@@ -48,6 +48,10 @@ limitations under the License.
       <artifactId>js</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>provided</scope>
