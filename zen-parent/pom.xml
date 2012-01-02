@@ -62,6 +62,11 @@ limitations under the License.
         <version>${zen.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.nominanuda</groupId>
+        <artifactId>zen-webservice</artifactId>
+        <version>${zen.version}</version>
+      </dependency>
+      <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>1.6.2</version>
