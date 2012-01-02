@@ -52,6 +52,16 @@ limitations under the License.
         <version>${zen.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.nominanuda</groupId>
+        <artifactId>zen-base</artifactId>
+        <version>${zen.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nominanuda</groupId>
+        <artifactId>zen-dataobject</artifactId>
+        <version>${zen.version}</version>
+      </dependency>
+      <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>1.6.2</version>
