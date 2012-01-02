@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
-import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-public class TextSelectTransformer extends ForwardingTransformerHandlerBase {
-	private final char[] BLANK = new char[] {' '};
 
-	@Override
-	public void startElement(String uri, String localName, String qName,
-			Attributes atts) throws SAXException {
-		super.characters(BLANK, 0, 1);
-	}
-
-	@Override 
-	public void endElement(String uri, String localName, String qName) throws SAXException {
-		super.characters(BLANK, 0, 1);
-	}
+public interface SAXEmitter {
+	void toSAX(ContentHandler ch) throws SAXException;
 }

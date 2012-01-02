@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
-public interface HtmlConstants {
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
-	String area = "area"; 
-	String base = "base";
-	String basefont = "basefont"; 
-	String bgsound = "bgsound"; 
-	String br = "br"; 
-	String col = "col"; 
-	String embed = "embed"; 
-	String frame = "frame"; 
-	String hr = "hr";
-	String img = "img"; 
-	String input = "input"; 
-	String link = "link"; 
-	String meta = "meta"; 
-	String param = "param"; 
-	String spacer = "spacer"; 
-	String wbr = "wbr";
+public class NullLexicalHandler implements LexicalHandler {
+
+	public void startDTD(String name, String publicId, String systemId)
+			throws SAXException {
+	}
+
+	public void endDTD() throws SAXException {
+	}
+
+	public void startEntity(String name) throws SAXException {
+	}
+
+	public void endEntity(String name) throws SAXException {
+	}
+
+	public void startCDATA() throws SAXException {
+	}
+
+	public void endCDATA() throws SAXException {
+	}
+
+	public void comment(char[] ch, int start, int length) throws SAXException {
+	}
 }

@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
 import org.xml.sax.SAXException;
 
-public class UntaggingTransformer extends SwallowingTransformerHandlerBase {
+
+public class WhiteSpaceIgnoringTransformer extends ForwardingTransformerHandlerBase {
+	private final static SAXHelper saxHelper = new SAXHelper();
 
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
-		getTarget().characters(ch, start, length);
+		if(! saxHelper.isWhiteSpace(ch, start, length)) {
+			super.characters(ch, start, length);
+		}
 	}
-
 	@Override
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException {
-		getTarget().ignorableWhitespace(ch, start, length);
 	}
-
 }

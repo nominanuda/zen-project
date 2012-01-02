@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
 import static com.nominanuda.lang.Collections.EMPTY_STR_ARR;
 import static com.nominanuda.lang.Collections.array;

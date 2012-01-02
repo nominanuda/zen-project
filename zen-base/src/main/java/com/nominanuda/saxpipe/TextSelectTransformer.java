@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
 
-public class NullLexicalHandler implements LexicalHandler {
+public class TextSelectTransformer extends ForwardingTransformerHandlerBase {
+	private final char[] BLANK = new char[] {' '};
 
-	public void startDTD(String name, String publicId, String systemId)
-			throws SAXException {
+	@Override
+	public void startElement(String uri, String localName, String qName,
+			Attributes atts) throws SAXException {
+		super.characters(BLANK, 0, 1);
 	}
 
-	public void endDTD() throws SAXException {
-	}
-
-	public void startEntity(String name) throws SAXException {
-	}
-
-	public void endEntity(String name) throws SAXException {
-	}
-
-	public void startCDATA() throws SAXException {
-	}
-
-	public void endCDATA() throws SAXException {
-	}
-
-	public void comment(char[] ch, int start, int length) throws SAXException {
+	@Override 
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+		super.characters(BLANK, 0, 1);
 	}
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.io.saxpipe;
+package com.nominanuda.saxpipe;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
@@ -27,6 +27,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.nominanuda.lang.ReflectiveObjectFactory;
+import com.nominanuda.saxpipe.SAXHelper;
+import com.nominanuda.saxpipe.SAXPipeline;
+import com.nominanuda.saxpipe.WhiteSpaceIgnoringTransformer;
 
 public class IdentityPipeTest {
 
