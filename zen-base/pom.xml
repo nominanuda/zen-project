@@ -22,7 +22,6 @@ limitations under the License.
   </parent>
   <groupId>com.nominanuda</groupId>
   <artifactId>zen-base</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
   <url>https://github.com/michelegonella/zen-project</url>
   <scm>
     <connection>scm:git:git@github.com:michelegonella/zen-project.git</connection>
