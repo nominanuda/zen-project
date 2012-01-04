@@ -48,6 +48,11 @@ limitations under the License.
     <dependencies>
       <dependency>
         <groupId>com.nominanuda</groupId>
+        <artifactId>zen-search</artifactId>
+        <version>${zen.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nominanuda</groupId>
         <artifactId>zen-urispec</artifactId>
         <version>${zen.version}</version>
       </dependency>
