@@ -22,6 +22,7 @@ import javax.ws.rs.QueryParam;
 
 import com.nominanuda.dataobject.DataObject;
 
+@HyperApi
 public interface TestHyperApi {
 	@PUT @Path("/foo/{bar}?{baz}")
 	DataObject putFoo(
