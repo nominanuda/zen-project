@@ -16,7 +16,6 @@
 package com.nominanuda.hyperapi;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
@@ -53,7 +52,6 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.jsonparser.JSONParser;
 import com.nominanuda.dataobject.jsonparser.ParseException;
-import com.nominanuda.io.BufferingInputStream;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
