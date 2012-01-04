@@ -46,6 +46,7 @@ limitations under the License.
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -55,6 +56,16 @@ limitations under the License.
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
