@@ -28,7 +28,7 @@ import com.nominanuda.lang.Strings;
 
 public class Console extends ScriptableObject {
 	private static final long serialVersionUID = 924498336863426363L;
-	private static final Logger log = LoggerFactory.getLogger(Console.class);
+	private static final Logger log = LoggerFactory.getLogger("console");
 
 	public void jsConstructor() {}
 
