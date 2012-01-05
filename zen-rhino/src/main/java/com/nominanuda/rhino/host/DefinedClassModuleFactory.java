@@ -22,7 +22,7 @@ public class DefinedClassModuleFactory implements ModuleFactory {
 			return null;
 		} else {
 			@SuppressWarnings("unchecked")
-			Object res = rhino.buildClassCtor(scope,(Class<? extends Scriptable>)Class.forName(defClass),false,false);
+			Object res = rhino.buildClassCtor(scope,(Class<? extends Scriptable>)Class.forName(defClass.trim()),false,false);
 			if(res instanceof JavaJsHostObject) {
 				String script = ((JavaJsHostObject)res).getJsScript();
 				rhino.evaluateReader(context, new StringReader(script), defClass, scope);
