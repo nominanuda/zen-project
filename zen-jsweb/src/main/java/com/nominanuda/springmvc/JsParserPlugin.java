@@ -10,7 +10,7 @@ public class JsParserPlugin implements
 		MvcFrontControllerBeanDefinitionParserPlugin {
 
 	public boolean supports(Element el) {
-		return null != el.getElementsByTagNameNS(SITEMAP_NS, "source").item(0);
+		return null != el.getElementsByTagNameNS(SITEMAP_NS, "js").item(0);
 	}
 
 	public String generateHandler(Element element, ParserContext parserContext,
