@@ -15,6 +15,7 @@
  */
 package com.nominanuda.lang;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.nominanuda.code.ThreadSafe;
 
 @ThreadSafe
 public abstract class Strings {
+	public static final Charset UTF8 = Charset.forName("UTF-8");
 	public static boolean nullOrEmpty(String s) {
 		return s == null || 0 == s.length();
 	}
