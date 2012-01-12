@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.PARAMETER,ElementType.METHOD/*return type*/})
-public @interface DataObjectType {
+public @interface StructDef {
 	String spec() default "";
 	String type_() default "";
 }
