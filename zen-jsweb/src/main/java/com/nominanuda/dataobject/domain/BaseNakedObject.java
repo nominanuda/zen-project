@@ -22,7 +22,7 @@ import java.util.List;
 import com.nominanuda.dataobject.AbstractDataStruct;
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectType;
+import com.nominanuda.dataobject.StructDef;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Strings;
@@ -37,8 +37,8 @@ public class BaseNakedObject extends AbstractDataStruct<String> implements Naked
 	public BaseNakedObject(DataObject o) {
 		super(null);
 		model = o;
-		Annotation t = getClass().getAnnotation(DataObjectType.class);
-		String type_ = ((DataObjectType)t).type_();
+		Annotation t = getClass().getAnnotation(StructDef.class);
+		String type_ = ((StructDef)t).type_();
 		if(Strings.notNullOrBlank(type_) && ! o.exists(TYPE_)) {
 			o.put(TYPE_, type_);
 		}
