@@ -36,6 +36,7 @@ import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.io.IOHelper;
+import com.nominanuda.lang.Check;
 
 @ThreadSafe
 public class ServletHelper {
@@ -49,7 +50,7 @@ public class ServletHelper {
 		String query = request.getQueryString();
 		String path = request.getRequestURI();
 		if(stripContextPath) {
-			path = path.substring(request.getContextPath().length());
+			path = path.substring(Check.ifNull(request.getContextPath(), "").length());
 		}
 		return query == null ? path : path + "?" + query;
 	}
