@@ -39,6 +39,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -87,7 +88,7 @@ public abstract class BaseHttpTest implements HttpProtocol {
 		}
 		w.flush();
 	}
-	protected Server startServer(int port, final AbstractHandler h) throws Exception {
+	protected Server startServer(int port, final Handler h) throws Exception {
 		Server srv = new Server(port);
 		srv.setHandler(new AbstractHandler() {
 			public void handle(String target, Request baseRequest,
