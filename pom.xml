@@ -44,8 +44,8 @@ limitations under the License.
   </developers>
   <modules>
     <module>zen-urispec</module>
-    <module>zen-base</module>
     <module>zen-parent</module>
+    <module>zen-base</module>
     <module>zen-dataobject</module>
     <module>zen-rhino</module>
     <module>zen-webservice</module>
