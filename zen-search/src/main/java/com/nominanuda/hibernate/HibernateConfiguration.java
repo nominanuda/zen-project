@@ -5,22 +5,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.event.service.internal.EventListenerRegistryImpl;
-import org.hibernate.event.service.spi.EventListenerRegistry;
-import org.hibernate.event.spi.EventType;
-import org.hibernate.event.spi.SaveOrUpdateEventListener;
-import org.hibernate.metamodel.MetadataSources;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.cfg.Environment;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.nominanuda.lang.Check;
 
 public class HibernateConfiguration {
 	private String username;
@@ -34,8 +27,6 @@ public class HibernateConfiguration {
 	//val an be of type X OR Iterable<X>
 	//where X is of type SaveOrUpdateEventListener or Class<SaveOrUpdateEventListener>
 	private Map<String,Object> listeners = new LinkedHashMap<String, Object>();
-	private final ServiceRegistry serviceRegistry;
-	private final MetadataSources metadataSources;
 	private boolean dynamic = true;
 	private boolean c3p0 = false;
 
@@ -46,17 +37,10 @@ public class HibernateConfiguration {
 		MYSQL, HSQLDB
 	}
 	public HibernateConfiguration() {
-		serviceRegistry = new ServiceRegistryBuilder().addService(EventListenerRegistry.class, new EventListenerRegistryImpl()).buildServiceRegistry();
-		metadataSources = new MetadataSources(serviceRegistry);
+//		serviceRegistry = new ServiceRegistryBuilder().addService(EventListenerRegistry.class, new EventListenerRegistryImpl()).buildServiceRegistry();
+//		metadataSources = new MetadataSources(serviceRegistry);
 	}
 
-	private void addListener(EventType<SaveOrUpdateEventListener> t, Object l, EventListenerRegistry r) {
-		if(l instanceof SaveOrUpdateEventListener) {
-			r.appendListeners(t, (SaveOrUpdateEventListener)l);
-		} else {
-			r.appendListeners(t, (Class<SaveOrUpdateEventListener>)l);
-		}
-	}
 	public Configuration getConfiguration() {
 		if(cfg == null) {
 			cfg = makeConfiguration();
@@ -66,31 +50,15 @@ public class HibernateConfiguration {
 
 	public SessionFactory getSessionFactory() {
 		if(sessionFactory == null) {
-			sessionFactory = getConfiguration().buildSessionFactory(serviceRegistry);
+			Configuration cfg = getConfiguration();
+			sessionFactory = cfg.buildSessionFactory();//serviceRegistry
 		}
 		return sessionFactory;
 	}
 
 	private Configuration makeConfiguration() {
-		for(String res : resources) {
-			metadataSources.addResource(res);
-		}
 		//SessionFactory sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
-		EventListenerRegistry listenerRegistry = serviceRegistry.getService(EventListenerRegistry.class);
-		for(Entry<String, ?> e : listeners.entrySet()) {
-			String evName = e.getKey().toLowerCase().replace('_', '-');
-			@SuppressWarnings("unchecked")
-			EventType<SaveOrUpdateEventListener> evt = Check.notNull(EventType.eventTypeByNameMap.get(evName));
-			Object val = e.getValue();
-			if(val instanceof Iterable<?>) {
-				for(Object l : (Iterable<?>)val) {
-					addListener(evt, l, listenerRegistry);
-				}
-			} else {
-				addListener(evt, val, listenerRegistry);
-			}
-		}
-		Configuration cfg = new Configuration();
+		final Configuration cfg = new Configuration();
 		DBType dbType = inferDbType();
 		//Configuration cfg = new Configuration();
 		if(dynamic ) {
@@ -123,10 +91,17 @@ public class HibernateConfiguration {
 					.setProperty("hibernate.jdbc.batch_size", "0");
 				break;
 			case MYSQL:
-				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect")
+				//.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver")
+				;
 				break;
 			default:
 				throw new IllegalStateException();
+		}
+		Properties properties = cfg.getProperties();
+		Environment.verifyProperties( properties );
+		for(String res : resources) {
+			cfg.addResource(res);
 		}
 		return cfg;
 	}

@@ -30,9 +30,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.XmlHelper;
+
 
 public class ForwardingTransformerHandlerBase implements TransformerHandler {
-	protected static final SAXHelper saxHelper = new SAXHelper();
+	protected static final XmlHelper saxHelper = new XmlHelper();
 	private Locator locator;//TODO
 	private ContentHandler contentHandler;
 	private LexicalHandler lexicalHandler = new NullLexicalHandler();

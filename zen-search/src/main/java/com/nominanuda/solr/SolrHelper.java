@@ -15,8 +15,10 @@
  */package com.nominanuda.solr;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -31,6 +33,7 @@ import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataArrayImpl;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStructHelper;
+import com.nominanuda.lang.Check;
 
 public class SolrHelper {
 	private static final DataStructHelper struct = new DataStructHelper();
@@ -43,12 +46,47 @@ public class SolrHelper {
 		qr.getResults();
 		SolrDocumentList sdl = qr.getResults();
 		for(Map<String,Object> d : sdl) {
-			DataObject o = (DataObject)struct.fromFlatMap(d);
+			DataObject o = (DataObject)struct.fromFlatMap(normalizeDynFields(d));
 			res.add(o);
 		}
 		return res;
 	}
+
+	private Map<String, Object> normalizeDynFields(Map<String, Object> d) {
+		Map<String, Object> res = new LinkedHashMap<String, Object>();
+		for(Entry<String, Object> e : d.entrySet()) {
+			String name = e.getKey();
+			if(isDynamicFieldName(name)) {
+				name = fromDynamicFieldName(name);
+			}
+			res.put(name, e.getValue());
+		}
+		return res;
+	}
+
+	private boolean isDynamicFieldName(String s) {
+		return s.endsWith("_l")
+			|| s.endsWith("_d")
+			|| s.endsWith("_s")
+			|| s.endsWith("_b")
+			;
+	}
 	
+	private String makeDynamicFieldName(String name, Object val) {
+		switch (struct.getDataType(val)) {
+		case bool:
+			return name + "_b";
+		case number:
+			return val instanceof Long ? name + "_l" : name + "_d";
+		case string:
+			return name + "_s";
+		default:
+			return Check.illegalargument.fail();
+		}
+	}
+	private String fromDynamicFieldName(String dName) {
+		return dName.substring(0, dName.length() - 2);
+	}
 
 	public String escAndQuote(String s) {
 		return '"' + esc(s) + '"';
@@ -74,7 +112,7 @@ public class SolrHelper {
 					if(val1 == null) {
 						continue;
 					} else if(struct.isPrimitiveOrNull(val1)) {
-						addField(sid, k+"."+k1, val1, solrFields);
+						addField(sid, k+"."+makeDynamicFieldName(k1, val1), val1, solrFields);
 					}
 				}
 			} else if(struct.isDataArray(val)) {
@@ -93,7 +131,7 @@ public class SolrHelper {
 		return sid;
 	}
 	private void addField(SolrInputDocument sid, String key, Object val, Set<String> solrFields) {
-		if(solrFields.contains(key)) {
+		if(solrFields.contains(key) || isDynamicFieldName(key)) {
 			sid.addField(key, val);
 		}
 	}

@@ -13,9 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.lang;
+package com.nominanuda.dataobject.dataview;
 
-public interface ArityNFun<V> {
+import java.util.Collection;
 
-	V apply(Object... params);
+import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.lang.Check;
+
+public class DataObjectPropertyReader implements PropertyReader<DataObject> {
+	public Collection<String> readableProps(DataObject m) {
+		return m.getKeys();
+	}
+	public Object read(DataObject m, String k) {
+		return m.get(k);
+	}
+	public boolean accepts(Object o) {
+		return Check.notNull(o) instanceof DataObject;
+	}
+	public boolean hasProp(DataObject o, String k) {
+		return o.exists(k);
+	}
 }

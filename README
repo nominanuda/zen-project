@@ -11,3 +11,8 @@ mvn install:install-file -Dfile=soy-latest.jar -DartifactId=closure-templates -D
 
 http://closure-templates.googlecode.com/files/closure-templates-for-java-latest.zip
 
+snapshot deploy cmd
+
+mvn clean deploy -DaltDeploymentRepository=sonatype-nexus-snapshots::default::https://oss.sonatype.org/content/repositories/snapshots
+
+

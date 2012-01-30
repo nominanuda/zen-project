@@ -1,5 +1,6 @@
 package com.nominanuda.hibernate;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,26 +14,27 @@ import com.nominanuda.dataobject.DataArrayImpl;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.DataType;
+import com.nominanuda.dataobject.dataview.DataView;
 import com.nominanuda.lang.Maths;
 
 public abstract class AbstractHibernateStructStore {
 	protected static final DataStructHelper struct = new DataStructHelper();
 	protected SessionFactory sessionFactory;
-	protected ObjectExpander objectExpander = new ObjectExpander();
+	protected Map<String, DataView<Map<String, Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String, Object>>>();
 
-	protected DataArray postprocess(List<?> l, String type, boolean expand) {
+	protected DataArray render(List<?> l, String type) {
 		DataArrayImpl a = new DataArrayImpl();
 		for(Object o : l) {
 			a.add(o instanceof Map<?,?>
-				? postprocess((Map<String, Object>)o, type, expand)
+				? render((Map<String, Object>)o, type)
 				: o
 			);
 		}
 		return a;
 	}
 
-	protected DataObject postprocess(Map<String, Object> obj, String type, boolean expand) {
-		return obj == null ? null : objectExpander.expand(obj, type, expand);
+	protected DataObject render(Map<String, Object> obj, String type /*TODO boolean expand*/) {
+		return obj == null ? null : dataViewRegistry.get(type).render(obj);
 	}
 
 	protected void bind(Query q, String k, Object v) {
@@ -69,8 +71,10 @@ public abstract class AbstractHibernateStructStore {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public void setObjectExpander(ObjectExpander objectExpander) {
-		this.objectExpander = objectExpander;
+	public void setDataViewRegistry(
+			Map<String, DataView<Map<String, Object>>> dataViewRegistry) {
+		this.dataViewRegistry = dataViewRegistry;
 	}
+
 
 }

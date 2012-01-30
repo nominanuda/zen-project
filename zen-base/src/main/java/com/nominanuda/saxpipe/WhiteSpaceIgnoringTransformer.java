@@ -17,9 +17,11 @@ package com.nominanuda.saxpipe;
 
 import org.xml.sax.SAXException;
 
+import com.nominanuda.lang.XmlHelper;
+
 
 public class WhiteSpaceIgnoringTransformer extends ForwardingTransformerHandlerBase {
-	private final static SAXHelper saxHelper = new SAXHelper();
+	private final static XmlHelper saxHelper = new XmlHelper();
 
 	@Override
 	public void characters(char[] ch, int start, int length)

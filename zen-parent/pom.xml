@@ -36,7 +36,7 @@ limitations under the License.
   </licenses>
   <properties>
     <zen.version>0.1.0-SNAPSHOT</zen.version>
-    <spring.version>3.0.5.RELEASE</spring.version>
+    <spring.version>3.1.0.RELEASE</spring.version>
     <jetty.version>7.4.4.v20110707</jetty.version>
     <luceneandsolr.version>3.6</luceneandsolr.version>
     <httpcore.version>4.1.1</httpcore.version>
@@ -85,55 +85,46 @@ limitations under the License.
         <groupId>nu.validator.htmlparser</groupId>
         <artifactId>htmlparser</artifactId>
         <version>1.2.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4.1</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${spring.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
         <version>${spring.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jdbc</artifactId>
         <version>${spring.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
         <version>${spring.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
         <version>${httpcore.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
         <version>${httpcore.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -165,25 +156,21 @@ limitations under the License.
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
         <version>2.4.0</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -195,31 +182,26 @@ limitations under the License.
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-continuation</artifactId>
         <version>${jetty.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-client</artifactId>
         <version>${jetty.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
         <version>${jetty.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-util</artifactId>
         <version>${jetty.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.16</version>
-        <scope>provided</scope>
       </dependency>
       <!-- START LOGGING -->
       <dependency>
@@ -342,7 +324,7 @@ limitations under the License.
       </plugin>
     </plugins>
   </build>
-  <repositories>
+<!--   <repositories>
     <repository>
       <id>lucene-jenkins-trunk</id>
       <name>Lucene jenkins trunk</name>
@@ -352,5 +334,5 @@ limitations under the License.
         <enabled>true</enabled>
       </snapshots>
     </repository>
-  </repositories>
+  </repositories> -->
 </project>
