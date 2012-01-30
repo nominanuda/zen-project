@@ -20,7 +20,6 @@ limitations under the License.
     <groupId>com.nominanuda</groupId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.nominanuda</groupId>
   <artifactId>zen-jsweb</artifactId>
   <url>https://github.com/michelegonella/zen-project</url>
   <scm>
