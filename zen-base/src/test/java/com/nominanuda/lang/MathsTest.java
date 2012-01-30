@@ -21,7 +21,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.nominanuda.codec.Hex;
-import com.nominanuda.io.IOHelper;
 
 public class MathsTest {
 
