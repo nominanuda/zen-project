@@ -36,7 +36,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.ObjectConvertor;
