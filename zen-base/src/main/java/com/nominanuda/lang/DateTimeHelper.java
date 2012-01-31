@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
