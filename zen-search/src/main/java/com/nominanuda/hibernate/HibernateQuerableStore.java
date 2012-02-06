@@ -26,7 +26,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 				bind(q, k, params.get(k));
 			}
 			List<?> l = q.list();
-			return postprocess(l, type, expand);
+			return render(l, type);
 		} catch(Exception e) {
 			if(tx != null && tx.isActive()) {
 				tx.rollback();
@@ -59,8 +59,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 				return null;
 			} else if(o instanceof Map<?,?>) {
 				Map<String,Object> m = (Map<String,Object>)o;
-				postprocess(m, type, expand);
-				return struct.fromMapsAndCollections(m);
+				return render(m, type);
 			} else {
 				return o;
 			}
@@ -90,8 +89,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			if (obj == null) {
 				return null;
 			} else {
-				postprocess(obj, type, false);
-				return struct.fromMapsAndCollections(obj);
+				return render(obj, type);
 			}
 			
 		} catch(Exception e) {

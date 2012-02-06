@@ -27,7 +27,7 @@ public class Test1 {
 		cfg.setUsername("SA");
 		cfg.setPassword("");
 		cfg.setShowSql(true);
-		cfg.setResource("com/nominanuda/hib/sample.hbm.xml");
+		cfg.setResource("com/nominanuda/hibernate/sample.hbm.xml");
 		
 		new SchemaExport(cfg.getConfiguration()).create(true, true);
 	}

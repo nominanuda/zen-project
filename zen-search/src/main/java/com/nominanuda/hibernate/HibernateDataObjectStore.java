@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.nominanuda.dataobject.DataObject;
@@ -18,7 +17,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 		Session session = null;
 		Transaction tx = null;
 		try {
-			session = sessionFactory.openSession();
+			session = openSession();
 			tx = session.beginTransaction();
 			Query q = session.createQuery("from "+type+" where id=:id");
 //							.setReadOnly(true);
@@ -32,8 +31,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 				return null;
 			} else if(o instanceof Map<?,?>) {
 				Map<String,Object> m = (Map<String,Object>)o;
-				postprocess(m, type, true);
-				return objectExpander.expand(m, type, true);
+				return render(m, type);
 			} else {
 				throw new IllegalStateException();
 			}
@@ -52,7 +50,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 		Session session = null;
 		Transaction tx = null;
 		try {
-			session = sessionFactory.openSession();
+			session = openSession();
 			tx = session.beginTransaction();
 			put(type, o, session, tx);
 			tx.commit();
@@ -79,7 +77,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 		Session session = null;
 		Transaction tx = null;
 		try {
-			session = sessionFactory.openSession();
+			session = openSession();
 			tx = session.beginTransaction();
 			Object o = session.get(type, id);
 			if(o != null) {
@@ -99,7 +97,8 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 	}
 
 	public Session openSession() {
-		return sessionFactory.openSession();
+		Session s = sessionFactory.openSession();
+		return s;
 	}
 
 }
