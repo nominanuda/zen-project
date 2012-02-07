@@ -28,7 +28,7 @@ public final class DataView<T> {
 	private Collection<String> wildcardProps = Collections.emptySet();// = Arrays.asList("id", "title");
 	private static final DataStructHelper struct = new DataStructHelper();
 	private DataViewDef viewDef;
-	private PropertyReader<T> pReader;// = (PropertyReader<T>)new StringMapPropertyEditor<T>();
+	private PropertyReader<T> pReader;// = (PropertyReader<T>)new MapPropertyReader<T>();
 
 	public DataObject render(T obj) {
 		Check.illegalargument.assertTrue(pReader.accepts(obj));

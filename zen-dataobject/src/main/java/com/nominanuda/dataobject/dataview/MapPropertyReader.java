@@ -18,7 +18,7 @@ package com.nominanuda.dataobject.dataview;
 import java.util.Collection;
 import java.util.Map;
 
-class StringMapPropertyEditor<T> implements PropertyReader<Map<String, ? extends Object>> {
+public class MapPropertyReader<T> implements PropertyReader<Map<String, ? extends Object>> {
 	public Collection<String> readableProps(Map<String, ? extends Object> m) {
 		return m.keySet();
 	}
