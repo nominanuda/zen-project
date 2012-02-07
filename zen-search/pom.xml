@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-core</artifactId>
-      <version>4.0-SNAPSHOT</version>
+      <version>3.5.0</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j-over-slf4j</artifactId>
