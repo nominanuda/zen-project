@@ -20,12 +20,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileManager.Location;
 import javax.tools.FileObject;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -118,7 +114,11 @@ public class JQueryAptProcessor implements Processor {
 
 	private void writeMethodCall(ExecutableElement member, Writer w, String ns) throws IOException {
 		List<? extends VariableElement> params = member.getParameters();
-		Path uriTpl = Check.notNull(member.getAnnotation(Path.class));
+		Path uriTpl = member.getAnnotation(Path.class);
+		if(uriTpl == null) {
+			log("skipping "+member.getSimpleName()+" because misses @Path annotation");
+			return;
+		}
 		String method = member.getAnnotation(GET.class) != null
 			? "GET" : member.getAnnotation(POST.class) != null
 			? "POST" : member.getAnnotation(PUT.class) != null
