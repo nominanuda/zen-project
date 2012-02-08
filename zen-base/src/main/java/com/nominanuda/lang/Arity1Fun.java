@@ -17,10 +17,10 @@ package com.nominanuda.lang;
 
 public interface Arity1Fun<P, V> {
 	Arity1Fun<String, String> STR_IDENTITY = new Arity1Fun<String, String>() {
-		public String appy(String param) {
+		public String apply(String param) {
 			return param;
 		}
 	};
 
-	V appy(P param);
+	V apply(P param);
 }

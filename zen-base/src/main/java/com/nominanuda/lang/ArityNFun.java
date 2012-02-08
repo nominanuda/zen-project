@@ -17,5 +17,5 @@ package com.nominanuda.lang;
 
 public interface ArityNFun<V> {
 
-	V appy(Object... params);
+	V apply(Object... params);
 }
