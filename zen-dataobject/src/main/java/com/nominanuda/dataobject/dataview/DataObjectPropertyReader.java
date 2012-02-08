@@ -16,21 +16,21 @@
 package com.nominanuda.dataobject.dataview;
 
 import java.util.Collection;
-import java.util.Map;
 
+import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.lang.Check;
 
-public class MapPropertyReader implements PropertyReader<Map<String, ? extends Object>> {
-	public Collection<String> readableProps(Map<String, ? extends Object> m) {
-		return m.keySet();
+public class DataObjectPropertyReader implements PropertyReader<DataObject> {
+	public Collection<String> readableProps(DataObject m) {
+		return m.getKeys();
 	}
-	public Object read(Map<String, ? extends Object> m, String k) {
+	public Object read(DataObject m, String k) {
 		return m.get(k);
 	}
 	public boolean accepts(Object o) {
-		return Check.notNull(o) instanceof Map<?,?>;
+		return Check.notNull(o) instanceof DataObject;
 	}
-	public boolean hasProp(Map<String, ? extends Object> o, String k) {
-		return o.containsKey(k);
+	public boolean hasProp(DataObject o, String k) {
+		return o.exists(k);
 	}
 }
