@@ -27,9 +27,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.nominanuda.lang.ReflectiveObjectFactory;
-import com.nominanuda.saxpipe.SAXHelper;
 import com.nominanuda.saxpipe.SAXPipeline;
 import com.nominanuda.saxpipe.WhiteSpaceIgnoringTransformer;
+import com.nominanuda.lang.XmlHelper;
 
 public class IdentityPipeTest {
 
@@ -39,10 +39,10 @@ public class IdentityPipeTest {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		new SAXPipeline()
 			.add(new ReflectiveObjectFactory<TransformerHandler>(WhiteSpaceIgnoringTransformer.class))
-			.addXslt(new StringReader(SAXHelper.identityXslt))
+			.addXslt(new StringReader(XmlHelper.identityXslt))
 			.add(new ReflectiveObjectFactory<TransformerHandler>(WhiteSpaceIgnoringTransformer.class))
 //TODO...			.add(new ReflectiveObjectFactory<TransformerHandler>(RootStripTransformer.class))
-			.addXslt(new StringReader(SAXHelper.identityXslt))
+			.addXslt(new StringReader(XmlHelper.identityXslt))
 			.complete()
 			.build(new StreamSource(new StringReader(xmlmsg)), new StreamResult(baos))
 			.run();
