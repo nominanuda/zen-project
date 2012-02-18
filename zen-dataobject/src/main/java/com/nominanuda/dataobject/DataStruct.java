@@ -28,7 +28,7 @@ public interface DataStruct<K extends Object> {
 
 	@Nullable DataStruct<?> getParent();	
 	@Nullable /*should root return itself ?*/ DataStruct<?> getRoot();//miki
-	DataStruct<K> cloneStruct();
+	//DataStruct<K> cloneStruct();
 	boolean isArray();
 	boolean isObject();
 	String getType();//Object or Array

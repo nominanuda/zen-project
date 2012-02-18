@@ -52,10 +52,6 @@ public class BaseNakedObject extends AbstractDataStruct<String> implements Naked
 		return model.getRoot();
 	}
 
-	public DataStruct<String> cloneStruct() {
-		return model.cloneStruct();
-	}
-
 	public boolean isArray() {
 		return model.isArray();
 	}

@@ -56,9 +56,6 @@ public class BaseNakedArray extends AbstractDataStruct<Integer> implements Naked
 	public DataStruct<?> getRoot() {
 		return model.getRoot();
 	}
-	public DataStruct<Integer> cloneStruct() {
-		return model.cloneStruct();
-	}
 	public boolean isArray() {
 		return model.isArray();
 	}

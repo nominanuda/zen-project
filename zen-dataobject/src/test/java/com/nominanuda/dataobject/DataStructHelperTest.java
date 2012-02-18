@@ -64,7 +64,7 @@ public class DataStructHelperTest {
 	public void testEqualsAndClone() throws IOException, ParseException, SAXException {
 		DataObject obj = (DataObject)new JSONParser().parse(
 			"{\"a\":null,\"b\":{\"c\":1},\"d\":\"X\"}");
-		DataObject obj2 = (DataObject)obj.cloneStruct();
+		DataObject obj2 = new DataStructHelper().clone(obj);
 		assertTrue(new DataStructHelper().equals(obj, obj2));
 	}
 
