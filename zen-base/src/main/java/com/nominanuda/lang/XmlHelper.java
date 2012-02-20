@@ -291,48 +291,48 @@ public class XmlHelper {
 		return outputProperties;
 	}
 
-	public String xPathForString(Document doc, String xpathExpr,
+	public String xPathForString(Object nodeOrNodeList, String xpathExpr,
 			String... nsBindings) throws IllegalArgumentException {
-		return (String) xPath(doc, xpathExpr, XPathConstants.STRING, nsBindings);
+		return (String) xPath(nodeOrNodeList, xpathExpr, XPathConstants.STRING, nsBindings);
 	}
 
-	public Number xPathForNumber(Document doc, String xpathExpr,
+	public Number xPathForNumber(Object nodeOrNodeList, String xpathExpr,
 			String... nsBindings) throws IllegalArgumentException {
-		return (Number) xPath(doc, xpathExpr, XPathConstants.NUMBER, nsBindings);
+		return (Number) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NUMBER, nsBindings);
 	}
 
-	public Boolean xPathForBoolean(Document doc, String xpathExpr,
+	public Boolean xPathForBoolean(Object nodeOrNodeList, String xpathExpr,
 			String... nsBindings) throws IllegalArgumentException {
-		return (Boolean) xPath(doc, xpathExpr, XPathConstants.BOOLEAN,
+		return (Boolean) xPath(nodeOrNodeList, xpathExpr, XPathConstants.BOOLEAN,
 				nsBindings);
 	}
 
-	public NodeList xPathForNodeList(Document doc, String xpathExpr,
+	public NodeList xPathForNodeList(Object nodeOrNodeList, String xpathExpr,
 			String... nsBindings) throws IllegalArgumentException {
-		return (NodeList) xPath(doc, xpathExpr, XPathConstants.NODESET,
+		return (NodeList) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NODESET,
 				nsBindings);
 	}
 
-	public Node xPathForNode(Document doc, String xpathExpr,
+	public Node xPathForNode(Object nodeOrNodeList, String xpathExpr,
 			String... nsBindings) throws IllegalArgumentException {
-		return (Node) xPath(doc, xpathExpr, XPathConstants.NODE, nsBindings);
+		return (Node) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NODE, nsBindings);
 	}
 
 	/**
 	 * 
-	 * @param doc
+	 * @param nodeOrNodeList
 	 * @param xpathExpr
 	 * @param nsBindings in the form "n1","http://a.b.c/n1", "prefix2", "http://a.b.c/whatever"
 	 * @return
 	 * @throws XPathExpressionException 
 	 */
-	private Object xPath(Document doc, String xpathExpr, QName resultType, String... nsBindings)
+	private Object xPath(Object nodeOrNodeList, String xpathExpr, QName resultType, String... nsBindings)
 			throws IllegalArgumentException {
 		try {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			xpath.setNamespaceContext(new MyNamespaceContext(nsBindings));
 			XPathExpression expr = xpath.compile(xpathExpr);
-			Object result = expr.evaluate(doc, resultType);
+			Object result = expr.evaluate(nodeOrNodeList, resultType);
 			return result;
 		} catch (XPathExpressionException e) {
 			throw new IllegalArgumentException(e);
