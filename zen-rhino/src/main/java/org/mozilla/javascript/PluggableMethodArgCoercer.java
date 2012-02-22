@@ -45,7 +45,7 @@ public class PluggableMethodArgCoercer implements MethodArgCoercer {
 		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type);
 		if(t != null) {
 			try {
-				return t.get0().convert(value);
+				return t.get0().apply(value);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

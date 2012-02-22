@@ -16,6 +16,6 @@
 package com.nominanuda.lang;
 
 public interface ObjectConvertor<X,Y,E extends Exception> {
-	Y convert(X x) throws E;
+	Y apply(X x) throws E;
 	boolean canConvert(Object o);
 }
