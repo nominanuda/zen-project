@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.dataobject.DataStructHelper;
 
 
 
@@ -338,4 +339,18 @@ public class JSONParser {
 		status = S_IN_ERROR;
 		throw new ParseException(getPosition(), ParseException.ERROR_UNEXPECTED_TOKEN, token);
 	}
+
+//	public Object parseValue(String val) throws IOException, ParseException, SAXException {
+//		DataStructHelper h = new DataStructHelper();
+//		try {
+//			return Double.valueOf(val);
+//		} catch (NumberFormatException e) {
+//		}
+//		if(val.startsWith("\"") && val.startsWith("\"")) {
+//			return h.jsonStringUnescape(val.substring(1, val.length() - 1));
+//		}
+//		return "null".equals(val) ? null :
+//				("true".equals(val)||"false".equals(val)) ? Boolean.valueOf(val) : 
+//				parse(val);
+//	}
 }

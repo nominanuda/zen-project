@@ -177,6 +177,11 @@ public class DataStructHelper implements Serializable {
 				.replace("\n", "\\n");
 	}
 
+	public String jsonStringUnescape(String s) {
+		return s.replace("\\\\", "\\").replace("\\\"", "\"")
+				.replace("\\n", "\\n");
+	}
+
 	public void copy(DataObject src, DataObject dst, int policy)
 			throws UnsupportedOperationException {
 		switch (policy) {
