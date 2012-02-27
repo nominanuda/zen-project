@@ -1,6 +1,5 @@
 package org.hibernate.tuple.entity;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,6 +9,8 @@ import org.hibernate.tuple.DynamicMapInstantiator;
 public class DynaMapDynamicMapInstantiator extends DynamicMapInstantiator {
 	private static final long serialVersionUID = 8117036205790668708L;
 
+	public DynaMapDynamicMapInstantiator() {
+	}
 	public DynaMapDynamicMapInstantiator(PersistentClass mappingInfo) {
 		super(mappingInfo);
 	}
