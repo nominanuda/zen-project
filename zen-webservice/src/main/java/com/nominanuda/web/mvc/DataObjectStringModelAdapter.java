@@ -32,6 +32,9 @@ public class DataObjectStringModelAdapter implements StringModelAdapter<DataObje
 	public List<String> getAsList(DataObject model, String path) {
 		LinkedList<String> res = new LinkedList<String>();
 		Object val = model.getPathSafe(path);
+		if(val == null) {
+			return null;
+		}
 		if(helper.isDataArray(val)) {
 			DataArray a = (DataArray)val;
 			for(int i : a.getKeys()) {

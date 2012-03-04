@@ -139,11 +139,15 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			for(Annotation annotation : annotations){
 				if(annotation instanceof PathParam) {
 					annotationFound = true;
-					uriParams.put(((PathParam)annotation).value(), arg.toString());//TODO multivalue or complex transformations
+					if(arg != null) {
+						uriParams.put(((PathParam)annotation).value(), arg.toString());//TODO multivalue or complex transformations
+					}
 					break;
 				} else if(annotation instanceof QueryParam) {
 					annotationFound = true;
-					uriParams.put(((QueryParam)annotation).value(), arg.toString());//TODO multivalue or complex transformations
+					if(arg != null) {
+						uriParams.put(((QueryParam)annotation).value(), arg.toString());//TODO multivalue or complex transformations
+					}
 					break;
 				}
 			}
