@@ -50,6 +50,7 @@ public class TopScopeBuildTest {
 			assertSame(UniqueTag.NOT_FOUND, ScriptableObject.getProperty(root, "java"));
 			try {
 				cx.compileString("new java.util.LinkedList();", "src", 0, null).exec(cx, fakeRoot);
+				fail();
 			} catch(RhinoException e) {}
 		} finally {
 			Context.exit();
