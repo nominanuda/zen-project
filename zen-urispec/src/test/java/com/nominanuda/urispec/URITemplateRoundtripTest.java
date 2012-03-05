@@ -45,6 +45,7 @@ public class URITemplateRoundtripTest {
 		roundTrip("/path1/rrr/{rrr}/path2/({path2}(/path9))", "/path1/rrr/rrr/path2/db", "/path1/rrr/rrr/path2/db/path9");
 		roundTrip("/path1/rrr/{rrr}(/config)", "/path1/rrr/rrr", "/path1/rrr/rrr/config");
 		roundTrip("/path1/rrr/{rrr}(/config)", "/path1/rrr/rrr/config", "/path1/rrr/rrr/config");
+		//TODO roundTrip("/{rrr}/{path2}/({dir */*}/)", "/rr+r/path2/d/i/r/");
 		roundTrip("/{rrr}/{path2}/({dir */*}/)", "/rrr/path2/d/i/r/");
 		roundTrip("/{rrr}/{path2}(/{dir */*}/)", "/rrr/path2");
 		roundTrip("/query/bA0r/qtag", "/query/bA0r/qtag");

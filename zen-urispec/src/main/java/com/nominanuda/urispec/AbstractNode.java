@@ -17,6 +17,8 @@ package com.nominanuda.urispec;
 
 import static java.util.Arrays.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,5 +66,19 @@ public abstract class AbstractNode extends CommonTree implements TemplatingNode 
 	}
 	public void setNodeAdaptor(NodeAdapter adaptor) {
 		this.nodeAdapter = adaptor;
+	}
+
+	protected static final int KEEP_SLASHES = 1;
+
+	public String percentEncodeUtf8(String str, int opts) {
+		try {
+			String encoded = URLEncoder.encode(str, "UTF-8");
+			if(opts == KEEP_SLASHES) {
+				encoded = encoded.replace("%2F", "/");
+			}
+			return encoded;
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

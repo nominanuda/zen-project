@@ -53,8 +53,8 @@ public class SpecTest {
 		test("http://10.10.10.10", "http://10.10.10.10");
 		test("file:///tmp/{tmpFile */0*}", "file:///tmp/1/2","tmpFile","1/2");
 		test("urn:isbn:{isbn}", "urn:isbn:123","isbn",123);
-		test("{scheme}{id}", "urn:uuid:123-245","scheme","urn:uuid:","id","123-245");
-		test("{scheme}({id})", "urn:uuid:","scheme","urn:uuid:");
+		test("{scheme}:{subscheme}:{id}", "urn:uuid:123-245","scheme","urn","subscheme","uuid","id","123-245");
+		test("{scheme}:({id})", "urn:","scheme","urn");
 		test("({scheme}{id}|{id})", "ID","id","ID");
 		test("/({scheme}{id}|({id}))", "/");
 		test("/({scheme}{id}|(http:{id}))", "/");

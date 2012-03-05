@@ -17,6 +17,7 @@ package com.nominanuda.urispec;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.runtime.CommonToken;
@@ -37,7 +38,11 @@ public class NamedExprNode extends AnonExprNode implements SeqComponent /*Bindin
 		List<String> vals = getNodeAdapter()
 			.getStringModelAdapter().getAsList(model,exprName);
 		if (vals != null) {
-			return vals;
+			List<String> encodedVals = new LinkedList<String>();
+			for(String s : vals) {
+				encodedVals.add(percentEncodeUtf8(s, KEEP_SLASHES));
+			}
+			return encodedVals;
 		} else {
 			for(CharSequenceNode seq : alts) {
 				List<String> tpls = seq.templateMulti(model);
