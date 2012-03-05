@@ -72,4 +72,28 @@ public abstract class Strings {
 		}
 		return l;
 	}
+	public static String pathConcat(String... segments) {
+		StringBuilder sb = new StringBuilder();
+		boolean lastEndsWithSlash = false;
+		boolean first = true;
+		for(String s : segments) {
+			if(first) {
+				sb.append(s);
+				first = false;
+			} else {
+				if((! lastEndsWithSlash) && (! s.startsWith("/"))) {
+					sb.append("/");
+					sb.append(s);
+				} else if(lastEndsWithSlash && s.startsWith("/")) {
+					sb.append(s.substring(1));
+				} else {
+					sb.append(s);
+				}
+			}
+			if(s.endsWith("/")) {
+				lastEndsWithSlash = true;
+			}
+		}
+		return sb.toString();
+	}
 }
