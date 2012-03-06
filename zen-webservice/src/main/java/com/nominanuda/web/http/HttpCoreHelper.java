@@ -257,9 +257,12 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public boolean hasEntity(HttpMessage message) {
-		return Check.notNull(message) instanceof HttpEntityEnclosingRequest
-		? ((HttpEntityEnclosingRequest)message).getEntity() != null
-		: ((HttpResponse)message).getEntity() != null;
+		return
+		Check.notNull(message) instanceof HttpResponse
+			? ((HttpResponse)message).getEntity() != null
+			: message instanceof HttpEntityEnclosingRequest
+				? ((HttpEntityEnclosingRequest)message).getEntity() != null
+				: false;
 	}
 
 	public HttpResponse resp404TextPlainUtf8(String msg) {
