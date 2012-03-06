@@ -256,10 +256,6 @@ public class HttpCoreHelper implements HttpProtocol {
 		return resp;
 	}
 
-	public boolean hasEntity(HttpRequest request) {
-		return Check.notNull(request) instanceof HttpEntityEnclosingRequest
-		&& ((HttpEntityEnclosingRequest)request).getEntity() != null;
-	}
 	public boolean hasEntity(HttpMessage message) {
 		return Check.notNull(message) instanceof HttpEntityEnclosingRequest
 		? ((HttpEntityEnclosingRequest)message).getEntity() != null
