@@ -25,6 +25,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoEmbedding;
 import org.mozilla.javascript.RhinoHelper;
@@ -62,6 +63,10 @@ public class RhinoHandler implements CommandRequestHandler {
 			throws Exception {
 		Context cx = rhinoEmbedding.enterContext();
 		try {
+			if(httpCore.hasEntity(request)) {
+				HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest)request;
+				r.setEntity(new BufferedHttpEntity(r.getEntity()));
+			}
 			Scriptable controllerScope = buildScope(cx);
 			Tuple2<String,Reader> script = getSource(cmd, request);
 			String jsLocation = script.get0();

@@ -15,7 +15,11 @@
  */
 package com.nominanuda.jsweb.host;
 
+import java.io.IOException;
+
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoHelper;
@@ -23,6 +27,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.nominanuda.code.Nullable;
+import com.nominanuda.io.IOHelper;
+import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class JsHttpRequest extends ScriptableObject implements HttpProtocol {
@@ -75,5 +81,16 @@ public class JsHttpRequest extends ScriptableObject implements HttpProtocol {
 		rhinoHelper.putProperty(jsh, "name", h.getName());
 		rhinoHelper.putProperty(jsh, "value", h.getValue());
 		return jsh;
+	}
+
+	//TODO don't use it
+	public @Nullable String jsFunction_stringEntity() throws IOException {
+		HttpCoreHelper httpHelper = new HttpCoreHelper();
+		if(httpHelper.hasEntity(req)) {
+			HttpEntity entity = ((HttpEntityEnclosingRequest)req).getEntity();
+			return new IOHelper().readAndCloseUtf8(entity.getContent());
+		} else {
+			return null;
+		}
 	}
 }
