@@ -26,12 +26,22 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.DataType;
+import com.nominanuda.saxpipe.SAXEmitter;
 
 @Immutable @ThreadSafe
-public class DataStructSAXStreamer {
+public class DataStructSAXStreamer implements SAXEmitter {
 	private DataStructHelper structHelper = new DataStructHelper(); 
+	private final DataStruct<?> struct;
 
-	public void toSAX(DataStruct<?> struct, ContentHandler ch) throws SAXException {
+	public DataStructSAXStreamer(DataStruct<?> struct) {
+		this.struct = struct;
+	}
+
+	public static void toSAX(DataStruct<?> struct, ContentHandler ch) throws SAXException {
+		new DataStructSAXStreamer(struct).toSAX(ch);
+	}
+
+	public void toSAX(ContentHandler ch) throws SAXException {
 		JsonSaxAdapter jsa = new JsonSaxAdapter(ch);
 		jsa.startJSON();
 		streamItem(jsa, struct);

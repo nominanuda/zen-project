@@ -37,7 +37,7 @@ limitations under the License.
   <properties>
     <zen.version>0.1.0-SNAPSHOT</zen.version>
     <spring.version>3.1.0.RELEASE</spring.version>
-    <jetty.version>7.4.4.v20110707</jetty.version>
+    <jetty.version>8.1.1.v20120215</jetty.version>
     <luceneandsolr.version>3.6</luceneandsolr.version>
     <httpcore.version>4.1.1</httpcore.version>
     <httpcorenio.version>4.1.1</httpcorenio.version>

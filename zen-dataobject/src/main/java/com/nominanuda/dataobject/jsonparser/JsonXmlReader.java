@@ -32,7 +32,6 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Exceptions;
 
 public class JsonXmlReader implements XMLReader {
-	private static final DataStructSAXStreamer structSAXStreamer = new DataStructSAXStreamer();
 	private JSONParser parser = new JSONParser();
 	private ContentHandler ch;
 
@@ -43,7 +42,7 @@ public class JsonXmlReader implements XMLReader {
 	public void parse(InputSource input) throws IOException, SAXException {
 		try {
 			DataStruct<?> ds = parser.parse(input.getCharacterStream());
-			structSAXStreamer.toSAX(ds, ch);
+			DataStructSAXStreamer.toSAX(ds, ch);
 		} catch (ParseException e) {
 			throw new IOException(Exceptions.toStackTrace(e));
 		}

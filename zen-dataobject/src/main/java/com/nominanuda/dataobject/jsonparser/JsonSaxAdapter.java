@@ -32,11 +32,11 @@ public class JsonSaxAdapter implements JsonContentHandler {
 	public static final String JSON_SAX_NS = "urn:JSON_SAX_NS";
 
 	private static final DataStructHelper dataStructHelper = new DataStructHelper();
-	private static final String OBJECT_TAG = object.name();
-	private static final String OBJECT_ENTRY_TAG = "objectEntry";
-	private static final String OBJECT_ENTRY_KEY_TAG = "key";
-	private static final String OBJECT_ENTRY_VALUE_TAG = "value";
-	private static final String ARRAY_TAG = array.name();
+	public static final String OBJECT_TAG = object.name();
+	public static final String OBJECT_ENTRY_TAG = "objectEntry";
+	public static final String OBJECT_ENTRY_KEY_TAG = "key";
+	public static final String OBJECT_ENTRY_VALUE_TAG = "value";
+	public static final String ARRAY_TAG = array.name();
 
 	private final Attributes EMPTY_ATTRS = new AttributesImpl();
 	private final ContentHandler ch;

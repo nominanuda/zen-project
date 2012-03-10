@@ -82,7 +82,13 @@ public class HibernateConfiguration {
 		cfg.setProperty("hibernate.show_sql", showSql .toString())
 		.setProperty("hibernate.connection.url", connectionUrl)
 		.setProperty("hibernate.connection.username", username)
-		.setProperty("hibernate.connection.password", password);
+		.setProperty("hibernate.connection.password", password)
+		.setProperty("hibernate.connection.useUnicode", "true")
+		.setProperty("hibernate.connection.characterEncoding", "UTF-8")
+		.setProperty("hibernate.connection.charSet", "UTF-8")
+		.setProperty("hibernate.connection.driver_class", getDriverClass(dbType))
+		;
+
 		//TODO pluggable
 		if(c3p0) {
 			cfg
@@ -94,8 +100,7 @@ public class HibernateConfiguration {
 			.setProperty("hibernate.c3p0.acquireRetryAttempts", "2")
 			.setProperty("hibernate.c3p0.acquireRetryDelay", "450")
 			.setProperty("hibernate.c3p0.timeout", "5000")
-			.setProperty("hibernate.c3p0.idle_test", "300")
-			.setProperty("hibernate.connection.driver_class", getDriverClass(dbType));
+			.setProperty("hibernate.c3p0.idle_test", "300");
 		}
 		
 		
