@@ -26,7 +26,7 @@ public class URISpec<T> {
 	@SuppressWarnings("unchecked")
 	public URISpec(String spec, StringModelAdapter<?> ma) {
 		try {
-			canonicalSpec = spec;
+			canonicalSpec = spec.replace("+", "%20");
 			ANTLRStringStream src = new ANTLRStringStream(canonicalSpec);
 			URISpecLexer lexer = new URISpecLexer(src);
 			CommonTokenStream dd = new CommonTokenStream(lexer);

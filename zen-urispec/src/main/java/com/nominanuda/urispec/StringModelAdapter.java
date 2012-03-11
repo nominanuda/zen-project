@@ -17,6 +17,7 @@ package com.nominanuda.urispec;
 
 import java.util.List;
 
+//it is implementor responsibility to decode params in write methods (sets and pushes)
 public interface StringModelAdapter<SM> {
 	SM createStringModel();
 	boolean validateModel(Object m);

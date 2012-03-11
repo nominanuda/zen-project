@@ -15,6 +15,8 @@
  */
 package com.nominanuda.urispec;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -46,6 +48,7 @@ public class StringListModelAdapter implements StringModelAdapter<Map<String,Obj
 
 	@SuppressWarnings("unchecked")
 	public void push(Map<String,Object> model, String key, String val) {
+		val = decode(val);
 		Object oldval = model.get(key);
 		if (oldval == null) {
 			model.put(key, val);
@@ -59,7 +62,24 @@ public class StringListModelAdapter implements StringModelAdapter<Map<String,Obj
 		}
 	}
 
+	private String decode(String encodedVal) {
+		try {
+			return URLDecoder.decode(encodedVal, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private List<String> decode(List<String> encodedVals) {
+		List<String> l = new LinkedList<String>();
+		for(String s : encodedVals) {
+			l.add(decode(s));
+		}
+		return l;
+	}
+
 	public void set(Map<String,Object> model, String key, String val) {
+		val = decode(val);
 		model.put(key, val);
 	}
 
@@ -89,6 +109,7 @@ public class StringListModelAdapter implements StringModelAdapter<Map<String,Obj
 	}
 
 	public void set(Map<String, Object> model, String key, List<String> val) {
+		val = decode(val);
 		model.put(key, copyList(val));
 	}
 

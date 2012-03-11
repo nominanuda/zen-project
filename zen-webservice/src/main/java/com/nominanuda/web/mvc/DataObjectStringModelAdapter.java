@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.mvc;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,10 +26,13 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.NoException;
+import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.urispec.StringModelAdapter;
 
 public class DataObjectStringModelAdapter implements StringModelAdapter<DataObject> {
 	private final static DataStructHelper helper = new DataStructHelper();
+	private final static XURLDecoder urlDecoder = new XURLDecoder();
 
 	public List<String> getAsList(DataObject model, String path) {
 		LinkedList<String> res = new LinkedList<String>();
@@ -60,17 +65,17 @@ public class DataObjectStringModelAdapter implements StringModelAdapter<DataObje
 	}
 
 	public void pushAll(DataObject from, DataObject to) {
-		helper.copy(from, to, 
+		helper.copy(helper.convertLeaves(from, urlDecoder), to, 
 			DataStructHelper.MERGE_POLICY_PUSH);
 	}
 
 	public void push(DataObject model, String path, String val) {
-		model.setOrPushPathProperty(path, val);
+		model.setOrPushPathProperty(path, urlDecoder.apply(val));
 	}
 
 	@Override
 	public void set(DataObject model, String path, String val) {
-		model.setPathProperty(path, val);
+		model.setPathProperty(path, urlDecoder.apply(val));
 	}
 
 	public boolean validateModel(Object m) {
@@ -80,7 +85,7 @@ public class DataObjectStringModelAdapter implements StringModelAdapter<DataObje
 	public void set(DataObject model, String key, List<String> val) {
 		DataArray arr = new DataArrayImpl();
 		for(String s : val) {
-			arr.add(s);
+			arr.add(urlDecoder.apply(s));
 		}
 		model.setPathProperty(key, arr);
 	}
@@ -104,5 +109,18 @@ public class DataObjectStringModelAdapter implements StringModelAdapter<DataObje
 		} else {
 			return Check.illegalargument.fail();
 		}
+	}
+	private static class XURLDecoder implements SafeConvertor<Object,Object> {
+		public Object apply(Object x) throws NoException {
+			try {
+				return x == null ? null : URLDecoder.decode(((String)x), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		public boolean canConvert(Object o) {
+			return true;
+		}
+		
 	}
 }

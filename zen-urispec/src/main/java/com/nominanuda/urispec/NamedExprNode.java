@@ -35,12 +35,16 @@ public class NamedExprNode extends AnonExprNode implements SeqComponent /*Bindin
 	}
 
 	public List<String> templateMulti(Object model) {
+		return templateMultiInternal(model, KEEP_SLASHES);
+	}
+
+	private List<String> templateMultiInternal(Object model, int encodingOpts) {
 		List<String> vals = getNodeAdapter()
 			.getStringModelAdapter().getAsList(model,exprName);
 		if (vals != null) {
 			List<String> encodedVals = new LinkedList<String>();
 			for(String s : vals) {
-				encodedVals.add(percentEncodeUtf8(s, KEEP_SLASHES));
+				encodedVals.add(percentEncodeUtf8(s, encodingOpts));
 			}
 			return encodedVals;
 		} else {

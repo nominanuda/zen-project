@@ -63,7 +63,9 @@ public class BindTest {
 		Map<String, Object> m = t.match("/?a=1&a=a&a=efoo");
 		assertEquals("efoo", ((List<String>)m.get("a")).get(2));
 		assertNotNull(t.match("/?a=1&a=a&a=efoo&b=9"));
-		assertNull(new StringMapURISpec("/?{a}&").match("/?a=1&a=a&a=efoo&b=9"));
+		m = new StringMapURISpec("/?{dt}").match("/?dt=2012-01-01%2000:00:00");
+		assertEquals("2012-01-01 00:00:00", m.get("dt"));
+
 	}
 
 }
