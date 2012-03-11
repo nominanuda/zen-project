@@ -29,6 +29,8 @@ import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
+import com.nominanuda.lang.ObjectConvertor;
+import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
 
 import static com.nominanuda.dataobject.DataType.*;
@@ -559,6 +561,45 @@ public class DataStructHelper implements Serializable {
 				: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
 				: v;
 			res.add(vToPut);
+		}
+		return res;
+	}
+	//if convertor#canConvert returns false value is not added to result
+	@SuppressWarnings("unchecked")
+	public <X extends DataStruct<?>> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
+		return Check.notNull(source) instanceof DataObject
+			? (X)convertLeavesInternal((DataObject)source, convertor)
+			: (X)convertLeavesInternal((DataArray)source, convertor);
+	}
+
+	private DataObject convertLeavesInternal(DataObject source, SafeConvertor<Object, Object> convertor) {
+		DataObject res = new DataObjectImpl();
+		for(String k : source.getKeys()) {
+			Object v = source.get(k);
+			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
+				res.put(k, convertor.apply(v));
+			} else if(v instanceof DataObject) {
+				res.put(k, convertLeavesInternal((DataObject)v, convertor));
+			} else {
+				res.put(k, convertLeavesInternal((DataArray)v, convertor));
+			}
+		}
+		return res;
+	}
+
+	private DataArray convertLeavesInternal(DataArray source,
+			SafeConvertor<Object, Object> convertor) {
+		DataArray res = new DataArrayImpl();
+		int len = source.getLength();
+		for(int i = 0; i < len; i++) {
+			Object v = source.get(i);
+			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
+				res.add(convertor.apply(v));
+			} else if(v instanceof DataObject) {
+				res.add(convertLeavesInternal((DataObject)v, convertor));
+			} else {
+				res.add(convertLeavesInternal((DataArray)v, convertor));
+			}
 		}
 		return res;
 	}
