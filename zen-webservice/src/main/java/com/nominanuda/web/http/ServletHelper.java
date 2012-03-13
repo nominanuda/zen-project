@@ -19,16 +19,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
 
@@ -110,24 +120,21 @@ public class ServletHelper {
 	}
 
 	public HttpRequest copyRequest(HttpServletRequest servletRequest, boolean stripContextPath) throws IOException {
-		InputStream is = getServletRequestBody(servletRequest);
+		final InputStream is = getServletRequestBody(servletRequest);
 		String method = servletRequest.getMethod();
 		String uri = getRequestLineURI(servletRequest, stripContextPath);
 		String ct = servletRequest.getContentType();
-		@SuppressWarnings("unused")
 		String charenc = getCharacterEncoding(servletRequest);
 		String cenc = getContentEncoding(servletRequest);
-		long length = servletRequest.getContentLength();
+		long contentLength = servletRequest.getContentLength();
 		HttpRequest req;
 		if(is == null) {
 			req  = new BasicHttpRequest(method, uri);
 		} else {
 			req = new BasicHttpEntityEnclosingRequest(method, uri);
-			InputStreamEntity entity = new InputStreamEntity(is, length);
-			((BasicHttpEntityEnclosingRequest)req).setEntity(entity);
-			entity.setContentType(ct);
-			if(cenc != null) {
-				entity.setContentEncoding(cenc);
+			HttpEntity entity = buildEntity(servletRequest, is, contentLength, ct, cenc);
+			if(entity != null) {
+				((BasicHttpEntityEnclosingRequest)req).setEntity(entity);
 			}
 		}
 		Enumeration<?> names = servletRequest.getHeaderNames();
@@ -140,6 +147,49 @@ public class ServletHelper {
 			}
 		}
 		return req;
+	}
+
+	@SuppressWarnings("unchecked")
+	private HttpEntity buildEntity(HttpServletRequest servletRequest, final InputStream is, long contentLength, String ct, String cenc) throws IOException {
+		if(ServletFileUpload.isMultipartContent(servletRequest)) {
+			FileItemFactory factory = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(factory);
+			List<FileItem> items;
+			try {
+				items = upload.parseRequest(new HttpServletRequestWrapper(
+						servletRequest) {
+					public ServletInputStream getInputStream()
+							throws IOException {
+						return new ServletInputStream() {
+							public int read() throws IOException {
+								return is.read();
+							}
+							public int read(byte[] arg0) throws IOException {
+								return is.read(arg0);
+							}
+							public int read(byte[] b, int off, int len)
+									throws IOException {
+								return is.read(b, off, len);
+							}
+						};
+					}
+				});
+			} catch (FileUploadException e) {
+				throw new IOException(e);
+			}
+			MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+			for(FileItem i : items) {
+				multipartEntity.addPart(i.getFieldName(), new InputStreamBody(i.getInputStream(), i.getName()));
+			}
+			return multipartEntity;
+		} else {
+			InputStreamEntity entity = new InputStreamEntity(is, contentLength);
+			entity.setContentType(ct);
+			if(cenc != null) {
+				entity.setContentEncoding(cenc);
+			}
+			return entity;
+		}
 	}
 
 	public HttpRequest getOrCreateRequest(HttpServletRequest servletRequest, boolean stripContextPath) throws IOException {
