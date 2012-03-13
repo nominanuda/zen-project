@@ -83,7 +83,6 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 
 	public void put(String type, DataObject o, Session session, Transaction tx) throws Exception {
 		//TODO
-		o.put("tstamp", System.currentTimeMillis());
 		Map<String, ? super Object> entity = struct.toMapsAndSetLists((DataObject)o);
 		session.saveOrUpdate(type, entity);
 	}
