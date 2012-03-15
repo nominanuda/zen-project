@@ -99,5 +99,10 @@ limitations under the License.
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>nu.validator.htmlparser</groupId>
+      <artifactId>htmlparser</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>
