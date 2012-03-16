@@ -72,6 +72,7 @@ limitations under the License.
     <dependency>
       <groupId>com.google.javascript</groupId>
       <artifactId>closure-templates</artifactId>
+      <scope>provided</scope>
       <version>r23</version>
     </dependency>
     <dependency>
