@@ -18,13 +18,11 @@ package com.nominanuda.web.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.util.Enumeration;
-import java.util.List;
+import java.text.*;
+import java.util.*;
 
 import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -99,7 +97,28 @@ public class ServletHelper {
 			throws IOException {
 		servletResponse.setStatus(response.getStatusLine().getStatusCode());
 		for(Header h : response.getAllHeaders()) {
-			servletResponse.setHeader(h.getName(), h.getValue());
+			if("Set-Cookie".equals(h.getName())) {
+				Map map = new HashMap();
+				String cookie = h.getValue();
+				String[] parts = cookie.split(";");
+				for(int i = 0; i < parts.length; i++) {
+					String part = parts[i];
+					int pos = part.indexOf("=");
+					String attr = part.substring(0, pos);
+					String value = part.substring(pos + 1);
+					if(0 == i) {
+						map.put("name", attr);
+						map.put("value", value);
+					}
+					else {
+						map.put(attr.toLowerCase(), value);
+					}
+				}
+				servletResponse.addCookie(cookie_from(map));
+			}
+			else {
+				servletResponse.setHeader(h.getName(), h.getValue());
+			}
 		}
 		HttpEntity entity = response.getEntity();
 		if(entity != null) {
@@ -116,6 +135,24 @@ public class ServletHelper {
 				servletResponse.setContentLength((int)len);
 			}
 			ioHelper.pipe(entity.getContent(), servletResponse.getOutputStream(), true, false);
+		}
+	}
+
+	private Cookie cookie_from(Map map) throws IOException {
+		String name = (String) map.get("name");
+		String value = (String) map.get("value");
+		Cookie result = new Cookie(name, value);
+		if(map.containsKey("domain")) result.setDomain((String) map.get("domain"));
+		if(map.containsKey("path")) result.setPath((String) map.get("path"));
+		if(map.containsKey("expires")) result.setMaxAge(cookie_max_age((String) map.get("expires")));
+		return result;
+	}
+
+	public int cookie_max_age(String expires) throws IOException {
+		try {
+			return (int) (new SimpleDateFormat("E, dd-MMM-yyyy HH:mm:ss 'GMT'").parse(expires).getTime() - System.currentTimeMillis());
+		} catch (ParseException e) {
+			throw new IOException(e);
 		}
 	}
 

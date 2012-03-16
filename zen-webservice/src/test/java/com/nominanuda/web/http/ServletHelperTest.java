@@ -1,24 +1,21 @@
 package com.nominanuda.web.http;
 
-import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import static org.junit.Assert.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.apache.http.*;
+import org.apache.http.client.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.*;
+import org.apache.http.message.*;
+import org.apache.http.util.*;
+import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.handler.*;
+import org.junit.*;
+import org.springframework.mock.web.*;
 
 public class ServletHelperTest extends BaseHttpTest {
 	ServletHelper servletHelper = new ServletHelper();
@@ -55,6 +52,31 @@ public class ServletHelperTest extends BaseHttpTest {
 		server.stop();
 		dumpFailures(System.err);
 		Assert.assertFalse(isFailed());
+	}
+	
+	@Test
+	public void shouldAddCookiesOnServletHttpResponseWhenHeaderSetCookie() throws IOException {
+		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+
+		HttpResponse response = new BasicHttpResponse(new HttpCoreHelper().statusLine(200));
+		Header[] headers = new Header[2];
+		headers[0] = new BasicHeader("Set-Cookie", "etalia=dGltZXN0YW1wPTEzMzE4ODQxxNzE4ODc.dXNlcm5hbWU9bHVjYQ.Y3JlYXRlZF9hdD0xxMzMxxODg0MTcxxODg3.cGFzc3dvcmQ9b0Z2WWtNU0dqcUdBZjRWa0JWMGZ1bmZHdW9F.Y29uZmlybV9hY2s9MDg0ZGM3ZTItM2VlMC00NWNkLWI2NmQtZGVmZTlmM2E5NTRm;Domain=localhost;Path=/;Expires=Mon, 02-Apr-2012 10:30:00 GMT");
+		headers[1] = new BasicHeader("Set-Cookie", "etalia_hash=4bYEnD7APP19SKPlf1x1IDrPzNY0;Domain=localhost;Path=/;Expires=Mon, 02-Apr-2012 10:30:00 GMT");
+		response.setHeaders(headers);
+		
+		servletHelper.copyResponse(response, servletResponse);
+		
+		Cookie[] cookies = servletResponse.getCookies();
+		
+		assertEquals(2, cookies.length);
+		
+		assertEquals("/", cookies[0].getPath());
+		assertEquals("localhost", cookies[0].getDomain());
+		assertNotSame(0, cookies[0].getMaxAge());
+		
+		assertEquals("/", cookies[1].getPath());
+		assertEquals("localhost", cookies[1].getDomain());
+		assertNotSame(0, cookies[1].getMaxAge());
 	}
 
 }
