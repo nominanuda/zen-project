@@ -16,6 +16,7 @@
 package com.nominanuda.lang;
 
 import java.nio.charset.Charset;
+import java.text.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,5 +96,12 @@ public abstract class Strings {
 			}
 		}
 		return sb.toString();
+	}
+
+	public static String F(String pattern, Object... arguments) {
+		for(int i = 0; i < arguments.length; i++) {
+			if(null == arguments[i]) throw new NullPointerException("arguments " + i + " is null");
+  		}
+		return MessageFormat.format(pattern, arguments);
 	}
 }
