@@ -335,7 +335,9 @@ public class XmlHelper {
 			Object result = expr.evaluate(nodeOrNodeList, resultType);
 			return result;
 		} catch (XPathExpressionException e) {
-			throw new IllegalArgumentException(e);
+			//TODO
+			return null;
+			//throw new IllegalArgumentException(e);
 		}
 	}
 
