@@ -38,9 +38,9 @@ import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
 import com.nominanuda.saxpipe.SAXPipeline;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.XHtml5Serializer;
+import com.nominanuda.web.htmlcomposer.HtmlComposer;
+import com.nominanuda.web.htmlcomposer.HtmlComposer.DomOp;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.web.mvc.HtmlComposer;
-import com.nominanuda.web.mvc.HtmlComposer.DomOp;
 
 public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;
