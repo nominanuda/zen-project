@@ -26,7 +26,7 @@ import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
 
 public class HibernateQuerableStore extends AbstractHibernateStructStore {
-	public DataArray query(String type, String hql, DataObject params, int start, int count, boolean expand) throws Exception {
+	public DataArray query(String type, String hql, DataObject params, int start, int count, String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
@@ -41,7 +41,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 				bind(q, k, params.get(k));
 			}
 			List<?> l = q.list();
-			return render(l, type);
+			return render(l, viewName);
 		} catch(Exception e) {
 			if(tx != null && tx.isActive()) {
 				tx.rollback();
@@ -56,6 +56,10 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			}
 		}
 
+	}
+
+	public Session openSession() {
+		return sessionFactory.openSession();
 	}
 
 	public Object queryForOne(String type, String hql, DataObject params, boolean expand) throws Exception {
