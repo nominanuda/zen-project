@@ -29,7 +29,6 @@ import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
-import com.nominanuda.lang.ObjectConvertor;
 import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
 
@@ -109,7 +108,7 @@ public class DataStructHelper implements Serializable {
 		} else if (o instanceof Number) {
 			Number n = (Number) o;
 			if (Maths.isInteger(n.doubleValue())) {
-				return "\"" + new Integer(n.intValue()).toString() + "\"";
+				return "\"" + new Long(n.longValue()).toString() + "\"";
 			} else {
 				return "\"" + n.toString() + "\"";
 			}
@@ -159,7 +158,7 @@ public class DataStructHelper implements Serializable {
 		} else if (o instanceof Number) {
 			Number n = (Number) o;
 			if (Maths.isInteger(n.doubleValue())) {
-				return new Integer(n.intValue()).toString();
+				return new Long(n.longValue()).toString();
 			} else {
 				return n.toString();
 			}
@@ -258,7 +257,8 @@ public class DataStructHelper implements Serializable {
 				.toString((Number) o) : o.toString();
 	}
 
-	public DataArray fromMapsAndCollections(Collection c) {
+	@SuppressWarnings("unchecked")
+	public DataArray fromMapsAndCollections(@SuppressWarnings("rawtypes") Collection c) {
 		DataArrayImpl a = new DataArrayImpl();
 		deepCopy(c, a);
 		return a;
@@ -270,6 +270,7 @@ public class DataStructHelper implements Serializable {
 		return o;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void deepCopy(Map<String, Object> m, DataObject o) {
 		for (Entry<String, Object> e : m.entrySet()) {
 			Object v = e.getValue();
@@ -287,6 +288,7 @@ public class DataStructHelper implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void deepCopy(Collection<Object> c, DataArray tarr) {
 		for (Object v : c) {
 			if (v == null) {

@@ -45,6 +45,10 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipart;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.impl.DefaultHttpRequestFactory;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -72,14 +76,17 @@ import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.io.IOHelper;
+import com.nominanuda.io.OutputStreamWriter;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Exceptions;
+import com.nominanuda.lang.ReflectionHelper;
 
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
 	private static final HttpRequestFactory httpRequestFactory = new DefaultHttpRequestFactory();
 	private static final HttpResponseFactory httpResponseFactory = new DefaultHttpResponseFactory();
 	private static final IOHelper IO = new IOHelper();
+	private static final ReflectionHelper reflect = new ReflectionHelper();
 
 	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion(
 			"HTTP", 1, 1);
@@ -310,6 +317,23 @@ public class HttpCoreHelper implements HttpProtocol {
 		return resp;
 	}
 
+	public boolean isMultipart(HttpEntity entity) {
+		return Check.notNull(entity) instanceof MultipartEntity;
+	}
+
+	public HttpMultipart extractHttpMultipart(MultipartEntity entity) {
+		HttpMultipart mp = (HttpMultipart)reflect.getFieldValue("multipart", entity, true);
+		return Check.notNull(mp);
+	}
+
+	public ContentBody extractFirstPartBody(MultipartEntity entity) {
+		HttpMultipart mp = extractHttpMultipart(entity);
+		FormBodyPart part = mp.getBodyParts().get(0);
+		ContentBody cb = part.getBody();
+		return cb;
+	}
+	
+
 	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis) {
 		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
 		cm.setMaxTotal(maxConnPerRoute );
@@ -319,5 +343,15 @@ public class HttpCoreHelper implements HttpProtocol {
 		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeoutMillis);
 		HttpClient httpClient = new DefaultHttpClient(cm);
 		return httpClient;
+	}
+
+	public @Nullable HttpEntity getEntity(HttpMessage msg) {
+		if(! hasEntity(msg)) {
+			return null;
+		} else if(msg instanceof HttpResponse) {
+			return ((HttpResponse)msg).getEntity();
+		} else {
+			return ((HttpEntityEnclosingRequest)msg).getEntity();
+		}
 	}
 }

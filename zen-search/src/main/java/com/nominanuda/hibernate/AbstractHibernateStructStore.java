@@ -37,7 +37,7 @@ public abstract class AbstractHibernateStructStore {
 	protected SessionFactory sessionFactory;
 	protected Map<String, DataView<Map<String, Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String, Object>>>();
 
-	protected DataArray render(List<?> l, String type) {
+	public DataArray render(List<?> l, String type) {
 		DataArrayImpl a = new DataArrayImpl();
 		for(Object o : l) {
 			a.add(o instanceof Map<?,?>
