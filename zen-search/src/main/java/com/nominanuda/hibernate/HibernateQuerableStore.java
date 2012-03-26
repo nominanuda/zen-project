@@ -22,11 +22,13 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.nominanuda.code.Nullable;
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.lang.Check;
 
 public class HibernateQuerableStore extends AbstractHibernateStructStore {
-	public DataArray query(String type, String hql, DataObject params, int start, int count, String viewName) throws Exception {
+	public DataArray query(String hql, DataObject params, int start, int count, String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
@@ -62,7 +64,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 		return sessionFactory.openSession();
 	}
 
-	public Object queryForOne(String type, String hql, DataObject params, boolean expand) throws Exception {
+	public Object queryForOne(String hql, DataObject params, @Nullable/*in case of scalar result*/ String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
@@ -78,7 +80,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 				return null;
 			} else if(o instanceof Map<?,?>) {
 				Map<String,Object> m = (Map<String,Object>)o;
-				return render(m, type);
+				return render(m, Check.notNull(viewName));
 			} else {
 				return o;
 			}
