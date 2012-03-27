@@ -189,5 +189,14 @@ public class ReflectionHelper {
 	private class Any {
 		public String toString() { return "Anyclass";}
 	}
+
+	public boolean safeInstanceOf(Object o, String clazz) throws NullPointerException /*if o == null*/{
+		try {
+			Class<?> cl = Class.forName(clazz);
+			return cl.isAssignableFrom(Check.notNull(o).getClass());
+		} catch(ClassNotFoundException e) {
+			return false;
+		}
+	}
 	
 }
