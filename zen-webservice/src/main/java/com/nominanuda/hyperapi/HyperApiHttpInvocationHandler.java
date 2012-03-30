@@ -97,8 +97,11 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		} else if("true".equals(s)||"false".equals(s)) {
 			return Boolean.valueOf(s);
 		} else if(Maths.isNumber(s)) {
-			return Maths.isInteger(s) 
-				? Long.valueOf(s) : Double.valueOf(s);
+			if(Maths.isInteger(s)) {
+				return Long.valueOf(s);
+			} else {
+				return Double.valueOf(s);
+			}
 		} else {//TODO
 			DataStruct<?> ds = new JSONParser().parse(new StringReader(s));
 			Class<?> returnType = method.getReturnType();
