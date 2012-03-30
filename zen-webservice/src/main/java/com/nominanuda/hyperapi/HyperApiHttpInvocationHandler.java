@@ -79,9 +79,9 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		HttpResponse resp = client.execute(req);
 		int status = resp.getStatusLine().getStatusCode();
 		if(status >= 500) {
-			throw new Http500Exception(resp.getStatusLine().getReasonPhrase());
+			throw new Http500Exception(resp.getStatusLine().getReasonPhrase() + " for " + req.getURI());
 		} else if(status >= 400) {
-			throw new Http400Exception(resp.getStatusLine().getReasonPhrase());
+			throw new Http400Exception(resp.getStatusLine().getReasonPhrase() + " for " + req.getURI());
 		}
 		Object result = decode(hyperApi, method, resp);
 		return result;
