@@ -68,4 +68,12 @@ public interface DataStruct<K extends Object> {
 	Boolean getStrictBoolean(K key) throws ClassCastException, NullPointerException;
 	DataObject getStrictObject(K key) throws ClassCastException, NullPointerException;
 	DataArray getStrictArray(K key) throws ClassCastException, NullPointerException;
+
+	Long putLong(K key, @Nullable Long o);
+	Double putDouble(K key, @Nullable Double o);
+	String putString(K key, @Nullable String o);
+	Boolean putBoolean(K key, @Nullable Boolean o);
+	DataObject putObject(K key, @Nullable DataObject o);
+	DataArray putArray(K key, @Nullable DataArray o);
+	
 }

@@ -285,4 +285,27 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 		return Check.notNull(getArray(key));
 	}
 
+	public Long putLong(K key, Long o) {
+		return (Long)put(key, o);
+	}
+
+	public Double putDouble(K key, Double o) {
+		return (Double)put(key, o);
+	}
+
+	public String putString(K key, String o) {
+		return (String)put(key, o);
+	}
+
+	public Boolean putBoolean(K key, Boolean o) {
+		return (Boolean)put(key, o);
+	}
+
+	public DataObject putObject(K key, DataObject o) {
+		return (DataObject)put(key, o);
+	}
+
+	public DataArray putArray(K key, DataArray o) {
+		return (DataArray)put(key, o);
+	}
 }
