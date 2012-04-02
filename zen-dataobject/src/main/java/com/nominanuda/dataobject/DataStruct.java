@@ -36,7 +36,7 @@ public interface DataStruct<K extends Object> {
 	DataObject asObject() throws ClassCastException;
 	Iterator<K> keyIterator();
 	@Nullable Object get(K key);
-	Object getStrict(K key);
+	Object getStrict(K key) throws NullPointerException;
 	Object put(K key, @Nullable Object o);
 	@Nullable Object remove(K key);
 	boolean exists(K k);
@@ -59,5 +59,13 @@ public interface DataStruct<K extends Object> {
 	@Nullable Boolean getPathSafeBoolean(String path) throws ClassCastException;
 	@Nullable DataObject getPathSafeObject(String path) throws ClassCastException;
 	@Nullable DataArray getPathSafeArray(String path) throws ClassCastException;
+	@Nullable Long getLong(K key) throws ClassCastException;
+	@Nullable Double getDouble(K key) throws ClassCastException;
 
+	String getStrictString(K key) throws ClassCastException, NullPointerException;
+	Long getStrictLong(K key) throws ClassCastException, NullPointerException;
+	Double getStrictDouble(K key) throws ClassCastException, NullPointerException;
+	Boolean getStrictBoolean(K key) throws ClassCastException, NullPointerException;
+	DataObject getStrictObject(K key) throws ClassCastException, NullPointerException;
+	DataArray getStrictArray(K key) throws ClassCastException, NullPointerException;
 }
