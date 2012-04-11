@@ -48,7 +48,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	private static final HttpCoreHelper httpCore = new HttpCoreHelper();
 	private static final DataStructHelper structHelper = new DataStructHelper();
 	private String function = "handle";
-	private static final RhinoHelper rhino = new RhinoHelper();
+	protected static final RhinoHelper rhino = new RhinoHelper();
 	private URISpec<DataObject> uriSpec;
 	private RhinoEmbedding rhinoEmbedding;
 	//private ScriptableObject rootScope;
@@ -68,9 +68,6 @@ public class RhinoHandler implements CommandRequestHandler {
 				r.setEntity(new BufferedHttpEntity(r.getEntity()));
 			}
 			Scriptable controllerScope = buildScope(cx);
-			Tuple2<String,Reader> script = getSource(cmd, request);
-			String jsLocation = script.get0();
-			Reader src = script.get1();
 			if(mergeGetAndPostFormParams ) {
 				DataObject cmdFromReq = (DataObject)httpCore.getQueryParams(request);
 				if(request instanceof HttpEntityEnclosingRequest) {
@@ -85,10 +82,11 @@ public class RhinoHandler implements CommandRequestHandler {
 			}
 
 			Scriptable jsCmd = dataStructScriptableConvertor.toScriptable(cx, cmd, controllerScope);
-			rhino.evaluateReader(cx, src, jsLocation, controllerScope);
 			JsHttpRequest jsReq = (JsHttpRequest)cx.newObject(
 					controllerScope, "HttpRequest", new Object[] {request});
 
+			String scriptUri = calcScriptUri(cmd, request);
+			evaluateScript(cx, controllerScope, scriptUri);
 			Object res = rhino.callFunctionInScope(cx, controllerScope, function,
 					new Object[] {jsCmd, jsReq});
 			DataStruct<?> ds = dataStructScriptableConvertor.fromScriptable((Scriptable)res);
@@ -97,13 +95,24 @@ public class RhinoHandler implements CommandRequestHandler {
 			Context.exit();
 		}
 	}
+	protected void evaluateScript(Context cx, Scriptable controllerScope,
+			String scriptUri) throws IOException {
+		Tuple2<String,Reader> script = getSource(scriptUri);
+		String jsLocation = script.get0();
+		Reader src = script.get1();
+		rhino.evaluateReader(cx, src, jsLocation, controllerScope);
+	}
 	private DataStruct<?> parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
 		List<NameValuePair> pairs = httpCore.parseEntityWithDefaultUtf8(entity);
 		return httpCore.toDataStruct(pairs);
 	}
 
-	protected Tuple2<String, Reader> getSource(DataStruct<?> cmd, HttpRequest request) throws IOException {
+	protected String calcScriptUri(DataStruct<?> cmd, HttpRequest request) throws IOException {
 		String uri = uriSpec.template((DataObject)cmd);
+		return uri;
+	}
+
+	protected Tuple2<String, Reader> getSource(String uri) throws IOException {
 		return new Tuple2<String, Reader>(
 				uri,
 				new InputStreamReader(new URL(uri).openStream(), "UTF-8"));
