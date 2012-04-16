@@ -82,7 +82,7 @@ public class DateTimeHelper {
 		return toISO8601UtcSecs(new DateTime());
 	}
 	public String nowToISO8601UtcMillis() {
-		return toISO8601UtcSecs(new DateTime());
+		return toISO8601UtcMillis(new DateTime());
 	}
 	public String nowToISO8601UtcDate() {
 		return toISO8601UtcSecs(new DateTime());
