@@ -21,22 +21,24 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoHelper;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
-public class JsHttpRequest extends ScriptableObject implements HttpProtocol {
+public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wrapper {
 	private static final long serialVersionUID = -7386543758365478363L;
 	private static final RhinoHelper rhinoHelper = new RhinoHelper();
 	protected HttpRequest req;
 
 	public JsHttpRequest() {
+	}
+	
+	@Override
+	public Object unwrap() {
+		return req;
 	}
 
 	public void jsConstructor(Object _req) {
