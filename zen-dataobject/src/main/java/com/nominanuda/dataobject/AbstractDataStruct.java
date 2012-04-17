@@ -244,4 +244,68 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 	public DataArray getPathSafeArray(String path) throws ClassCastException {
 		return (DataArray)getPathSafe(path);
 	}
+
+	public Long getLong(K key) throws ClassCastException {
+		Number n = getNumber(key);
+		return n == null ? null : (Long)n;
+	}
+
+	public Double getDouble(K key) throws ClassCastException {
+		Number n = getNumber(key);
+		return n == null ? null : (Double)n;
+	}
+
+	public String getStrictString(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getString(key));
+	}
+
+	public Long getStrictLong(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getLong(key));
+	}
+
+	public Double getStrictDouble(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getDouble(key));
+	}
+
+	public Boolean getStrictBoolean(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getBoolean(key));
+	}
+
+	public DataObject getStrictObject(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getObject(key));
+	}
+
+	public DataArray getStrictArray(K key) throws ClassCastException,
+			NullPointerException {
+		return Check.notNull(getArray(key));
+	}
+
+	public Long putLong(K key, Long o) {
+		return (Long)put(key, o);
+	}
+
+	public Double putDouble(K key, Double o) {
+		return (Double)put(key, o);
+	}
+
+	public String putString(K key, String o) {
+		return (String)put(key, o);
+	}
+
+	public Boolean putBoolean(K key, Boolean o) {
+		return (Boolean)put(key, o);
+	}
+
+	public DataObject putObject(K key, DataObject o) {
+		return (DataObject)put(key, o);
+	}
+
+	public DataArray putArray(K key, DataArray o) {
+		return (DataArray)put(key, o);
+	}
 }

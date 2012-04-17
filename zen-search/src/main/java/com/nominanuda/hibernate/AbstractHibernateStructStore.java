@@ -56,12 +56,10 @@ public abstract class AbstractHibernateStructStore {
 		DataType t = struct.getDataType(v);
 		switch (t) {
 		case array:
-			List l = new LinkedList();
-			Iterator i = ((DataArrayImpl)v).iterator();
-			while(i.hasNext()) {
-				l.add(i.next());
-			}
-			q.setParameterList(k, l);
+			q.setParameterList(k, struct.toMapsAndSetLists((DataArray)v));
+			break;
+		case object:
+			q.setEntity(k, struct.toMapsAndSetLists((DataObject)v));
 			break;
 		case string:
 			q.setString(k, (String)v);
