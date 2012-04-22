@@ -29,6 +29,10 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 //	protected Logger log = LoggerFactory.getLogger(HibernateDataObjectStore.class);
 
 	public DataObject get(String type, String id) throws Exception {
+		return get(type, id, type);
+	}
+
+	public DataObject get(String type, String id, String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
@@ -46,7 +50,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 				return null;
 			} else if(o instanceof Map<?,?>) {
 				Map<String,Object> m = (Map<String,Object>)o;
-				return render(m, type);
+				return render(m, viewName);
 			} else {
 				throw new IllegalStateException();
 			}
