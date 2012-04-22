@@ -35,7 +35,7 @@ import com.nominanuda.lang.Maths;
 public abstract class AbstractHibernateStructStore {
 	protected static final DataStructHelper struct = new DataStructHelper();
 	protected SessionFactory sessionFactory;
-	protected Map<String, DataView<Map<String, Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String, Object>>>();
+	protected Map<String, DataView<Map<String, ? extends Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String, ? extends Object>>>();
 
 	public DataArray render(List<?> l, String type) {
 		DataArrayImpl a = new DataArrayImpl();
@@ -85,7 +85,7 @@ public abstract class AbstractHibernateStructStore {
 	}
 
 	public void setDataViewRegistry(
-			Map<String, DataView<Map<String, Object>>> dataViewRegistry) {
+			Map<String, DataView<Map<String, ? extends Object>>> dataViewRegistry) {
 		this.dataViewRegistry = dataViewRegistry;
 	}
 
