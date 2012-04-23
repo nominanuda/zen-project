@@ -342,8 +342,8 @@ public class HttpCoreHelper implements HttpProtocol {
 		cm.setMaxTotal(maxConnPerRoute );
 		cm.setDefaultMaxPerRoute(maxConnPerRoute);
 		HttpParams p = new BasicHttpParams();
-		p.setLongParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, new Long(connTimeoutMillis).intValue());
-		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, new Long(soTimeoutMillis).intValue());
+		p.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, new Long(connTimeoutMillis).intValue());
+		p.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, new Long(soTimeoutMillis).intValue());
 		HttpClient httpClient = new DefaultHttpClient(cm, p);
 		return httpClient;
 	}
@@ -354,8 +354,8 @@ public class HttpCoreHelper implements HttpProtocol {
 		cm.setMaxTotal(maxConnPerRoute );
 		cm.setDefaultMaxPerRoute(maxConnPerRoute);
 		HttpParams p = new BasicHttpParams();
-		p.setLongParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connTimeoutMillis);
-		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeoutMillis);
+		p.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, new Long(connTimeoutMillis).intValue());
+		p.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, new Long(soTimeoutMillis).intValue());
 		DefaultHttpClient httpClient = new DefaultHttpClient(cm, p);
 		if("jvm".equalsIgnoreCase(proxyHostAnPort)) {
 			ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
