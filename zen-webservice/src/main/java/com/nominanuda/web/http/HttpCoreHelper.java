@@ -341,7 +341,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		HttpParams p = new BasicHttpParams();
 		p.setLongParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connTimeoutMillis);
 		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeoutMillis);
-		HttpClient httpClient = new DefaultHttpClient(cm);
+		HttpClient httpClient = new DefaultHttpClient(cm, p);
 		return httpClient;
 	}
 
