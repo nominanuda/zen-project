@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://nominanuda.com/ns/2011/mvcfrontcontroller-1.0" xmlns:mvc="http://nominanuda.com/ns/2011/mvcfrontcontroller-1.0">
+  <xs:element name="match">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mvc:pattern"/>
+        <xs:choice>
+          <xs:element ref="mvc:source"/>
+          <xs:element ref="mvc:handler"/>
+          <xs:element ref="mvc:js"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pattern" type="xs:string"/>
+  <!--xs:element name="proxy">
+    <xs:complexType>
+      <xs:attribute name="prefix" use="required" type="xs:string"/>
+      <xs:attribute name="dest" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element-->
+  <xs:element name="source">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mvc:url"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="js">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mvc:url"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="handler">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any minOccurs="0" processContents="skip"/>
+      </xs:sequence>
+      <xs:attribute name="ref" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="url" type="xs:string"/>
+  <xs:group name="anyElement">
+    <xs:sequence>
+      <xs:any processContents="skip"/>
+    </xs:sequence>
+  </xs:group>
+</xs:schema>
