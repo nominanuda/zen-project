@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestFactory;
@@ -42,6 +44,7 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
@@ -52,6 +55,7 @@ import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.impl.DefaultHttpRequestFactory;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.io.AbstractMessageWriter;
 import org.apache.http.impl.io.AbstractSessionInputBuffer;
@@ -76,7 +80,6 @@ import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.io.IOHelper;
-import com.nominanuda.io.OutputStreamWriter;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Exceptions;
 import com.nominanuda.lang.ReflectionHelper;
@@ -342,6 +345,34 @@ public class HttpCoreHelper implements HttpProtocol {
 		p.setLongParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connTimeoutMillis);
 		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeoutMillis);
 		HttpClient httpClient = new DefaultHttpClient(cm, p);
+		return httpClient;
+	}
+
+	//if proxyHostAnPort value is jvm the normal jvm settings apply
+	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis, String proxyHostAnPort) {
+		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
+		cm.setMaxTotal(maxConnPerRoute );
+		cm.setDefaultMaxPerRoute(maxConnPerRoute);
+		HttpParams p = new BasicHttpParams();
+		p.setLongParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connTimeoutMillis);
+		p.setLongParameter(CoreConnectionPNames.SO_TIMEOUT, soTimeoutMillis);
+		DefaultHttpClient httpClient = new DefaultHttpClient(cm, p);
+		if("jvm".equalsIgnoreCase(proxyHostAnPort)) {
+			ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
+					httpClient.getConnectionManager().getSchemeRegistry(),
+					ProxySelector.getDefault());
+			httpClient.setRoutePlanner(routePlanner);
+		} else {
+			String[] hostAndPort = proxyHostAnPort.split(":");
+			Check.illegalargument.assertTrue(hostAndPort.length < 3, "wrong hostAndPort:"+proxyHostAnPort);
+			String host = hostAndPort[0];
+			int port = 80;
+			if(hostAndPort.length > 1) {
+				port = Integer.valueOf(hostAndPort[1]);
+			}
+			HttpHost proxy = new HttpHost(host, port);
+			httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		}
 		return httpClient;
 	}
 
