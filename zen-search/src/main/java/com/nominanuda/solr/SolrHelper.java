@@ -112,7 +112,11 @@ public class SolrHelper {
 					if(val1 == null) {
 						continue;
 					} else if(struct.isPrimitiveOrNull(val1)) {
-						addField(sid, k+"."+makeDynamicFieldName(k1, val1), val1, solrFields);
+						if(solrFields.contains(k+"."+k1)) {
+							addField(sid, k+"."+k1, val1, solrFields);
+						} else {
+							addField(sid, k+"."+makeDynamicFieldName(k1, val1), val1, solrFields);
+						}
 					}
 				}
 			} else if(struct.isDataArray(val)) {
