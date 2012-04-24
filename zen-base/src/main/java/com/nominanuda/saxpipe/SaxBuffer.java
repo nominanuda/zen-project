@@ -2,6 +2,7 @@ package com.nominanuda.saxpipe;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,6 +226,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[StartDocument]\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndDocument implements SaxBit, Serializable {
@@ -237,6 +248,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 
 		public void dump(Writer writer) throws IOException {
 			writer.write("[EndDocument]\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -257,6 +278,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[ProcessingInstruction] target=" + this.target
 					+ ",data=" + this.data + "\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -283,6 +314,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 			writer.write("[StartDTD] name=" + this.name + ",publicId="
 					+ this.publicId + ",systemId=" + this.systemId + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndDTD implements SaxBit, Serializable {
@@ -297,6 +338,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 
 		public void dump(Writer writer) throws IOException {
 			writer.write("[EndDTD]\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -317,6 +368,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[StartEntity] name=" + this.name + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndEntity implements SaxBit, Serializable {
@@ -336,6 +397,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[EndEntity] name=" + this.name + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class SkippedEntity implements SaxBit, Serializable {
@@ -352,6 +423,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 
 		public void dump(Writer writer) throws IOException {
 			writer.write("[SkippedEntity] name=" + this.name + "\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -374,6 +455,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 			writer.write("[StartPrefixMapping] prefix=" + this.prefix + ",uri="
 					+ this.uri + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndPrefixMapping implements SaxBit, Serializable {
@@ -390,6 +481,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 
 		public void dump(Writer writer) throws IOException {
 			writer.write("[EndPrefixMapping] prefix=" + this.prefix + "\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -426,6 +527,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 						+ this.attrs.getValue(i) + "\n");
 			}
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndElement implements SaxBit, Serializable {
@@ -449,6 +560,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 			writer.write("[EndElement] namespaceURI=" + this.namespaceURI
 					+ ",localName=" + this.localName + ",qName=" + this.qName
 					+ "\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -474,6 +595,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[Characters] ch=" + new String(this.ch) + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class Comment implements SaxBit, Serializable {
@@ -497,6 +628,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[Comment] ch=" + new String(this.ch) + "\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class StartCDATA implements SaxBit, Serializable {
@@ -512,6 +653,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[StartCDATA]\n");
 		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
+		}
 	}
 
 	public final static class EndCDATA implements SaxBit, Serializable {
@@ -526,6 +677,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 
 		public void dump(Writer writer) throws IOException {
 			writer.write("[EndCDATA]\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
@@ -548,6 +709,16 @@ public class SaxBuffer implements ContentHandler, LexicalHandler, Serializable,
 		public void dump(Writer writer) throws IOException {
 			writer.write("[IgnorableWhitespace] ch=" + new String(this.ch)
 					+ "\n");
+		}
+		@Override
+		public String toString() {
+			StringWriter sw = new StringWriter();
+			try {
+				dump(sw);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return sw.toString();
 		}
 	}
 
