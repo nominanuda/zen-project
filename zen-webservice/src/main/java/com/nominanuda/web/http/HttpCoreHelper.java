@@ -223,7 +223,7 @@ public class HttpCoreHelper implements HttpProtocol {
 			final HttpEntity entity) throws IOException {
 		List<NameValuePair> result = Collections.emptyList();
 		String contentType = null;
-		String charset = null;
+		String charset = UTF_8;
 		Header h = entity.getContentType();
 		if (h != null) {
 			HeaderElement[] elems = h.getElements();
@@ -237,7 +237,7 @@ public class HttpCoreHelper implements HttpProtocol {
 			}
 		}
 		if (contentType != null
-		&& contentType.equalsIgnoreCase(CT_WWW_FORM_URLENCODED)) {
+		&& contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
 			final String content = EntityUtils.toString(entity, HTTP.UTF_8);
 			if (content != null && content.length() > 0) {
 				result = new ArrayList<NameValuePair>();
