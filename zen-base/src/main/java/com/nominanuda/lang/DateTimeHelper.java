@@ -69,23 +69,23 @@ public class DateTimeHelper {
 	}
 
 	public String toISO8601UtcSecs(long utcEpochMillis) {
-		return toISO8601UtcSecs(new DateTime(utcEpochMillis));
+		return toISO8601UtcSecs(new DateTime(utcEpochMillis, DateTimeZone.UTC));
 	}
 	public String toISO8601UtcMillis(long utcEpochMillis) {
-		return toISO8601UtcMillis(new DateTime(utcEpochMillis));
+		return toISO8601UtcMillis(new DateTime(utcEpochMillis, DateTimeZone.UTC));
 	}
 	public String toISO8601UtcDate(long utcEpochMillis) {
-		return toISO8601UtcDate(new DateTime(utcEpochMillis));
+		return toISO8601UtcDate(new DateTime(utcEpochMillis, DateTimeZone.UTC));
 	}
 
 	public String nowToISO8601UtcSecs() {
-		return toISO8601UtcSecs(new DateTime());
+		return toISO8601UtcSecs(new DateTime(DateTimeZone.UTC));
 	}
 	public String nowToISO8601UtcMillis() {
-		return toISO8601UtcMillis(new DateTime());
+		return toISO8601UtcMillis(new DateTime(DateTimeZone.UTC));
 	}
 	public String nowToISO8601UtcDate() {
-		return toISO8601UtcSecs(new DateTime());
+		return toISO8601UtcSecs(new DateTime(DateTimeZone.UTC));
 	}
 
 	public long fromISO8601UtcDate(String isoDt) throws IllegalArgumentException {
