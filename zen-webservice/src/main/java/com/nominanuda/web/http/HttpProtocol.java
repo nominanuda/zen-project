@@ -102,4 +102,6 @@ public interface HttpProtocol {
 	String HDR_X_FORWARDED_FOR = "X-Forwarded-For";
 	String HDR_X_REQUEST_PROCESSING_TIME = "X-Request-Processing-Time";
 	String HDR_X_FORWARDED_URL = "X-Forwarded-URL";
+
+	String HTMLNS = "http://www.w3.org/1999/xhtml";
 }

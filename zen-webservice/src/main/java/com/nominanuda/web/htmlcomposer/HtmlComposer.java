@@ -19,36 +19,44 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.lang.Tuple2;
-import com.nominanuda.lang.Tuple3;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.SaxBuffer.SaxBit;
+import com.nominanuda.springmvc.DomManipulationInstr;
 
 public class HtmlComposer {
 	public enum DomOp {
 		prepend, append, before, after, replaceWith, html
 	}
 	private final ContentHandler target;
-	private List<Tuple3<String, SaxBuffer, DomOp>> fragments;
+	private List<DomManipulationInstr> fragments;
 	private final Stack<Tuple2<Integer, Iterator<SaxBit>>> playing = new Stack<Tuple2<Integer,Iterator<SaxBit>>>();
 	private final DocContext docContext = new DocContext();
 	private int numDocStarted = 0;
-
+	private Logger log = LoggerFactory.getLogger(getClass());
 	public HtmlComposer(ContentHandler target) {
 		this.target = target;
 	}
 
-	public void render(List<Tuple3<String, SaxBuffer, DomOp>> viewMap) throws SAXException {
+	public void render(List<DomManipulationInstr> viewMap) throws SAXException {
 		fragments = viewMap;
-		playing.push(new Tuple2<Integer, Iterator<SaxBit>>(0, viewMap.get(0).get1().getBits().iterator()));
+		playing.push(new Tuple2<Integer, Iterator<SaxBit>>(0, viewMap.get(0).getSaxBuffer().getBits().iterator()));
 		while(true) {
 			Iterator<SaxBit> itr = playing.peek().get1();
 			if(itr.hasNext()) {
 				SaxBit bit = itr.next();
+				if(!itr.hasNext()) {
+					playing.pop();
+				}
 				sendSaxBit(bit);
+				if(playing.isEmpty()) {
+					break;
+				}
 			} else {
 				playing.pop();
 				if(playing.isEmpty()) {
@@ -61,49 +69,56 @@ public class HtmlComposer {
 	}
 
 	public void sendSaxBit(SaxBit bit) throws SAXException {
+		log.debug("sendSaxBit::{}", bit);
 		bit.send(docContext);
-		if(SaxBuffer.isStartDocument(bit) && numDocStarted == 0) {
+		if(SaxBuffer.isStartDocument(bit)) {
+			if(numDocStarted == 0) {
+				target.startDocument();
+			}
 			numDocStarted++;
-			target.startDocument();
-		} else if(SaxBuffer.isEndDocument(bit) && numDocStarted == 1) {
+		} else if(SaxBuffer.isEndDocument(bit)) {
+			if(numDocStarted == 1) {
+				target.endDocument();
+			}
 			numDocStarted--;
-			target.endDocument();
 		} else if(!on(docContext, bit)) {
 			bit.send(target);
+		} else {
+			docContext.removeLast();
+			log.debug("IGNORED");
 		}
 	}
 
 	private boolean on(DocContext cx, SaxBit curEvent) throws SAXException {
 		int insertionCtxOrder = playing.peek().get0();
 		for(int i = insertionCtxOrder + 1; i < fragments.size(); i++) {
-			String sel = fragments.get(i).get0();
-			DomOp op = fragments.get(i).get2();
+			String sel = fragments.get(i).getSelector();
+			DomOp op = fragments.get(i).getOperation();
 			if(cx.matches(sel)) {
 				switch (op) {
 				case after:
 					if(SaxBuffer.isEndElement(curEvent)) {
-						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new PrependingIterator<SaxBit>(curEvent, fragments.get(i).get1().getBits().iterator())));
+						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new PrependingIterator<SaxBit>(curEvent, fragments.get(i).getSaxBuffer().getBits().iterator())));
 					}
-					break;
+					return true;
 				case prepend:
 					if(SaxBuffer.isStartElement(curEvent)) {
-						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new PrependingIterator<SaxBit>(curEvent, fragments.get(i).get1().getBits().iterator())));
+						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new PrependingIterator<SaxBit>(curEvent, fragments.get(i).getSaxBuffer().getBits().iterator())));
 					}
-					break;
+					return true;
 				case append:
 					if(SaxBuffer.isEndElement(curEvent)) {
 						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new AppendingIterator<SaxBit>(
-								fragments.get(i).get1().getBits().iterator(), curEvent)));
+								fragments.get(i).getSaxBuffer().getBits().iterator(), curEvent)));
 					}
-					break;
+					return true;
 				case before:
 					if(SaxBuffer.isStartElement(curEvent)) {
 						playing.push(new Tuple2<Integer, Iterator<SaxBit>>(i, new AppendingIterator<SaxBit>(
-								fragments.get(i).get1().getBits().iterator(), curEvent)));
+								fragments.get(i).getSaxBuffer().getBits().iterator(), curEvent)));
 					}
-					break;
+					return true;
 				}
-				return true;
 			}
 		}
 		//curEvent.send(target);

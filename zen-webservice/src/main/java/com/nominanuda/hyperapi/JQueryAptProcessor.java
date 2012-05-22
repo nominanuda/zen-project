@@ -36,24 +36,28 @@ import com.nominanuda.lang.Strings;
 
 public class JQueryAptProcessor implements Processor {
 	private ProcessingEnvironment env;
-	String prologue = //"(function() {var dummy = function(){};var uritpl = function(spec, model) {var pathAndQuery = spec.split('?');var re = /\\{[^\\}]+\\}/g;var result = pathAndQuery[0].replace(re,function(str, p1, p2, offset, s) {return model[str.replace(/\\{(\\w+).*/, '$1')];});if(pathAndQuery.length > 1) {result += '?' + pathAndQuery[1].replace(re,function(str, offset) {var x = str.replace(/\\{(\\w+).*/, '$1');var p = model[x];var isPname = offset === 0 || pathAndQuery[1].charAt(offset - 1) ==! '=';return ''+ (isPname ? x+'='+p : p);});};return result;};";
+	String prologue1 = //"(function() {var dummy = function(){};var uritpl = function(spec, model) {var pathAndQuery = spec.split('?');var re = /\\{[^\\}]+\\}/g;var result = pathAndQuery[0].replace(re,function(str, p1, p2, offset, s) {return model[str.replace(/\\{(\\w+).*/, '$1')];});if(pathAndQuery.length > 1) {result += '?' + pathAndQuery[1].replace(re,function(str, offset) {var x = str.replace(/\\{(\\w+).*/, '$1');var p = model[x];var isPname = offset === 0 || pathAndQuery[1].charAt(offset - 1) ==! '=';return ''+ (isPname ? x+'='+p : p);});};return result;};";
 "(function() {\n"+
 "var dummy = function(){};\n"+
 "var uritpl = function(spec, model) {\n"+
+"  var globalObj = window.";
+	String prologue2 = ";\n" +
+"  var uriPrefix = globalObj.globalPrefix || '';\n" +
 "  var pathAndQuery = spec.split('?');\n"+
-"  var re = /\\{[^\\}]+\\}/g;\n"+
+"  var re = /\\(?\\{[^\\}]+\\}\\)?/g;\n"+
 "  var result = pathAndQuery[0].replace(re,function(str, p1, p2, offset, s) {\n"+
 "    return model[str.replace(/\\{(\\w+).*/, '$1')];\n"+
 "  });\n"+
 "  if(pathAndQuery.length > 1) {\n"+
 "    result += '?' + pathAndQuery[1].replace(re,function(str, offset) {\n"+
-"      var x = str.replace(/\\{(\\w+).*/, '$1');\n"+
+"      var x = str.replace(/\\(?\\{(\\w+).*/, '$1');\n"+
 "      var p = model[x];\n"+
+"      if(!((p === null||typeof p === 'undefined') && pathAndQuery[1].charAt(offset)==='(')){\n"+
 "      var isPname = offset === 0 || pathAndQuery[1].charAt(offset - 1) ==! '=';\n"+
 "      return ''+ (isPname ? x+'='+p : p);\n"+
-"    });\n"+
+"    }}).replace(/\\s/g,'&');\n"+
 "  }\n"+
-"  return result;\n"+
+"  return uriPrefix+result;\n"+
 "};\n";
 
 	
@@ -94,7 +98,9 @@ public class JQueryAptProcessor implements Processor {
 			log("detected package:"+pkg);
 			FileObject jsSrc = env.getFiler().createResource(StandardLocation.CLASS_OUTPUT, pkg, ns+".js", el);
 			Writer w = jsSrc.openWriter();
-			w.write(prologue);
+			w.write(prologue1);
+			w.write(ns);
+			w.write(prologue2);
 			w.write("window."+ns+" = {");
 			for(Element member : el.getEnclosedElements()) {
 				if(member.getKind() == ElementKind.METHOD) {
@@ -165,11 +171,11 @@ public class JQueryAptProcessor implements Processor {
 		if(jsonBody != null && ("POST".equals(method) || "PUT".equals(method))) {
 			content = ",contentType:'application/json;charset=UTF-8',data:JSON.stringify("+jsonBody+")";
 		}
-		w.write("\n"+member.getSimpleName().toString()+" : function("+sig+"okcb,errcb)  {" +
-			"var uri = uritpl('"+uriTpl.value()+"',"+uriTplParams.toString()+");" +
-			"var _errcb = errcb || dummy;" +
-			"jQuery.ajax({method:'"+method+"', url:uri, success:okcb, error:_errcb" + content +
-			"});\n},");
+		w.write("\n"+member.getSimpleName().toString()+" : function("+sig+"okcb,errcb)  {\n" +
+			"var uri = uritpl('"+uriTpl.value()+"',"+uriTplParams.toString()+");\n" +
+			"var _errcb = errcb || dummy;\n" +
+			"jQuery.ajax({type:'"+method+"',\n url:uri,\n success:okcb,\n error:_errcb" + content +
+			"\n});\n},");
 	}
 
 

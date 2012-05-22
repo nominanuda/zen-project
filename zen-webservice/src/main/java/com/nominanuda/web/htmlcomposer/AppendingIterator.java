@@ -33,4 +33,8 @@ public class AppendingIterator<T> implements Iterator<T> {
 	public void remove() {
 		Check.illegalstate.fail();
 	}
+
+	public boolean isLast() {
+		return ! delegate.hasNext();
+	}
 }

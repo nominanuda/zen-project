@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -14,6 +16,7 @@ import com.nominanuda.lang.Strings;
 public class DocContext implements ContentHandler {
 	private Stack<String> elementsStack = new Stack<String>();
 	private Stack<List<String>> classesStack = new Stack<List<String>>();
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public boolean matches(String selector) {//TODO
 		return !classesStack.isEmpty()
@@ -23,6 +26,7 @@ public class DocContext implements ContentHandler {
 	List<String> THE_EMPTY_LIST = Collections.emptyList();
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
+		//log.debug("startElement {}",localName);
 		if(! ("html".equals(localName)||"body".equals(localName))) {
 			elementsStack.push(localName);
 			String classAttVal = atts.getValue("class");
@@ -31,6 +35,11 @@ public class DocContext implements ContentHandler {
 				: Strings.splitAndTrim(classAttVal, "\\s+");
 			classesStack.push(classes);
 		}
+		//log.debug("stack:",elementsStack);
+	}
+	public void removeLast() {
+		elementsStack.pop();
+		classesStack.pop();
 	}
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {

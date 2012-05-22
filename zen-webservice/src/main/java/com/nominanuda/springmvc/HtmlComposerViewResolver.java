@@ -18,8 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import nu.validator.htmlparser.sax.HtmlParser;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +30,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 
 import com.nominanuda.codec.Digester;
 import com.nominanuda.lang.Check;
@@ -35,6 +39,7 @@ import com.nominanuda.lang.Tuple2;
 import com.nominanuda.lang.Tuple3;
 import com.nominanuda.lang.Tuple4;
 import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
+import com.nominanuda.saxpipe.HtmlFragmentParser;
 import com.nominanuda.saxpipe.SAXPipeline;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.XHtml5Serializer;
@@ -42,7 +47,7 @@ import com.nominanuda.web.htmlcomposer.HtmlComposer;
 import com.nominanuda.web.htmlcomposer.HtmlComposer.DomOp;
 import com.nominanuda.web.http.HttpProtocol;
 
-public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
+public class HtmlComposerViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;
 	private ApplicationContext applicationContext;
 
@@ -53,7 +58,7 @@ public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAw
 
 	public View resolveViewName(String viewName, Locale locale)
 			throws Exception {
-		return "async_".equals(viewName) ? makeView(locale) : null;
+		return "htmlcomposer_".equals(viewName) ? makeView(locale) : null;
 	}
 
 	private View makeView(Locale locale) {
@@ -85,7 +90,7 @@ public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAw
 			ContentHandler ch = createSerializer(new OutputStreamWriter(baos));
 			List<Tuple4<View,Map<String, ?>,DomOp,String>> springMavs = getSpringViewsAndModels(model);
 			boolean firstRound = true;
-			List<Tuple3<String, SaxBuffer, DomOp>> saxViews = new LinkedList<Tuple3<String, SaxBuffer, DomOp>>();
+			List<DomManipulationInstr> saxViews = new LinkedList<DomManipulationInstr>();
 			for(Tuple4<View,Map<String, ?>,DomOp,String> mav : springMavs) {
 				View v = mav.get0();
 				Map<String, ?> m = mav.get1();
@@ -96,8 +101,12 @@ public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAw
 				CollectingResponse cr = new CollectingResponse(response);
 				v.render(m, request, cr);
 				SaxBuffer sbuf = new SaxBuffer();
-				new SAXPipeline().complete().build(new StreamSource(cr.getBuffer()), new SAXResult(sbuf)).run();
-				saxViews.add(new Tuple3<String, SaxBuffer, DomOp>(selector, sbuf, domOp));
+				HtmlParser parser = new HtmlParser();
+				parser.setMappingLangToXmlLang(true);
+				parser.setReportingDoctype(false);
+				SAXSource src = new SAXSource(new HtmlFragmentParser(parser), new InputSource(cr.getBuffer()));
+				new SAXPipeline().complete().build(src, new SAXResult(sbuf)).run();
+				saxViews.add(new DomManipulationInstr(selector, sbuf, domOp));
 			}
 			HtmlComposer composer = new HtmlComposer(ch);
 			composer.render(saxViews);
@@ -107,9 +116,11 @@ public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAw
 		}
 
 		private ContentHandler createSerializer(Writer out) {
+			//SAXResult snk = new SAXResult(new XHtml5Serializer(outs));
 			ForwardingTransformerHandlerBase tx = new ForwardingTransformerHandlerBase();
 			tx.setResult(new StreamResult(out));
 			return tx;
+//			return new XHtml5Serializer(out);
 		}
 
 		private List<Tuple4<View,Map<String, ?>,DomOp,String>> getSpringViewsAndModels(Map<String, ?> model) throws Exception {
@@ -122,7 +133,8 @@ public class AsyncJsonViewResolver implements ViewResolver, ApplicationContextAw
 				for(ViewResolver r : resolvers) {
 					mav = r.resolveViewName(viewName, locale);
 					if(mav != null) {
-						DomOp op = viewDef.containsKey("domOp_") ? DomOp.valueOf((String)viewDef.get("domOp_")) : null;
+						
+						DomOp op = viewDef.get("domOp_") == null ? DomOp.valueOf((String)viewDef.get("domOp_")) : null;
 						mavs.add(new Tuple4<View,Map<String, ?>,DomOp,String>(
 								mav,
 								(Map<String, ?>)viewDef.get("data_"),
