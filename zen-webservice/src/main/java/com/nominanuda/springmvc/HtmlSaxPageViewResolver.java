@@ -2,7 +2,6 @@ package com.nominanuda.springmvc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -17,6 +16,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
@@ -31,25 +31,26 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.codec.Digester;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Initializable;
-import com.nominanuda.lang.Tuple2;
-import com.nominanuda.lang.Tuple3;
+import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.lang.Tuple4;
 import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
 import com.nominanuda.saxpipe.HtmlFragmentParser;
 import com.nominanuda.saxpipe.SAXPipeline;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.XHtml5Serializer;
-import com.nominanuda.web.htmlcomposer.HtmlComposer;
-import com.nominanuda.web.htmlcomposer.HtmlComposer.DomOp;
+import com.nominanuda.web.htmlcomposer.DomManipulationStmt;
+import com.nominanuda.web.htmlcomposer.DomOp;
+import com.nominanuda.web.htmlcomposer.HtmlSaxPage;
 import com.nominanuda.web.http.HttpProtocol;
 
-public class HtmlComposerViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
+public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;
 	private ApplicationContext applicationContext;
+	private boolean html = true;
 
 	public void init() {
 		resolvers = new LinkedList<ViewResolver>();
@@ -88,39 +89,55 @@ public class HtmlComposerViewResolver implements ViewResolver, ApplicationContex
 				HttpServletResponse response) throws Exception {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ContentHandler ch = createSerializer(new OutputStreamWriter(baos));
+			HtmlSaxPage p = new HtmlSaxPage();
+			
 			List<Tuple4<View,Map<String, ?>,DomOp,String>> springMavs = getSpringViewsAndModels(model);
-			boolean firstRound = true;
-			List<DomManipulationInstr> saxViews = new LinkedList<DomManipulationInstr>();
 			for(Tuple4<View,Map<String, ?>,DomOp,String> mav : springMavs) {
 				View v = mav.get0();
 				Map<String, ?> m = mav.get1();
-				String selector = firstRound ? null : 
-					Check.illegalargument.assertNotNull(mav.get3());
-				DomOp domOp = firstRound ? null : mav.get2();
-				firstRound = false;
+				String selector = Check.illegalargument.assertNotNull(mav.get3());
+				DomOp domOp = Check.illegalargument.assertNotNull(mav.get2());
 				CollectingResponse cr = new CollectingResponse(response);
 				v.render(m, request, cr);
 				SaxBuffer sbuf = new SaxBuffer();
-				HtmlParser parser = new HtmlParser();
-				parser.setMappingLangToXmlLang(true);
-				parser.setReportingDoctype(false);
-				SAXSource src = new SAXSource(new HtmlFragmentParser(parser), new InputSource(cr.getBuffer()));
-				new SAXPipeline().complete().build(src, new SAXResult(sbuf)).run();
-				saxViews.add(new DomManipulationInstr(selector, sbuf, domOp));
+				new SAXPipeline()
+					.complete()
+					.build(saxSource(cr.getBuffer()), new SAXResult(sbuf))
+					.run();
+				p.applyStmt(new DomManipulationStmt(selector, new InstanceFactory<SaxBuffer>(sbuf), domOp));
 			}
-			HtmlComposer composer = new HtmlComposer(ch);
-			composer.render(saxViews);
+			new SaxBuffer.StartDocument().send(ch);
+			new SaxBuffer.StartElement(HTMLNS,"html","html",new AttributesImpl()).send(ch);
+			p.toSAX(ch);
+			new SaxBuffer.EndElement(HTMLNS,"html","html").send(ch);
+			new SaxBuffer.EndDocument().send(ch);
 			byte[] page = baos.toByteArray();
 			response.setHeader(HDR_CONTENT_LENGTH, new Integer(page.length).toString());
 			response.getOutputStream().write(page);
 		}
 
+		
+		private Source saxSource(InputStream is) {
+			if(html) {
+				HtmlParser parser = new HtmlParser();
+				parser.setMappingLangToXmlLang(true);
+				parser.setReportingDoctype(false);
+				SAXSource src = new SAXSource(new HtmlFragmentParser(parser), new InputSource(is));
+				return src;
+			} else {
+				return new StreamSource(is);
+			}
+		}
+
 		private ContentHandler createSerializer(Writer out) {
-			//SAXResult snk = new SAXResult(new XHtml5Serializer(outs));
-			ForwardingTransformerHandlerBase tx = new ForwardingTransformerHandlerBase();
-			tx.setResult(new StreamResult(out));
-			return tx;
-//			return new XHtml5Serializer(out);
+			if(html) {
+				XHtml5Serializer ser = new XHtml5Serializer(out);
+				return ser;
+			} else {
+				ForwardingTransformerHandlerBase tx = new ForwardingTransformerHandlerBase();
+				tx.setResult(new StreamResult(out));
+				return tx;
+			}
 		}
 
 		private List<Tuple4<View,Map<String, ?>,DomOp,String>> getSpringViewsAndModels(Map<String, ?> model) throws Exception {
@@ -134,7 +151,7 @@ public class HtmlComposerViewResolver implements ViewResolver, ApplicationContex
 					mav = r.resolveViewName(viewName, locale);
 					if(mav != null) {
 						
-						DomOp op = viewDef.get("domOp_") == null ? DomOp.valueOf((String)viewDef.get("domOp_")) : null;
+						DomOp op = DomOp.valueOf((String)viewDef.get("domOp_"));
 						mavs.add(new Tuple4<View,Map<String, ?>,DomOp,String>(
 								mav,
 								(Map<String, ?>)viewDef.get("data_"),
