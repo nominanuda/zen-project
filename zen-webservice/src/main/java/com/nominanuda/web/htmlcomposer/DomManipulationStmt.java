@@ -4,7 +4,6 @@ import com.nominanuda.code.Immutable;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.ObjectFactory;
 import com.nominanuda.saxpipe.SaxBuffer;
-import com.nominanuda.web.htmlcomposer.HtmlComposer.DomOp;
 
 @Immutable
 public class DomManipulationStmt {

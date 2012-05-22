@@ -13,7 +13,7 @@ import com.nominanuda.saxpipe.SAXPipeline;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.SaxBuffer.SaxBit;
 import com.nominanuda.saxpipe.SaxBuffer.StartElement;
-import com.nominanuda.web.htmlcomposer.HtmlComposer.DomOp;
+import com.nominanuda.web.htmlcomposer.DomOp;
 
 public class JQuerySaxMatcher {
 	private final DomOp operation;

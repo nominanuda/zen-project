@@ -1,20 +1,14 @@
 package com.nominanuda.web.htmlcomposer;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.saxpipe.SAXEmitter;
 import com.nominanuda.saxpipe.SaxBuffer;
 import com.nominanuda.saxpipe.SaxBuffer.SaxBit;
-import com.nominanuda.web.htmlcomposer.EventBlock.EventBlockIterator;
 
 //TODO replace html in split blocks
 public class HtmlSaxPage implements SAXEmitter {
