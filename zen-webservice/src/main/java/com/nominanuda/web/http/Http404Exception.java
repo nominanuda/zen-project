@@ -16,7 +16,7 @@
 package com.nominanuda.web.http;
 
 public class Http404Exception extends Http4xxException {
-	private static final long serialVersionUID = 1743745763945084329L;
+	private static final long serialVersionUID = 1743745753945084329L;
 
 	public Http404Exception(Exception e) {
 		super(e);
