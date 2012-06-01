@@ -24,7 +24,7 @@ import com.nominanuda.code.Nullable;
 public interface DataStruct<K extends Object> {
 	String OBJECT = "Object";
 	String ARRAY = "Array";
-	Pattern VALID_OBJ_KEY = Pattern.compile("[_A-Za-z][_A-Za-z0-9]*");
+	Pattern VALID_OBJ_KEY = Pattern.compile("[\\$_A-Za-z][\\$_A-Za-z0-9]*");
 
 	@Nullable DataStruct<?> getParent();	
 	@Nullable /*should root return itself ?*/ DataStruct<?> getRoot();//miki
