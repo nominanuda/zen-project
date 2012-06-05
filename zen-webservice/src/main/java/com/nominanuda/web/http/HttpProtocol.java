@@ -73,6 +73,7 @@ public interface HttpProtocol {
 	String CT_IMAGE_JPEG = "image/jpeg";
 	String CT_IMAGE_GIF = "image/gif";
 	String CT_IMAGE_PNG = "image/png";
+	String CT_IMAGE_X_ICON = "image/x-icon";
 
 	Set<String> ONE_HOP_HEADERS = Collections.hashSet(
 "proxy-connection","connection","keep-alive","transfer-encoding","te","trailer","proxy-authorization","proxy-authenticate","upgrade","content-length"
