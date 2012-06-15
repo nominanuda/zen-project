@@ -43,13 +43,14 @@ limitations under the License.
     </developer>
   </developers>
   <modules>
-    <module>zen-urispec</module>
     <module>zen-parent</module>
+    <module>zen-urispec</module>
     <module>zen-base</module>
     <module>zen-dataobject</module>
     <module>zen-rhino</module>
     <module>zen-webservice</module>
     <module>zen-search</module>
+    <module>zen-store</module>
     <module>zen-jsweb</module>
   </modules>
 </project>
