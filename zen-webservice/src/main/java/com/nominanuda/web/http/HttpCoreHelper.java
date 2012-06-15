@@ -247,6 +247,16 @@ public class HttpCoreHelper implements HttpProtocol {
 		return result;
 	}
 
+	public @Nullable String getQueryParamFirstOccurrence(HttpRequest request, String name) {
+		List<NameValuePair> l = URLEncodedUtils.parse(
+				URI.create(request.getRequestLine().getUri()), UTF_8);
+		for(NameValuePair nvp : l) {
+			if(name.equals(nvp.getName())) {
+				return nvp.getValue();
+			}
+		}
+		return null;
+	}
 	public DataStruct<?> getQueryParams(HttpRequest request) {
 		List<NameValuePair> l = URLEncodedUtils.parse(
 				URI.create(request.getRequestLine().getUri()), UTF_8);
