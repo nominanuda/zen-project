@@ -33,6 +33,8 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.jsonparser.JSONParser;
 import com.nominanuda.lang.Check;
+import com.nominanuda.web.http.Http404Exception;
+import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.DataObjectURISpec;
@@ -45,6 +47,17 @@ public class HyperApiWsSkelton implements WebService {
 	private Object service;
 
 	public HttpResponse handle(HttpRequest request) throws Exception {
+		try {
+			Object result = handleCall(request);
+			return response(result);
+		} catch(IllegalArgumentException e) {
+			throw new Http404Exception(e);
+		} catch(Exception e) {
+			throw new Http500Exception(e);
+		}
+	}
+
+	protected Object handleCall(HttpRequest request) throws Exception, IllegalArgumentException/*method not found*/ {
 		String requestUri = request.getRequestLine().getUri();
 		Check.illegalargument.assertTrue(requestUri.startsWith(requestUriPrefix));
 		String apiRequestUri = requestUri.substring(requestUriPrefix.length());
@@ -66,12 +79,12 @@ public class HyperApiWsSkelton implements WebService {
 						}
 						Object[] args = createArgs(uriParams, dataEntity, api, m);
 						Object result = m.invoke(service, args);
-						return response(result);
+						return result;
 					}
 				}
 			}
 		}
-		throw new IllegalStateException("could not find any suitable method to call " +
+		throw new IllegalArgumentException("could not find any suitable method to call " +
 			"for api request: "+apiRequestUri);
 	}
 
@@ -115,7 +128,7 @@ public class HyperApiWsSkelton implements WebService {
 		return null;
 	}
 
-	private HttpResponse response(Object result) {
+	protected HttpResponse response(Object result) {
 		HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
 		DataStructHelper dataStructHelper = new DataStructHelper();
 		return httpCoreHelper.createBasicResponse(200, dataStructHelper.toJsonString(result), 
