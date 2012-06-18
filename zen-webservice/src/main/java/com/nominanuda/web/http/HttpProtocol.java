@@ -52,6 +52,8 @@ public interface HttpProtocol {
 	String ASCII = "ASCII";
 	String CT_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	String CT_WWW_FORM_URLENCODED_CS_UTF8 = "application/x-www-form-urlencoded; charset=UTF-8";
+	String CT_APPLICATION_JAVASCRIPT = "application/javascript";
+	String CT_APPLICATION_JAVASCRIPT_CS_UTF8 = "application/javascript; charset=UTF-8";
 	String CT_TEXT_JAVASCRIPT = "text/javascript";
 	String CT_TEXT_JAVASCRIPT_CS_UTF8 = "text/javascript; charset=UTF-8";
 	String CT_TEXT_CSS = "text/css";
