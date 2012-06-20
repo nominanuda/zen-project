@@ -124,6 +124,12 @@ public class HyperApiWsSkelton implements WebService {
 			return sval;
 		} else if(Integer.class.equals(targetType) || int.class.equals(targetType) || "int".equals(targetType.getSimpleName())) {
 			return Integer.parseInt(sval);
+		} else if(Long.class.equals(targetType) || long.class.equals(targetType) || "long".equals(targetType.getSimpleName())) {
+			return Long.parseLong(sval);
+		} else if(Double.class.equals(targetType) || double.class.equals(targetType) || "double".equals(targetType.getSimpleName())) {
+			return Double.parseDouble(sval);
+		} else if(Boolean.class.equals(targetType) || boolean.class.equals(targetType) || "boolean".equals(targetType.getSimpleName())) {
+			return Boolean.parseBoolean(sval);
 		}
 		return null;
 	}
