@@ -102,20 +102,33 @@ public class Collections {
 		return (Set<T>)s;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <K,V> Map<K,V> buildMap(Class<? extends Map> mclass, Object... members) throws RuntimeException {
+	@SuppressWarnings("unchecked")
+	public static <K,V,T extends Map<K,V>> Map<K,V> buildMap(Class<T> mclass, Object... members) throws RuntimeException {
 		int len = members.length;
 		if(len % 2 != 0) {
 			throw new IllegalArgumentException("odd number of arguments");
 		}
 		Map<K,V> m;
 		try {
-			m = (Map<K,V>)mclass.newInstance();
+			m = mclass.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		for(int i = 0; i < len; i += 2) {
 			m.put((K)members[i], (V)members[i+1]);
+		}
+		return m;
+	}
+
+	public static <K,V,T extends Map<K,V>> Map<K,V> entriesToMap(Class<T> mclass, Iterable<Entry<K, V>> entries) throws RuntimeException {
+		Map<K,V> m;
+		try {
+			m = mclass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		for(Entry<K, V> e : entries) {
+			m.put(e.getKey(), e.getValue());
 		}
 		return m;
 	}
@@ -137,5 +150,14 @@ public class Collections {
 			}
 			return l;
 		}
+	}
+
+	public static <T1,T2> List<T2> map(Iterable<T1> coll,
+			Arity1Fun<T1, T2> mapFun) {
+		List<T2> result = new LinkedList<T2>();
+		for(T1 o1 : coll) {
+			result.add(mapFun.apply(o1));
+		}
+		return result;
 	}
 }
