@@ -104,4 +104,33 @@ public abstract class Strings {
   		}
 		return MessageFormat.format(pattern, arguments);
 	}
+
+	public static <T> String J(String separator, List<T> someT) {
+		StringBuilder result = new StringBuilder();
+		for (T t : someT) {
+			result.append(t);
+			result.append(separator);
+		}
+		return result.toString().replaceAll(separator.concat("$"), "");
+	}
+
+	public static String J(String separator, String decorator, List<String> strings) {
+		StringBuilder result = new StringBuilder();
+		for (String string : strings) {
+			result.append(decorator);
+			result.append(string);
+			result.append(decorator);
+			result.append(separator);
+		}
+		return result.toString().replaceAll(separator.concat("$"), "");
+	}
+
+	public static String J(String separator, String... strings) {
+		StringBuilder result = new StringBuilder();
+		for (String string : strings) {
+			result.append(string);
+			result.append(separator);
+		}
+		return result.toString().replaceAll(separator.concat("$"), "");
+	}
 }
