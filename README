@@ -15,4 +15,6 @@ snapshot deploy cmd
 
 mvn clean deploy -DaltDeploymentRepository=sonatype-nexus-snapshots::default::https://oss.sonatype.org/content/repositories/snapshots
 
+TODO
+spring style constants
 
