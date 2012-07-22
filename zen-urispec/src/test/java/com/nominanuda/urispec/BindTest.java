@@ -15,14 +15,15 @@
  */
 package com.nominanuda.urispec;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import com.nominanuda.urispec.StringMapURISpec;
-
-import static org.junit.Assert.*;
 
 public class BindTest {
 
@@ -44,6 +45,9 @@ public class BindTest {
 		m = t.match("/a/v/e/r/y/longpath");
 		assertNull(m);
 		
+		t = new StringMapURISpec("/analytics/import?{path */*}");
+		m = t.match("/analytics/import?path=/foo/bar");
+		assertNotNull(m);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,6 +70,20 @@ public class BindTest {
 		m = new StringMapURISpec("/?{dt}").match("/?dt=2012-01-01%2000:00:00");
 		assertEquals("2012-01-01 00:00:00", m.get("dt"));
 
+		assertNotNull(
+			new StringMapURISpec("/unicredit/order/{numeroOrdine}/user/{emailCompratore}/ok")
+						.match("/unicredit/order/P2012031710314/user/username/ok"));
+	}
+	@Test
+	public void testPGroup() {
+		StringMapURISpec spec = new StringMapURISpec(
+			"/imagesapi/{id}?({x0Clip} {y0Clip} {x1Clip} {y1Clip} ({width}))");
+		Assert.assertNotNull(spec.match("/imagesapi/foo"));
+		Assert.assertNotNull(spec.match("/imagesapi/foo?x0Clip=1&y0Clip=1&x1Clip=1&y1Clip=1"));
+		Assert.assertNotNull(spec.match("/imagesapi/foo?x0Clip=1&y0Clip=1&x1Clip=1&y1Clip=1&width=0"));
+//		Assert.assertNull(spec.match("/imagesapi/foo?width=0"));
+//		Assert.assertNull(spec.match("/imagesapi/foo?x0Clip=1&y0Clip=1&x1Clip=1"));
+		
 	}
 
 }
