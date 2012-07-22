@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -94,8 +95,8 @@ public class HibernateConfiguration {
 			cfg
 			.setProperty("connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider")
 			.setProperty("hibernate.c3p0.acquire_increment", "3")
-			.setProperty("hibernate.c3p0.min_size", "3")
-			.setProperty("hibernate.c3p0.max_size", "15")
+			.setProperty("hibernate.c3p0.min_size", "30")
+			.setProperty("hibernate.c3p0.max_size", "100")
 			.setProperty("hibernate.c3p0.max_statements", "300")
 			.setProperty("hibernate.c3p0.acquireRetryAttempts", "2")
 			.setProperty("hibernate.c3p0.acquireRetryDelay", "450")
@@ -103,7 +104,9 @@ public class HibernateConfiguration {
 			.setProperty("hibernate.c3p0.idle_test", "300");
 		}
 		
-		
+		for(Entry<String, ?> e : listeners.entrySet()) {
+			cfg.setListener(e.getKey(), e.getValue());
+		}
 //		cfg.setListener("delete", new HibernateDeleteListener());
 		switch (dbType) {
 			case HSQLDB:
