@@ -18,7 +18,7 @@ public class JsJsonDataParser {
 	public DataStruct<?> parse(Reader json) {
 		Context cx = Context.enter();
 		try {
-			return (DataObject) convertor.fromScriptable(
+			return convertor.fromScriptable(
 					r.jsonToScriptable(cx,json));
 		} finally {
 			Context.exit();
@@ -34,5 +34,5 @@ public class JsJsonDataParser {
 	public DataObject parseObj(Reader json) {
 		return (DataObject)parse(json);
 	}
-	
+
 }
