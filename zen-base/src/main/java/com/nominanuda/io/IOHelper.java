@@ -41,6 +41,7 @@ import com.nominanuda.codec.Base64Codec;
 import com.nominanuda.lang.Maths;
 
 public class IOHelper {
+	public static final IOHelper IO = new IOHelper();
 	private static File TMP = new File(System.getProperty("java.io.tmpdir"));
 	private static final Charset CSUTF8 = Charset.forName("UTF-8");
 	public static final Pattern NAMED_PLACEHOLDER = Pattern.compile(
