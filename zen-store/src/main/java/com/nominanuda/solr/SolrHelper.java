@@ -46,10 +46,14 @@ public class SolrHelper {
 		qr.getResults();
 		SolrDocumentList sdl = qr.getResults();
 		for(Map<String,Object> d : sdl) {
-			DataObject o = (DataObject)struct.fromFlatMap(normalizeDynFields(d));
+			DataObject o = solrDoc2DataObject(d);
 			res.add(o);
 		}
 		return res;
+	}
+
+	public DataObject solrDoc2DataObject(Map<String, Object> d) {
+		return (DataObject)struct.fromFlatMap(normalizeDynFields(d));
 	}
 
 	private Map<String, Object> normalizeDynFields(Map<String, Object> d) {
