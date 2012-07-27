@@ -37,15 +37,15 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Initializable;
 import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.lang.Tuple4;
-import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
-import com.nominanuda.saxpipe.HtmlFragmentParser;
-import com.nominanuda.saxpipe.SAXPipeline;
-import com.nominanuda.saxpipe.SaxBuffer;
-import com.nominanuda.saxpipe.XHtml5Serializer;
 import com.nominanuda.web.htmlcomposer.DomManipulationStmt;
 import com.nominanuda.web.htmlcomposer.DomOp;
 import com.nominanuda.web.htmlcomposer.HtmlSaxPage;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.xml.ForwardingTransformerHandlerBase;
+import com.nominanuda.xml.HtmlFragmentParser;
+import com.nominanuda.xml.SAXPipeline;
+import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.xml.XHtml5Serializer;
 
 public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;

@@ -37,7 +37,7 @@ public class URISpecMatcher implements HandlerMatcher {
 	private URISpec<DataObject> spec;
 	private Pattern methodPattern;
 
-	public @Nullable Tuple2<Object, DataStruct<?>> match(HttpRequest request) {
+	public @Nullable Tuple2<Object, DataStruct> match(HttpRequest request) {
 		String method = request.getRequestLine().getMethod();
 		Matcher methodMatcher = methodPattern.matcher(method);
 		if(! methodMatcher.matches()) {
@@ -46,7 +46,7 @@ public class URISpecMatcher implements HandlerMatcher {
 
 		DataObject o = spec.match(request.getRequestLine().getUri());
 		return o == null ? null :
-			new Tuple2<Object, DataStruct<?>>(handler, o);
+			new Tuple2<Object, DataStruct>(handler, o);
 	}
 
 	public void setHandler(Object handler) {

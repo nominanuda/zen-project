@@ -9,11 +9,11 @@ import javax.xml.transform.sax.TransformerHandler;
 import com.nominanuda.code.Nullable;
 import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.lang.Strings;
-import com.nominanuda.saxpipe.SAXPipeline;
-import com.nominanuda.saxpipe.SaxBuffer;
-import com.nominanuda.saxpipe.SaxBuffer.SaxBit;
-import com.nominanuda.saxpipe.SaxBuffer.StartElement;
 import com.nominanuda.web.htmlcomposer.DomOp;
+import com.nominanuda.xml.SAXPipeline;
+import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.xml.SaxBuffer.SaxBit;
+import com.nominanuda.xml.SaxBuffer.StartElement;
 
 public class JQuerySaxMatcher {
 	private final DomOp operation;

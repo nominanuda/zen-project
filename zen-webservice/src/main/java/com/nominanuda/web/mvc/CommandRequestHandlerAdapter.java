@@ -26,7 +26,7 @@ public class CommandRequestHandlerAdapter extends GenericHandlerAdapter {
 
 	@Override
 	protected Object handleInternal(Object handler, HttpRequest request,
-			DataStruct<?> command) throws Exception {
+			DataStruct command) throws Exception {
 		return ((CommandRequestHandler)handler).handle(command, request);
 	}
 }

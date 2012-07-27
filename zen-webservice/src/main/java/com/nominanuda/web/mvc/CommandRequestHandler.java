@@ -20,5 +20,5 @@ import org.apache.http.HttpRequest;
 import com.nominanuda.dataobject.DataStruct;
 
 public interface CommandRequestHandler {
-	Object handle(DataStruct<?> cmd, HttpRequest request) throws Exception;
+	Object handle(DataStruct cmd, HttpRequest request) throws Exception;
 }

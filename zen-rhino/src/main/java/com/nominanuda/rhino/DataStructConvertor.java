@@ -26,11 +26,11 @@ public class DataStructConvertor implements ToScriptableConvertor {
 
 	public Scriptable convert(Context cx, Scriptable prototypeSearchScope,
 			Object o) {
-		return convertor.toScriptable(cx, (DataStruct<?>)o, prototypeSearchScope);
+		return convertor.toScriptable(cx, (DataStruct)o, prototypeSearchScope);
 	}
 
 	public boolean canConvert(Object obj) {
-		return obj != null && obj instanceof DataStruct<?>;
+		return obj != null && obj instanceof DataStruct;
 	}
 
 }

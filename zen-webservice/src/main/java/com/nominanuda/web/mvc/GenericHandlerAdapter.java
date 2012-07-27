@@ -35,10 +35,10 @@ public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProto
 	protected static final HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
 
 	protected abstract Object handleInternal(Object handler, HttpRequest request,
-			DataStruct<?> command) throws Exception;
+			DataStruct command) throws Exception;
 
 	public Object invoke(Object handler, HttpRequest request,
-			DataStruct<?> command) throws Exception {
+			DataStruct command) throws Exception {
 		Object handlerResponse = handleInternal(handler, request, command);
 		return adaptHandlerResponse(handlerResponse);
 	}
@@ -47,8 +47,8 @@ public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProto
 		Check.notNull(response);
 		if(response instanceof ViewSpec) {
 			return response;
-		} else if(response instanceof DataStruct<?>) {
-			DataStruct<?> ds = (DataStruct<?>)response;
+		} else if(response instanceof DataStruct) {
+			DataStruct ds = (DataStruct)response;
 			if(ds instanceof DataObject && ((DataObject)ds).exists("view_")) {
 				String view = ((DataObject)ds).getString("view_");
 				if(view.startsWith("redirect:")) {

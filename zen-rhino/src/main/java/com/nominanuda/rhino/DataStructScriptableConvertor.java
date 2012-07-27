@@ -31,7 +31,7 @@ public class DataStructScriptableConvertor {
 	private static final DataStructHelper structHelper = new DataStructHelper();
 	private static final RhinoHelper rhino = new RhinoHelper();
 
-	public Scriptable toScriptable(Context cx, DataStruct<?> source, Scriptable topScope) {
+	public Scriptable toScriptable(Context cx, DataStruct source, Scriptable topScope) {
 		Scriptable res;
 		if(source.isArray()) {
 			res = rhino.newArray(cx, topScope);
@@ -43,7 +43,7 @@ public class DataStructScriptableConvertor {
 					rhino.putProperty(res, i, convertPrimitiveToRhino(val));
 				} else {
 					rhino.putProperty(res, i, 
-						toScriptable(cx, (DataStruct<?>)val, topScope));
+						toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
 		} else {
@@ -55,7 +55,7 @@ public class DataStructScriptableConvertor {
 					rhino.putProperty(res, k, convertPrimitiveToRhino(val));
 				} else {
 					rhino.putProperty(res, k, 
-						toScriptable(cx, (DataStruct<?>)val, topScope));
+						toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
 		}
@@ -66,8 +66,8 @@ public class DataStructScriptableConvertor {
 		return val;//TODO date number
 	}
 
-	public DataStruct<?> fromScriptable(Scriptable s) {
-		DataStruct<?> res;
+	public DataStruct fromScriptable(Scriptable s) {
+		DataStruct res;
 		if(rhino.isArray(s)) {
 			res = new DataArrayImpl();
 			NativeArray a = (NativeArray)s;//TODO unsafe

@@ -103,7 +103,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 				return Double.valueOf(s);
 			}
 		} else {//TODO
-			DataStruct<?> ds = new JSONParser().parse(new StringReader(s));
+			DataStruct ds = new JSONParser().parse(new StringReader(s));
 			Class<?> returnType = method.getReturnType();
 			return ds;
 		}

@@ -22,5 +22,5 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Tuple2;
 
 public interface HandlerMatcher {
-	@Nullable Tuple2<Object, DataStruct<?>> match(HttpRequest request);
+	@Nullable Tuple2<Object, DataStruct> match(HttpRequest request);
 }

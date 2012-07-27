@@ -4,9 +4,9 @@ import com.nominanuda.dataobject.DataStruct;
 
 public class PathAndJsonViewSpec implements ViewSpec {
 	private String path;
-	private DataStruct<?> model;
+	private DataStruct model;
 
-	public PathAndJsonViewSpec(String path, DataStruct<?> model) {
+	public PathAndJsonViewSpec(String path, DataStruct model) {
 		this.path = path;
 		this.model = model;
 	}
@@ -14,7 +14,7 @@ public class PathAndJsonViewSpec implements ViewSpec {
 	public String getPath() {
 		return path;
 	}
-	public DataStruct<?> getModel() {
+	public DataStruct getModel() {
 		return model;
 	}
 }

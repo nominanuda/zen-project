@@ -6,9 +6,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.saxpipe.SAXEmitter;
-import com.nominanuda.saxpipe.SaxBuffer;
-import com.nominanuda.saxpipe.SaxBuffer.SaxBit;
+import com.nominanuda.xml.SAXEmitter;
+import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.xml.SaxBuffer.SaxBit;
 
 //TODO replace html in split blocks
 public class HtmlSaxPage implements SAXEmitter {

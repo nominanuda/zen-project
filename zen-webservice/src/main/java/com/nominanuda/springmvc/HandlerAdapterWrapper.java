@@ -30,7 +30,7 @@ public class HandlerAdapterWrapper implements org.springframework.web.servlet.Ha
 	public ModelAndView handle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
 		HttpRequest httpReq = servletHelper.getOrCreateRequest(request, true);
-		DataStruct<?> command = Check.ifNull(servletHelper.getCommand(request), new DataObjectImpl());
+		DataStruct command = Check.ifNull(servletHelper.getCommand(request), new DataObjectImpl());
 		Object result = handlerAdapter.invoke(handler, httpReq, command);
 		if(result instanceof HttpResponse) {
 			servletHelper.copyResponse((HttpResponse)result, response);

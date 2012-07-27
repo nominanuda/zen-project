@@ -27,5 +27,5 @@ public interface CommandHandler {
 	 * and <code>view_</code> are the instructions to build the view
 	 * or another supported object such as HttpResponse or HttpEntity
 	 */
-	Object handle(DataStruct<?> cmd) throws Exception;
+	Object handle(DataStruct cmd) throws Exception;
 }

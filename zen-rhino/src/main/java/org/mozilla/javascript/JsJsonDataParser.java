@@ -15,7 +15,7 @@ public class JsJsonDataParser {
 	private static final DataStructScriptableConvertor convertor = new DataStructScriptableConvertor();
 	private static final RhinoHelper r = new RhinoHelper();
 
-	public DataStruct<?> parse(Reader json) {
+	public DataStruct parse(Reader json) {
 		Context cx = Context.enter();
 		try {
 			return convertor.fromScriptable(
@@ -24,7 +24,7 @@ public class JsJsonDataParser {
 			Context.exit();
 		}
 	}
-	public DataStruct<?> parse(String json) {
+	public DataStruct parse(String json) {
 		return parse(new StringReader(json));
 	}
 

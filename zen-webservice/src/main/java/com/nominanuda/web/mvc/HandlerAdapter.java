@@ -27,6 +27,6 @@ public interface HandlerAdapter {
 	 * @return one of HttpResponse HttpEntity ViewSpec
 	 * @throws Exception
 	 */
-	Object invoke(Object handler, HttpRequest request, DataStruct<?> command) throws Exception;
+	Object invoke(Object handler, HttpRequest request, DataStruct command) throws Exception;
 	boolean supports(Object handler);
 }

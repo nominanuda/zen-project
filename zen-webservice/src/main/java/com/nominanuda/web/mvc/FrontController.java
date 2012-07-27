@@ -35,7 +35,7 @@ public class FrontController implements WebService {
 	@Override
 	public HttpResponse handle(HttpRequest request) throws Exception {
 		try {
-			Tuple2<Object, DataStruct<?>> handlerAndContext = getHandlerAndContext(request);
+			Tuple2<Object, DataStruct> handlerAndContext = getHandlerAndContext(request);
 			if(handlerAndContext == null) {
 				return httpCore.resp404TextPlainUtf8("not found");
 			}
@@ -71,10 +71,10 @@ public class FrontController implements WebService {
 		return null;
 	}
 
-	private @Nullable Tuple2<Object, DataStruct<?>> getHandlerAndContext(HttpRequest request) {
+	private @Nullable Tuple2<Object, DataStruct> getHandlerAndContext(HttpRequest request) {
 		List<HandlerMatcher> matchers = getMatchers();
 		for(HandlerMatcher m : matchers) {
-			Tuple2<Object, DataStruct<?>> candidate = m.match(request);
+			Tuple2<Object, DataStruct> candidate = m.match(request);
 			if(candidate != null) {
 				return candidate;
 			}

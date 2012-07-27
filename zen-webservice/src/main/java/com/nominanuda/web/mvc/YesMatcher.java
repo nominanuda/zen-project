@@ -25,8 +25,8 @@ public class YesMatcher implements HandlerMatcher {
 	private Object handler;
 
 	@Override
-	public Tuple2<Object, DataStruct<?>> match(HttpRequest request) {
-		return new Tuple2<Object, DataStruct<?>>(handler, new DataObjectImpl());
+	public Tuple2<Object, DataStruct> match(HttpRequest request) {
+		return new Tuple2<Object, DataStruct>(handler, new DataObjectImpl());
 	}
 
 	public void setHandler(Object handler) {

@@ -3,8 +3,8 @@ package com.nominanuda.web.htmlcomposer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.xml.ForwardingTransformerHandlerBase;
 
 public class HtmlFragmentChecker extends ForwardingTransformerHandlerBase implements HttpProtocol {
 

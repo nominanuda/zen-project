@@ -21,10 +21,10 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.NoException;
 import com.nominanuda.lang.ObjectConvertor;
 
-public class ToDataStructCoercer implements ObjectConvertor<Scriptable, DataStruct<?>, NoException> {
+public class ToDataStructCoercer implements ObjectConvertor<Scriptable, DataStruct, NoException> {
 	private DataStructScriptableConvertor convertor = new DataStructScriptableConvertor();
 
-	public DataStruct<?> apply(Scriptable x) throws NoException {
+	public DataStruct apply(Scriptable x) throws NoException {
 		return convertor.fromScriptable(x);
 	}
 

@@ -257,12 +257,12 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		return null;
 	}
-	public DataStruct<?> getQueryParams(HttpRequest request) {
+	public DataStruct getQueryParams(HttpRequest request) {
 		List<NameValuePair> l = URLEncodedUtils.parse(
 				URI.create(request.getRequestLine().getUri()), UTF_8);
 		return toDataStruct(l);
 	}
-	public DataStruct<?> toDataStruct(List<NameValuePair> l) {
+	public DataStruct toDataStruct(List<NameValuePair> l) {
 		DataObjectImpl res = new DataObjectImpl();
 		for(NameValuePair nvp : l) {
 			res.setOrPushPathProperty(nvp.getName(), nvp.getValue());

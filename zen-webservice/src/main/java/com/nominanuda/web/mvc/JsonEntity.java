@@ -27,11 +27,11 @@ import com.nominanuda.web.http.HttpProtocol;
 public class JsonEntity extends StringEntity implements HttpProtocol {
 	private static final DataStructHelper dataStructHelper = new DataStructHelper();
 
-	public JsonEntity(DataStruct<?> json) throws UnsupportedEncodingException {
+	public JsonEntity(DataStruct json) throws UnsupportedEncodingException {
 		this(json, "UTF-8");
 	}
 
-	public JsonEntity(DataStruct<?> json, String charset) throws UnsupportedEncodingException {
+	public JsonEntity(DataStruct json, String charset) throws UnsupportedEncodingException {
 		super(dataStructHelper.toJsonString(
 			Check.notNull(json)), charset);
 		setContentType(CT_APPLICATION_JSON);

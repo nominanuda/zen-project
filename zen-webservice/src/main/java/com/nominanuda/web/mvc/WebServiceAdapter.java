@@ -24,7 +24,7 @@ public class WebServiceAdapter implements HandlerAdapter {
 
 	@Override
 	public HttpResponse invoke(Object handler, HttpRequest request,
-			DataStruct<?> command) throws Exception {
+			DataStruct command) throws Exception {
 		return ((WebService)handler).handle(request);
 	}
 

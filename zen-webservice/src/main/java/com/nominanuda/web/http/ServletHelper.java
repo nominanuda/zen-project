@@ -237,11 +237,11 @@ public class ServletHelper {
 		}
 		return req;
 	}
-	public void storeCommand(HttpServletRequest servletRequest, DataStruct<?> command) throws IOException {
+	public void storeCommand(HttpServletRequest servletRequest, DataStruct command) throws IOException {
 		servletRequest.setAttribute("__command__", command);
 	}
-	public @Nullable DataStruct<?> getCommand(HttpServletRequest servletRequest) throws IOException {
-		return (DataStruct<?>)servletRequest.getAttribute("__command__");
+	public @Nullable DataStruct getCommand(HttpServletRequest servletRequest) throws IOException {
+		return (DataStruct)servletRequest.getAttribute("__command__");
 	}
 
 }

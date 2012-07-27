@@ -71,7 +71,7 @@ public class HyperApiWsSkelton implements WebService {
 					if(httpMethod != null
 					&& httpMethod.annotationType().getSimpleName()
 							.equals(request.getRequestLine().getMethod())) {
-						DataStruct<?> dataEntity = null;
+						DataStruct dataEntity = null;
 						if(request instanceof HttpEntityEnclosingRequest) {
 							HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 							if(entity != null) {
@@ -90,7 +90,7 @@ public class HyperApiWsSkelton implements WebService {
 			"for api request: "+apiRequestUri);
 	}
 
-	private Object[] createArgs(DataObject uriParams, DataStruct<?> dataEntity,
+	private Object[] createArgs(DataObject uriParams, DataStruct dataEntity,
 			Class<?> api2, Method method) {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		Class<?>[] parameterTypes = method.getParameterTypes();

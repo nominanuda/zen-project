@@ -37,7 +37,7 @@ public class HandlerMatcherMapping implements HandlerMapping {
 	public HandlerExecutionChain getHandler(HttpServletRequest request)
 			throws Exception {
 		HttpRequest httpRequest = servletHelper.getOrCreateRequest(request, true);;
-		Tuple2<Object, DataStruct<?>> res = handlerMatcher.match(httpRequest);
+		Tuple2<Object, DataStruct> res = handlerMatcher.match(httpRequest);
 		if(res == null) {
 			return null;
 		} else {

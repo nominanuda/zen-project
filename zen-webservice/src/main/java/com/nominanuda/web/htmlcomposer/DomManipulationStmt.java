@@ -3,7 +3,7 @@ package com.nominanuda.web.htmlcomposer;
 import com.nominanuda.code.Immutable;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.ObjectFactory;
-import com.nominanuda.saxpipe.SaxBuffer;
+import com.nominanuda.xml.SaxBuffer;
 
 @Immutable
 public class DomManipulationStmt {
