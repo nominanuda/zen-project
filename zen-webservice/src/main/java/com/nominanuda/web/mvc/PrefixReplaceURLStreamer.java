@@ -31,7 +31,7 @@ public class PrefixReplaceURLStreamer extends URLStreamer {
 		String reqURI = request.getRequestLine().getUri();
 		Check.illegalargument.assertTrue(reqURI.startsWith(strip));
 		try {
-			return getUrlResolver().url(replace + reqURI.substring(stripLen));
+			return new URL(replace + reqURI.substring(stripLen));
 		} catch(Exception e) {
 			throw new IllegalArgumentException(e);
 		}

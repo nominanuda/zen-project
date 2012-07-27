@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.mvc;
 
+import static org.apache.http.HttpStatus.SC_OK;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,23 +30,16 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHttpResponse;
 
 import com.nominanuda.io.IOHelper;
-import com.nominanuda.uri.URLResolver;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.http.MimeHelper;
-
-import static org.apache.http.HttpStatus.*;
 
 public abstract class URLStreamer implements WebService, HttpProtocol {
 	private static final HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
 	private static final IOHelper ioHelper = new IOHelper();
 	private static final MimeHelper mimeHelper = new MimeHelper();
 	private String defaultContentType = CT_APPLICATION_OCTET_STREAM;
-	private URLResolver urlResolver;
 
-	protected URLResolver getUrlResolver() {
-		return urlResolver;
-	}
 	public HttpResponse handle(HttpRequest request) throws IOException {
 		URL url = getURL(request);
 		URLConnection conn = url.openConnection();
@@ -83,9 +78,6 @@ public abstract class URLStreamer implements WebService, HttpProtocol {
 
 	protected abstract URL getURL(HttpRequest request) throws IllegalArgumentException;
 
-	public void setUrlResolver(URLResolver urlResolver) {
-		this.urlResolver = urlResolver;
-	}
 	public void setDefaultContentType(String defaultContentType) {
 		this.defaultContentType = defaultContentType;
 	}

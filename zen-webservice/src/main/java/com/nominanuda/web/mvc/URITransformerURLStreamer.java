@@ -33,7 +33,7 @@ public class URITransformerURLStreamer extends URLStreamer {
 		try {
 			DataObject o = match.match(reqURI);
 			Check.illegalargument.assertNotNull(o);
-			return getUrlResolver().url(template.template(o));
+			return new URL(template.template(o));
 		} catch(Exception e) {
 			throw new IllegalArgumentException(e);
 		}
