@@ -27,8 +27,8 @@ import com.nominanuda.lang.Check;
 public class DataStructContentHandler implements JsonContentHandler {
 	private final DataStructHelper dataStructHelper = new DataStructHelper();
 	private volatile boolean finished = false;
-	private DataStruct<?> result;
-	private DataStruct<?> cur;
+	private DataStruct result;
+	private DataStruct cur;
 	private String pendingKey;
 //	private Object pendingValue;
 
@@ -96,7 +96,7 @@ public class DataStructContentHandler implements JsonContentHandler {
 		return true;
 	}
 
-	public DataStruct<?> getResult() {
+	public DataStruct getResult() {
 		Check.illegalstate.assertTrue(finished);
 		return result;
 	}

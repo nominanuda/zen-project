@@ -198,8 +198,8 @@ public class DataStructHelper implements Serializable {
 		}
 	}
 
-	public <K, T extends DataStruct<?>> void copyOverwite(DataStruct<K> source,
-			DataStruct<K> target) {
+	public <K, T extends DataStruct> void copyOverwite(PropertyBag<K> source,
+			PropertyBag<K> target) {
 		Iterator<K> itr = source.keyIterator();
 		while (itr.hasNext()) {
 			K key = itr.next();
@@ -318,11 +318,11 @@ public class DataStructHelper implements Serializable {
 		if (!o1.getClass().equals(o2.getClass())) {
 			return false;
 		}
-		if (o1 instanceof DataStruct<?>) {
+		if (o1 instanceof DataStruct) {
 			@SuppressWarnings("unchecked")
-			DataStruct<Object> ds1 = (DataStruct<Object>) o1;
+			PropertyBag<Object> ds1 = (PropertyBag<Object>) o1;
 			@SuppressWarnings("unchecked")
-			DataStruct<Object> ds2 = (DataStruct<Object>) o2;
+			PropertyBag<Object> ds2 = (PropertyBag<Object>) o2;
 			Iterator<Object> k1Itr = ds1.keyIterator();
 			Set<Object> analyzedKeys = new HashSet<Object>();
 			while (k1Itr.hasNext()) {
@@ -348,7 +348,7 @@ public class DataStructHelper implements Serializable {
 		}
 	}
 
-	public <K, T extends DataStruct<K>> T clone(T struct) {
+	public <K, T extends PropertyBag<K>> T clone(T struct) {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
@@ -367,7 +367,7 @@ public class DataStructHelper implements Serializable {
 		}
 		return target;
 	}
-	public <K, T extends DataStruct<K>> T clone(T struct, AbstractDataStruct<?> parent) {
+	public <K, T extends PropertyBag<K>> T clone(T struct, AbstractDataStruct<K> parent) {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
@@ -392,7 +392,7 @@ public class DataStructHelper implements Serializable {
 		return (Iterable<T>) arr;
 	}
 
-	public void toFlatMap(DataStruct<?> from, Map<String, Object> map) {
+	public void toFlatMap(DataStruct from, Map<String, Object> map) {
 		toFlatMap(map, "", from);
 	}
 
@@ -437,7 +437,7 @@ public class DataStructHelper implements Serializable {
 		}
 	}
 
-	public DataStruct<?> fromFlatMap(Map<String, Object> map) {
+	public DataStruct fromFlatMap(Map<String, Object> map) {
 		DataObject dest = new DataObjectImpl();
 		writeFlatMapTo(map, dest);
 		return dest;
@@ -568,7 +568,7 @@ public class DataStructHelper implements Serializable {
 	}
 	//if convertor#canConvert returns false value is not added to result
 	@SuppressWarnings("unchecked")
-	public <X extends DataStruct<?>> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
+	public <X extends DataStruct> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
 		return Check.notNull(source) instanceof DataObject
 			? (X)convertLeavesInternal((DataObject)source, convertor)
 			: (X)convertLeavesInternal((DataArray)source, convertor);

@@ -27,12 +27,12 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		m = createInnerMap();
 	}
 
-	DataObjectImpl(AbstractDataStruct<?> parent) {
+	DataObjectImpl(AbstractDataStruct parent) {
 		super(parent);
 		m = createInnerMap();
 	}
 	
-	private DataObjectImpl(Map<String, ? super Object> o, DataStruct<?> parent) {
+	private DataObjectImpl(Map<String, ? super Object> o, DataStruct parent) {
 		super(parent);
 		m = o;
 	}
@@ -60,7 +60,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 	}
 
 	public String getType() {
-		return OBJECT;
+		return DataType.object.name();
 	}
 
 	@Override
@@ -73,9 +73,15 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 			if (isPrimitiveOrNull(val)) {
 				map.put(k, val);
 			} else {
-				map.put(k, ((AbstractDataStruct<?>)val).cloneStruct(res));
+				map.put(k, ((AbstractDataStruct)val).cloneStruct(res));
 			}
 		}
 		return res;
 	}
+
+	public DataObject with(String k, Object v) {
+		put(k, v);
+		return this;
+	}
+
 }

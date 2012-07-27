@@ -32,7 +32,7 @@ public class SoyJsTemplateServer implements CommandRequestHandler, HttpProtocol 
 		this.soySource = soySource;
 	}
 
-	public Object handle(DataStruct<?> cmd, HttpRequest request)
+	public Object handle(DataStruct cmd, HttpRequest request)
 			throws Exception {
 		String lang = ((DataObject)cmd).getString("lang");
 		String tpl = soySource.getJsTemplate(getTemplateName(cmd, request), lang);
@@ -40,7 +40,7 @@ public class SoyJsTemplateServer implements CommandRequestHandler, HttpProtocol 
 		return entity;
 	}
 
-	private String getTemplateName(DataStruct<?> cmd, HttpRequest request) {
+	private String getTemplateName(DataStruct cmd, HttpRequest request) {
 		String reqPath = URI.create(request.getRequestLine().getUri()).getPath();
 		return reqPath.substring(reqPath.lastIndexOf('/') + 1, reqPath.length() - ".js".length());
 	}

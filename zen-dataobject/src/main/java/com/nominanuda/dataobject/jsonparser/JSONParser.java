@@ -90,10 +90,10 @@ public class JSONParser {
 			token = new Yytoken(Yytoken.TYPE_EOF, null);
 	}
 
-	public DataStruct<?> parse(String s) throws IOException, ParseException, SAXException {
+	public DataStruct parse(String s) throws IOException, ParseException, SAXException {
 		return parse(new StringReader(s));
 	}
-	public DataStruct<?> parse(Reader in) throws IOException, ParseException, SAXException {
+	public DataStruct parse(Reader in) throws IOException, ParseException, SAXException {
 		DataStructContentHandler ch = new DataStructContentHandler();
 		parse(in, ch, false);
 		return ch.getResult();

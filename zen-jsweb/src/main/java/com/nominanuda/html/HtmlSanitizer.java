@@ -28,12 +28,12 @@ import nu.validator.htmlparser.sax.HtmlParser;
 import org.xml.sax.InputSource;
 
 import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.saxpipe.HtmlFragmentParser;
-import com.nominanuda.saxpipe.HtmlPurifyTransformer;
-import com.nominanuda.saxpipe.SAXPipeline;
-import com.nominanuda.saxpipe.TextSelectTransformer;
-import com.nominanuda.saxpipe.WhiteSpaceNormalizingTransformer;
-import com.nominanuda.saxpipe.XHtml5Serializer;
+import com.nominanuda.xml.HtmlFragmentParser;
+import com.nominanuda.xml.HtmlPurifyTransformer;
+import com.nominanuda.xml.SAXPipeline;
+import com.nominanuda.xml.TextSelectTransformer;
+import com.nominanuda.xml.WhiteSpaceNormalizingTransformer;
+import com.nominanuda.xml.XHtml5Serializer;
 
 public class HtmlSanitizer {
 

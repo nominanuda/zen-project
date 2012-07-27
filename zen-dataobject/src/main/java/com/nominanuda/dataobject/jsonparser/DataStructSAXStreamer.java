@@ -26,18 +26,18 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.DataType;
-import com.nominanuda.saxpipe.SAXEmitter;
+import com.nominanuda.xml.SAXEmitter;
 
 @Immutable @ThreadSafe
 public class DataStructSAXStreamer implements SAXEmitter {
 	private DataStructHelper structHelper = new DataStructHelper(); 
-	private final DataStruct<?> struct;
+	private final DataStruct struct;
 
-	public DataStructSAXStreamer(DataStruct<?> struct) {
+	public DataStructSAXStreamer(DataStruct struct) {
 		this.struct = struct;
 	}
 
-	public static void toSAX(DataStruct<?> struct, ContentHandler ch) throws SAXException {
+	public static void toSAX(DataStruct struct, ContentHandler ch) throws SAXException {
 		new DataStructSAXStreamer(struct).toSAX(ch);
 	}
 

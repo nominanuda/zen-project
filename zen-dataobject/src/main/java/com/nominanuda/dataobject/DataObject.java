@@ -15,5 +15,8 @@
  */
 package com.nominanuda.dataobject;
 
-public interface DataObject extends DataStruct<String> {
+public interface DataObject extends DataStruct, PropertyBag<String> {
+
+	DataObject with(String k, Object v);
+
 }

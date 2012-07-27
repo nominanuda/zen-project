@@ -6,7 +6,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.saxpipe.ForwardingTransformerHandlerBase;
+import com.nominanuda.xml.ForwardingTransformerHandlerBase;
 
 @ThreadSafe
 public class HtmlTagStripper extends ForwardingTransformerHandlerBase {

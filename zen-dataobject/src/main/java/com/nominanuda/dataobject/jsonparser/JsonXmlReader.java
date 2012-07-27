@@ -41,7 +41,7 @@ public class JsonXmlReader implements XMLReader {
 
 	public void parse(InputSource input) throws IOException, SAXException {
 		try {
-			DataStruct<?> ds = parser.parse(input.getCharacterStream());
+			DataStruct ds = parser.parse(input.getCharacterStream());
 			DataStructSAXStreamer.toSAX(ds, ch);
 		} catch (ParseException e) {
 			throw new IOException(Exceptions.toStackTrace(e));

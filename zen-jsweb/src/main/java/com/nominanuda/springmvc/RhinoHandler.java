@@ -59,7 +59,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	private ScopeFactory scopeFactory;
 
 	@Override
-	public DataStruct<?> handle(DataStruct<?> cmd, HttpRequest request)
+	public DataStruct handle(DataStruct cmd, HttpRequest request)
 			throws Exception {
 		Context cx = rhinoEmbedding.enterContext();
 		try {
@@ -89,7 +89,7 @@ public class RhinoHandler implements CommandRequestHandler {
 			evaluateScript(cx, controllerScope, scriptUri);
 			Object res = rhino.callFunctionInScope(cx, controllerScope, function,
 					new Object[] {jsCmd, jsReq});
-			DataStruct<?> ds = dataStructScriptableConvertor.fromScriptable((Scriptable)res);
+			DataStruct ds = dataStructScriptableConvertor.fromScriptable((Scriptable)res);
 			return ds;
 		} finally {
 			Context.exit();
@@ -102,12 +102,12 @@ public class RhinoHandler implements CommandRequestHandler {
 		Reader src = script.get1();
 		rhino.evaluateReader(cx, src, jsLocation, controllerScope);
 	}
-	private DataStruct<?> parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
+	private DataStruct parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
 		List<NameValuePair> pairs = httpCore.parseEntityWithDefaultUtf8(entity);
 		return httpCore.toDataStruct(pairs);
 	}
 
-	protected String calcScriptUri(DataStruct<?> cmd, HttpRequest request) throws IOException {
+	protected String calcScriptUri(DataStruct cmd, HttpRequest request) throws IOException {
 		String uri = uriSpec.template((DataObject)cmd);
 		return uri;
 	}

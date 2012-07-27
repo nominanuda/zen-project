@@ -16,10 +16,10 @@
 package com.nominanuda.dataobject;
 
 
-public interface DataArray extends DataStruct<Integer>, Iterable<Object> {
+public interface DataArray extends PropertyBag<Integer>, DataStruct, Iterable<Object> {
 	Object add(Object val);
 	DataObject addNewObject();
 	DataArray addNewArray();
 	int getLength();
-	int compact();
 }
+

@@ -28,25 +28,25 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
 
 
-public abstract class AbstractDataStruct<K> implements DataStruct<K> {
+public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	protected static final DataStructHelper structHelper = new DataStructHelper();
-	protected final DataStruct<?> parent;
+	protected final DataStruct parent;
 
-	public AbstractDataStruct(DataStruct<?> parent) {
+	public AbstractDataStruct(DataStruct parent) {
 		this.parent = parent;
 	}
 	
-	public DataStruct<?> getParent() {
+	public DataStruct getParent() {
 		return parent;
 	}
 
-	public DataStruct<?> getRoot() {
+	public DataStruct getRoot() {
 		return parent == null
 			? this
 			: parent.getRoot();
 	}
 
-	public DataStruct<K> cloneStruct() {
+	public DataStruct cloneStruct() {
 		return cloneStruct(null);
 	}
 
@@ -54,7 +54,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 		return getKeys().iterator();
 	}
 
-	protected abstract DataStruct<K> cloneStruct(@Nullable AbstractDataStruct<?> parent);
+	protected abstract DataStruct cloneStruct(@Nullable AbstractDataStruct<?> parent);
 	
 	protected Object cloneInternal(Object o, AbstractDataStruct<?> parent) {
 		if (o == null) {
@@ -62,7 +62,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 		} else if (isPrimitiveOrNull(o)) {
 			return o;
 		} else if (o instanceof AbstractDataStruct) {
-			AbstractDataStruct<?> tStruct = (AbstractDataStruct<?>) o;
+			AbstractDataStruct tStruct = (AbstractDataStruct) o;
 			return tStruct.cloneStruct(parent);
 		}
 		throw new IllegalArgumentException();
@@ -139,8 +139,8 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 		explodePath(path).setOrPushProperty(pathBits[len-1], value);
 	}
 	@SuppressWarnings("unchecked")
-	private DataStruct<Object> explodePath(String path) {
-		DataStruct<Object> _target = asObjectKeyedDataStruct();
+	private PropertyBag<Object> explodePath(String path) {
+		PropertyBag<Object> _target = asObjectKeyedDataStruct();
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		for(int i = 0; i < len - 1; i++) {
@@ -154,7 +154,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 					newTarget = asObjectKeyedDataStruct(_target.putNewObject(k));
 				}
 			}
-			_target = (DataStruct<Object>)newTarget;
+			_target = (PropertyBag<Object>)newTarget;
 		}
 		return _target;
 	}
@@ -163,7 +163,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 		asObjectKeyedDataStruct().put(key, value);
 	}
 	public void setOrPushProperty(Object key, @Nullable Object value) {
-		DataStruct<Object> _this = asObjectKeyedDataStruct();
+		PropertyBag<Object> _this = asObjectKeyedDataStruct();
 		if(_this.exists(key)) {
 			Object cur = _this.get(key);
 			if(structHelper.isDataArray(cur)) {
@@ -180,16 +180,16 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private DataStruct<Object> asObjectKeyedDataStruct() {
-		return (DataStruct<Object>)this;
+	private PropertyBag<Object> asObjectKeyedDataStruct() {
+		return (PropertyBag<Object>)this;
 	}
 	private Object toStringOrIntKey(String s) {
 		Check.notNull(s);
 		return Maths.isInteger(s) ? Integer.valueOf(s) : s;
 	}
 	@SuppressWarnings("unchecked")
-	private DataStruct<Object> asObjectKeyedDataStruct(DataStruct<?> ds) {
-		return (DataStruct<Object>)ds;
+	private PropertyBag<Object> asObjectKeyedDataStruct(DataStruct ds) {
+		return (PropertyBag<Object>)ds;
 	}
 	@Override
 	public String toString() {
@@ -197,7 +197,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 	}
 	@SuppressWarnings("unchecked")
 	public Object getPathSafe(String path) {
-		DataStruct<Object> _target = asObjectKeyedDataStruct();
+		PropertyBag<Object> _target = asObjectKeyedDataStruct();
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		for(int i = 0; i < len; i++) {
@@ -207,7 +207,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct<K> {
 			if(isPrimitiveOrNull(newTarget)) {
 				return i == len - 1 ? newTarget : null;
 			} else {
-				_target = (DataStruct<Object>)newTarget;
+				_target = (PropertyBag<Object>)newTarget;
 			}
 		}
 		return _target;
