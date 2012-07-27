@@ -23,7 +23,7 @@ import java.net.URLStreamHandlerFactory;
 
 import com.nominanuda.lang.Check;
 
-public class URLStreamHandlerFactoryResolver implements URLResolver {
+public class URLStreamHandlerFactoryResolver {
 	private URLStreamHandlerFactory handlerFactory;
 	public URL url(String url) throws IllegalArgumentException{
 		Check.notNull(url);
