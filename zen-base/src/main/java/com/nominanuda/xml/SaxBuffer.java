@@ -1,4 +1,4 @@
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
 import java.io.IOException;
 import java.io.Serializable;

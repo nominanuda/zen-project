@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
-import org.xml.sax.DTDHandler;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-public class NullDTDHandler implements DTDHandler {
 
-	public void notationDecl(String name, String publicId, String systemId)
-			throws SAXException {
-	}
-
-	public void unparsedEntityDecl(String name, String publicId,
-			String systemId, String notationName) throws SAXException {
-	}
-
+public interface SAXEmitter {
+	void toSAX(ContentHandler ch) throws SAXException;
 }

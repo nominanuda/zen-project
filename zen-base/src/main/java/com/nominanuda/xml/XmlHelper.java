@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.lang;
+package com.nominanuda.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,6 +62,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import com.nominanuda.code.ThreadSafe;
+import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Strings;
 
 @ThreadSafe
 public class XmlHelper {

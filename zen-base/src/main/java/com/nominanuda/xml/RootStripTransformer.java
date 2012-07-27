@@ -13,22 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class UntaggingTransformer extends SwallowingTransformerHandlerBase {
+public class RootStripTransformer extends ForwardingTransformerHandlerBase {
+	private int depth = 0;
 
 	@Override
-	public void characters(char[] ch, int start, int length)
-			throws SAXException {
-		getTarget().characters(ch, start, length);
+	public void startDocument() throws SAXException {};
+	@Override
+	public void endDocument() throws SAXException {};
+	@Override
+	public void startElement(String uri, String localName, String qName,
+			Attributes atts) throws SAXException {
+		if(depth > 0) {
+			super.startElement(uri, localName, qName, atts);
+		}
+		depth++;
 	}
-
 	@Override
-	public void ignorableWhitespace(char[] ch, int start, int length)
+	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		getTarget().ignorableWhitespace(ch, start, length);
+		depth--;
+		if(depth > 0) {
+			super.endElement(uri, localName, qName);
+		}
 	}
 
 }

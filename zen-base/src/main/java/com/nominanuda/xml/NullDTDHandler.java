@@ -13,33 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
-import org.xml.sax.Attributes;
+import org.xml.sax.DTDHandler;
 import org.xml.sax.SAXException;
 
-public class RootStripTransformer extends ForwardingTransformerHandlerBase {
-	private int depth = 0;
+public class NullDTDHandler implements DTDHandler {
 
-	@Override
-	public void startDocument() throws SAXException {};
-	@Override
-	public void endDocument() throws SAXException {};
-	@Override
-	public void startElement(String uri, String localName, String qName,
-			Attributes atts) throws SAXException {
-		if(depth > 0) {
-			super.startElement(uri, localName, qName, atts);
-		}
-		depth++;
-	}
-	@Override
-	public void endElement(String uri, String localName, String qName)
+	public void notationDecl(String name, String publicId, String systemId)
 			throws SAXException {
-		depth--;
-		if(depth > 0) {
-			super.endElement(uri, localName, qName);
-		}
+	}
+
+	public void unparsedEntityDecl(String name, String publicId,
+			String systemId, String notationName) throws SAXException {
 	}
 
 }

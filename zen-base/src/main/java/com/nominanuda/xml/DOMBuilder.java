@@ -20,7 +20,7 @@
 /*
  * $Id: DOMBuilder.java,v 1.2.4.1 2005/09/15 08:15:39 suresh_emailid Exp $
  */
-package com.nominanuda.lang;
+package com.nominanuda.xml;
 
 import java.util.Stack;
 
@@ -34,6 +34,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.ext.LexicalHandler;
+
 
 
 @SuppressWarnings("unchecked")

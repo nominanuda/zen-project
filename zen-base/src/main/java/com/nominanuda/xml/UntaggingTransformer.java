@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
-public interface HtmlConstants {
+import org.xml.sax.SAXException;
 
-	String area = "area"; 
-	String base = "base";
-	String basefont = "basefont"; 
-	String bgsound = "bgsound"; 
-	String br = "br"; 
-	String col = "col"; 
-	String embed = "embed"; 
-	String frame = "frame"; 
-	String hr = "hr";
-	String img = "img"; 
-	String input = "input"; 
-	String link = "link"; 
-	String meta = "meta"; 
-	String param = "param"; 
-	String spacer = "spacer"; 
-	String wbr = "wbr";
+public class UntaggingTransformer extends SwallowingTransformerHandlerBase {
+
+	@Override
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
+		getTarget().characters(ch, start, length);
+	}
+
+	@Override
+	public void ignorableWhitespace(char[] ch, int start, int length)
+			throws SAXException {
+		getTarget().ignorableWhitespace(ch, start, length);
+	}
+
 }

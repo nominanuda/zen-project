@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.saxpipe;
+package com.nominanuda.xml;
 
 import java.net.URI;
 
@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.XmlHelper;
 
 
 public class ForwardingTransformerHandlerBase implements TransformerHandler {
