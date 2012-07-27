@@ -36,12 +36,20 @@ public class PercentEncodeTest {
 	}
 
 	@Test
-	public void testBindIri() throws UnsupportedEncodingException {
+	public void testBindIri() {
 		StringMapURISpec spec = new StringMapURISpec("/{baz}?{foo} {boo}");
 		Map<String, Object> model = spec.match("/é?foo=è&boo=%C3%A9");
 		assertEquals("è", model.get("foo"));
 		assertEquals("é", model.get("baz"));
 		assertEquals("é", model.get("boo"));
+	}
+
+	@Test
+	public void testUtf8Template() {
+		StringMapURISpec spec = new StringMapURISpec("/{foo}");
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("foo", "é");
+		assertEquals("/%C3%A9", spec.template(model));
 	}
 
 }
