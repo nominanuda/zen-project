@@ -74,8 +74,10 @@ public class HyperApiWsSkelton implements WebService {
 						DataStruct<?> dataEntity = null;
 						if(request instanceof HttpEntityEnclosingRequest) {
 							HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
-							dataEntity = new JSONParser().parse(new InputStreamReader(
-									entity.getContent()));
+							if(entity != null) {
+								dataEntity = new JSONParser().parse(new InputStreamReader(
+										entity.getContent()));
+							}
 						}
 						Object[] args = createArgs(uriParams, dataEntity, api, m);
 						Object result = m.invoke(service, args);
