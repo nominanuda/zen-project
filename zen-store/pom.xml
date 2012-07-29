@@ -11,7 +11,7 @@
   <parent>
     <artifactId>zen-parent</artifactId>
     <groupId>com.nominanuda</groupId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
   </parent>
   <artifactId>zen-store</artifactId>
   <dependencies>
@@ -29,11 +29,6 @@
           <artifactId>lucene-core</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>redis.clients</groupId>
-      <artifactId>jedis</artifactId>
-      <version>2.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
