@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.dataobject.DataStructContentHandler;
 
 
 public class JsonParseTest {
