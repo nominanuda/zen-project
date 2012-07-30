@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 import java.io.IOException;
 
@@ -28,7 +28,8 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.dataobject.jsonparser.JSONParser;
+import com.nominanuda.dataobject.jsonparser.ParseException;
 import com.nominanuda.lang.Exceptions;
 
 public class JsonXmlReader implements XMLReader {

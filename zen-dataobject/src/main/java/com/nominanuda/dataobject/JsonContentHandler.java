@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 import org.xml.sax.SAXException;
 

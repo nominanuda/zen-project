@@ -14,15 +14,13 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.DataType;
 import com.nominanuda.lang.Check;
 
 import static com.nominanuda.dataobject.DataType.*;

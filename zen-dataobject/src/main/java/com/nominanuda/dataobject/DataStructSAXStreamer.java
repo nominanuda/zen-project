@@ -14,18 +14,13 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.code.Immutable;
 import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.DataType;
 import com.nominanuda.xml.SAXEmitter;
 
 @Immutable @ThreadSafe

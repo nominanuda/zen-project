@@ -14,14 +14,8 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataArrayImpl;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
 
 public class DataStructContentHandler implements JsonContentHandler {
