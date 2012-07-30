@@ -172,7 +172,7 @@ public class MvcFrontControllerBeanDefinitionParser extends
 					.genericBeanDefinition(URITransformerURLStreamer.class);
 			sourceBuilder.addPropertyValue("match", uriSpec);
 			sourceBuilder.addPropertyValue("template", url);
-			sourceBuilder.addPropertyReference("urlResolver", "urlResolver");
+			//sourceBuilder.addPropertyReference("urlResolver", "urlResolver");
 			String id = uuid();
 			parserContext.getRegistry().registerBeanDefinition(id,
 					sourceBuilder.getBeanDefinition());
