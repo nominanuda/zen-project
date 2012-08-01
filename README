@@ -1,0 +1,18 @@
+The project is unusable at the moment, in case you wonder ZEN is an acronym for Zoe Enea Nina.
+
+cheers
+
+Michele
+
+to build the maven google-closure-templates dependency has to installed locally
+
+
+mvn install:install-file -Dfile=soy-latest.jar -DartifactId=closure-templates -DgroupId=com.google.javascript -Dversion=r23 -Dpackaging=jar
+
+http://closure-templates.googlecode.com/files/closure-templates-for-java-latest.zip
+
+snapshot deploy cmd
+
+mvn clean deploy -DaltDeploymentRepository=sonatype-nexus-snapshots::default::https://oss.sonatype.org/content/repositories/snapshots
+
+

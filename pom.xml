@@ -1,39 +1,56 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- 
+Copyright 2008-2011 the original author or authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>zen</groupId>
-  <artifactId>master</artifactId>
-  <version>2.0</version>
+  <groupId>com.nominanuda</groupId>
+  <artifactId>zen-project</artifactId>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Zen</name>
-  <description/>
-  <url>http://www.dixero.com</url>
-  <inceptionYear>2012</inceptionYear>
-  <organization/>
-  <licenses/>
-  <developers/>
-  <contributors/>
-  <mailingLists/>
-  <prerequisites/>
+  <name>zen-project</name>
+  <description>zen-project for building web applications</description>
+  <url>https://github.com/michelegonella/zen</url>
+  <scm>
+    <connection>scm:git:git@github.com:michelegonella/zen.git</connection>
+    <url>scm:git:git@github.com:michelegonella/zen.git</url>
+  </scm>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>michele</id>
+      <name>Michele</name>
+      <email>michelegonella@gmail.com</email>
+      <url>https://github.com/michelegonella</url>
+    </developer>
+  </developers>
   <modules>
-  	<module>zen-base</module>
-  	<module>zen-dataobject</module>
-  	<module>zen-jsweb</module>
-  	<module>zen-rhino</module>
-  	<module>zen-search</module>
-  	<module>zen-store</module>
-  	<module>zen-urispec</module>
- 	 <module>zen-webservice</module>
+    <module>zen-parent</module>
+    <module>zen-urispec</module>
+    <module>zen-base</module>
+    <module>zen-dataobject</module>
+    <module>zen-rhino</module>
+    <module>zen-webservice</module>
+    <module>zen-search</module>
+    <module>zen-store</module>
+    <module>zen-jsweb</module>
   </modules>
-  <scm/>
-  <issueManagement/>
-  <ciManagement/>
-  <distributionManagement/>
-  <dependencyManagement/>
-  <properties/>
-  <dependencies/>
-  <repositories/>
-  <pluginRepositories/>
-  <reporting/>
-  <profiles/>
 </project>
