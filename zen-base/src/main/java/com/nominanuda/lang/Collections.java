@@ -153,7 +153,7 @@ public class Collections {
 	}
 
 	public static <T1,T2> List<T2> map(Iterable<T1> coll,
-			Arity1Fun<T1, T2> mapFun) {
+			Fun1<T1, T2> mapFun) {
 		List<T2> result = new LinkedList<T2>();
 		for(T1 o1 : coll) {
 			result.add(mapFun.apply(o1));

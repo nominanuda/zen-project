@@ -15,6 +15,6 @@
  */
 package com.nominanuda.lang;
 
-public interface Fun0<V> extends Arity0Fun<V> {
+public interface Fun0<V> {
 	V apply();
 }
