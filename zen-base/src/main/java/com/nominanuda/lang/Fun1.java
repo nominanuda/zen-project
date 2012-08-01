@@ -15,9 +15,8 @@
  */
 package com.nominanuda.lang;
 
-@Deprecated//@see Fun1
-public interface Arity1Fun<P, V> {
-	Arity1Fun<String, String> STR_IDENTITY = new Arity1Fun<String, String>() {
+public interface Fun1<P, V> {
+	Fun1<String, String> STR_IDENTITY = new Fun1<String, String>() {
 		public String apply(String param) {
 			return param;
 		}

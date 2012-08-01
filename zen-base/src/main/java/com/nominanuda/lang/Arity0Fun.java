@@ -15,6 +15,7 @@
  */
 package com.nominanuda.lang;
 
+@Deprecated//@see Fun0
 public interface Arity0Fun<V> {
 	V apply();
 

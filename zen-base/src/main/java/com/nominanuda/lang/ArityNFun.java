@@ -15,6 +15,7 @@
  */
 package com.nominanuda.lang;
 
+@Deprecated//@see FunN
 public interface ArityNFun<V> {
 
 	V apply(Object... params);
