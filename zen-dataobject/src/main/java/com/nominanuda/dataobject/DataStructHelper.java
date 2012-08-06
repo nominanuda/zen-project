@@ -36,7 +36,7 @@ import com.nominanuda.lang.SetList;
 import static com.nominanuda.dataobject.DataType.*;
 
 @ThreadSafe
-public class DataStructHelper implements Serializable {
+public class DataStructHelper implements Serializable, DataStructFactory {
 	private static final long serialVersionUID = -4825883006001134937L;
 	public static final int MERGE_POLICY_OVERRIDE = 0;
 	public static final int MERGE_POLICY_PUSH = 1;
@@ -608,6 +608,14 @@ public class DataStructHelper implements Serializable {
 			}
 		}
 		return res;
+	}
+
+	public DataObject newObject() {
+		return new DataObjectImpl();
+	}
+
+	public DataArray newArray() {
+		return new DataArrayImpl();
 	}
 
 }
