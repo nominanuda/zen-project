@@ -23,58 +23,25 @@ import com.nominanuda.code.Immutable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.xml.SAXEmitter;
 
-@Immutable @ThreadSafe
+@Immutable
 public class DataStructSAXStreamer implements SAXEmitter {
-	private DataStructHelper structHelper = new DataStructHelper(); 
 	private final DataStruct struct;
 
 	public DataStructSAXStreamer(DataStruct struct) {
 		this.struct = struct;
 	}
 
+	@ThreadSafe
 	public static void toSAX(DataStruct struct, ContentHandler ch) throws SAXException {
 		new DataStructSAXStreamer(struct).toSAX(ch);
 	}
 
 	public void toSAX(ContentHandler ch) throws SAXException {
 		JsonSaxAdapter jsa = new JsonSaxAdapter(ch);
-		jsa.startJSON();
-		streamItem(jsa, struct);
-		jsa.endJSON();
-	}
-
-	private void stream(DataArray array, JsonContentHandler jch) throws SAXException {
-		jch.startArray();
-		int len = array.getLength();
-		for(int i = 0; i < len; i++) {
-			Object o = array.get(i);
-			streamItem(jch, o);
+		try {
+			new DataStructStreamer(struct).stream(jsa);
+		} catch(Exception e) {
+			throw new SAXException(e);
 		}
-		jch.endArray();
-	}
-
-	private void streamItem(JsonContentHandler jch, Object o) throws SAXException {
-		DataType dt = structHelper.getDataType(o);
-		switch (dt) {
-		case array:
-			stream((DataArray)o, jch);
-			break;
-		case object:
-			stream((DataObject)o, jch);
-			break;
-		default:
-			jch.primitive(o);
-			break;
-		}
-	}
-	private void stream(DataObject object, JsonContentHandler jch) throws SAXException {
-		jch.startObject();
-		for(String k : object.getKeys()) {
-			Object o = object.get(k);
-			jch.startObjectEntry(k);
-			streamItem(jch, o);
-			jch.endObjectEntry();
-		}
-		jch.endObject();
 	}
 }

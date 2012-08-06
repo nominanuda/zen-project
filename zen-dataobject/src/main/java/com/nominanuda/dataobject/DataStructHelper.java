@@ -16,6 +16,7 @@
 package com.nominanuda.dataobject;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -129,19 +130,22 @@ public class DataStructHelper implements Serializable {
 		if (o == null) {
 			return "null";
 		} else if (isDataObject(o)) {
-			DataObject obj = (DataObject) o;
-			StringBuilder sb = new StringBuilder();
-			sb.append("{");
-			Iterator<String> itr = obj.getKeys().iterator();
-			while (itr.hasNext()) {
-				String k = itr.next();
-				sb.append("\"" + k + "\":" + toJsonString(obj.get(k)));
-				if (itr.hasNext()) {
-					sb.append(",");
-				}
-			}
-			sb.append("}");
-			return sb.toString();
+			StringWriter sw = new StringWriter();
+			JsonPrinter p = new JsonPrinter(sw, false);
+			return sw.toString();
+//			DataObject obj = (DataObject) o;
+//			StringBuilder sb = new StringBuilder();
+//			sb.append("{");
+//			Iterator<String> itr = obj.getKeys().iterator();
+//			while (itr.hasNext()) {
+//				String k = itr.next();
+//				sb.append("\"" + k + "\":" + toJsonString(obj.get(k)));
+//				if (itr.hasNext()) {
+//					sb.append(",");
+//				}
+//			}
+//			sb.append("}");
+//			return sb.toString();
 		} else if (isDataArray(o)) {
 			DataArray arr = (DataArray) o;
 			StringBuilder sb = new StringBuilder();

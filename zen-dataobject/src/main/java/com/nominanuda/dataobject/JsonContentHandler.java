@@ -16,16 +16,15 @@
  */
 package com.nominanuda.dataobject;
 
-import org.xml.sax.SAXException;
 
 public interface JsonContentHandler {
-	public void startJSON() throws SAXException;
-	public void endJSON() throws SAXException;
-	public boolean startObject() throws SAXException;
-	public boolean endObject() throws SAXException;
-	public boolean startObjectEntry(String key) throws SAXException;
-	public boolean endObjectEntry() throws SAXException;
-	public boolean startArray() throws SAXException;
-	public boolean endArray() throws SAXException;
-	public boolean primitive(Object value) throws SAXException;
+	public void startJSON() throws RuntimeException;
+	public void endJSON() throws RuntimeException;
+	public boolean startObject() throws RuntimeException;
+	public boolean endObject() throws RuntimeException;
+	public boolean startObjectEntry(String key) throws RuntimeException;
+	public boolean endObjectEntry() throws RuntimeException;
+	public boolean startArray() throws RuntimeException;
+	public boolean endArray() throws RuntimeException;
+	public boolean primitive(Object value) throws RuntimeException;
 }
