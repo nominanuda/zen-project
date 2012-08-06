@@ -127,16 +127,19 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	public String toJsonString(Object o) {
+		return toJsonString(o, false);
+	}
+	public String toJsonString(Object o, boolean pretty) {
 		if (o == null) {
 			return "null";
 		} else if (isDataObject(o)) {
 			StringWriter sw = new StringWriter();
-			JsonPrinter p = new JsonPrinter(sw, false);
+			JsonPrinter p = new JsonPrinter(sw, pretty);
 			DataStructStreamer.stream((DataObject) o, p);
 			return sw.toString();
 		} else if (isDataArray(o)) {
 			StringWriter sw = new StringWriter();
-			JsonPrinter p = new JsonPrinter(sw, false);
+			JsonPrinter p = new JsonPrinter(sw, pretty);
 			DataStructStreamer.stream((DataArray) o, p);
 			return sw.toString();
 		} else if (o instanceof Number) {
