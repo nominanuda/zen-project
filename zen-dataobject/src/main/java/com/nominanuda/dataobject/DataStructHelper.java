@@ -132,33 +132,13 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		} else if (isDataObject(o)) {
 			StringWriter sw = new StringWriter();
 			JsonPrinter p = new JsonPrinter(sw, false);
+			DataStructStreamer.stream((DataObject) o, p);
 			return sw.toString();
-//			DataObject obj = (DataObject) o;
-//			StringBuilder sb = new StringBuilder();
-//			sb.append("{");
-//			Iterator<String> itr = obj.getKeys().iterator();
-//			while (itr.hasNext()) {
-//				String k = itr.next();
-//				sb.append("\"" + k + "\":" + toJsonString(obj.get(k)));
-//				if (itr.hasNext()) {
-//					sb.append(",");
-//				}
-//			}
-//			sb.append("}");
-//			return sb.toString();
 		} else if (isDataArray(o)) {
-			DataArray arr = (DataArray) o;
-			StringBuilder sb = new StringBuilder();
-			sb.append("[");
-			int len = arr.getLength();
-			for (int i = 0; i < len; i++) {
-				sb.append(toJsonString(arr.get(i)));
-				if (i < len - 1) {
-					sb.append(",");
-				}
-			}
-			sb.append("]");
-			return sb.toString();
+			StringWriter sw = new StringWriter();
+			JsonPrinter p = new JsonPrinter(sw, false);
+			DataStructStreamer.stream((DataArray) o, p);
+			return sw.toString();
 		} else if (o instanceof Number) {
 			Number n = (Number) o;
 			if (Maths.isInteger(n.doubleValue())) {

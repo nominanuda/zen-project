@@ -96,7 +96,9 @@ public class JsonPrinter implements JsonContentHandler {
 	public boolean primitive(Object o) throws RuntimeException {
 		try {
 			commas.primitive(o);
-			if (o instanceof Number) {
+			if (o == null) {
+				w.write("null");
+			} else if (o instanceof Number) {
 				Number n = (Number) o;
 				if (Maths.isInteger(n.doubleValue())) {
 					w.write(new Long(n.longValue()).toString());
