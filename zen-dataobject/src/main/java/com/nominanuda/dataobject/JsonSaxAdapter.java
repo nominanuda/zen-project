@@ -44,78 +44,125 @@ public class JsonSaxAdapter implements JsonContentHandler {
 	}
 
 	@Override
-	public void startJSON() throws SAXException {
-		ch.startDocument();
-		ch.startPrefixMapping(JSON_SAX, JSON_SAX_NS);
+	public void startJSON() throws RuntimeException {
+		try {
+			ch.startDocument();
+			ch.startPrefixMapping(JSON_SAX, JSON_SAX_NS);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public void endJSON() throws SAXException {
-		ch.endPrefixMapping(JSON_SAX);
-		ch.endDocument();
+	public void endJSON() throws RuntimeException {
+		try {
+			ch.endPrefixMapping(JSON_SAX);
+			ch.endDocument();
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String qname(String localName) {
-		return JSON_SAX_NS+":"+localName;
+		return JSON_SAX_NS + ":" + localName;
 	}
 
 	@Override
-	public boolean startObject() throws SAXException {
-		ch.startElement(JSON_SAX_NS, OBJECT_TAG, qname(OBJECT_TAG), EMPTY_ATTRS);
-		return true;
+	public boolean startObject() throws RuntimeException {
+		try {
+			ch.startElement(JSON_SAX_NS, OBJECT_TAG, qname(OBJECT_TAG),
+					EMPTY_ATTRS);
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public boolean endObject() throws SAXException {
-		ch.endElement(JSON_SAX_NS, OBJECT_TAG, qname(OBJECT_TAG));
-		return true;
+	public boolean endObject() throws RuntimeException {
+		try {
+			ch.endElement(JSON_SAX_NS, OBJECT_TAG, qname(OBJECT_TAG));
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public boolean startObjectEntry(String key) throws SAXException {
-		ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_TAG, qname(OBJECT_ENTRY_TAG), EMPTY_ATTRS);
-		ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_KEY_TAG, qname(OBJECT_ENTRY_KEY_TAG), EMPTY_ATTRS);
-		ch.characters(key.toCharArray(), 0, key.length());
-		ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_KEY_TAG, qname(OBJECT_ENTRY_KEY_TAG));
-		ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_VALUE_TAG, qname(OBJECT_ENTRY_VALUE_TAG), EMPTY_ATTRS);
-		return true;
-	}
-
-	@Override
-	public boolean endObjectEntry() throws SAXException {
-		ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_VALUE_TAG, qname(OBJECT_ENTRY_VALUE_TAG));
-		ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_TAG, qname(OBJECT_ENTRY_TAG));
-		return true;
-	}
-
-	@Override
-	public boolean startArray() throws SAXException {
-		ch.startElement(JSON_SAX_NS, ARRAY_TAG, qname(ARRAY_TAG), EMPTY_ATTRS);
-		return true;
-	}
-
-	@Override
-	public boolean endArray() throws SAXException {
-		ch.endElement(JSON_SAX_NS, ARRAY_TAG, qname(ARRAY_TAG));
-		return true;
-	}
-
-	@Override
-	public boolean primitive(Object value) throws SAXException {
-		Check.illegalstate.assertTrue(dataStructHelper.isPrimitiveOrNull(value));
-		DataType t = dataStructHelper.getDataType(value);
-		switch (t) {
-		case nil:
-			ch.startElement(JSON_SAX_NS, nil.name(), qname(nil.name()), EMPTY_ATTRS);
-			ch.endElement(JSON_SAX_NS, nil.name(), qname(nil.name()));
-			break;
-		default:
-			String v = dataStructHelper.primitiveOrNullToString(value);
-			ch.startElement(JSON_SAX_NS, t.name(), qname(t.name()), EMPTY_ATTRS);
-			ch.characters(v.toCharArray(), 0, v.length());
-			ch.endElement(JSON_SAX_NS, t.name(), qname(t.name()));
-			break;
+	public boolean startObjectEntry(String key) throws RuntimeException {
+		try {
+			ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_TAG,
+					qname(OBJECT_ENTRY_TAG), EMPTY_ATTRS);
+			ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_KEY_TAG,
+					qname(OBJECT_ENTRY_KEY_TAG), EMPTY_ATTRS);
+			ch.characters(key.toCharArray(), 0, key.length());
+			ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_KEY_TAG,
+					qname(OBJECT_ENTRY_KEY_TAG));
+			ch.startElement(JSON_SAX_NS, OBJECT_ENTRY_VALUE_TAG,
+					qname(OBJECT_ENTRY_VALUE_TAG), EMPTY_ATTRS);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
 		}
 		return true;
+	}
+
+	@Override
+	public boolean endObjectEntry() throws RuntimeException {
+		try {
+			ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_VALUE_TAG,
+					qname(OBJECT_ENTRY_VALUE_TAG));
+			ch.endElement(JSON_SAX_NS, OBJECT_ENTRY_TAG,
+					qname(OBJECT_ENTRY_TAG));
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public boolean startArray() throws RuntimeException {
+		try {
+			ch.startElement(JSON_SAX_NS, ARRAY_TAG, qname(ARRAY_TAG),
+					EMPTY_ATTRS);
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public boolean endArray() throws RuntimeException {
+		try {
+			ch.endElement(JSON_SAX_NS, ARRAY_TAG, qname(ARRAY_TAG));
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public boolean primitive(Object value) throws RuntimeException {
+		try {
+			Check.illegalstate.assertTrue(dataStructHelper
+					.isPrimitiveOrNull(value));
+			DataType t = dataStructHelper.getDataType(value);
+			switch (t) {
+			case nil:
+				ch.startElement(JSON_SAX_NS, nil.name(), qname(nil.name()),
+						EMPTY_ATTRS);
+				ch.endElement(JSON_SAX_NS, nil.name(), qname(nil.name()));
+				break;
+			default:
+				String v = dataStructHelper.primitiveOrNullToString(value);
+				ch.startElement(JSON_SAX_NS, t.name(), qname(t.name()),
+						EMPTY_ATTRS);
+				ch.characters(v.toCharArray(), 0, v.length());
+				ch.endElement(JSON_SAX_NS, t.name(), qname(t.name()));
+				break;
+			}
+			return true;
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
