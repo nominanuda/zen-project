@@ -56,6 +56,9 @@ public class URITemplateRoundtripTest {
 		roundTrip("/ping", "/ping");
 		roundTrip("/query/{path */*}", "/query/p/ath");
 		roundTrip("/caza/bA0r/zz/{path */*}", "/caza/bA0r/zz/path");
+		roundTrip("/(track|album|artist).getSuggested", "/track.getSuggested");
+		roundTrip("/{entity track|album|artist}.getSuggested", "/track.getSuggested");
+		roundTrip("/{entity track|album|artist}.getSuggested", "/album.getSuggested");
 	}
 	@Test
 	public void testRoundTrips() {
