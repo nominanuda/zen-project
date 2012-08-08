@@ -15,6 +15,7 @@
  */package com.nominanuda.solr;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
 
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataArrayImpl;
@@ -54,6 +56,16 @@ public class SolrHelper {
 
 	public DataObject solrDoc2DataObject(Map<String, Object> d) {
 		return (DataObject)struct.fromFlatMap(normalizeDynFields(d));
+	}
+
+	public DataObject sid2DataObject(SolrInputDocument sid) {
+		Map<String, Object> m = new LinkedHashMap<String, Object>();
+		Iterator<SolrInputField> itr = sid.iterator();
+		while(itr.hasNext()) {
+			SolrInputField f = itr.next();
+			m.put(f.getName(), f.getValue());
+		}
+		return solrDoc2DataObject(m);
 	}
 
 	private Map<String, Object> normalizeDynFields(Map<String, Object> d) {
