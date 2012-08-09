@@ -97,7 +97,7 @@ public abstract class RhinoTestCase {
 	protected void onSetup() throws Exception {
 	}
 	@After
-	public void tearDown() {
+	public void tearDown() throws Exception {
 		Context.exit();
 	}
 	protected Object runJSTestCase(URL url) throws Exception {
