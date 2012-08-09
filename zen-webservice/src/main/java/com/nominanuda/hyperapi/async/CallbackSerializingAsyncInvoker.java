@@ -45,7 +45,7 @@ public class CallbackSerializingAsyncInvoker extends AsyncInvokerImpl {
 	}
 
 	@Override
-	public void await(long timeout, TimeUnit unit) throws Exception {
+	public void onBeforeAwait(long timeout, TimeUnit unit) throws Exception {
 		long start = System.currentTimeMillis();
 		long millis = TimeUnit.MILLISECONDS.convert(timeout, unit);
 		int numPendingTasks = getFutures().size();
@@ -59,6 +59,7 @@ public class CallbackSerializingAsyncInvoker extends AsyncInvokerImpl {
 				try {
 					cb.call();
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}

@@ -45,6 +45,10 @@ public abstract class AbstractAsyncInvoker implements AsyncInvoker {
 						} catch(InvocationTargetException e) {
 							invokeErrorCb(ee, (Exception)e.getTargetException());
 							return null;
+						} catch(Exception e) {
+							//invokeErrorCb(ee, (Exception)e.getTargetException());
+							e.printStackTrace();
+							throw e;
 						}
 					}
 				};
@@ -72,8 +76,12 @@ public abstract class AbstractAsyncInvoker implements AsyncInvoker {
 		return futures;
 	}
 
-	public void await(long timeout, TimeUnit unit) throws Exception {
+	protected void onBeforeAwait(long timeout, TimeUnit unit) throws Exception {
+	}
+
+	public final void await(long timeout, TimeUnit unit) throws Exception {
 		long start = System.currentTimeMillis();
+		onBeforeAwait(timeout, unit);
 		long millis = TimeUnit.MILLISECONDS.convert(timeout, unit);
 		for(Future<?> f : futures) {
 			if(System.currentTimeMillis() - start > millis) {
