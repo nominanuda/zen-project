@@ -15,8 +15,6 @@
  */
 package com.nominanuda.web.mvc;
 
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -25,9 +23,6 @@ import org.apache.http.HttpResponse;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.NoException;
-import com.nominanuda.lang.ObjectConvertor;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
@@ -76,5 +71,13 @@ public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProto
 
 	protected HttpResponse createResponse(int status) {
 		return httpCoreHelper.createBasicResponse(status);
+	}
+
+	public static Object unwrapHandlerIfNeeded(Object handlerOrHandlerAndFilters) {
+		if(handlerOrHandlerAndFilters instanceof HandlerAndFilters) {
+			return ((HandlerAndFilters)handlerOrHandlerAndFilters).getHandler();
+		} else {
+			return handlerOrHandlerAndFilters;
+		}
 	}
 }

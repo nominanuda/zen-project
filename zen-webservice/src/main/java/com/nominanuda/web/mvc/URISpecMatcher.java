@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.mvc;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +38,8 @@ public class URISpecMatcher implements HandlerMatcher {
 	private Object handler;
 	private URISpec<DataObject> spec;
 	private Pattern methodPattern;
+	private List<HandlerFilter> handlerFilters = null;
+	private transient HandlerAndFilters handlerAndFilters = null;
 
 	public @Nullable Tuple2<Object, DataStruct> match(HttpRequest request) {
 		String method = request.getRequestLine().getMethod();
@@ -46,7 +50,18 @@ public class URISpecMatcher implements HandlerMatcher {
 
 		DataObject o = spec.match(request.getRequestLine().getUri());
 		return o == null ? null :
-			new Tuple2<Object, DataStruct>(handler, o);
+			new Tuple2<Object, DataStruct>(getHandlerOrChain(), o);
+	}
+
+	private Object getHandlerOrChain() {
+		if(handlerFilters == null) {
+			return handler;
+		} else {
+			if(handlerAndFilters == null) {
+				handlerAndFilters = new HandlerAndFiltersBean(handler, handlerFilters);
+			}
+			return handlerAndFilters;
+		}
 	}
 
 	public void setHandler(Object handler) {
@@ -72,5 +87,10 @@ public class URISpecMatcher implements HandlerMatcher {
 		methodPattern = Pattern.compile(method);
 		this.spec = new URISpec<DataObject>(urispec,
 				new DataObjectStringModelAdapter());
+	}
+
+	public void setHandlerFilters(List<HandlerFilter> hfs) {
+		handlerFilters = new LinkedList<HandlerFilter>();
+		handlerFilters.addAll(hfs);
 	}
 }

@@ -30,7 +30,7 @@ public class WebServiceAdapter implements HandlerAdapter {
 
 	@Override
 	public boolean supports(Object handler) {
-		return handler instanceof WebService;
+		return GenericHandlerAdapter.unwrapHandlerIfNeeded(handler) instanceof WebService;
 	}
 
 }

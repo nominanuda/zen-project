@@ -21,7 +21,7 @@ import com.nominanuda.dataobject.DataStruct;
 
 public class CommandRequestHandlerAdapter extends GenericHandlerAdapter {
 	public boolean supports(Object handler) {
-		return handler instanceof CommandRequestHandler;
+		return unwrapHandlerIfNeeded(handler) instanceof CommandRequestHandler;
 	}
 
 	@Override

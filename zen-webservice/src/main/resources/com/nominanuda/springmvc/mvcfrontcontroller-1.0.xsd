@@ -4,6 +4,9 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="mvc:pattern"/>
+        <xs:sequence>
+          <xs:element ref="mvc:filter" minOccurs="0"/>
+        </xs:sequence>
         <xs:choice>
           <xs:element ref="mvc:source"/>
           <xs:element ref="mvc:handler"/>
@@ -35,6 +38,14 @@
     </xs:complexType>
   </xs:element>
   <xs:element name="handler">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any minOccurs="0" processContents="skip"/>
+      </xs:sequence>
+      <xs:attribute name="ref" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filter">
     <xs:complexType>
       <xs:sequence>
         <xs:any minOccurs="0" processContents="skip"/>

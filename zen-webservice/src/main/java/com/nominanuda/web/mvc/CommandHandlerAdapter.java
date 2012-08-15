@@ -22,7 +22,7 @@ import com.nominanuda.dataobject.DataStruct;
 public class CommandHandlerAdapter extends GenericHandlerAdapter {
 
 	public boolean supports(Object handler) {
-		return handler instanceof CommandHandler;
+		return unwrapHandlerIfNeeded(handler) instanceof CommandHandler;
 	}
 
 	@Override

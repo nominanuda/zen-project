@@ -57,15 +57,16 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 		if (res == null) {
 			return null;
 		} else {
+			Object h = res.get0();
 			HandlerExecutionChain hec;
-			if (res instanceof HandlerAndFilters) {
-				HandlerAndFilters haf = (HandlerAndFilters) res;
+			if (h instanceof HandlerAndFilters) {
+				HandlerAndFilters haf = (HandlerAndFilters) h;
 				hec = new HandlerExecutionChain(haf.getHandler());
 				for (HandlerFilter f : haf.getFilters()) {
 					hec.addInterceptor(convert(f));
 				}
 			} else {
-				hec = new HandlerExecutionChain(res.get0());
+				hec = new HandlerExecutionChain(h);
 			}
 			servletHelper.storeCommand(request, res.get1());
 			return hec;

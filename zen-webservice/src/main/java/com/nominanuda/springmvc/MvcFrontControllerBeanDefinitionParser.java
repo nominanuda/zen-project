@@ -19,13 +19,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import com.nominanuda.code.Nullable;
+import com.nominanuda.lang.Check;
 import com.nominanuda.springmvc.HandlerMatcherMapping;
 import com.nominanuda.web.mvc.URISpecMatcher;
 import com.nominanuda.web.mvc.URITransformerURLStreamer;
@@ -61,11 +66,46 @@ public class MvcFrontControllerBeanDefinitionParser extends
 		bdBuilder.addPropertyReference("handlerMatcher", matchId);
 		String handlerId = generateHandler(element, parserContext, uriSpec);
 		matchBuilder.addPropertyReference("handler", handlerId);
+		List<BeanMetadataElement> filters = generateFilterList(element, parserContext, uriSpec);
+		if(filters != null) {
+			matchBuilder.addPropertyValue("handlerFilters", filters);
+		}
 		AbstractBeanDefinition abd = bdBuilder.getBeanDefinition();
 		abd.setAutowireCandidate(false);
 		return abd;
 	}
 
+	protected @Nullable List<BeanMetadataElement> generateFilterList(Element element,
+			ParserContext parserContext, String uriSpec) {
+		NodeList nl = element.getElementsByTagNameNS(ns,
+				"filter");
+		if(nl == null || nl.getLength() == 0) {
+			return null;
+		}
+		List<BeanMetadataElement> l = new ManagedList<BeanMetadataElement>();
+		for(int i = 0; i < nl.getLength(); i++) {
+			Element filter = (Element)nl.item(i);
+			String ref = getAttribute(filter, "ref");
+			BeanDefinition bd;
+			if (ref != null) {
+				bd = parserContext.getRegistry().getBeanDefinition(ref);
+			} else {
+				Element innerBean = (Element) filter.getElementsByTagNameNS(
+						beansNs, "bean").item(0);
+				String innerBeanId = getAttribute(innerBean, "id");
+				if (innerBeanId == null) {
+					innerBeanId = uuid();
+				}
+				bd = parserContext.getDelegate()
+						.parseBeanDefinitionElement(innerBean)
+						.getBeanDefinition();
+				parserContext.getRegistry().registerBeanDefinition(innerBeanId,
+						bd);
+			}
+			l.add(Check.notNull(bd));
+		}
+		return l;
+	}
 	private void initPlugins(ParserContext parserContext)
 			throws InstantiationException, IllegalAccessException {
 		plugins = new LinkedList<MvcFrontControllerBeanDefinitionParserPlugin>();
