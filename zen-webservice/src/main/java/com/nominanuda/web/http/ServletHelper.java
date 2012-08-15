@@ -244,4 +244,17 @@ public class ServletHelper {
 		return (DataStruct)servletRequest.getAttribute("__command__");
 	}
 
+	public void storeHandlerOutput(HttpServletRequest servletRequest, Object handlerOutput) {
+		servletRequest.setAttribute("__handlerOutput__", handlerOutput);
+	}
+	public @Nullable Object getHandlerOutput(HttpServletRequest servletRequest) throws IOException {
+		return servletRequest.getAttribute("__handlerOutput__");
+	}
+
+	public void storeResponse(HttpServletRequest servletRequest, HttpResponse response) {
+		servletRequest.setAttribute("__HttpResponse__", response);
+	}
+	public @Nullable HttpResponse getResponse(HttpServletRequest servletRequest) throws IOException {
+		return (HttpResponse)servletRequest.getAttribute("__HttpResponse__");
+	}
 }
