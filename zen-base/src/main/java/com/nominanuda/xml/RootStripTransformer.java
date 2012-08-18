@@ -20,11 +20,28 @@ import org.xml.sax.SAXException;
 
 public class RootStripTransformer extends ForwardingTransformerHandlerBase {
 	private int depth = 0;
+	private boolean emitStartEndDocument = true;
+
+	public RootStripTransformer() {
+	}
+
+	public RootStripTransformer(boolean emitStartEndDocument) {
+		this.emitStartEndDocument = emitStartEndDocument;
+	}
 
 	@Override
-	public void startDocument() throws SAXException {};
+	public void startDocument() throws SAXException {
+		if(emitStartEndDocument) {
+			super.startDocument();
+		}
+	};
 	@Override
-	public void endDocument() throws SAXException {};
+	public void endDocument() throws SAXException {
+		if(emitStartEndDocument) {
+			super.endDocument();
+		}
+	};
+
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
