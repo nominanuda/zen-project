@@ -67,6 +67,7 @@ import com.nominanuda.lang.Strings;
 
 @ThreadSafe
 public class XmlHelper {
+	public static final XmlHelper XML = new XmlHelper();
 
 	private final ThreadLocal<DocumentBuilder> documentBuilder = new ThreadLocal<DocumentBuilder>() {
 		@Override
