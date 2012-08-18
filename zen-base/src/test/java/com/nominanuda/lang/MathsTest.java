@@ -31,4 +31,14 @@ public class MathsTest {
 		Assert.assertEquals("FF00EE11DD22CC33".toLowerCase(),
 				Hex.encode(b));
 	}
+
+	@Test
+	public void testAsUnsignedByte() {
+		Assert.assertEquals(128, Maths.asUnsignedByte((byte)-128));
+		Assert.assertEquals(131, Maths.asUnsignedByte((byte)-125));
+		Assert.assertEquals(0  , Maths.asUnsignedByte((byte)0));
+		Assert.assertEquals(127, Maths.asUnsignedByte((byte)127));
+		Assert.assertEquals(254, Maths.asUnsignedByte((byte)-2));
+		Assert.assertEquals(255, Maths.asUnsignedByte((byte)-1));
+	}
 }

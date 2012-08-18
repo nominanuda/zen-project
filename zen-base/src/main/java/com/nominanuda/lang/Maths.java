@@ -62,4 +62,10 @@ public abstract class Maths {
 			return false;
 		}
 	}
+
+	public static int asUnsignedByte(byte b) {
+		return b < 0
+			? (int) (b + 256)
+			: (int) b;
+	}
 }

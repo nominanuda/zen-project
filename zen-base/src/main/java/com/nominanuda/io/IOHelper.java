@@ -122,10 +122,19 @@ public class IOHelper {
 	}
 
 	public Reader concat(Reader... readers) {
-		return concat(Arrays.asList(readers));
+		return concatReaders(Arrays.asList(readers));
 	}
 
+	/**
+	 * use {@link IOHelper#concatReaders(Iterable<Reader>)}
+	 * @param readers
+	 * @return
+	 */
+	@Deprecated
 	public Reader concat(final Iterable<Reader> readers) {
+		return concatReaders(readers);
+	}
+	public Reader concatReaders(final Iterable<Reader> readers) {
 		return new Reader() {
 			private Iterator<Reader> itr = readers.iterator();
 			private Reader cur = itr.next();
@@ -148,6 +157,50 @@ public class IOHelper {
 			@Override
 			public void close() throws IOException {
 				Iterator<Reader> closeItr = readers.iterator();
+				while (closeItr.hasNext()) {
+					closeItr.next().close();
+				}
+			}
+		};
+	}
+
+	public InputStream concat(InputStream... streams) {
+		return concatStreams(Arrays.asList(streams));
+	}
+
+	public InputStream concatStreams(final Iterable<InputStream> streams) {
+		return new InputStream() {
+			private Iterator<InputStream> itr = streams.iterator();
+			private InputStream cur = itr.next();
+
+			@Override
+			public int read() throws IOException {
+				byte[] b = new byte[1];
+				int numRead = read(b, 0, 1);
+				if(numRead != 1) {
+					return -1;
+				} else {
+					return Maths.asUnsignedByte(b[0]);
+				}
+			}
+			@Override
+			public int read(byte[] bbuf, int off, int len) throws IOException {
+				int res = cur.read(bbuf, off, len);
+				if (res < 0) {
+					if (itr.hasNext()) {
+						cur = itr.next();
+						return read(bbuf, off, len);
+					} else {
+						return -1;
+					}
+				} else {
+					return res;
+				}
+			}
+
+			@Override
+			public void close() throws IOException {
+				Iterator<InputStream> closeItr = streams.iterator();
 				while (closeItr.hasNext()) {
 					closeItr.next().close();
 				}
