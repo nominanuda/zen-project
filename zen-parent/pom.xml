@@ -48,7 +48,12 @@ limitations under the License.
     <dependencies>
       <dependency>
         <groupId>com.nominanuda</groupId>
-        <artifactId>zen-search</artifactId>
+        <artifactId>zen-jsweb</artifactId>
+        <version>${zen.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nominanuda</groupId>
+        <artifactId>zen-store</artifactId>
         <version>${zen.version}</version>
       </dependency>
       <dependency>
