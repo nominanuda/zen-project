@@ -72,23 +72,24 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Exceptions;
 import com.nominanuda.lang.ReflectionHelper;
 
+import static com.nominanuda.io.IOHelper.IO;
+
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
+	public static final HttpCoreHelper HTTP = new HttpCoreHelper();
+
 	private static final HttpRequestFactory httpRequestFactory = new DefaultHttpRequestFactory();
 	private static final HttpResponseFactory httpResponseFactory = new DefaultHttpResponseFactory();
-	private static final IOHelper IO = new IOHelper();
 	private static final ReflectionHelper reflect = new ReflectionHelper();
 
 	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion(
@@ -238,7 +239,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		if (contentType != null
 		&& contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
-			final String content = EntityUtils.toString(entity, HTTP.UTF_8);
+			final String content = EntityUtils.toString(entity, UTF_8);
 			if (content != null && content.length() > 0) {
 				result = new ArrayList<NameValuePair>();
 				URLEncodedUtils.parse(result, new Scanner(content), charset);
