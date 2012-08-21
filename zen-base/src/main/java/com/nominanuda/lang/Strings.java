@@ -100,18 +100,17 @@ public abstract class Strings {
 
 	public static String F(String pattern, Object... arguments) {
 		for(int i = 0; i < arguments.length; i++) {
-			if(null == arguments[i]) throw new NullPointerException("arguments " + i + " is null");
+			if(null == arguments[i]) {
+				throw new NullPointerException("arguments " + i + " is null");
+			} else {
+				arguments[i] = arguments[i].toString();
+			}
   		}
 		return MessageFormat.format(pattern, arguments);
 	}
 
-	public static <T> String J(String separator, List<T> someT) {
-		StringBuilder result = new StringBuilder();
-		for (T t : someT) {
-			result.append(t);
-			result.append(separator);
-		}
-		return result.toString().replaceAll(separator.concat("$"), "");
+	public static <T> String J(String separator, Iterable<T> someT) {
+		return join(separator, someT);
 	}
 
 	public static String J(String separator, String decorator, List<String> strings) {
