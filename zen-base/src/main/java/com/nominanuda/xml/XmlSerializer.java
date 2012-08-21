@@ -16,15 +16,11 @@
 package com.nominanuda.xml;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -33,14 +29,15 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Strings;
 
 public class XmlSerializer implements ContentHandler, LexicalHandler {
 	private static final XmlHelper XML = new XmlHelper();
 	private boolean forrestMode = true;
 	private boolean stripComments = false;
-	private boolean omitXmlDecl = true;
+	//private boolean omitXmlDecl = true;
 	private boolean oneline = false;
-	private boolean pretty = false;
+	//private boolean pretty = false;
 	private boolean xmlEscapeAposAndQuote = false;
 
 	private boolean docStarted = false;
@@ -50,7 +47,6 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 	private boolean withinCdata = false;
 
 	private Map<String, String> prefixMappings = new HashMap<String, String>();
-	private Stack<String> boundMappings = new Stack<String>();
 	private Map<String, String> pendingPrefixMappings = new LinkedHashMap<String, String>();
 	private boolean startTagJustSeen = false;
 
@@ -65,11 +61,12 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 			throws SAXException {
 		checkInDocFlow();
 		pendingPrefixMappings.put(prefix, uri);
-		
+		prefixMappings.put(prefix, uri);
 	}
 	public void endPrefixMapping(String prefix) throws SAXException {
 		checkInDocFlow();
 		pendingPrefixMappings.remove(prefix);
+		prefixMappings.remove(prefix);
 	}
 
 	public void startDocument() throws SAXException {
@@ -124,8 +121,24 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 			Attributes atts) throws SAXException {
 		checkInDocFlow();
 		preInsertContent(false);
-		w.write("<"+Check.ifNullOrEmpty(qName, localName)+atts(atts)+consumePendingPrefixMappings());
+		w.write("<"+tagName(uri, localName, qName)+atts(atts)+consumePendingPrefixMappings());
 		startTagJustSeen = true;
+	}
+
+	private String tagName(String uri, String localName, String qName) {
+		if(qName != null) {
+			return qName;
+		} else if(Strings.nullOrEmpty(uri)) {
+			return localName;
+		} else {
+			for(Entry<String, String> entry : prefixMappings.entrySet()) {
+				if(uri.equals(entry.getValue())) {
+					return entry.getKey()+":"+localName;
+				}
+			}
+			Check.illegalstate.fail();
+		}
+		return Check.ifNullOrEmpty(qName, localName);
 	}
 	private String consumePendingPrefixMappings() {
 		if(pendingPrefixMappings.isEmpty()) {
@@ -169,7 +182,7 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 		if(emptyTag && allowSingletonTag(uri, localName, qName)) {
 			w.write("/>");
 		} else {
-			w.write("</"+Check.ifNullOrEmpty(qName, localName)+">");
+			w.write("</"+tagName(uri, localName, qName)+">");
 		}
 	}
 
@@ -180,6 +193,7 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 	public void ignorableWhitespace(char[] ch, int start, int length)
 			throws SAXException {
 		checkInDocFlow();
+		preInsertContent(true);
 		if(! oneline) {
 			w.write(ch, start, length);
 		}
@@ -188,17 +202,8 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 	public void processingInstruction(String target, String data)
 			throws SAXException {
 		checkInDocFlow();
-		
+		preInsertContent(true);
 	}
-
-
-
-
-
-
-
-
-
 
 	//////////////////////////////////////////
 	private void preInsertContent(boolean isEndTag) throws SAXException {
