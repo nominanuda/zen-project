@@ -49,7 +49,6 @@ limitations under the License.
     <module>zen-dataobject</module>
     <module>zen-rhino</module>
     <module>zen-webservice</module>
-    <module>zen-search</module>
     <module>zen-store</module>
     <module>zen-jsweb</module>
   </modules>
