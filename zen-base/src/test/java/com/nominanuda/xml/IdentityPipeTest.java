@@ -16,35 +16,34 @@
 package com.nominanuda.xml;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.nominanuda.lang.ReflectiveObjectFactory;
-import com.nominanuda.xml.SAXPipeline;
-import com.nominanuda.xml.WhiteSpaceIgnoringTransformer;
+import com.nominanuda.lang.Strings;
 
 public class IdentityPipeTest {
 
 	@Test
 	public void testIdentity() throws Exception {
-		String xmlmsg = "<a>lavispateresa</a>\n";
+		String xmlmsg = "<a>lavispateresa</a>";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		OutputStreamWriter ow = new OutputStreamWriter(baos, Strings.UTF8);
 		new SAXPipeline()
-			.add(new ReflectiveObjectFactory<TransformerHandler>(WhiteSpaceIgnoringTransformer.class))
 			.addXslt(new StringReader(XmlHelper.identityXslt))
+			.add(new ReflectiveObjectFactory<TransformerHandler>(RootStripTransformer.class))
 			.add(new ReflectiveObjectFactory<TransformerHandler>(WhiteSpaceIgnoringTransformer.class))
-//TODO...			.add(new ReflectiveObjectFactory<TransformerHandler>(RootStripTransformer.class))
-			.addXslt(new StringReader(XmlHelper.identityXslt))
 			.complete()
-			.build(new StreamSource(new StringReader(xmlmsg)), new StreamResult(baos))
+			.build(new StreamSource(new StringReader(xmlmsg)), new SAXResult(new XmlSerializer(ow)))
 			.run();
-		Assert.assertEquals(xmlmsg, new String(baos.toByteArray(), "UTF-8"));
+		ow.flush();
+		Assert.assertEquals("lavispateresa", new String(baos.toByteArray(), "UTF-8"));
 	}
 }
