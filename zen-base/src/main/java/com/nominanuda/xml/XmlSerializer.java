@@ -176,8 +176,8 @@ public class XmlSerializer implements ContentHandler, LexicalHandler {
 	}
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		preInsertContent(true);
 		boolean emptyTag = startTagJustSeen;
+		preInsertContent(true);
 		checkInDocFlow();
 		if(emptyTag && allowSingletonTag(uri, localName, qName)) {
 			w.write("/>");
