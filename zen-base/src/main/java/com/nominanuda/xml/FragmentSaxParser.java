@@ -18,7 +18,6 @@ package com.nominanuda.xml;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 
@@ -40,9 +39,9 @@ import static com.nominanuda.xml.XmlHelper.XML;
 import static com.nominanuda.io.IOHelper.IO;
 
 public class FragmentSaxParser implements XMLReader {
-	private static final String startTag = "<2910111008642414584>";
+	private static final String startTag = "<XXXXXX>";
 	private static final byte[] startTagBuf = startTag.getBytes();
-	private static final String endTag = "</2910111008642414584>";
+	private static final String endTag = "</XXXXXX>";
 	private static final byte[] endTagBuf = endTag.getBytes();
 	private RootStripTransformer contentHandlerWrapper;
 	private ContentHandler wrappedHandler;
