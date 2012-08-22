@@ -18,7 +18,7 @@ package com.nominanuda.web.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.text.*;
+import java.net.HttpCookie;
 import java.util.*;
 
 import javax.servlet.ServletInputStream;
@@ -97,24 +97,10 @@ public class ServletHelper {
 			throws IOException {
 		servletResponse.setStatus(response.getStatusLine().getStatusCode());
 		for(Header h : response.getAllHeaders()) {
-			if("Set-Cookie".equals(h.getName())) {
-				Map map = new HashMap();
-				String cookie = h.getValue();
-				String[] parts = cookie.split(";");
-				for(int i = 0; i < parts.length; i++) {
-					String part = parts[i];
-					int pos = part.indexOf("=");
-					String attr = part.substring(0, pos);
-					String value = part.substring(pos + 1);
-					if(0 == i) {
-						map.put("name", attr);
-						map.put("value", value);
-					}
-					else {
-						map.put(attr.toLowerCase(), value);
-					}
+			if("Set-Cookie".equals(h.getName()) || "Set-Cookie2".equals(h.getName())) {
+				for(HttpCookie c : HttpCookie.parse(h.getValue())) {
+					servletResponse.addCookie(servletCookie(c));
 				}
-				servletResponse.addCookie(cookie_from(map));
 			}
 			else {
 				servletResponse.setHeader(h.getName(), h.getValue());
@@ -138,22 +124,22 @@ public class ServletHelper {
 		}
 	}
 
-	private Cookie cookie_from(Map map) throws IOException {
-		String name = (String) map.get("name");
-		String value = (String) map.get("value");
-		Cookie result = new Cookie(name, value);
-		if(map.containsKey("domain")) result.setDomain((String) map.get("domain"));
-		if(map.containsKey("path")) result.setPath((String) map.get("path"));
-		if(map.containsKey("expires")) result.setMaxAge(cookie_max_age((String) map.get("expires")));
-		return result;
-	}
-
-	public int cookie_max_age(String expires) throws IOException {
-		try {
-			return (int) (new SimpleDateFormat("E, dd-MMM-yyyy HH:mm:ss 'GMT'").parse(expires).getTime() - System.currentTimeMillis());
-		} catch (ParseException e) {
-			throw new IOException(e);
+	public Cookie servletCookie(HttpCookie c) {
+		Cookie _c = new Cookie(c.getName(), c.getValue());
+		if(c.getComment() != null) {
+			_c.setComment(c.getComment());
 		}
+		if(c.getDomain() != null) {
+			_c.setDomain(c.getDomain());
+		}
+		if(c.getPath() != null) {
+			_c.setPath(c.getPath());
+		}
+		_c.setSecure(c.getSecure());
+		_c.setVersion(c.getVersion());
+		_c.setHttpOnly(c.getDiscard());
+		_c.setMaxAge((int)c.getMaxAge());
+		return _c;
 	}
 
 	public HttpRequest copyRequest(HttpServletRequest servletRequest, boolean stripContextPath) throws IOException {
@@ -161,6 +147,7 @@ public class ServletHelper {
 		String method = servletRequest.getMethod();
 		String uri = getRequestLineURI(servletRequest, stripContextPath);
 		String ct = servletRequest.getContentType();
+		@SuppressWarnings("unused")
 		String charenc = getCharacterEncoding(servletRequest);
 		String cenc = getContentEncoding(servletRequest);
 		long contentLength = servletRequest.getContentLength();

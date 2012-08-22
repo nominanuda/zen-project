@@ -24,12 +24,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
+import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -45,6 +48,8 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.cookie.CookieSpec;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
@@ -57,6 +62,11 @@ import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.NetscapeDraftSpec;
+import org.apache.http.impl.cookie.RFC2109Spec;
+import org.apache.http.impl.cookie.RFC2965Spec;
 import org.apache.http.impl.io.AbstractMessageWriter;
 import org.apache.http.impl.io.AbstractSessionInputBuffer;
 import org.apache.http.impl.io.AbstractSessionOutputBuffer;
@@ -81,6 +91,7 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Exceptions;
 import com.nominanuda.lang.ReflectionHelper;
+import com.nominanuda.lang.Strings;
 
 import static com.nominanuda.io.IOHelper.IO;
 
@@ -396,4 +407,56 @@ public class HttpCoreHelper implements HttpProtocol {
 			return ((HttpEntityEnclosingRequest)msg).getEntity();
 		}
 	}
+	//Cookies....
+	public enum CookieSpecKind {
+		rfc2965Spec(new RFC2965Spec()), 
+		rfc2109Spec(new RFC2109Spec()), 
+		browserCompat(new BrowserCompatSpec()), 
+		netscape(new NetscapeDraftSpec());
+
+		private CookieSpec cookieSpec;
+
+		CookieSpecKind(CookieSpec spec) {
+			cookieSpec = spec;
+		}
+
+		CookieSpec getSpec() {
+			return cookieSpec;
+		}
+	}
+
+	public List<Cookie> getRequestCookiesByName(HttpRequest req, String name) {
+		final HeaderIterator iterator = req.headerIterator();
+		List<Cookie> cookies = new LinkedList<Cookie>();
+		while (iterator.hasNext()) {
+			Header header = iterator.nextHeader();
+			if ("Cookie".equals(header.getName())) {
+				String remaining = header.getValue();
+				List<String> pairs = Strings.splitAndTrim(remaining, ";");
+				for (String nav : pairs) {
+					int w = nav.indexOf('=');
+					if (w > 0) {
+						String cname = nav.substring(0, w);
+						if (name.equals(cname)) {
+							cookies.add(new NameValueCookie(cname, nav
+									.substring(w)));
+						}
+					}
+				}
+			}
+		}
+		return cookies;
+	}
+
+	public void setResponseCookie(HttpResponse resp, Cookie cookie, CookieSpecKind cookieSpec) {
+		Header h = cookieSpec.getSpec().formatCookies(Arrays.asList(cookie)).get(0);
+		resp.addHeader("Set-Cookie", h.getValue());
+
+	}
+
+	public void setResponseCookie(HttpResponse req, String name, String value, CookieSpecKind cookieSpec) {
+		BasicClientCookie c = new BasicClientCookie(name, value);
+		setResponseCookie(req, c, cookieSpec);
+	}
+
 }
