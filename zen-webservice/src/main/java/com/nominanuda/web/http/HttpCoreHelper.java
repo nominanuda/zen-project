@@ -287,6 +287,12 @@ public class HttpCoreHelper implements HttpProtocol {
 		HttpResponse resp = new BasicHttpResponse(statusline);
 		return resp;
 	}
+	public HttpResponse redirectTo(String url) {
+		StatusLine statusline = statusLine(302);
+		HttpResponse resp = new BasicHttpResponse(statusline);
+		resp.addHeader(HDR_LOCATION, url);
+		return resp;
+	}
 
 	public boolean hasEntity(HttpMessage message) {
 		return
@@ -458,5 +464,4 @@ public class HttpCoreHelper implements HttpProtocol {
 		BasicClientCookie c = new BasicClientCookie(name, value);
 		setResponseCookie(req, c, cookieSpec);
 	}
-
 }
