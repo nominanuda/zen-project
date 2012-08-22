@@ -30,6 +30,7 @@ public interface PropertyBag<K> extends DataStruct {
 	DataArray putNewArray(K key);
 	DataObject putNewObject(K key);
 	List<K> getKeys();
+	@Deprecated
 	boolean isPrimitiveOrNull(@Nullable Object o);
 	void setPathProperty(String path, @Nullable Object value);
 	void setOrPushPathProperty(String path, @Nullable  Object value);
