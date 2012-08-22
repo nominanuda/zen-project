@@ -83,17 +83,6 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 		return putNewArray(getLength());
 	}
 
-	public int compact() {
-		List<Object> l1 = createInnerList();
-		for(Object o : l) {
-			if(o != null) {
-				l1.add(o);
-			}
-		}
-		l = l1;
-		return getLength();
-	}
-
 	public String getType() {
 		return DataType.array.name();
 	}
