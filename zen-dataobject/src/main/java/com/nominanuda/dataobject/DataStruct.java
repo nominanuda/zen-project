@@ -21,7 +21,9 @@ import com.nominanuda.code.Nullable;
 
 public interface DataStruct {
 	Pattern VALID_OBJ_KEY = Pattern.compile("[\\$_A-Za-z][\\$_A-Za-z0-9]*");
+	@Deprecated
 	@Nullable DataStruct getParent();	
+	@Deprecated
 	@Nullable /*root returns itself */ DataStruct getRoot();
 	//DataStruct<K> cloneStruct();
 
