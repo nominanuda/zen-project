@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +35,10 @@ public class DispatcherServletHelper implements ApplicationContextAware {
 		resolvers = new LinkedList<ViewResolver>();
 		resolvers.addAll(applicationContext.getBeansOfType(ViewResolver.class)
 				.values());
-		localeResolver = applicationContext.getBean(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
+		try {
+			localeResolver = applicationContext.getBean(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
+		} catch (NoSuchBeanDefinitionException e) {
+		}
 
 	}
 
