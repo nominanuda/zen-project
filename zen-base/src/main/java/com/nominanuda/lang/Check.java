@@ -96,6 +96,20 @@ public enum Check {
 		}
 	}
 
+	public <T> T assertInstanceOf(Object o1, Class<T> type, String reason) {
+		if(o1 == null || ! type.isAssignableFrom(o1.getClass())) {
+			throw buildEx(reason);
+		}
+		return type.cast(o1);
+	}
+
+	public <T> T assertInstanceOf(Object o1, Class<T> type) {
+		if(o1 == null || ! type.isAssignableFrom(o1.getClass())) {
+			throw buildEx();
+		}
+		return type.cast(o1);
+	}
+
 	public <T> T assertNotNull(T o) throws NullPointerException {
 		if(o == null) {
 			throw buildEx();
