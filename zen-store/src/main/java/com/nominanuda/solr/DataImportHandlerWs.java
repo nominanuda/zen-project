@@ -147,10 +147,6 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 		this.nextUrlPrefix = nextUrlPrefix;
 	}
 
-	public void setUriSpec(URISpec<DataObject> uriSpec) {
-		this.uriSpec = uriSpec;
-	}
-
 	public void setRows(int rows) {
 		this.rows = rows;
 	}
