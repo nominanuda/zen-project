@@ -67,5 +67,19 @@ public class DataStructHelperTest {
 		DataObject obj2 = new DataStructHelper().clone(obj);
 		assertTrue(new DataStructHelper().equals(obj, obj2));
 	}
+	
+	@Test
+	public void testStringEscapeRoundTrip() throws IOException, ParseException, SAXException {
+		String[] examples = new String[] {
+			"", "\\", "\"", "ẽ", "è"
+		};
+		for(String s : examples) {
+			String s1 = DataStructHelper.STRUCT.toJsonString(s);
+			System.err.println(s1);
+			String s2 = DataStructHelper.STRUCT.jsonStringUnescape(s1.substring(1, s1.length() - 1));
+			assertEquals(s, s2);
+		}
+	}
+	
 
 }

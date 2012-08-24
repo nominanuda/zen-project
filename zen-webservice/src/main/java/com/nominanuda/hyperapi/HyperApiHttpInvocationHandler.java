@@ -92,6 +92,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		}
 		IOHelper io = new IOHelper();
 		String s = io.readAndCloseUtf8(resp.getEntity().getContent());
+		Class<?> returnType = method.getReturnType();
 		if("null".equals(s)) {
 			return null;
 		} else if("true".equals(s)||"false".equals(s)) {
@@ -102,9 +103,10 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			} else {
 				return Double.valueOf(s);
 			}
-		} else {//TODO
+		} else if(s.startsWith("\"") && s.length() > 1) {
+			return DataStructHelper.STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
+		} else {
 			DataStruct ds = new JSONParser().parse(new StringReader(s));
-			Class<?> returnType = method.getReturnType();
 			return ds;
 		}
 	}
