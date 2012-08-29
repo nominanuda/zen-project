@@ -75,7 +75,7 @@ public class SAXPipeline {
 	}
 	public SAXPipeline setComponents(List<?> components) {
 		Check.illegalstate.assertFalse(completed);
-//		Check.illegalstate.assertTrue(this.components.isEmpty());
+		this.components.clear();
 		for(Object c : components) {
 			this.components.add(c);
 		}
