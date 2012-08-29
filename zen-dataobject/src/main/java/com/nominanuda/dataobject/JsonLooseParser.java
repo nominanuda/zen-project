@@ -28,24 +28,29 @@ import com.nominanuda.lang.Strings;
 
 public class JsonLooseParser {
 
-	public DataStruct parse(String json) throws IllegalArgumentException {
-		return parse(new StringReader(json));
-	}
-	public DataStruct parse(Reader json) throws IllegalArgumentException {
+	public void parse(Reader json, JsonContentHandler jch) throws IllegalArgumentException {
 		try {
 			try {
 				CharStream cs = new ANTLRReaderStream(json);
 				StreamingLooseJsonLexer lexer = new StreamingLooseJsonLexer(cs);
 				CommonTokenStream tokens = new CommonTokenStream(lexer);
 				StreamingLooseJsonParser parser = new StreamingLooseJsonParser(tokens);
+				parser.setJsonContentHandler(jch);
 				parser.program();
-				return ((DataStructContentHandler)parser.getJsonContentHandler()).getResult();
 			} catch(WrappingRecognitionException e) {
 				throw e.getWrappedException();
 			}
 		} catch(Exception e) {
 			throw new IllegalArgumentException(e);
 		}
+	}
+	public DataStruct parse(String json) throws IllegalArgumentException {
+		return parse(new StringReader(json));
+	}
+	public DataStruct parse(Reader json) throws IllegalArgumentException {
+		DataStructContentHandler h = new DataStructContentHandler();
+		parse(json, h);
+		return h.getResult();
 	}
 	public DataStruct parseUtf8(InputStream json) throws IllegalArgumentException {
 		return parse(new InputStreamReader(json, Strings.UTF8));
@@ -60,8 +65,6 @@ public class JsonLooseParser {
 	public DataArray parseUtf8Array(InputStream json) throws IllegalArgumentException {
 		return (DataArray)parseUtf8(json);
 	}
-
-
 	public DataObject parseObject(String json) throws IllegalArgumentException {
 		return (DataObject)parse(json);
 	}

@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 /**
  * ParseException explains why and where the error occurs in source JSON text.
@@ -56,7 +56,7 @@ public class ParseException extends Exception {
 	}
 	
 	/**
-	 * @see org.json.simple.parser.JSONParser#getPosition()
+	 * @see com.nominanuda.dataobject.json.simple.parser.JSONParser#getPosition()
 	 * 
 	 * @return The character position (starting with 0) of the input where the error occurs.
 	 */
@@ -69,7 +69,7 @@ public class ParseException extends Exception {
 	}
 	
 	/**
-	 * @see org.json.simple.parser.Yytoken
+	 * @see com.nominanuda.dataobject.json.simple.parser.Yytoken
 	 * 
 	 * @return One of the following base on the value of errorType:
 	 * 		   	ERROR_UNEXPECTED_CHAR		java.lang.Character

@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package com.nominanuda.dataobject.jsonparser;
+package com.nominanuda.dataobject;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -23,10 +23,6 @@ import java.util.LinkedList;
 
 import org.xml.sax.SAXException;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructContentHandler;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.JsonContentHandler;
 
 
 

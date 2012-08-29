@@ -19,7 +19,7 @@ package com.nominanuda.dataobject;
 import com.nominanuda.code.Immutable;
 
 @Immutable
-public class DataStructStreamer {
+public class DataStructStreamer implements JsonStreamer {
 	private DataStructHelper structHelper = new DataStructHelper(); 
 	private final DataStruct struct;
 

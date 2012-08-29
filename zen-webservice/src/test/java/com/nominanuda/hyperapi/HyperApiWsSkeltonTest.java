@@ -27,7 +27,7 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.jsonparser.JSONParser;
+import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.web.http.HttpProtocol;
 
 

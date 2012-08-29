@@ -24,8 +24,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.dataobject.jsonparser.JSONParser;
-import com.nominanuda.dataobject.jsonparser.ParseException;
 
 public class DataStructHelperTest {
 

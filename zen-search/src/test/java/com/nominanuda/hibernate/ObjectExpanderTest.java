@@ -10,8 +10,8 @@ import org.xml.sax.SAXException;
 
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.jsonparser.JSONParser;
-import com.nominanuda.dataobject.jsonparser.ParseException;
+import com.nominanuda.dataobject.JSONParser;
+import com.nominanuda.dataobject.ParseException;
 import com.nominanuda.hibernate.ObjectExpander;
 import com.nominanuda.hibernate.PathMap;
 

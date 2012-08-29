@@ -3,7 +3,6 @@ package com.nominanuda.dataobject;
 import java.util.Iterator;
 import java.util.List;
 
-import com.nominanuda.dataobject.jsonparser.JSONParser;
 
 public class LazyDataObject implements DataObject {
 	private DataObject delegee;

@@ -31,7 +31,7 @@ import org.apache.http.HttpResponse;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.jsonparser.JSONParser;
+import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.lang.Check;
 import com.nominanuda.web.http.Http404Exception;
 import com.nominanuda.web.http.Http500Exception;
@@ -75,8 +75,9 @@ public class HyperApiWsSkelton implements WebService {
 						if(request instanceof HttpEntityEnclosingRequest) {
 							HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 							if(entity != null) {
+								String cs = Check.ifNull(HttpCoreHelper.HTTP.guessCharset(entity), HttpProtocol.UTF_8);
 								dataEntity = new JSONParser().parse(new InputStreamReader(
-										entity.getContent()));
+										entity.getContent(), cs));
 							}
 						}
 						Object[] args = createArgs(uriParams, dataEntity, api, m);
