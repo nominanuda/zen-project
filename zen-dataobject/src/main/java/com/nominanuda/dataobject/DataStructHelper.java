@@ -145,12 +145,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			DataStructStreamer.stream((DataArray) o, p);
 			return sw.toString();
 		} else if (o instanceof Number) {
-			Number n = (Number) o;
-			if (Maths.isInteger(n.doubleValue())) {
-				return new Long(n.longValue()).toString();
-			} else {
-				return n.toString();
-			}
+			return numberToString((Number)o);
 		} else if (o instanceof String) {
 			return "\"" + jsonStringEscape((String) o) + "\"";
 		} else if (o instanceof Boolean) {
@@ -159,6 +154,14 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			throw new IllegalArgumentException(
 					"cannot convert to string an object of type:"
 							+ o.getClass().getName());
+		}
+	}
+
+	public String numberToString(Number n) {
+		if (Maths.isInteger(n.doubleValue())) {
+			return new Long(n.longValue()).toString();
+		} else {
+			return n.toString();
 		}
 	}
 
