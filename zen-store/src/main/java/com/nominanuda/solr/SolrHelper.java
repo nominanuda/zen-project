@@ -38,6 +38,7 @@ import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
 
 public class SolrHelper {
+	public static final SolrHelper SOLR = new SolrHelper();
 	private static final DataStructHelper struct = new DataStructHelper();
 
 	public DataArray listResultsDotAware(SolrServer solr, SolrQuery sq, int start, int count) throws SolrServerException {
