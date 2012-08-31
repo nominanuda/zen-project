@@ -15,7 +15,18 @@
  */
 package com.nominanuda.dataobject;
 
+import static com.nominanuda.dataobject.DataType.array;
+import static com.nominanuda.dataobject.DataType.bool;
+import static com.nominanuda.dataobject.DataType.nil;
+import static com.nominanuda.dataobject.DataType.number;
+import static com.nominanuda.dataobject.DataType.object;
+import static com.nominanuda.dataobject.DataType.string;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,8 +43,7 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
 import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
-
-import static com.nominanuda.dataobject.DataType.*;
+import com.nominanuda.lang.Strings;
 
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
@@ -604,6 +614,82 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 
 	public DataArray newArray() {
 		return new DataArrayImpl();
+	}
+
+	public DataStruct parse(Reader json, boolean loose) {
+		try {
+			return loose ? new JsonLooseParser().parse(json) : new JSONParser().parse(json);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	public DataStruct parseUtf8(InputStream json, boolean loose) {
+		return parse(new InputStreamReader(json, Strings.UTF8), loose);
+	}
+
+	public DataStruct parse(String json, boolean loose) {
+		return parse(new StringReader(json), loose);
+	}
+
+	public DataObject parseObject(Reader json, boolean loose) {
+		return (DataObject)parse(json, loose);
+	}
+
+	public DataObject parseObjectUtf8(InputStream json, boolean loose) {
+		return (DataObject)parseUtf8(json, loose);
+	}
+
+	public DataObject parseObject(String json, boolean loose) {
+		return (DataObject)parse(new StringReader(json), loose);
+	}
+
+	public DataArray parseArray(Reader json, boolean loose) {
+		return (DataArray)parse(json, loose);
+	}
+
+	public DataArray parseArrayUtf8(InputStream json, boolean loose) {
+		return (DataArray)parseUtf8(json, loose);
+	}
+
+	public DataArray parseArray(String json, boolean loose) {
+		return (DataArray)parse(new StringReader(json), loose);
+	}
+
+	public DataStruct parse(Reader json) {
+		return parse(json, false);
+	}
+
+	public DataStruct parseUtf8(InputStream json) {
+		return parseUtf8(json, false);
+	}
+
+	public DataStruct parse(String json) {
+		return parse(json, false);
+	}
+
+	public DataObject parseObject(Reader json) {
+		return parseObject(json, false);
+	}
+
+	public DataObject parseObjectUtf8(InputStream json) {
+		return parseObjectUtf8(json, false);
+	}
+
+	public DataObject parseObject(String json) {
+		return (DataObject)parse(new StringReader(json));
+	}
+
+	public DataArray parseArray(Reader json) {
+		return parseArray(json, false);
+	}
+
+	public DataArray parseArrayUtf8(InputStream json) {
+		return parseArrayUtf8(json, false);
+	}
+
+	public DataArray parseArray(String json) {
+		return parseArray(json, false);
 	}
 
 }
