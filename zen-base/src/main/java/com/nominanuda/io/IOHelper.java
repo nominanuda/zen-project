@@ -248,6 +248,17 @@ public class IOHelper {
 		return res;
 	}
 
+	public File newTmpFile(String prefix) throws IOException {
+		File res = null;
+		do {
+			Double d = Math.random() * Long.MAX_VALUE;
+			byte[] b = Maths.getBytes(d.longValue());
+			res = new File(TMP, prefix + base64.encodeUrlSafeNoPad(b));
+		} while (res.exists());
+		res.createNewFile();
+		return res;
+	}
+
 	public void copyRecursive(URL srcDir, File dstDir) throws IOException {
 		copyRecursive(srcDir, dstDir, null);
 	}
