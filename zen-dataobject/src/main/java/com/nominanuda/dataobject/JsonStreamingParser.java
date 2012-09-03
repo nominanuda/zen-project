@@ -44,7 +44,7 @@ public class JsonStreamingParser implements JsonStreamer {
 		Check.illegalstate.assertFalse(consumed);
 		consumed = true;
 		if(loose) {
-			new JsonLooseParser().parse(json);
+			new JsonLooseParser().parse(json, jch);
 		} else {
 			try {
 				new JSONParser().parse(json, jch);
