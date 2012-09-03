@@ -12,33 +12,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
  */
-package com.nominanuda.dataobject.transform;
+package com.nominanuda.store.api;
 
 import static org.junit.Assert.*;
 
-import java.io.StringReader;
+import java.io.File;
 
 import org.junit.Test;
 
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.xml.SAXPipeline;
+import com.nominanuda.io.IOHelper;
 
-public class JsonPipeTest {
+public class PropertyFileKeyValueStoreTest {
 
 	@Test
-	public void test() {
-		DataObjectImpl in = new DataObjectImpl();
-		in.put("a", 1);
-		JsonPipeline p = new JsonPipeline()
-			.add(new InstanceFactory<JsonTransformer>(new StringValuesJsonTransformer()))
-			.withLooseParser()
-			.complete();
-		DataStruct res = p.build(new StringReader("{a:{b:false,c:1.1,d:1.0}}")).apply();
-		System.err.println(res.toString());
+	public void test() throws Exception {
+		File f = IOHelper.IO.newTmpFile(getClass().getSimpleName());
+		PropertyFileKeyValueStore pkvs = new PropertyFileKeyValueStore(f.getAbsolutePath());
+		pkvs.init();
+		pkvs.put("foo", "bar");
+		pkvs.put("foo", "baz");
+		assertTrue(pkvs.exists("foo"));
+		assertEquals("baz", pkvs.get("foo"));
+		pkvs.dispose();
+		PropertyFileKeyValueStore pkvs2 = new PropertyFileKeyValueStore(f.getAbsolutePath());
+		pkvs2.init();
+		assertEquals("baz", pkvs2.get("foo"));
+		pkvs2.dispose();
 	}
 
 }
