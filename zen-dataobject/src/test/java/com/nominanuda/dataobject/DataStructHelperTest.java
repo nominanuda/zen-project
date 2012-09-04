@@ -15,14 +15,13 @@
  */
 package com.nominanuda.dataobject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.*;
 
-import org.junit.Test;
-import org.xml.sax.SAXException;
+import org.junit.*;
+import org.xml.sax.*;
 
 
 public class DataStructHelperTest {
@@ -77,6 +76,18 @@ public class DataStructHelperTest {
 			String s2 = DataStructHelper.STRUCT.jsonStringUnescape(s1.substring(1, s1.length() - 1));
 			assertEquals(s, s2);
 		}
+	}
+	
+	@Test
+	public void shouldTranslateDataArrayWith2EqualsObjectIntoAListWith2EqualsMap() {
+		DataObject val1 = new DataObjectImpl();
+		DataObject val2 = new DataObjectImpl();
+		DataArray arr = new DataArrayImpl();
+		arr.add(val1);
+		arr.add(val2);
+		List list = new DataStructHelper().toMapsAndLists(arr);
+		assertEquals(2, list.size());
+		assertEquals(list.get(0), list.get(1));
 	}
 	
 

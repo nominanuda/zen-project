@@ -15,35 +15,14 @@
  */
 package com.nominanuda.dataobject;
 
-import static com.nominanuda.dataobject.DataType.array;
-import static com.nominanuda.dataobject.DataType.bool;
-import static com.nominanuda.dataobject.DataType.nil;
-import static com.nominanuda.dataobject.DataType.number;
-import static com.nominanuda.dataobject.DataType.object;
-import static com.nominanuda.dataobject.DataType.string;
+import static com.nominanuda.dataobject.DataType.*;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Maths;
-import com.nominanuda.lang.SafeConvertor;
-import com.nominanuda.lang.SetList;
-import com.nominanuda.lang.Strings;
+import com.nominanuda.code.*;
+import com.nominanuda.lang.*;
 
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
@@ -543,6 +522,32 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 
+	public Map<String, ? super Object> toMapsAndLists(DataObject o) {
+		Map<String,Object> res = new LinkedHashMap<String, Object>();
+		for(String k : o.getKeys()) {
+			Object v = o.get(k);
+			Object vToPut = 
+				v == null ? null
+				: v instanceof DataObject ? toMapsAndLists((DataObject)v)
+				: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+				: v;
+			res.put(k, vToPut);
+		}
+		return res;
+	}
+	public List<? super Object> toMapsAndLists(DataArray arr) {
+		List<? super Object> res = new LinkedList<Object>();
+		for(Object v : arr) {
+			Object vToPut = 
+				v == null ? null
+				: v instanceof DataObject ? toMapsAndLists((DataObject)v)
+				: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+				: v;
+			res.add(vToPut);
+		}
+		return res;
+	}
+	
 	public Map<String, ? super Object> toMapsAndSetLists(DataObject o) {
 		Map<String,Object> res = new LinkedHashMap<String, Object>();
 		for(String k : o.getKeys()) {
