@@ -21,6 +21,9 @@ import com.nominanuda.dataobject.JsonContentHandler;
 public class BaseJsonTransformer implements JsonTransformer {
 	private JsonContentHandler target;
 
+	protected JsonContentHandler getTarget() {
+		return target;
+	}
 	public void setTarget(JsonContentHandler target) {
 		this.target = target;
 	}
