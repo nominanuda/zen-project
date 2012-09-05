@@ -125,4 +125,10 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	public Iterator<Object> iterator() {
 		return l.iterator();
 	}
+
+	@Override
+	public DataArray with(Object val) {
+		add(val);
+		return this;
+	}
 }
