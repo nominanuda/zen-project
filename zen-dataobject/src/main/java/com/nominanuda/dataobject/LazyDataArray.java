@@ -291,4 +291,9 @@ public class LazyDataArray implements DataArray {
 		return delegee.putArray(key, o);
 	}
 
+	public DataArray with(Object val) {
+		add(val);
+		return this;
+	}
+
 }
