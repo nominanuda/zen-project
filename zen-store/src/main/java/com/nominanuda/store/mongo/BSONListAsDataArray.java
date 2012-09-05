@@ -246,4 +246,9 @@ public class BSONListAsDataArray implements DataArray {
 		return l.size();
 	}
 
+	public DataArray with(Object val) {
+		add(val);
+		return this;
+	}
+
 }
