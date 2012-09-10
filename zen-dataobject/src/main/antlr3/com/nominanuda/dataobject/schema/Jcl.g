@@ -2,13 +2,13 @@ grammar Jcl;
 
 options {
 output = AST;
-//backtrack=true;
-//k=10;
+backtrack=true;
+k=10;
 
 }
 
 tokens {
-OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;
+OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;VALUESEQ;ENTRYSEQ;TYPEDEF;TYPEREF;
 }
 
 @header {
@@ -42,6 +42,8 @@ throw e;
 
 program
 	: value
+	| LvalTkn '@' value
+	 -> ^(TYPEDEF LvalTkn value)
 	;
 
 value
@@ -61,13 +63,13 @@ choiceValue
 	;
 
 primitive
-	: PrimitiveTkn
-	-> ^(PRIMITIVE PrimitiveTkn)
+	: LvalTkn
+	-> ^(PRIMITIVE LvalTkn)//TODO token overlap
 	;
-PrimitiveTkn
-	:'n' | 's' | 'b';	
+//PrimitiveTkn
+//	:'n' | 's' | 'b';	
 
-object	: '{' members? '}' 
+object	: '{' members?  '}' 
 	  -> ^(OBJECT members?)
 	;
 	
@@ -75,31 +77,45 @@ array	: '[' elements? ']'
 	  -> ^(ARRAY elements?)
 	;
 
-elements	: value (','! value)*
+elements	: valueseq | (value (','! value)* (','! valueseq)?)
+//elements	: value (','! value)* 
 	;
-	
-members	: entry (','! entry)*
+
+valueseq	: '*' -> VALUESEQ;
+
+members	: entryseq | (entry (','! entry)* (','! entryseq)?)
 	;
-	 
+
+entryseq:	'*' -> ENTRYSEQ;
 //entry	: StringExpr ':' value 
 //	  -> ^(ENTRY StringExpr value) 
 //
 entry
 	: lval ':'  rval
-	-> ^(ENTRY lval rval)
+	 -> ^(ENTRY lval rval)
 	| lval
-	-> ^(ENTRY lval PRIMITIVE)
+	 -> ^(ENTRY lval PRIMITIVE)
+//	| '*'
+//	 -> ENTRYSEQ
 	;
 lval
 	: LvalTkn 
 	-> ^(NAME LvalTkn)
+	| LvalTkn ExistentialTkn
+	-> ^(NAME LvalTkn ExistentialTkn)
 	;
+ExistentialTkn
+	: '!?'|'?!'|'!'|'?'
+	;
+
 LvalTkn
-	: ('a'..'z')+
+	: ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'$')+
 	;
 
 rval
 	: value
+	| '@' LvalTkn
+	 -> ^(TYPEREF LvalTkn)
 	;
 
 WS
