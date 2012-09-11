@@ -2,8 +2,8 @@ grammar Jcl;
 
 options {
 output = AST;
-backtrack=true;
-k=10;
+//backtrack=true;
+//k=10;
 
 }
 
@@ -81,12 +81,12 @@ elements	: valueseq | (value (','! value)* (','! valueseq)?)
 //elements	: value (','! value)* 
 	;
 
-valueseq	: '*' -> VALUESEQ;
+valueseq	: '*' rval? -> ^(VALUESEQ rval?);
 
 members	: entryseq | (entry (','! entry)* (','! entryseq)?)
 	;
 
-entryseq:	'*' -> ENTRYSEQ;
+entryseq:	'*' rval? -> ^(ENTRYSEQ rval?);
 //entry	: StringExpr ':' value 
 //	  -> ^(ENTRY StringExpr value) 
 //
