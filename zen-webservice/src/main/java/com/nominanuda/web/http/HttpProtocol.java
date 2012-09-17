@@ -69,7 +69,7 @@ public interface HttpProtocol {
 	String CT_ATOM = "application/atom+xml";
 	String CT_APPLICATION_XQUERY_CS_UTF8 = "application/xquery; charset=UTF-8";
 	String CT_APPLICATION_XQUERY = "application/xquery";
-	String CT_APPLICATION_OCTET_STREAM = "application/octect-stream";
+	String CT_APPLICATION_OCTET_STREAM = "application/octet-stream";
 	String CT_APPLICATION_JSON_CS_UTF8 = "application/json; charset=UTF-8";
 	String CT_APPLICATION_JSON = "application/json";
 	String CT_IMAGE_JPEG = "image/jpeg";
