@@ -15,8 +15,22 @@
  */
 package com.nominanuda.hyperapi;
 
-public interface PayloadDecoder {
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
 
-	<H,R extends H> R decode (byte[] payload, String mediaType, Class<H> hint);
-	boolean canDecode(byte[] payload, String mediaType, Class<?> hint);
+import com.nominanuda.lang.Check;
+
+public class ByteArrayEntityEncoder extends AbstractEntityEncoder<byte[]> {
+
+	public ByteArrayEntityEncoder() {
+		super(byte[].class);
+	}
+
+	@Override
+	protected HttpEntity encodeInternal(AnnotatedType p, byte[] barr) {
+		String ct = Check.ifNullOrBlank(p.mediaType(), defaultContentType);
+		ByteArrayEntity entity = new ByteArrayEntity(barr);
+		entity.setContentType(ct);
+		return entity;
+	}
 }

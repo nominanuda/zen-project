@@ -16,13 +16,10 @@
 package com.nominanuda.hyperapi;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -42,27 +39,20 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.ByteArrayEntity;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.dataobject.ParseException;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Maths;
 import com.nominanuda.urispec.URISpec;
 import com.nominanuda.web.http.Http400Exception;
 import com.nominanuda.web.http.Http500Exception;
-import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 
 public class HyperApiHttpInvocationHandler implements InvocationHandler {
-	private List<PayloadDecoder> decoders = new LinkedList<PayloadDecoder>();
+	private EntityCodec entityCodec = EntityCodec.createBasic();
 	private Class<?> hyperApi;
 	private HttpClient client;
 	private String uriPrefix;
@@ -90,25 +80,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		if(resp.getEntity() == null || resp.getEntity().getContent() == null) {
 			return null;
 		}
-		IOHelper io = new IOHelper();
-		String s = io.readAndCloseUtf8(resp.getEntity().getContent());
-		Class<?> returnType = method.getReturnType();
-		if("null".equals(s)) {
-			return null;
-		} else if("true".equals(s)||"false".equals(s)) {
-			return Boolean.valueOf(s);
-		} else if(Maths.isNumber(s)) {
-			if(Maths.isInteger(s)) {
-				return Long.valueOf(s);
-			} else {
-				return Double.valueOf(s);
-			}
-		} else if(s.startsWith("\"") && s.length() > 1) {
-			return DataStructHelper.STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
-		} else {
-			DataStruct ds = new JSONParser().parse(new StringReader(s));
-			return ds;
-		}
+		return entityCodec.decode(resp.getEntity(), new AnnotatedType(method.getReturnType(), method.getAnnotations()));
 	}
 	private HttpUriRequest encode(String uriPrefix, Class<?> hyperApi2, Method method, Object[] args) {
 		String httpMethod = null;
@@ -136,7 +108,6 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		for(int i = 0; i < parameterTypes.length; i++) {
-			@SuppressWarnings("unused")
 			Class<?> parameterType = parameterTypes[i];
 			Annotation[] annotations = parameterAnnotations[i];
 			Object arg = args[i];
@@ -158,7 +129,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			}
 			if(! annotationFound) {
 				Check.unsupportedoperation.assertNull(entity);
-				entity = getEntity(arg);
+				entity = getEntity(arg, parameterType, annotations);
 			}
 		}
 		String uri = spec.template(uriParams);
@@ -180,20 +151,12 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		}
 		throw new IllegalArgumentException("unknown http method "+httpMethod);
 	}
-	private HttpEntity getEntity(Object arg) {
-		DataStructHelper dataStructHelper = new DataStructHelper();
-		try {
-			byte[] payload = dataStructHelper.toJsonString(arg).getBytes("UTF-8");
-			ByteArrayEntity e = new ByteArrayEntity(payload);
-			e.setContentType(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
-			return e;
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException();
-		}
+	private @Nullable HttpEntity getEntity(Object arg, Class<?> parameterType, Annotation[] parameterAnnotations) throws IllegalArgumentException {
+		AnnotatedType ap = new AnnotatedType(parameterType, parameterAnnotations);
+		return entityCodec.encode(arg, ap);
 	}
 
-	public void setPayloadDecoders(List<? extends PayloadDecoder> l) {
-		decoders.clear();
-		decoders.addAll(l);
+	public void setEntityCodec(EntityCodec entityCodec) {
+		this.entityCodec = entityCodec;
 	}
 }

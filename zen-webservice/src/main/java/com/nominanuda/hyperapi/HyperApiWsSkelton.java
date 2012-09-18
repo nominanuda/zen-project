@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -24,23 +24,21 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.message.BasicHttpResponse;
 
 import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.http.Http404Exception;
 import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpCoreHelper;
-import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 import com.nominanuda.web.mvc.WebService;
 
 public class HyperApiWsSkelton implements WebService {
+	private EntityCodec entityCodec = EntityCodec.createBasic();
 	private HyperApiIntrospector apiIntrospector = new HyperApiIntrospector();
 	private Class<?> api;
 	private String requestUriPrefix = "";
@@ -48,8 +46,8 @@ public class HyperApiWsSkelton implements WebService {
 
 	public HttpResponse handle(HttpRequest request) throws Exception {
 		try {
-			Object result = handleCall(request);
-			return response(result);
+			Tuple2<Object, AnnotatedType> result = handleCall(request);
+			return response(result.get0(), result.get1());
 		} catch(IllegalArgumentException e) {
 			throw new Http404Exception(e);
 		} catch(Exception e) {
@@ -57,7 +55,7 @@ public class HyperApiWsSkelton implements WebService {
 		}
 	}
 
-	protected Object handleCall(HttpRequest request) throws Exception, IllegalArgumentException/*method not found*/ {
+	protected Tuple2<Object, AnnotatedType> handleCall(HttpRequest request) throws Exception, IllegalArgumentException/*method not found*/ {
 		String requestUri = request.getRequestLine().getUri();
 		Check.illegalargument.assertTrue(requestUri.startsWith(requestUriPrefix));
 		String apiRequestUri = requestUri.substring(requestUriPrefix.length());
@@ -71,18 +69,9 @@ public class HyperApiWsSkelton implements WebService {
 					if(httpMethod != null
 					&& httpMethod.annotationType().getSimpleName()
 							.equals(request.getRequestLine().getMethod())) {
-						DataStruct dataEntity = null;
-						if(request instanceof HttpEntityEnclosingRequest) {
-							HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
-							if(entity != null) {
-								String cs = Check.ifNull(HttpCoreHelper.HTTP.guessCharset(entity), HttpProtocol.UTF_8);
-								dataEntity = new JSONParser().parse(new InputStreamReader(
-										entity.getContent(), cs));
-							}
-						}
-						Object[] args = createArgs(uriParams, dataEntity, api, m);
+						Object[] args = createArgs(uriParams, new HttpCoreHelper().getEntity(request), api, m);
 						Object result = m.invoke(service, args);
-						return result;
+						return new Tuple2<Object, AnnotatedType>(result, new AnnotatedType(m.getReturnType(), m.getAnnotations()));
 					}
 				}
 			}
@@ -91,14 +80,19 @@ public class HyperApiWsSkelton implements WebService {
 			"for api request: "+apiRequestUri);
 	}
 
-	private Object[] createArgs(DataObject uriParams, DataStruct dataEntity,
-			Class<?> api2, Method method) {
+	private Object decodeEntity(HttpEntity entity, AnnotatedType p) throws IOException {
+		return entityCodec.decode(entity, p);
+	}
+
+	private Object[] createArgs(DataObject uriParams, HttpEntity entity,
+			Class<?> api2, Method method) throws IOException {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		Object[] args = new Object[parameterTypes.length];
 		for(int i = 0; i < parameterTypes.length; i++) {
 			Class<?> parameterType = parameterTypes[i];
 			Annotation[] annotations = parameterAnnotations[i];
+			AnnotatedType p = new AnnotatedType(parameterType, annotations);
 			boolean annotationFound = false;
 			for(Annotation annotation : annotations){
 				if(annotation instanceof PathParam) {
@@ -114,7 +108,8 @@ public class HyperApiWsSkelton implements WebService {
 				}
 			}
 			if(! annotationFound) {
-				args[i] = Check.notNull(dataEntity);
+				Object dataEntity = entity == null ? null : decodeEntity(entity, p);
+				args[i] = dataEntity;
 			}
 		}
 		return args;
@@ -137,11 +132,14 @@ public class HyperApiWsSkelton implements WebService {
 		return null;
 	}
 
-	protected HttpResponse response(Object result) {
-		HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
-		DataStructHelper dataStructHelper = new DataStructHelper();
-		return httpCoreHelper.createBasicResponse(200, dataStructHelper.toJsonString(result), 
-								HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
+	protected HttpResponse response(Object result, AnnotatedType ap) {
+		HttpCoreHelper d = new HttpCoreHelper();
+		BasicHttpResponse resp = new BasicHttpResponse(d.statusLine(200));
+		HttpEntity entity = entityCodec.encode(result, ap);
+		if(entity != null) {
+			resp.setEntity(entity);
+		}
+		return resp;
 	}
 
 	public void setApi(Class<?> api) {
@@ -155,5 +153,4 @@ public class HyperApiWsSkelton implements WebService {
 	public void setService(Object service) {
 		this.service = service;
 	}
-
 }
