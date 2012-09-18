@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 
@@ -91,6 +92,34 @@ public class PayloadCodecTest {
 	interface Api2 {
 		@PUT @Path("/")
 		byte[] put(InputStream foo);
+	}
+
+	@Test
+	public void testAnyJsonApi() {
+		HyperApiWsSkelton skelton = makeSkelton(Api3.class, new Api3() {
+			public String x(String x) { return x; }
+			public Boolean y(Boolean y) { return y; }
+			public Double w(Double w) { return w; }
+			public Long k(Long k) { return k; }
+		});
+		Api3 api = makeStub(skelton, Api3.class);
+		assertEquals("B", api.x("B"));
+		assertEquals("", api.x(""));
+		assertEquals(null, api.x(null));
+		assertEquals(null, api.y(null));
+		assertEquals(null, api.w(null));
+		assertEquals(null, api.k(null));
+		assertEquals(new Long(1), api.k(1l));
+		assertEquals(new Boolean(false), api.y(false));
+		assertEquals(new Double(1.1), api.w(1.1));
+	}
+
+	@HyperApi
+	interface Api3 {
+		@PUT @Path("/x")String x(String x);
+		@PUT @Path("/y")Boolean y(Boolean y);
+		@PUT @Path("/w")Double w(Double w);
+		@PUT @Path("/k")Long k(Long k);
 	}
 
 	private <T> HyperApiWsSkelton makeSkelton(Class<T> api, T impl) {

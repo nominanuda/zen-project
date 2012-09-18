@@ -25,9 +25,10 @@ import com.nominanuda.lang.Collections;
 
 public class EntityCodec {
 	private List<EntityEncoder> encoders = Collections.linkedList(
-			(EntityEncoder)new DataStructJsonEntityEncoder(), 
 			(EntityEncoder)new InputStreamEntityEncoder(), 
-			(EntityEncoder)new ByteArrayEntityEncoder());
+			(EntityEncoder)new ByteArrayEntityEncoder(),
+			(EntityEncoder)new JsonAnyValueEntityEncoder()
+		);
 
 	private List<EntityDecoder> decoders = Collections.linkedList(
 			//(EntityDecoder)new DataStructJsonDecoder(),
