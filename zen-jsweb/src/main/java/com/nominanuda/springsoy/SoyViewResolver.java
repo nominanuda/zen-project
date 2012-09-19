@@ -15,8 +15,11 @@
  */
 package com.nominanuda.springsoy;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +28,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 import com.google.template.soy.tofu.SoyTofu;
+import com.nominanuda.springsoy.SoyViewResolver.SoyView.LongToInt;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class SoyViewResolver implements ViewResolver {
@@ -42,6 +46,7 @@ public class SoyViewResolver implements ViewResolver {
 	public static class SoyView implements View {
 		private final SoyTofu tofu;
 		private final String name;
+		private static final LongToInt longToInt = new LongToInt();
 
 		public SoyView(String name, SoyTofu tofu) {
 			this.name = name;
@@ -55,13 +60,45 @@ public class SoyViewResolver implements ViewResolver {
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			byte[] b = tofu.newRenderer(name)
-						.setData(model)
+						.setData(longToInt.longToInt((Map<String, Object>)model))
 						.render()
 						.getBytes(HttpProtocol.CS_UTF_8);
 			response.setContentType(getContentType());
 			response.setContentLength(b.length);
 			response.getOutputStream().write(b);
 		}
-
+		static class LongToInt {
+			public Map<String, ?> longToInt(Map<String, Object> m) {
+				for(Entry<String, Object> e : m.entrySet()) {
+					Object o = e.getValue();
+					e.setValue(o);
+					if(o != null) {
+						if(o instanceof Long) {
+							e.setValue(((Long) o).intValue());
+						} else if(o instanceof Map) {
+							longToInt((Map<String, Object>)o);
+						} else if(o instanceof List) {
+							longToInt((List<Object>)o);
+						}
+					}
+				}
+				return m;
+			}
+			public void longToInt(List<Object> l) {
+				int len = l.size();
+				for(int i = 0; i < len; i++) {
+					Object o = l.get(i);
+					if(o != null) {
+						if(o instanceof Long) {
+							l.set(i, ((Long)o).intValue());
+						} else if(o instanceof Map) {
+							longToInt((Map<String, Object>)o);
+						} else if(o instanceof List) {
+							longToInt((List<Object>)o);
+						}
+					}
+				}
+			}
+		}
 	}
 }
