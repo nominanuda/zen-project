@@ -29,7 +29,11 @@ import com.nominanuda.lang.Maths;
 public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 
 	public JsonAnyValueDecoder() {
-		super(Object.class, CT_APPLICATION_JSON);
+		this(CT_APPLICATION_JSON);
+	}
+
+	public JsonAnyValueDecoder(String contentType) {
+		super(Object.class, contentType);
 	}
 
 	@Override

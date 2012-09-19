@@ -34,7 +34,9 @@ public class EntityCodec {
 			//(EntityDecoder)new DataStructJsonDecoder(),
 			(EntityDecoder)new JsonAnyValueDecoder(),
 			(EntityDecoder)new ByteArrayEntityDecoder(),
-			(EntityDecoder)new InputStreamEntityDecoder());
+			(EntityDecoder)new InputStreamEntityDecoder(),
+			(EntityDecoder)new JsonAnyValueDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE)//this is for buggy server compat 
+			);
 
 	public static EntityCodec createBasic() {
 		return new EntityCodec();

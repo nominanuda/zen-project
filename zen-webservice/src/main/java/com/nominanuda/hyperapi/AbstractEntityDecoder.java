@@ -25,7 +25,7 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.web.http.HttpProtocol;
 
 public abstract class AbstractEntityDecoder<T> implements EntityDecoder, HttpProtocol {
-	protected static final String ANY_CONTENT_TYPE = "*";
+	public static final String ANY_CONTENT_TYPE = "*";
 	private final Class<T> cl;
 	protected final String contentType;
 
