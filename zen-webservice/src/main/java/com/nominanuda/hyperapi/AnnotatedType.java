@@ -18,7 +18,9 @@ package com.nominanuda.hyperapi;
 import java.lang.annotation.Annotation;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.lang.Check;
@@ -45,6 +47,33 @@ public class AnnotatedType {
 			} else if(Produces.class.equals(t)) {
 				String[] vals = ((Produces)a).value();
 				return vals == null ? null : vals[0];
+			}
+		}
+		return null;
+	}
+
+	public boolean isNullable() {
+		for(Annotation a : annotations) {
+			Class<? extends Annotation> t = a.annotationType();
+			if(Nullable.class.equals(t)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public @Nullable String getNameInUri() {
+		for(Annotation a : annotations) {
+			Class<? extends Annotation> t = a.annotationType();
+			if(PathParam.class.equals(t)) {
+				return ((PathParam)a).value();
+			}
+			if(QueryParam.class.equals(t)) {
+				return ((QueryParam)a).value();
 			}
 		}
 		return null;
