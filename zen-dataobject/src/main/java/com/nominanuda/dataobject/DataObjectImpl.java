@@ -40,6 +40,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 	public Object put(String k, Object v) {
 		Object o = cloneInternal(v,this);
 		m.put(checkKey(k), o);
+		onMutate();
 		return o;
 	}
 
@@ -52,7 +53,11 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 	}
 	
 	public Object remove(String k) {
-		return m.remove(k);
+		Object o = m.remove(k);
+		if(o != null) {
+			onMutate();
+		}
+		return o;
 	}
 	
 	public List<String> getKeys() {

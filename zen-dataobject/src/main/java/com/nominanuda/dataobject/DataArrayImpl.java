@@ -49,6 +49,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 		Object obj = isPrimitiveOrNull(v)
 			? v : ((AbstractDataStruct)v).cloneStruct(this);
 		l.set(ensureRoom(i),obj);
+		onMutate();
 		return obj;
 	}
 
@@ -68,10 +69,15 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	}
 
 	public Object remove(Integer i) {
-		return l.remove(i);
+		Object o = l.remove(i);
+		if(o != null) {
+			onMutate();
+		}
+		return o;
 	}
 
 	public Object add(Object v) {
+		onMutate();
 		return put(getLength(), v);
 	}
 

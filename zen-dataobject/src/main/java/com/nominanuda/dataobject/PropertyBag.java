@@ -34,7 +34,7 @@ public interface PropertyBag<K> extends DataStruct {
 	boolean isPrimitiveOrNull(@Nullable Object o);
 	void setPathProperty(String path, @Nullable Object value);
 	void setOrPushPathProperty(String path, @Nullable  Object value);
-	void setProperty(Object key, @Nullable Object value);
+	//void setProperty(Object key, @Nullable Object value);
 	void setOrPushProperty(Object key, @Nullable Object value);
 	Object getPathSafe(String path);
 	@Nullable String getString(K key) throws ClassCastException;

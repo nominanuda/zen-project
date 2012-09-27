@@ -130,11 +130,6 @@ public class LazyDataObject implements DataObject {
 		delegee.setOrPushPathProperty(path, value);
 	}
 
-	public void setProperty(Object key, Object value) {
-		explode();
-		delegee.setProperty(key, value);
-	}
-
 	public void setOrPushProperty(Object key, Object value) {
 		explode();
 		delegee.setOrPushProperty(key, value);

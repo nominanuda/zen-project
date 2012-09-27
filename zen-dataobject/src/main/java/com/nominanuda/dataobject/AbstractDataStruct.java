@@ -17,6 +17,8 @@ package com.nominanuda.dataobject;
 
 import static com.nominanuda.lang.Check.illegalargument;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -29,7 +31,6 @@ import com.nominanuda.lang.Maths;
 
 
 public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
-	protected static final DataStructHelper structHelper = new DataStructHelper();
 	protected final DataStruct parent;
 
 	public AbstractDataStruct(DataStruct parent) {
@@ -89,7 +90,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 	}
 
 	public boolean isPrimitiveOrNull(Object o) {
-		return structHelper.isPrimitiveOrNull(o);
+		return STRUCT.isPrimitiveOrNull(o);
 	}
 	public DataArray asArray() throws ClassCastException {
 		return (DataArray)this;
@@ -131,7 +132,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 	public void setPathProperty(String path, @Nullable Object value) {
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
-		explodePath(path).setProperty(pathBits[len-1], value);
+		explodePath(path).put(pathBits[len-1], value);
 	}
 	public void setOrPushPathProperty(String path, @Nullable  Object value) {
 		String[] pathBits = path.split("\\.");
@@ -159,14 +160,14 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 		return _target;
 	}
 
-	public void setProperty(Object key, @Nullable Object value) {
+	private void setProperty(Object key, @Nullable Object value) {
 		asObjectKeyedDataStruct().put(key, value);
 	}
 	public void setOrPushProperty(Object key, @Nullable Object value) {
 		PropertyBag<Object> _this = asObjectKeyedDataStruct();
 		if(_this.exists(key)) {
 			Object cur = _this.get(key);
-			if(structHelper.isDataArray(cur)) {
+			if(STRUCT.isDataArray(cur)) {
 				((DataArray)cur).add(value);
 			} else {
 				DataArray darr = new DataArrayImpl();
@@ -191,10 +192,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 	private PropertyBag<Object> asObjectKeyedDataStruct(DataStruct ds) {
 		return (PropertyBag<Object>)ds;
 	}
-	@Override
-	public String toString() {
-		return structHelper.toJsonString(this);
-	}
+
 	@SuppressWarnings("unchecked")
 	public Object getPathSafe(String path) {
 		PropertyBag<Object> _target = asObjectKeyedDataStruct();
@@ -307,5 +305,32 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 
 	public DataArray putArray(K key, DataArray o) {
 		return (DataArray)put(key, o);
+	}
+
+	protected void onMutate() {
+		json = null;
+	}
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return STRUCT.clone(this);
+	}
+
+	@Override
+	public String toString() {
+		return json != null ? json : STRUCT.toJsonString(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return STRUCT.equals(this, obj);
+	}
+
+	private String json = null;
+	@Override
+	public int hashCode() {
+		if(json == null) {
+			json = toString();
+		}
+		return json.hashCode();
 	}
 }
