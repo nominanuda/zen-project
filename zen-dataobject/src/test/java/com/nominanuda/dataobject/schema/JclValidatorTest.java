@@ -19,27 +19,65 @@ import static org.junit.Assert.*;
 
 import java.io.StringReader;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.transform.JsonPipeline;
 import com.nominanuda.dataobject.transform.JsonTransformer;
 import com.nominanuda.dataobject.transform.StringValuesJsonTransformer;
+import com.nominanuda.lang.Check;
 import com.nominanuda.lang.InstanceFactory;
 
+//@Ignore
 public class JclValidatorTest {
 
 
 	@Test
-	public void test1() throws Exception {
-		JclValidatorFactory f = new JclValidatorFactory("{a:{r:b,c!:n,e:s}}");
+	public void testValid() throws Exception {
+		valid("{}", "{}");
+		invalid("{}", "{a:null}");
+		valid("{a}", "{a:1}");
+		valid("{a?}", "{}");
+		invalid("{a}", "{}");
+		valid("{c,a?,b}", "{b:1,c:2}");
+		valid("{a!}", "{a:1}");
+		invalid("{a!}", "{a:null}");
+		valid("{a?:{}}", "{a:null}");
+		invalid("{a!:{}}", "{a:null}");
+		valid("{a!:{}}", "{a:{}}");
+		invalid("{a!:{}}", "{a:2}");
+		valid("{a,*}", "{b:{},a:1}");
+		valid("{a,b:{*}}", "{b:{c:{d:1}},a:1}");
+		valid("[]", "[]");
+		valid("[b]", "[true]");
+		invalid("[]", "[true]");
+		invalid("[b,b]", "[true]");
+		invalid("[b,b]", "[true,null,null]");
+	}
+
+	private void invalid(String schema, String instance) throws Exception {
+		try {
+			valid(schema, instance);
+			fail();
+		} catch(RuntimeException e) {
+			if(! (e.getCause() != null 
+					&& e.getCause() instanceof ValidationException)) {
+				throw e;
+			}
+		}
+	}
+
+	private void valid(String schema, String instance) throws Exception {
+		DataStruct res = DataStructHelper.STRUCT.parse(instance, true);
+		JclValidatorFactory f = new JclValidatorFactory(schema);
 		JsonPipeline p = new JsonPipeline()
 			.add(f)
 			.withLooseParser()
 			.complete();
-		DataStruct res = p.build(new StringReader("{a:{r:false,c:1.1,e:''}}")).apply();
-		System.err.println(res.toString());
+		DataStruct res2 = p.build(res).apply();
+		assertEquals(res, res2);
 	}
-
 }

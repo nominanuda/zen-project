@@ -8,7 +8,7 @@ output = AST;
 }
 
 tokens {
-OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;VALUESEQ;ENTRYSEQ;TYPEDEF;TYPEREF;
+OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;VALUESEQ;ENTRYSEQ;TYPEDEF;TYPEREF;EXISTENTIAL;
 }
 
 @header {
@@ -100,9 +100,9 @@ entry
 	;
 lval
 	: LvalTkn 
-	-> ^(NAME LvalTkn)
+	-> ^(NAME LvalTkn) EXISTENTIAL
 	| LvalTkn ExistentialTkn
-	-> ^(NAME LvalTkn ExistentialTkn)
+	-> ^(NAME LvalTkn) ^(EXISTENTIAL ExistentialTkn)
 	;
 ExistentialTkn
 	: '!?'|'?!'|'!'|'?'

@@ -15,60 +15,75 @@
  */
 package com.nominanuda.dataobject.schema;
 
+import java.nio.channels.IllegalSelectorException;
 import java.util.Stack;
 
 import com.nominanuda.dataobject.JsonContentHandler;
 
 public abstract class EventConsumer implements JsonContentHandler {
 	private final Stack<EventConsumer> stack;
+	private ExistentialPredicate predicate;
 
 	public EventConsumer(Stack<EventConsumer> stack) {
 		this.stack = stack;
+		this.predicate = new ExistentialPredicate();
+	}
+
+	public EventConsumer(Stack<EventConsumer> stack, ExistentialPredicate predicate) {
+		this.stack = stack;
+		this.predicate = predicate;
+	}
+
+	public boolean isOptional() {
+		return predicate.isOptional();
+	}
+	public boolean isNullable() {
+		return predicate.isNullable();
 	}
 
 	@Override
 	public void startJSON() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void endJSON() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public boolean startObject() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected start of object");
 	}
 
 	@Override
 	public boolean endObject() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected end of object");
 	}
 
 	@Override
 	public boolean startObjectEntry(String key) throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected start of object entry with key:"+key);
 	}
 
 	@Override
 	public boolean endObjectEntry() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected end of object entry");
 	}
 
 	@Override
 	public boolean startArray() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected start of array");
 	}
 
 	@Override
 	public boolean endArray() throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected end of array");
 	}
 
 	@Override
 	public boolean primitive(Object value) throws RuntimeException {
-		throw new UnsupportedOperationException();
+		throw new ValidationException("unespected primitive value "+value);
 	}
 
 	protected void pop() {
@@ -76,5 +91,9 @@ public abstract class EventConsumer implements JsonContentHandler {
 	}
 	protected void push(EventConsumer c) {
 		stack.push(c);
+	}
+
+	public void setPredicate(ExistentialPredicate predicate) {
+		this.predicate = predicate;
 	}
 }

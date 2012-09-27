@@ -16,10 +16,12 @@
 package com.nominanuda.dataobject.schema;
 
 import java.io.StringReader;
+import java.nio.channels.IllegalSelectorException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import org.antlr.runtime.ANTLRReaderStream;
@@ -28,6 +30,7 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
+import com.nominanuda.code.Nullable;
 import com.nominanuda.dataobject.JsonContentHandler;
 import com.nominanuda.dataobject.WrappingRecognitionException;
 import com.nominanuda.dataobject.transform.BaseJsonTransformer;
@@ -105,7 +108,8 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 			for(int i = 0; i < node.getChildCount(); i++) {
 				Tree entry = node.getChild(i);
 				if(entry.getType() == ENTRY) {
-					EventConsumer c = makeConsumer(entry.getChild(1), stack);
+					EventConsumer c = makeConsumer(entry.getChild(2), stack);
+					c.setPredicate(tokenToPredicate(entry.getChild(1)));
 					String key = entry.getChild(0).getChild(0).getText();
 					entryConsumers.put(key, c);
 				} else if(entry.getType() == ENTRYSEQ) {
@@ -133,6 +137,11 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 		}
 	}
 
+	private ExistentialPredicate tokenToPredicate(Tree predTnkNode) {
+		String p = predTnkNode.getChildCount() > 0 ? predTnkNode.getChild(0).getText() : null;
+		return new ExistentialPredicate(p);
+	}
+
 	private Fun1<Object, String> makePrimitiveValidator(Tree node) {
 		Tree t = node.getChild(0);
 		String typeDef = t == null 
@@ -156,16 +165,48 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 
 		@Override
 		public boolean endObject() throws RuntimeException {
-			//TODO validate
+			validateExit();
 			pop();
 			return true;
 		}
 
 		@Override
+		public boolean primitive(Object value) throws RuntimeException {
+			if(value == null) {
+				if(! isNullable()) {
+					throw new ValidationException("null value of not-nul property");
+				} else {
+					return true;
+				}
+			} else {
+				throw new ValidationException("found "+value.toString()+" where object expected");
+			}
+		}
+		private void validateExit() {
+			for(Entry<String,EventConsumer> e : entryConsumers.entrySet()) {
+				String k = e.getKey();
+				EventConsumer c = e.getValue();
+				if(! isEntrySequence(k)) {
+					if(! c.isOptional()) {
+						throw new ValidationException("missing property:"+k);
+					}
+				}
+			}
+			
+		}
+
+		private boolean isEntrySequence(String k) {
+			return "*".equals(k);
+		}
+
+		@Override
 		public boolean startObjectEntry(String key) throws RuntimeException {
 			EventConsumer c = entryConsumers.remove(key);
-			if(c == null && entryConsumers.size() == 1 && entryConsumers.containsKey("*")) {
-				c = entryConsumers.values().iterator().next();
+			if(c == null && entryConsumers.containsKey("*")) {
+				c = entryConsumers.get("*");
+			}
+			if(c == null) {
+				throw new ValidationException("unexpected entry with key "+key);
 			}
 			push(Check.notNull(c));
 			return true;
@@ -189,33 +230,56 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 
 		@Override
 		public boolean primitive(Object value) throws RuntimeException {
-			nextConsumer().primitive(value);
+			EventConsumer c = pushNextConsumer();
+			c.primitive(value);
 			return true;
+		}
+
+		private EventConsumer pushNextConsumer() {
+			EventConsumer c = nextConsumer();
+			if(c == null) {
+				throw new ValidationException("wrong number of elements in array, at position "+i);
+			}
+			push(c);
+			return c;
 		}
 
 		@Override
 		public boolean startObject() throws RuntimeException {
-			push(nextConsumer());
+			EventConsumer c = pushNextConsumer();
+			c.startObject();
 			return true;
 		}
 
+		private boolean startArraySeen = false;
 		@Override
 		public boolean startArray() throws RuntimeException {
-			push(nextConsumer());
+			if(startArraySeen) {
+				EventConsumer c = pushNextConsumer();
+				c.startArray();
+			} else {
+				startArraySeen = true;
+			}
 			return true;
 		}
 
 		@Override
 		public boolean endArray() throws RuntimeException {
 			pop();
-			Check.illegalargument.assertEquals(i, elementsConsumers.size());
+			if(i != elementsConsumers.size()) {
+				throw new ValidationException("array expected "+elementsConsumers.size()+" elements, but got "+i);
+			}
 			return true;
 		}
 
-		private EventConsumer nextConsumer() {
-			EventConsumer c = elementsConsumers.get(i);
-			i++;
-			return c;
+		private @Nullable EventConsumer nextConsumer() {
+			if(i >= elementsConsumers.size()) {
+				return null;
+			} else {
+				EventConsumer c = elementsConsumers.get(i);
+				i++;
+				return c;
+			}
 		}
 	}
 
@@ -315,13 +379,22 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 
 		@Override
 		public boolean primitive(Object value) throws RuntimeException {
-			String errorMessage = validator.apply(value);
-			if(errorMessage != null) {
-				throw new IllegalArgumentException(errorMessage);
+			if(value == null) {
+				if(! isNullable()) {
+					throw new ValidationException("null value of not-nul property");
+				} else {
+					return true;
+				}
+			} else {
+				String errorMessage = validator.apply(value);
+				if(errorMessage != null) {
+					throw new ValidationException(errorMessage);
+				}
+				pop();
+				return true;
 			}
-			pop();
-			return true;
 		}
+
 	}
 
 	public void setPrimitiveValidatorFactory(
