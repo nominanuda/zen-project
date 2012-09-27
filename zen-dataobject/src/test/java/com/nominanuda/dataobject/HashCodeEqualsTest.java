@@ -70,7 +70,10 @@ public class HashCodeEqualsTest {
 		assertTrue(s.contains(o2));
 		assertEquals(2, s.size());
 		assertFalse(o1.equals(o2));
+		int h21 = o2.hashCode();
 		o2.with("a", 1);
+		int h22 = o2.hashCode();
+		assertTrue(h21 != h22);
 		assertTrue(s.contains(o2));
 		assertEquals(o1, o2);
 		assertEquals(2, s.size());
