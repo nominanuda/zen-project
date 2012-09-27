@@ -28,8 +28,12 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 import com.google.template.soy.tofu.SoyTofu;
+import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
 import com.nominanuda.springsoy.SoyViewResolver.SoyView.LongToInt;
 import com.nominanuda.web.http.HttpProtocol;
+
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class SoyViewResolver implements ViewResolver {
 	private SoySource soySource;
@@ -59,6 +63,11 @@ public class SoyViewResolver implements ViewResolver {
 
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
+			if(model instanceof MapsAndListsObjectDecorator) {
+				DataObject o = ((MapsAndListsObjectDecorator)model).unwrap();
+				Map<String, ? super Object> mm = STRUCT.toMapsAndLists(o);
+				model = mm;
+			}
 			byte[] b = tofu.newRenderer(name)
 						.setData(longToInt.longToInt((Map<String, Object>)model))
 						.render()

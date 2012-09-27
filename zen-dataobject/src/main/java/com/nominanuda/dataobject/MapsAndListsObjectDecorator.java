@@ -71,4 +71,8 @@ public class MapsAndListsObjectDecorator extends AbstractMap<String, Object> {
 			return Check.unsupportedoperation.fail("readonly object");
 		}
 	}
+
+	public DataObject unwrap() {
+		return o;
+	}
 }

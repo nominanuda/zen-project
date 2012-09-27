@@ -32,4 +32,8 @@ public class MapsAndListsArrayDecorator extends AbstractList<Object> {
 	public Object get(int index) {
 		return MapsAndListsObjectDecorator.wrapIfNecessary(a.get(index));
 	}
+
+	public DataArray unwrap() {
+		return a;
+	}
 }
