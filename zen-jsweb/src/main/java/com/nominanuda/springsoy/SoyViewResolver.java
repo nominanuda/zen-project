@@ -80,7 +80,6 @@ public class SoyViewResolver implements ViewResolver {
 			public Map<String, ?> longToInt(Map<String, Object> m) {
 				for(Entry<String, Object> e : m.entrySet()) {
 					Object o = e.getValue();
-					e.setValue(o);
 					if(o != null) {
 						if(o instanceof Long) {
 							e.setValue(((Long) o).intValue());
