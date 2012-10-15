@@ -17,6 +17,7 @@ package com.nominanuda.dataobject.schema;
 
 import java.io.StringReader;
 import java.nio.channels.IllegalSelectorException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +62,31 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 
 	public JsonTransformer getObject() {
 		Tree cur = root;
+		if(cur.getText() != null) {
+			return makeValueTransformer(cur);
+		} else {
+			int len = cur.getChildCount();
+			for(int i = 0; i < len; i++) {
+				Tree t = cur.getChild(i);
+				Check.illegalstate.assertEquals(TYPEDEF, t.getType());
+				String tname = t.getChild(0).getText();
+				JsonTransformer tx = makeValueTransformer(t.getChild(1));
+				addTypeToLibrary(tname, t, tx);
+			}
+			return getDefaultTypeTransfomer();
+		}
+	}
+
+	private JsonTransformer getDefaultTypeTransfomer() {
+		return tMap.entrySet().iterator().next().getValue();
+	}
+
+	private LinkedHashMap<String, JsonTransformer> tMap = new LinkedHashMap<String, JsonTransformer>();
+	private void addTypeToLibrary(String tname, Tree t, JsonTransformer tx) {
+		tMap.put(tname, tx);
+	}
+
+	private JsonTransformer makeValueTransformer(Tree cur) {
 		final Stack<EventConsumer> stack = new Stack<EventConsumer>();
 		stack.push(makeConsumer(cur, stack));
 		return new BaseJsonTransformer() {

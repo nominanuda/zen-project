@@ -37,25 +37,27 @@ public class JclValidatorTest {
 
 	@Test
 	public void testValid() throws Exception {
-		valid("{}", "{}");
-		invalid("{}", "{a:null}");
-		valid("{a}", "{a:1}");
-		valid("{a?}", "{}");
-		invalid("{a}", "{}");
-		valid("{c,a?,b}", "{b:1,c:2}");
-		valid("{a!}", "{a:1}");
-		invalid("{a!}", "{a:null}");
-		valid("{a?:{}}", "{a:null}");
-		invalid("{a!:{}}", "{a:null}");
-		valid("{a!:{}}", "{a:{}}");
-		invalid("{a!:{}}", "{a:2}");
-		valid("{a,*}", "{b:{},a:1}");
-		valid("{a,b:{*}}", "{b:{c:{d:1}},a:1}");
-		valid("[]", "[]");
-		valid("[b]", "[true]");
-		invalid("[]", "[true]");
-		invalid("[b,b]", "[true]");
-		invalid("[b,b]", "[true,null,null]");
+//		valid("{}", "{}");
+//		invalid("{}", "{a:null}");
+//		valid("{a}", "{a:1}");
+//		valid("{a?}", "{}");
+//		invalid("{a}", "{}");
+//		valid("{c,a?,b}", "{b:1,c:2}");
+//		valid("{a!}", "{a:1}");
+//		invalid("{a!}", "{a:null}");
+//		valid("{a?:{}}", "{a:null}");
+//		invalid("{a!:{}}", "{a:null}");
+//		valid("{a!:{}}", "{a:{}}");
+//		invalid("{a!:{}}", "{a:2}");
+//		valid("{a,*}", "{b:{},a:1}");
+//		valid("{a,b:{*}}", "{b:{c:{d:1}},a:1}");
+//		valid("[]", "[]");
+//		valid("[b]", "[true]");
+//		invalid("[]", "[true]");
+//		invalid("[b,b]", "[true]");
+//		invalid("[b,b]", "[true,null,null]");
+//		valid("[b,b,*]", "[true,true,true,1]");
+		valid("MyType@[b] MyType2@[b]", "[true]");
 	}
 
 	private void invalid(String schema, String instance) throws Exception {

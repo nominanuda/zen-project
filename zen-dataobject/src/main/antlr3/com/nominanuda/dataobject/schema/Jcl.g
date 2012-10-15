@@ -42,8 +42,8 @@ throw e;
 
 program
 	: value
-	| LvalTkn '@' value
-	 -> ^(TYPEDEF LvalTkn value)
+	| (LvalTkn '@' value)+
+	 -> ^(TYPEDEF LvalTkn value)+
 	;
 
 value
