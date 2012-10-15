@@ -105,7 +105,9 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 			if(jsonField != null) {
 				for (Object record : resultsArray) {
 					DataObject o = (DataObject) record;
-					o.put(jsonField, o.toString());
+					if(!o.exists(jsonField)) {
+						o.put(jsonField, o.toString());
+					}
 				}
 			}
 			if (resultsArray.getLength() == rows) {
