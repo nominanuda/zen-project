@@ -110,6 +110,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 					}
 				}
 			}
+			int resLen = resultsArray.getLength();
 			DataArray deletedEntities = computeDeleted(cmd, type_, since, start, rows);
 			for (Object o : deletedEntities) {
 				DataObject obj = STRUCT.newObject();
@@ -117,7 +118,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 				obj.put("deleteDocById", o.toString());
 				resultsArray.add(obj);
 			}
-			if (resultsArray.getLength() >= rows || deletedEntities.getLength() >= rows) {
+			if (resLen >= rows || deletedEntities.getLength() >= rows) {
 				Integer nextStart = start + rows;
 				DataObject hasMore = resultsArray.addNewObject();
 				hasMore.put(idField, "1");
