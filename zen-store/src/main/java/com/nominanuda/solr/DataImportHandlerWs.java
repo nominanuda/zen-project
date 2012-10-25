@@ -110,19 +110,19 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 					}
 				}
 			}
-			if (resultsArray.getLength() == rows) {
-				Integer nextStart = start + rows;
-				DataObject hasMore = resultsArray.addNewObject();
-				hasMore.put(idField, "1");
-				hasMore.put("hasMore", true);
-				hasMore.put("nextUrl", computeNextUrl(cmd, nextStart));
-			}
 			DataArray deletedEntities = computeDeleted(cmd, type_, since, start, rows);
 			for (Object o : deletedEntities) {
 				DataObject obj = STRUCT.newObject();
 				obj.put(idField, FAKE_ID);
 				obj.put("deleteDocById", o.toString());
 				resultsArray.add(obj);
+			}
+			if (resultsArray.getLength() >= rows || deletedEntities.getLength() >= rows) {
+				Integer nextStart = start + rows;
+				DataObject hasMore = resultsArray.addNewObject();
+				hasMore.put(idField, "1");
+				hasMore.put("hasMore", true);
+				hasMore.put("nextUrl", computeNextUrl(cmd, nextStart));
 			}
 			String message = toXml(STRUCT.newObject().with(resultsTag, resultsArray));
 			HttpResponse resp = HTTP.createBasicResponse(200, message,
