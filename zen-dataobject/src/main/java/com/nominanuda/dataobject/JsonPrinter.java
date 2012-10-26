@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
 
-import org.xml.sax.SAXException;
-
 import com.nominanuda.lang.Maths;
 import static com.nominanuda.dataobject.DataType.*;
 
@@ -134,7 +132,7 @@ public class JsonPrinter implements JsonContentHandler {
 		}
 	}
 	private int indent = 0;
-	private String[] d = new String[] {
+	private final static String[] INDENTS = new String[] {
 		"","  ","    ","      ","        ","          ","               "
 	};
 	//TODO
@@ -142,12 +140,24 @@ public class JsonPrinter implements JsonContentHandler {
 		if(pretty) {
 			try {
 				w.write("\n");
-				w.write(d[indent]);
+				w.write(indentSpaces(indent));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
+	private String indentSpaces(int size) {
+		if(size < INDENTS.length) {
+			return INDENTS[size];
+		} else {
+			char[] carr = new char[size];
+			for(int i = 0; i < size; i++) {
+				carr[i] = ' ';
+			}
+			return new String(carr);
+		}
+	}
+
 	private class CommaInsCtx implements JsonContentHandler {
 		Stack<Cx> stack = new Stack<Cx>();
 
