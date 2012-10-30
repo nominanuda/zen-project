@@ -696,5 +696,10 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray parseArray(String json) {
 		return parseArray(json, false);
 	}
+	//can lead to classcastexception in case it is not a dataobjectarray
+	@SuppressWarnings("unchecked")
+	public Iterable<DataObject> asObjSeq(DataArray arr) {
+		return (Iterable<DataObject>)(Iterable<?>)arr;
+	}
 
 }
