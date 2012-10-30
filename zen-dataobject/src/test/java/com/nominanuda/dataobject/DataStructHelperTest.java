@@ -23,6 +23,7 @@ import java.util.*;
 import org.junit.*;
 import org.xml.sax.*;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class DataStructHelperTest {
 
@@ -89,6 +90,25 @@ public class DataStructHelperTest {
 		assertEquals(2, list.size());
 		assertEquals(list.get(0), list.get(1));
 	}
-	
+
+	@Test
+	public void testSaObjSeq() {
+		DataArray a0 = STRUCT.newArray();
+		DataArray a1 = STRUCT.newArray().with(STRUCT.newObject());
+		DataArray a2 = STRUCT.newArray().with("");
+
+		for(DataObject o : STRUCT.asObjSeq(a0)) {
+			assertFalse(o.exists("foo"));
+		}
+		for(DataObject o : STRUCT.asObjSeq(a1)) {
+			assertFalse(o.exists("foo"));
+		}
+		try {
+			for(DataObject o : STRUCT.asObjSeq(a2)) {
+				assertFalse(o.exists("foo"));
+			}
+			fail();
+		} catch(ClassCastException e) {}
+	}
 
 }
