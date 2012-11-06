@@ -16,35 +16,49 @@
 package com.nominanuda.web.htmlcomposer;
 
 import java.util.LinkedList;
+import java.util.List;
+
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.nominanuda.lang.InstanceFactory;
+import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.xml.SAXEmitter;
+import com.nominanuda.xml.SAXPipeline;
 import com.nominanuda.xml.SaxBuffer;
-import com.nominanuda.xml.SaxBuffer.SaxBit;
 
-//TODO replace html in split blocks
-public class HtmlSaxPage implements SAXEmitter {
-	String htmlns = "http://www.w3.org/1999/xhtml";
-	LinkedList<SaxBit> bits = new LinkedList<SaxBit>();
-
-	public HtmlSaxPage() {
-		bits.add(new SaxBuffer.StartElement(htmlns, "body", "body", new AttributesImpl()));
-		bits.add(new SaxBuffer.EndElement(htmlns, "body", "body"));
-	}
+public class HtmlSaxPage implements SAXEmitter, HttpProtocol {
+	private static final String BODY = "body";
+	private static final String HEAD = "head";
+	private final List<DomManipulationStmt> stmts = new LinkedList<DomManipulationStmt>();
 
 	public void applyStmt(DomManipulationStmt domManipulationStmt) {
-		JQuerySaxMatcher m = new JQuerySaxMatcher(domManipulationStmt);
-		for(int i = 0; i < bits.size();) {
-			i = m.match(bits, i);
-		}
+		stmts.add(domManipulationStmt);
 	}
 
 	public void toSAX(ContentHandler ch) throws SAXException {
-		for(SaxBit b : bits) {
-			b.send(ch);
+		ContentHandler x = buildPipe(ch);
+		new SaxBuffer.StartElement(HTMLNS, HEAD, HEAD, new AttributesImpl()).send(x);
+		new SaxBuffer.EndElement(HTMLNS, HEAD, HEAD).send(x);
+		new SaxBuffer.StartElement(HTMLNS, BODY, BODY, new AttributesImpl()).send(x);
+		new SaxBuffer.EndElement(HTMLNS, BODY, BODY).send(x);
+	}
+
+	private ContentHandler buildPipe(ContentHandler ch) {
+		SAXPipeline p = new SAXPipeline();
+		for(DomManipulationStmt stmt : stmts) {
+			TransformerHandler instance = buildHandler(stmt);
+			p.add(new InstanceFactory<TransformerHandler>(instance));
 		}
+		ContentHandler x = p.complete().build(new SAXResult(ch)).getHandler();
+		return x;
+	}
+
+	private TransformerHandler buildHandler(DomManipulationStmt stmt) {
+		return DomManipulationHandler.build(stmt);
 	}
 }

@@ -22,10 +22,10 @@ import com.nominanuda.xml.SaxBuffer;
 
 @Immutable
 public class DomManipulationStmt {
-	final String selector;
-	final ObjectFactory<SaxBuffer> saxBufferFactory;
-	final DomOp operation;
-	SaxBuffer saxBuffer;
+	private final String selector;
+	private final ObjectFactory<SaxBuffer> saxBufferFactory;
+	private final DomOp operation;
+	private SaxBuffer saxBuffer;
 
 	public DomManipulationStmt(String selector, ObjectFactory<SaxBuffer> saxBufferFactory,
 			DomOp operation) {

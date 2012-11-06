@@ -92,6 +92,18 @@ public class SAXPipeline {
 		}
 		return this;
 	}
+
+	public SAXResult build(Result result) {
+		if(! completed) {
+			complete();
+		}
+		try {
+			return (SAXResult)buildInternal(result);
+		} catch (TransformerConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public Runnable build(final Source source, final Result result) {
 		if(! completed) {
 			complete();
@@ -99,7 +111,7 @@ public class SAXPipeline {
 		return new Runnable() {
 			public void run() {
 				try {
-					txFactory.newTransformer().transform(source, build(result));
+					txFactory.newTransformer().transform(source, buildInternal(result));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -113,7 +125,7 @@ public class SAXPipeline {
 		return new Runnable() {
 			public void run() {
 				try {
-					emitter.toSAX(((SAXResult)build(result)).getHandler());
+					emitter.toSAX(((SAXResult)buildInternal(result)).getHandler());
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -133,7 +145,7 @@ public class SAXPipeline {
 		}
 	}
 
-	private Result build(final Result result) throws TransformerConfigurationException {
+	private Result buildInternal(final Result result) throws TransformerConfigurationException {
 		Check.illegalstate.assertTrue(completed);
 		Result nextRes = result;
 		Iterator<Object> itr = components.iterator();
