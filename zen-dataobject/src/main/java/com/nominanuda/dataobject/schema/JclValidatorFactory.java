@@ -43,9 +43,10 @@ import com.nominanuda.lang.ObjectFactory;
 import static com.nominanuda.dataobject.schema.JclLexer.*;
 
 
-public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
+public class JclValidatorFactory {
 	private CommonTree root;
 	private PrimitiveValidatorFactory primitiveValidatorFactory = new DefaultPrimitiveValidatorFactory();
+	private final LinkedHashMap<String, Tree> tMap = new LinkedHashMap<String, Tree>();
 
 	public JclValidatorFactory(String jclExpr) throws Exception {
 		try {
@@ -55,35 +56,42 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 			JclParser parser = new JclParser(tokens);
 			CommonTree tree = (CommonTree)parser.program().getTree();
 			root = tree;
+			Tree cur = root;
+			if(cur.getText() != null) {
+				tMap.put("", cur);
+			} else {
+				int len = cur.getChildCount();
+				boolean defaultAdded = false;
+				for(int i = 0; i < len; i++) {
+					Tree t = cur.getChild(i);
+					Check.illegalstate.assertEquals(TYPEDEF, t.getType());
+					String tname = t.getChild(0).getText();
+					tMap.put(tname, t.getChild(1));
+					if(!defaultAdded) {
+						tMap.put("", t.getChild(1));
+						defaultAdded = true;
+					}
+				}
+			}
 		} catch(WrappingRecognitionException e) {
 			throw e.getWrappedException();
 		}
 	}
 
-	public JsonTransformer getObject() {
-		Tree cur = root;
-		if(cur.getText() != null) {
-			return makeValueTransformer(cur);
-		} else {
-			int len = cur.getChildCount();
-			for(int i = 0; i < len; i++) {
-				Tree t = cur.getChild(i);
-				Check.illegalstate.assertEquals(TYPEDEF, t.getType());
-				String tname = t.getChild(0).getText();
-				JsonTransformer tx = makeValueTransformer(t.getChild(1));
-				addTypeToLibrary(tname, t, tx);
+	public ObjectFactory<JsonTransformer> buildValidatorFactory(@Nullable String type) {
+		String t = Check.ifNull(type, "");
+		final Tree tree = tMap.get(t);
+		return new ObjectFactory<JsonTransformer>() {
+			public JsonTransformer getObject() {
+				return makeValueTransformer(tree);
 			}
-			return getDefaultTypeTransfomer();
-		}
+		};
 	}
 
-	private JsonTransformer getDefaultTypeTransfomer() {
-		return tMap.entrySet().iterator().next().getValue();
-	}
-
-	private LinkedHashMap<String, JsonTransformer> tMap = new LinkedHashMap<String, JsonTransformer>();
-	private void addTypeToLibrary(String tname, Tree t, JsonTransformer tx) {
-		tMap.put(tname, tx);
+	public JsonTransformer buildValidator(@Nullable String type) {
+		String t = Check.ifNull(type, "");
+		Tree tree = tMap.get(t);
+		return makeValueTransformer(tree);
 	}
 
 	private JsonTransformer makeValueTransformer(Tree cur) {
@@ -248,6 +256,7 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 	public class ArrayConsumer extends EventConsumer {
 		private final List<EventConsumer> elementsConsumers;
 		private int i = 0;
+		private boolean startArraySeen = false;
 
 		public ArrayConsumer(Stack<EventConsumer> stack, List<EventConsumer> elementsConsumers) {
 			super(stack);
@@ -277,7 +286,6 @@ public class JclValidatorFactory implements ObjectFactory<JsonTransformer>{
 			return true;
 		}
 
-		private boolean startArraySeen = false;
 		@Override
 		public boolean startArray() throws RuntimeException {
 			if(startArraySeen) {
