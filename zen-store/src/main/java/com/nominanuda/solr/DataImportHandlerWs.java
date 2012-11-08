@@ -28,7 +28,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.xml.sax.InputSource;
@@ -49,8 +51,10 @@ import com.nominanuda.xml.SAXPipeline;
 
 public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 	private static final String FAKE_ID = "foobar";
-	private static final DateTimeFormatter SOLR_FMT = DateTimeFormat
+	private static final DateTimeFormatter GMT_SOLR_FMT = DateTimeFormat
 			.forPattern("yyyy-MM-dd' 'HH:mm:ss").withZone(DateTimeZone.UTC);
+	private static final DateTimeFormatter LOCAL_SOLR_FMT = DateTimeFormat
+			.forPattern("yyyy-MM-dd' 'HH:mm:ss");
 	//compulsory conf
 	private URISpec<DataObject> uriSpec;
 	private String nextUrlPrefix;
@@ -63,7 +67,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 	private String typeUrlParam = "type";
 	private String jsonField = null;//"__RAWJSON__";
 	private String resultsTag = "results";
-
+	private boolean solrTimestampInLocalTime = true;
 	private final SAXPipeline pipe = new SAXPipeline()
 		.add(new InstanceFactory<TransformerHandler>(
 				new SimpleJsonXmlTransformer("root")))
@@ -85,7 +89,10 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 		if (sinceStr == null) {
 			return 0;
 		} else {
-			return SOLR_FMT.parseDateTime(sinceStr).getMillis();
+			long dt = solrTimestampInLocalTime
+				? LOCAL_SOLR_FMT.parseDateTime(sinceStr).getMillis()
+				: GMT_SOLR_FMT.parseDateTime(sinceStr).getMillis();
+			return dt;
 		}
 	}
 
@@ -180,5 +187,9 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 
 	public void setResultsTag(String resultsTag) {
 		this.resultsTag = resultsTag;
+	}
+
+	public void setSolrTimestampInLocalTime(boolean solrTimestampInLocalTime) {
+		this.solrTimestampInLocalTime = solrTimestampInLocalTime;
 	}
 }
