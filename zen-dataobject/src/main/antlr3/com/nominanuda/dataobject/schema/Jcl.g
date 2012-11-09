@@ -77,10 +77,10 @@ array	: '[' elements? ']'
 	  -> ^(ARRAY elements?)
 	;
 
-existentialValue	: value ExistentialTkn
-		->  ^(ARRAYVAL value ^(EXISTENTIAL ExistentialTkn))
-		| value
-		->  ^(ARRAYVAL value EXISTENTIAL)
+existentialValue	: rval ExistentialTkn
+		->  ^(ARRAYVAL rval ^(EXISTENTIAL ExistentialTkn))
+		| rval
+		->  ^(ARRAYVAL rval EXISTENTIAL)
 	; 
 
 elements	: valueseq | (existentialValue (','! existentialValue)* (','! valueseq)?)
@@ -126,3 +126,5 @@ rval
 
 WS
 	: (' '|'\n'|'\r'|'\t')+ {$channel=HIDDEN;} ;
+COMMENT
+	: '/*' (options {greedy=false;} : .)* '*/' {$channel=HIDDEN;};
