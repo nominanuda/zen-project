@@ -54,7 +54,11 @@ public class JclValidatorFactory {
 			CommonTree tree = (CommonTree)parser.program().getTree();
 			root = tree;
 			Tree cur = root;
-			if(cur.getText() != null) {
+			if(cur.getType() == TYPEDEF) {
+				String tname = cur.getChild(0).getText();
+				tMap.put(tname, cur.getChild(1));
+				tMap.put("", cur.getChild(1));
+		} else if(cur.getText() != null) {
 				tMap.put("", cur);
 			} else {
 				int len = cur.getChildCount();
@@ -164,9 +168,11 @@ public class JclValidatorFactory {
 		case PRIMITIVE:
 			return new PrimitiveConsumer(stack, makePrimitiveValidator(node));
 		case ARRAYVAL:
-			Tree primitive = node.getChild(0);
-			Tree existential = node.getChild(1);
-			return new PrimitiveConsumer(stack, makePrimitiveValidator(primitive), tokenToPredicate(existential));
+			Tree value = node.getChild(0);
+			Tree pred = node.getChild(1);
+			EventConsumer c = makeConsumer(value, stack);
+			c.setPredicate(tokenToPredicate(pred));
+			return c;
 		case TYPEREF:
 			String tname = node.getChild(0).getText();
 			Tree typedef = Check.illegalargument.assertNotNull(
