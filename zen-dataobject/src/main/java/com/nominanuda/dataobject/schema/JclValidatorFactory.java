@@ -16,8 +16,6 @@
 package com.nominanuda.dataobject.schema;
 
 import java.io.StringReader;
-import java.nio.channels.IllegalSelectorException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +30,6 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.JsonContentHandler;
 import com.nominanuda.dataobject.WrappingRecognitionException;
 import com.nominanuda.dataobject.transform.BaseJsonTransformer;
 import com.nominanuda.dataobject.transform.JsonTransformer;
@@ -166,10 +163,19 @@ public class JclValidatorFactory {
 			return new ArrayConsumer(stack, elementsConsumers);
 		case PRIMITIVE:
 			return new PrimitiveConsumer(stack, makePrimitiveValidator(node));
+		case ARRAYVAL:
+			Tree primitive = node.getChild(0);
+			Tree existential = node.getChild(1);
+			return new PrimitiveConsumer(stack, makePrimitiveValidator(primitive), tokenToPredicate(existential));
+		case TYPEREF:
+			String tname = node.getChild(0).getText();
+			Tree typedef = Check.illegalargument.assertNotNull(
+					tMap.get(tname), "type not found "+tname);
+			return makeConsumer(typedef, stack);
 		default:
 			return Check.illegalstate.fail();
 		}
-	}
+	} 
 
 	private ExistentialPredicate tokenToPredicate(Tree predTnkNode) {
 		String p = predTnkNode.getChildCount() > 0 ? predTnkNode.getChild(0).getText() : null;
@@ -178,10 +184,10 @@ public class JclValidatorFactory {
 
 	private Fun1<Object, String> makePrimitiveValidator(Tree node) {
 		Tree t = node.getChild(0);
-		String typeDef = t == null 
+		String valDef = t == null 
 			? DefaultPrimitiveValidatorFactory.ANYPRIMITIVE
 			: t.getText();
-		return primitiveValidatorFactory.create(typeDef);
+		return primitiveValidatorFactory.create(valDef);
 	}
 	////////////////////////////////////////
 	public class ObjectConsumer extends EventConsumer {
@@ -411,12 +417,18 @@ public class JclValidatorFactory {
 			this.validator = validator;
 		}
 
+		public PrimitiveConsumer(Stack<EventConsumer> stack, Fun1<Object, String> validator, ExistentialPredicate pred) {
+			super(stack, pred);
+			this.validator = validator;
+		}
+
 		@Override
 		public boolean primitive(Object value) throws RuntimeException {
 			if(value == null) {
 				if(! isNullable()) {
 					throw new ValidationException("null value of not-nul property");
 				} else {
+					pop();
 					return true;
 				}
 			} else {

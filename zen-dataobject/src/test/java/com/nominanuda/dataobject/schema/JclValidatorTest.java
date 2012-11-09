@@ -17,23 +17,13 @@ package com.nominanuda.dataobject.schema;
 
 import static org.junit.Assert.*;
 
-import java.io.StringReader;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.dataobject.transform.JsonPipeline;
-import com.nominanuda.dataobject.transform.JsonTransformer;
-import com.nominanuda.dataobject.transform.StringValuesJsonTransformer;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.InstanceFactory;
 
-//@Ignore
 public class JclValidatorTest {
-
 
 	@Test
 	public void testValid() throws Exception {
@@ -59,6 +49,9 @@ public class JclValidatorTest {
 		valid("[b,b,*]", "[true,true,true,1]");
 		valid("MyType@[b] MyType2@[b]", "[true]");
 		valid("MyType@[b] MyType2@[b]", "MyType2", "[true]");
+		valid("MyType1@{x:@MyType2} MyType2@[b!]", "{x:[true]}");
+		valid("MyType1@{x:@MyType2} MyType2@[b]", "{x:[null]}");
+		invalid("MyType1@{x:@MyType2} MyType2@[b!]", "{x:[null]}");
 	}
 
 	private void invalid(String schema, String instance) throws Exception {

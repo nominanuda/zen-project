@@ -2,13 +2,13 @@ grammar Jcl;
 
 options {
 output = AST;
-//backtrack=true;
+backtrack=true;
 //k=10;
 
 }
 
 tokens {
-OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;VALUESEQ;ENTRYSEQ;TYPEDEF;TYPEREF;EXISTENTIAL;
+OBJECT;ARRAY;NAME;ENTRY;PRIMITIVE;VALUECHOICE;VALUESEQ;ENTRYSEQ;TYPEDEF;TYPEREF;EXISTENTIAL;ARRAYVAL;
 }
 
 @header {
@@ -77,7 +77,13 @@ array	: '[' elements? ']'
 	  -> ^(ARRAY elements?)
 	;
 
-elements	: valueseq | (value (','! value)* (','! valueseq)?)
+existentialValue	: value ExistentialTkn
+		->  ^(ARRAYVAL value ^(EXISTENTIAL ExistentialTkn))
+		| value
+		->  ^(ARRAYVAL value EXISTENTIAL)
+	; 
+
+elements	: valueseq | (existentialValue (','! existentialValue)* (','! valueseq)?)
 //elements	: value (','! value)* 
 	;
 
