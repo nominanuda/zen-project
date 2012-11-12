@@ -70,18 +70,10 @@ public class ServletHelper {
 	 */
 	public @Nullable InputStream getServletRequestBody(HttpServletRequest servletRequest) throws IOException {
 		ServletInputStream sis = servletRequest.getInputStream();
-		if(sis == null) {
-			return null;
+		if(servletRequest.getContentLength() > 0) {
+			return sis;
 		} else {
-			PushbackInputStream pis = new PushbackInputStream(sis);
-			int val = pis.read();
-			if(val == -1) {
-				//?? sis.close();
-				return null;
-			} else {
-				pis.unread(val);
-				return pis;
-			}
+			return null;
 		}
 	}
 
