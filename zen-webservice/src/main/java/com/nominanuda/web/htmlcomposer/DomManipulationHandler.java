@@ -23,18 +23,18 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.code.Nullable;
 import com.nominanuda.lang.Fun0;
-import com.nominanuda.lang.Strings;
 import com.nominanuda.lang.Tuple2;
 import com.nominanuda.xml.ForwardingTransformerHandlerBase;
-import com.nominanuda.xml.SwallowingTransformerHandlerBase;
 import com.nominanuda.xml.SaxBuffer.SaxBit;
+import com.nominanuda.xml.SwallowingTransformerHandlerBase;
 
 public abstract class DomManipulationHandler extends ForwardingTransformerHandlerBase {
 	private int nestingLevel = 0;
 	private final DomManipulationStmt stmt;
-	private Stack<Tuple2<Integer, Fun0<Void>>> triggerStack = new Stack<Tuple2<Integer,Fun0<Void>>>();
+	private final JquerySelectorExpr jqSelector;
+	private final Stack<Tuple2<Integer, Fun0<Void>>> triggerStack = new Stack<Tuple2<Integer,Fun0<Void>>>();
+	protected final Stack<HtmlTag> parentElementStack = new Stack<HtmlTag>();
 	private ContentHandler liveContentHandler;
 	private final static ContentHandler devNull = new SwallowingTransformerHandlerBase();
 
@@ -58,21 +58,24 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 
 	private DomManipulationHandler(DomManipulationStmt domManipulationStmt) {
 		stmt = domManipulationStmt;
+		jqSelector = new JquerySelectorExpr(stmt.getSelector());
+
 	}
 
-	protected String getSelector() {
-		return stmt.getSelector();
-	}
-
+//	protected String getSelector() {
+//		return stmt.getSelector();
+//	}
+//
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		nestingLevel++;
-		if(matches(localName, atts)) {
+		if(matches(localName, atts, parentElementStack)) {
 			onMatchedStartElement(uri, localName, qName, atts);
 		} else {
 			super.startElement(uri, localName, qName, atts);
 		}
+		parentElementStack.push(new HtmlTag(localName, atts));
 	}
 
 	protected abstract void onMatchedStartElement(String uri, String localName, String qName,
@@ -95,25 +98,12 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 		} else {
 			super.endElement(uri, localName, qName);
 		}
+		parentElementStack.pop();
 		nestingLevel--;
 	}
 
-	//TODO
-	private boolean matches(String tag, Attributes atts) {
-		if(getSelector().startsWith(".")) {
-			if(classMatches(atts.getValue("class"), getSelector().substring(1))) {
-				return true;
-			}
-		} else if(true) {
-			if(tag.equals(getSelector())) {
-				return true;
-			}
-		}
-		return false;//TODO
-	}
-
-	private boolean classMatches(@Nullable String clsAttr, String targetClass) {
-		return clsAttr != null &&  Strings.splitAndTrim(clsAttr, "\\s+").contains(targetClass);
+	private boolean matches(String tag, Attributes atts, Stack<HtmlTag> parents) {
+		return jqSelector.matches(tag, atts, parents);
 	}
 
 	protected void turnOnOutput() {
