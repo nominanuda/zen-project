@@ -89,11 +89,13 @@ limitations under the License.
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.jsr107cache</groupId>
       <artifactId>jsr107cache</artifactId>
       <version>1.1</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
