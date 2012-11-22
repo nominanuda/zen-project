@@ -132,7 +132,7 @@ public class ImageAwtTransformer {
 				return new int[] { 0 + margin, 0, sw - margin, sh, dw, sh };
 			} else if (dw > sw) {
 				int margin = approx((double) (sh - dh) / 2);
-				return new int[] { 0 + margin, 0, sw, dh - margin, sw, dh };
+				return new int[] { 0, 0 + margin, sw, sh - margin, sw, dh };
 			} else {
 				double xRatio = (double) sw / (double) dw;
 				double yRatio = (double) sh / (double) dh;
