@@ -69,7 +69,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	}
 
 	public Object remove(Integer i) {
-		Object o = l.remove(i);
+		Object o = l.remove((int)i);
 		if(o != null) {
 			onMutate();
 		}
