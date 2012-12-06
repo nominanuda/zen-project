@@ -245,12 +245,12 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 
 	public Long getLong(K key) throws ClassCastException {
 		Number n = getNumber(key);
-		return n == null ? null : (Long)n;
+		return n == null ? null : n.longValue();
 	}
 
 	public Double getDouble(K key) throws ClassCastException {
 		Number n = getNumber(key);
-		return n == null ? null : (Double)n;
+		return n == null ? null : n.doubleValue();
 	}
 
 	public String getStrictString(K key) throws ClassCastException,
