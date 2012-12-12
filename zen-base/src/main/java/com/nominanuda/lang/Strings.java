@@ -20,6 +20,7 @@ import java.text.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.nominanuda.code.ThreadSafe;
 
@@ -66,7 +67,10 @@ public abstract class Strings {
 		return sb.toString();
 	}
 	public static List<String> splitAndTrim(String str, String regex) {
-		String[] arr = str.split(regex);
+		return splitAndTrim(str, Pattern.compile(regex));
+	}
+	public static List<String> splitAndTrim(String str, Pattern regex) {
+		String[] arr = regex.split(str);
 		LinkedList<String> l = new LinkedList<String>();
 		for(String s : arr) {
 			l.add(s.trim());
