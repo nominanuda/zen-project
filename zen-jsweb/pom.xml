@@ -18,7 +18,7 @@ limitations under the License.
   <parent>
     <artifactId>zen-parent</artifactId>
     <groupId>com.nominanuda</groupId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
   </parent>
   <artifactId>zen-jsweb</artifactId>
   <url>https://github.com/michelegonella/zen-project</url>
