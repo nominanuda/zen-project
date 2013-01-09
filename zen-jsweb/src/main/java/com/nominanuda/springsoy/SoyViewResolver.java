@@ -15,7 +15,8 @@
  */
 package com.nominanuda.springsoy;
 
-import java.util.LinkedList;
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,17 +31,16 @@ import org.springframework.web.servlet.ViewResolver;
 import com.google.template.soy.tofu.SoyTofu;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
-import com.nominanuda.springsoy.SoyViewResolver.SoyView.LongToInt;
 import com.nominanuda.web.http.HttpProtocol;
-
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class SoyViewResolver implements ViewResolver {
 	private SoySource soySource;
 	
 	public View resolveViewName(String viewName, Locale locale)
 			throws Exception {
-		return new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()));
+		return soySource.hasFunction(viewName, locale.getLanguage())
+			? new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()))
+			: null;
 	}
 
 	public void setSoySource(SoySource soySource) {
@@ -61,6 +61,7 @@ public class SoyViewResolver implements ViewResolver {
 			return "text/html;charset=UTF-8";
 		}
 
+		@SuppressWarnings("unchecked")
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			if(model instanceof MapsAndListsObjectDecorator) {
@@ -77,6 +78,7 @@ public class SoyViewResolver implements ViewResolver {
 			response.getOutputStream().write(b);
 		}
 		static class LongToInt {
+			@SuppressWarnings("unchecked")
 			public Map<String, ?> longToInt(Map<String, Object> m) {
 				for(Entry<String, Object> e : m.entrySet()) {
 					Object o = e.getValue();
@@ -92,6 +94,7 @@ public class SoyViewResolver implements ViewResolver {
 				}
 				return m;
 			}
+			@SuppressWarnings("unchecked")
 			public void longToInt(List<Object> l) {
 				int len = l.size();
 				for(int i = 0; i < len; i++) {

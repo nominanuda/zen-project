@@ -18,7 +18,7 @@ limitations under the License.
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nominanuda</groupId>
   <artifactId>zen-urispec</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
   <packaging>jar</packaging>
   <name>zen-urispec</name>
   <description>uri template roundtripping library</description>

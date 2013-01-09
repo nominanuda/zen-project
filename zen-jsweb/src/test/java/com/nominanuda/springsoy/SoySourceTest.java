@@ -75,7 +75,7 @@ public class SoySourceTest {
 		DataObject cmd =  spec.match(req.getRequestLine().getUri());
 		CommandRequestHandlerAdapter adapter = new CommandRequestHandlerAdapter();
 		StringEntity se = (StringEntity)adapter.invoke(soyJsTemplateServer, req, cmd);
-		String jsFile = new IOHelper().readAndClose(se.getContent(), HttpProtocol.CS_UTF_8);
+		String jsFile = IOHelper.IO.readAndClose(se.getContent(), HttpProtocol.CS_UTF_8);
 		Assert.assertTrue(jsFile.contains("examples.simple.helloWorld2 = function"));
 		Assert.assertEquals(HttpProtocol.CT_TEXT_JAVASCRIPT_CS_UTF8, se.getContentType().getValue());
 	}

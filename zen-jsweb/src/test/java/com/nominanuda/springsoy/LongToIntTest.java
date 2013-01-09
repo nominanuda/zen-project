@@ -28,6 +28,7 @@ import com.nominanuda.springsoy.SoyViewResolver.SoyView.LongToInt;
 
 public class LongToIntTest {
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void test() {
 		LongToInt l2i = new LongToInt();
