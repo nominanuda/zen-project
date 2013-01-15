@@ -16,3 +16,35 @@ snapshot deploy cmd
 mvn clean deploy -DaltDeploymentRepository=sonatype-nexus-snapshots::default::https://oss.sonatype.org/content/repositories/snapshots
  
 
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+http://www.sonatype.com/people/2010/01/how-to-generate-pgp-signatures-with-maven/
+https://oss.sonatype.org
+
+mvn clean
+mvn javadoc:jar gpg:sign deploy -DaltDeploymentRepository=sonatype-nexus-staging::default::https://oss.sonatype.org/service/local/staging/deploy/maven2/
+for p in  zen-urispec zen-base zen-dataobject zen-rhino zen-webservice zen-store zen-jsweb; do mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=sonatype-nexus-staging -DpomFile=$p/target/$p-1.1.2.pom -Dfile=$p/target/$p-1.1.2-sources.jar  -Dclassifier=sources; done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for p in zen-parent zen-urispec zen-base zen-dataobject zen-rhino zen-webservice zen-store zen-jsweb zen-project; do mvn gpg:sign -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=sonatype-nexus-staging -DpomFile=$p/target/$p-1.1.2.pom -Dfile=$p/target/$p-1.1.2-javadoc.jar; done
+
+
+
+
