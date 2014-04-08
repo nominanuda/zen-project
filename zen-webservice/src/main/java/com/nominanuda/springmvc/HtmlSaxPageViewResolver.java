@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -202,6 +203,14 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 				}
 				public void write(byte[] b) throws IOException {
 					baos.write(b);
+				}
+				@Override
+				public boolean isReady() {
+					return true;
+				}
+				@Override
+				public void setWriteListener(WriteListener arg0) {
+					Check.illegalstate.fail("not implemented");
 				}
 			};
 		}

@@ -73,7 +73,7 @@ limitations under the License.
       <groupId>com.google.javascript</groupId>
       <artifactId>closure-templates</artifactId>
       <scope>provided</scope>
-      <version>r23</version>
+      <version>r28</version>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>

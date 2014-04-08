@@ -21,6 +21,7 @@ import java.io.PushbackInputStream;
 import java.net.HttpCookie;
 import java.util.*;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.*;
 
@@ -186,6 +187,20 @@ public class ServletHelper {
 							public int read(byte[] b, int off, int len)
 									throws IOException {
 								return is.read(b, off, len);
+							}
+							@Override
+							public boolean isFinished() {
+								Check.illegalstate.fail("not implemented");
+								return false;
+							}
+							@Override
+							public boolean isReady() {
+								Check.illegalstate.fail("not implemented");
+								return false;
+							}
+							@Override
+							public void setReadListener(ReadListener arg0) {
+								Check.illegalstate.fail("not implemented");
 							}
 						};
 					}
