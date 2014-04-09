@@ -52,7 +52,7 @@ limitations under the License.
     <aspectjrt.version>1.6.11</aspectjrt.version><!--TODO 1.7.4 -->
     <rhino.js.version>1.7R4</rhino.js.version>
     <xmlbeans.version>2.4.0</xmlbeans.version>
-    <cglib-nodep.version>2.2</cglib-nodep.version>
+    <cglib.version>2.2</cglib.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <servlet-api.version>2.5</servlet-api.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
@@ -215,7 +215,12 @@ limitations under the License.
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>${cglib-nodep.version}</version>
+        <version>${cglib.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>${cglib.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.cache</groupId>
@@ -344,6 +349,21 @@ limitations under the License.
         <groupId>org.apache.mahout</groupId>
         <artifactId>mahout-core</artifactId>
         <version>${mahout.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-c3p0</artifactId>
+        <version>${hibernate-c3p0.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>${hsqldb.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
