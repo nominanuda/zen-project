@@ -47,6 +47,7 @@ public class ContentTypeHelper {
 	private static String findInMap(String suffix) {
 		return suffixes.get(suffix);
 	}
+	@SuppressWarnings("unchecked")
 	private static final Map<String, String> suffixes = Collections.buildMap(HashMap.class, 
 		"aif", "audio/x-aiff",
 		"aifc", "audio/x-aiff",

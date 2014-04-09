@@ -19,6 +19,7 @@ limitations under the License.
     <artifactId>zen-parent</artifactId>
     <groupId>com.nominanuda</groupId>
     <version>1.2.0-SNAPSHOT</version>
+    <relativePath>../zen-parent/pom.xml</relativePath>
   </parent>
   <artifactId>zen-webservice</artifactId>
   <url>https://github.com/michelegonella/zen-project</url>
@@ -33,6 +34,9 @@ limitations under the License.
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.nominanuda</groupId>
@@ -86,7 +90,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <artifactId>javax.mail-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -95,9 +99,8 @@ limitations under the License.
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-      <version>1.0.0.Final</version>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -112,11 +115,6 @@ limitations under the License.
     <dependency>
       <groupId>nu.validator.htmlparser</groupId>
       <artifactId>htmlparser</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

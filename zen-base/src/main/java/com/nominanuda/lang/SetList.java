@@ -49,8 +49,4 @@ public class SetList<E> extends AbstractList<E> implements Set<E> {
 			l.add(index, element);
 		}
 	}
-	
-	//////////////////////////////////
-
-//	set(int, Object) set(int, E)}
 }

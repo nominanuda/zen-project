@@ -204,11 +204,11 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 				public void write(byte[] b) throws IOException {
 					baos.write(b);
 				}
-				@Override
+				//@Override
 				public boolean isReady() {
 					return true;
 				}
-				@Override
+				//@Override
 				public void setWriteListener(WriteListener arg0) {
 					Check.illegalstate.fail("not implemented");
 				}

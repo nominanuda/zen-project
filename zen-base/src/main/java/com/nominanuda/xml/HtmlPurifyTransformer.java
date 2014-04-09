@@ -65,6 +65,7 @@ public class HtmlPurifyTransformer extends ForwardingTransformerHandlerBase {
 	}
 	private String[] allowedAttributesOnAllTags = array("title", "alt");
 
+	@SuppressWarnings("unchecked")
 	private Map<String, String[]> attsMap = buildMap(HashMap.class, 
 		"img", array("src"),
 		"a", array("href")

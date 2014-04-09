@@ -12,6 +12,7 @@
     <artifactId>zen-parent</artifactId>
     <groupId>com.nominanuda</groupId>
     <version>1.2.0-SNAPSHOT</version>
+    <relativePath>../zen-parent/pom.xml</relativePath>
   </parent>
   <artifactId>zen-rhino</artifactId>
   <url>https://github.com/michelegonella/zen-project</url>
@@ -26,6 +27,9 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.nominanuda</groupId>
@@ -47,7 +51,6 @@
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
       <artifactId>xmlbeans</artifactId>
-      <version>2.5.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -87,6 +90,7 @@
             <configuration>
               <source>1.6</source>
               <target>1.6</target>
+              <complianceLevel>1.6</complianceLevel>
             </configuration>
           </execution>
         </executions>
