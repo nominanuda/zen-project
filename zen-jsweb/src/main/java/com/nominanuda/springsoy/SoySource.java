@@ -42,6 +42,7 @@ import com.google.template.soy.tofu.SoyTofu;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import com.nominanuda.code.Nullable;
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.Strings;
 
 public class SoySource {
@@ -53,7 +54,9 @@ public class SoySource {
 	private ConcurrentHashMap<String, SoyTofu> tofuCache = new ConcurrentHashMap<String, SoyTofu>();
 	private Set<String> functionNames = new HashSet<String>();
 	private String i18nXlfUrl;
-	private Set<String> skipLangs;
+	private boolean i18n = false;
+
+	private Set<String> skipLangs = Collections.emptySet();
 
 	public String getJsTemplate(String name, @Nullable String lang) throws IOException {
 		lang = Check.ifNull(lang, NULL_LANG_KEY);
@@ -119,7 +122,7 @@ public class SoySource {
 	}
 
 	public @Nullable SoyMsgBundle getBundle(String lang) throws SoyMsgException, IOException {
-		if(lang == null || skipLangs.contains(lang)) {
+		if(!i18n || lang == null || skipLangs.contains(lang)) {
 			return null;
 		} else {
 			SoyMsgBundleHandler msgBundleHandler = new SoyMsgBundleHandler(new XliffMsgPlugin());
@@ -151,4 +154,11 @@ public class SoySource {
 	public void setSkipLangs(String skipLangs) {
 		this.skipLangs = new HashSet<String>(Strings.splitAndTrim(skipLangs, ","));
 	}
+	/**
+	 * @param i18n enable translation, default is false
+	 */
+	public void setI18n(boolean i18n) {
+		this.i18n = i18n;
+	}
+
 }
