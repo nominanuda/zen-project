@@ -17,7 +17,6 @@ package com.nominanuda.web.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.net.HttpCookie;
 import java.util.*;
 
@@ -41,6 +40,7 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
 
+import com.nominanuda.code.CodeConstants;
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataStruct;
@@ -48,7 +48,7 @@ import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 
 @ThreadSafe
-public class ServletHelper {
+public class ServletHelper implements CodeConstants {
 	private final static IOHelper ioHelper = new IOHelper();
 	/**
 	 * @param request
@@ -190,17 +190,17 @@ public class ServletHelper {
 							}
 							//@Override
 							public boolean isFinished() {
-								Check.illegalstate.fail("not implemented");
+								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
 							public boolean isReady() {
-								Check.illegalstate.fail("not implemented");
+								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
 							public void setReadListener(ReadListener arg0) {
-								Check.illegalstate.fail("not implemented");
+								Check.illegalstate.fail(NOT_IMPLEMENTED);
 							}
 						};
 					}

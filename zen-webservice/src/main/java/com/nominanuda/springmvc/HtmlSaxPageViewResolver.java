@@ -49,6 +49,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.nominanuda.code.CodeConstants;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Initializable;
 import com.nominanuda.lang.InstanceFactory;
@@ -63,7 +64,7 @@ import com.nominanuda.xml.SAXPipeline;
 import com.nominanuda.xml.SaxBuffer;
 import com.nominanuda.xml.XHtml5Serializer;
 
-public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
+public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;
 	private ApplicationContext applicationContext;
 	private boolean html = true;
@@ -104,7 +105,7 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ContentHandler ch = createSerializer(new OutputStreamWriter(baos));
+			ContentHandler ch = createSerializer(new OutputStreamWriter(baos, UTF_8));
 			HtmlSaxPage p = new HtmlSaxPage();
 			
 			List<Tuple4<View,Map<String, ?>,DomOp,String>> springMavs = getSpringViewsAndModels(model);
@@ -138,7 +139,9 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 				HtmlParser parser = new HtmlParser();
 				parser.setMappingLangToXmlLang(true);
 				parser.setReportingDoctype(false);
-				SAXSource src = new SAXSource(new HtmlFragmentParser(parser), new InputSource(is));
+				InputSource inputSource = new InputSource(is);
+				inputSource.setEncoding(UTF_8);
+				SAXSource src = new SAXSource(new HtmlFragmentParser(parser), inputSource);
 				return src;
 			} else {
 				return new StreamSource(is);
@@ -166,7 +169,6 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 				for(ViewResolver r : resolvers) {
 					mav = r.resolveViewName(viewName, locale);
 					if(mav != null) {
-						
 						DomOp op = DomOp.valueOf((String)viewDef.get("domOp_"));
 						mavs.add(new Tuple4<View,Map<String, ?>,DomOp,String>(
 								mav,
@@ -181,9 +183,9 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 			}
 			return mavs;
 		}
-		
 	}
-	private class CollectingResponse extends HttpServletResponseWrapper {
+
+	public static class CollectingResponse extends HttpServletResponseWrapper {
 		private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		public CollectingResponse(HttpServletResponse response) {
 			//TODO shield setters headers etc
@@ -210,13 +212,14 @@ public class HtmlSaxPageViewResolver implements ViewResolver, ApplicationContext
 				}
 				//@Override
 				public void setWriteListener(WriteListener arg0) {
-					Check.illegalstate.fail("not implemented");
+					Check.illegalstate.fail(NOT_IMPLEMENTED);
 				}
 			};
 		}
 
 		public PrintWriter getWriter() throws IOException {
-			return new PrintWriter(getOutputStream());
+			throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+			//return new PrintWriter(getOutputStream());
 		}
 		
 	}
