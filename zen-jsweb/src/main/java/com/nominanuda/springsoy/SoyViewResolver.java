@@ -15,7 +15,6 @@
  */
 package com.nominanuda.springsoy;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,20 +26,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
+import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.tofu.SoyTofu;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
-import com.nominanuda.springsoy.SoyViewResolver.SoyView.LongToInt;
 import com.nominanuda.web.http.HttpProtocol;
 
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class SoyViewResolver implements ViewResolver {
 	private SoySource soySource;
-	
+
 	public View resolveViewName(String viewName, Locale locale)
 			throws Exception {
-		return new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()));
+		return soySource.hasFunction(viewName, locale.getLanguage())
+				? new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()), soySource.getBundle(locale.getLanguage()))
+				: null;
 	}
 
 	public void setSoySource(SoySource soySource) {
@@ -50,11 +51,13 @@ public class SoyViewResolver implements ViewResolver {
 	public static class SoyView implements View {
 		private final SoyTofu tofu;
 		private final String name;
+		private final SoyMsgBundle bundle;
 		private static final LongToInt longToInt = new LongToInt();
 
-		public SoyView(String name, SoyTofu tofu) {
+		public SoyView(String name, SoyTofu tofu, SoyMsgBundle bundle) {
 			this.name = name;
 			this.tofu = tofu;
+			this.bundle = bundle;
 		}
 
 		public String getContentType() {
@@ -68,15 +71,18 @@ public class SoyViewResolver implements ViewResolver {
 				Map<String, ? super Object> mm = STRUCT.toMapsAndLists(o);
 				model = mm;
 			}
-			byte[] b = tofu.newRenderer(name)
+			@SuppressWarnings("unchecked")
+			String s = tofu.newRenderer(name)
 						.setData(longToInt.longToInt((Map<String, Object>)model))
-						.render()
-						.getBytes(HttpProtocol.CS_UTF_8);
+						.setMsgBundle(bundle)
+						.render();
+			byte[] b = s.getBytes(HttpProtocol.CS_UTF_8);
 			response.setContentType(getContentType());
 			response.setContentLength(b.length);
 			response.getOutputStream().write(b);
 		}
 		static class LongToInt {
+			@SuppressWarnings("unchecked")
 			public Map<String, ?> longToInt(Map<String, Object> m) {
 				for(Entry<String, Object> e : m.entrySet()) {
 					Object o = e.getValue();
@@ -92,6 +98,7 @@ public class SoyViewResolver implements ViewResolver {
 				}
 				return m;
 			}
+			@SuppressWarnings("unchecked")
 			public void longToInt(List<Object> l) {
 				int len = l.size();
 				for(int i = 0; i < len; i++) {
