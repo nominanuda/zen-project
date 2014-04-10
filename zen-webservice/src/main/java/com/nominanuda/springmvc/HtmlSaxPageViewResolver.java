@@ -50,10 +50,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.nominanuda.code.CodeConstants;
+import com.nominanuda.code.Immutable;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Initializable;
 import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.lang.Tuple4;
 import com.nominanuda.web.htmlcomposer.DomManipulationStmt;
 import com.nominanuda.web.htmlcomposer.DomOp;
 import com.nominanuda.web.htmlcomposer.HtmlSaxPage;
@@ -91,7 +91,36 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 			throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-	class AsyncView implements View {
+	@Immutable
+	public static class JqFragmentAndManipulationStmt {
+		final View view;
+		final Map<String, ?> model;
+		final String selector;
+		final DomOp domOp;
+
+		public JqFragmentAndManipulationStmt(View view, Map<String, ?> model, String selector,
+				DomOp domOp) {
+			this.view = Check.illegalargument.assertNotNull(view);
+			this.model = Check.illegalargument.assertNotNull(model);
+			this.selector = Check.illegalargument.assertNotNull(selector);
+			this.domOp = Check.illegalargument.assertNotNull(domOp);
+		}
+
+		public View getView() {
+			return view;
+		}
+		public Map<String, ?> getModel() {
+			return model;
+		}
+		public String getSelector() {
+			return selector;
+		}
+		public DomOp getDomOp() {
+			return domOp;
+		}
+	}
+
+	private class AsyncView implements View {
 		private Locale locale;
 
 		public AsyncView(Locale locale) {
@@ -108,12 +137,12 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 			ContentHandler ch = createSerializer(new OutputStreamWriter(baos, UTF_8));
 			HtmlSaxPage p = new HtmlSaxPage();
 			
-			List<Tuple4<View,Map<String, ?>,DomOp,String>> springMavs = getSpringViewsAndModels(model);
-			for(Tuple4<View,Map<String, ?>,DomOp,String> mav : springMavs) {
-				View v = mav.get0();
-				Map<String, ?> m = mav.get1();
-				String selector = Check.illegalargument.assertNotNull(mav.get3());
-				DomOp domOp = Check.illegalargument.assertNotNull(mav.get2());
+			List<JqFragmentAndManipulationStmt> springMavs = getSpringViewsAndModels(model);
+			for(JqFragmentAndManipulationStmt mav : springMavs) {
+				View v = mav.getView();
+				Map<String, ?> m = mav.getModel();
+				String selector = mav.getSelector();
+				DomOp domOp = mav.getDomOp();
 				CollectingResponse cr = new CollectingResponse(response);
 				v.render(m, request, cr);
 				SaxBuffer sbuf = new SaxBuffer();
@@ -159,27 +188,28 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 			}
 		}
 
-		private List<Tuple4<View,Map<String, ?>,DomOp,String>> getSpringViewsAndModels(Map<String, ?> model) throws Exception {
-			List<Tuple4<View,Map<String, ?>,DomOp,String>> mavs = new LinkedList<Tuple4<View,Map<String, ?>,DomOp,String>>();
+		private List<JqFragmentAndManipulationStmt> getSpringViewsAndModels(Map<String, ?> model) throws Exception {
+			List<JqFragmentAndManipulationStmt> mavs = new LinkedList<JqFragmentAndManipulationStmt>();
 			List<ViewResolver> resolvers = getViewResolvers();
+			@SuppressWarnings("unchecked")
 			List<Map<String, ?>> viewDefs = (List<Map<String, ?>>)model.get("views_");
 			for(Map<String, ?> viewDef : viewDefs) {
 				String viewName = (String)viewDef.get("view_");
-				View mav = null;
+				View v = null;
 				for(ViewResolver r : resolvers) {
-					mav = r.resolveViewName(viewName, locale);
-					if(mav != null) {
+					v = r.resolveViewName(viewName, locale);
+					if(v != null) {
 						DomOp op = DomOp.valueOf((String)viewDef.get("domOp_"));
-						mavs.add(new Tuple4<View,Map<String, ?>,DomOp,String>(
-								mav,
+						mavs.add(new JqFragmentAndManipulationStmt(
+								v,
 								(Map<String, ?>)viewDef.get("data_"),
-								op,
-								(String)viewDef.get("selector_")
+								(String)viewDef.get("selector_"),
+								op
 						));
 						break;
 					}
 				}
-				Check.illegalargument.assertNotNull(mav, "cannot resolve view named:"+viewName);
+				Check.illegalargument.assertNotNull(v, "cannot resolve view named:"+viewName);
 			}
 			return mavs;
 		}
