@@ -43,6 +43,36 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		onMutate();
 		return o;
 	}
+	//Pattern VALID_OBJ_KEY = Pattern.compile("[\\$_A-Za-z][\\$_A-Za-z0-9-]*");
+	protected String checkKey(String key) throws IllegalArgumentException {
+		try {
+			int len = key.length();
+			char ch = key.charAt(0);
+			if(! (
+				(ch >= 'a' && ch <= 'z')||(ch >= 'A' && ch <= 'Z')
+				||(ch == '_')||(ch == '$')
+			)) {
+				throw new IllegalArgumentException();
+			}
+			for(int i = 1; i < len; i++) {
+				ch = key.charAt(i);
+				if(! (
+					(ch >= 'a' && ch <= 'z')||(ch >= 'A' && ch <= 'Z')||(ch >= '0' && ch <= '9')
+					||(ch == '_')||(ch == '$')||(ch == '-')
+				)) 
+				{
+					throw new IllegalArgumentException();
+				}
+			}
+			return key;
+		} catch(Exception e) {
+			if(e instanceof IllegalArgumentException) {
+				throw (IllegalArgumentException)e;
+			} else {
+				throw new IllegalArgumentException(e);
+			}
+		}
+	}
 
 	public Object get(String k) {
 		return m.get(checkKey(k));
@@ -88,5 +118,4 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		put(k, v);
 		return this;
 	}
-
 }

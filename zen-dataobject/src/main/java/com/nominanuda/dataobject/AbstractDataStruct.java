@@ -77,6 +77,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 		return new LinkedList<Object>();
 	}
 
+/*
 	public K checkKey(K key) throws IllegalArgumentException {
 		illegalargument.assertNotNull(key);
 		if(isArray()) {
@@ -88,7 +89,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 		}
 		return key;
 	}
-
+*/
 	public boolean isPrimitiveOrNull(Object o) {
 		return STRUCT.isPrimitiveOrNull(o);
 	}
