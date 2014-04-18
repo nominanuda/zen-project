@@ -15,7 +15,6 @@
  */
 package com.nominanuda.dataobject;
 
-import static com.nominanuda.lang.Check.illegalargument;
 
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
@@ -63,7 +62,7 @@ public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K
 		} else if (isPrimitiveOrNull(o)) {
 			return o;
 		} else if (o instanceof AbstractDataStruct) {
-			AbstractDataStruct tStruct = (AbstractDataStruct) o;
+			AbstractDataStruct<?> tStruct = (AbstractDataStruct<?>) o;
 			return tStruct.cloneStruct(parent);
 		}
 		throw new IllegalArgumentException();

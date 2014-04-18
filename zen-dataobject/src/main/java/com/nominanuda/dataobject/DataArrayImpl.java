@@ -31,12 +31,12 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 		l = createInnerList();
 	}
 
-	DataArrayImpl(AbstractDataStruct parent) {
+	DataArrayImpl(AbstractDataStruct<?> parent) {
 		super(parent);
 		l = createInnerList();
 	}
 
-	private DataArrayImpl(List<Object> o, AbstractDataStruct parent) {
+	private DataArrayImpl(List<Object> o, AbstractDataStruct<?> parent) {
 		super(parent);
 		l = o;
 	}
@@ -47,7 +47,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 
 	public Object put(Integer i, Object v) {
 		Object obj = isPrimitiveOrNull(v)
-			? v : ((AbstractDataStruct)v).cloneStruct(this);
+			? v : ((AbstractDataStruct<?>)v).cloneStruct(this);
 		l.set(ensureRoom(i),obj);
 		onMutate();
 		return obj;
@@ -95,7 +95,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 
 	@Override
 	protected AbstractDataStruct<Integer> cloneStruct(
-			@Nullable AbstractDataStruct parent) {
+			@Nullable AbstractDataStruct<?> parent) {
 		List<Object> list = createInnerList();
 		DataArrayImpl res = new DataArrayImpl(list, parent);
 		int len = getLength();
@@ -104,7 +104,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 			if (isPrimitiveOrNull(o)) {
 				list.add(o);
 			} else {
-				list.add(((AbstractDataStruct)o).cloneStruct(res));
+				list.add(((AbstractDataStruct<?>)o).cloneStruct(res));
 			}
 		}
 		return res;

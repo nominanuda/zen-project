@@ -27,7 +27,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		m = createInnerMap();
 	}
 
-	DataObjectImpl(AbstractDataStruct parent) {
+	DataObjectImpl(AbstractDataStruct<?> parent) {
 		super(parent);
 		m = createInnerMap();
 	}
@@ -108,7 +108,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 			if (isPrimitiveOrNull(val)) {
 				map.put(k, val);
 			} else {
-				map.put(k, ((AbstractDataStruct)val).cloneStruct(res));
+				map.put(k, ((AbstractDataStruct<?>)val).cloneStruct(res));
 			}
 		}
 		return res;
