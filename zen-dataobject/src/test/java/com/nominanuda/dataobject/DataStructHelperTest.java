@@ -86,7 +86,7 @@ public class DataStructHelperTest {
 		DataArray arr = new DataArrayImpl();
 		arr.add(val1);
 		arr.add(val2);
-		List list = new DataStructHelper().toMapsAndLists(arr);
+		List<?> list = new DataStructHelper().toMapsAndLists(arr);
 		assertEquals(2, list.size());
 		assertEquals(list.get(0), list.get(1));
 	}

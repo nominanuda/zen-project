@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.nominanuda.code.*;
+import com.nominanuda.io.DevNull;
 import com.nominanuda.lang.*;
 
 @ThreadSafe
@@ -117,6 +118,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 
+	private final JsonPrinter nullJsonPrinter = new JsonPrinter(DevNull.asWriter());
+
 	public String toJsonString(Object o) {
 		return toJsonString(o, false);
 	}
@@ -134,9 +137,9 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			DataStructStreamer.stream((DataArray) o, p);
 			return sw.toString();
 		} else if (o instanceof Number) {
-			return numberToString((Number)o);
+			return nullJsonPrinter.numberEncode((Number)o);
 		} else if (o instanceof String) {
-			return "\"" + jsonStringEscape((String) o) + "\"";
+			return "\"" + nullJsonPrinter.stringEncode((String) o) + "\"";
 		} else if (o instanceof Boolean) {
 			return ((Boolean) o).toString();
 		} else {
@@ -147,21 +150,16 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	public String numberToString(Number n) {
-		if (Maths.isInteger(n.doubleValue())) {
-			return new Long(n.longValue()).toString();
-		} else {
-			return n.toString();
-		}
+		return nullJsonPrinter.numberEncode(n);
 	}
 
 	public String jsonStringEscape(String s) {
-		return s.replace("\\", "\\\\").replace("\"", "\\\"")
-				.replace("\n", "\\n");
+		return nullJsonPrinter.stringEncode(s);
 	}
 
+	ParserUtils parserUtils = new ParserUtils();
 	public String jsonStringUnescape(String s) {
-		return s.replace("\\\\", "\\").replace("\\\"", "\"")
-				.replace("\\n", "\\n");
+		return parserUtils.parseStringContent(s);
 	}
 
 	public void copy(DataObject src, DataObject dst, int policy)

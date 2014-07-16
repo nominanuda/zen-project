@@ -11,37 +11,36 @@ public class JsonPrinterTest {
 	@Test
 	public void testNoUnicode() {
 		JsonPrinter jp = new JsonPrinter(DevNull.asWriter());
-		assertEquals("", jp.jsonStringEscape(""));
-		assertEquals("1", jp.jsonStringEscape("1"));
-		assertEquals("\\\\", jp.jsonStringEscape("\\"));
-		assertEquals("é", jp.jsonStringEscape("é"));
-		assertEquals("\\\\u1234", jp.jsonStringEscape("\\u1234"));
-		assertEquals("ሴ", jp.jsonStringEscape("\u1234"));
-		assertEquals("\\n", jp.jsonStringEscape("\n"));
-		assertEquals("\\\"", jp.jsonStringEscape("\""));
-		assertEquals("\\r", jp.jsonStringEscape("\r"));
-		assertEquals("\\b", jp.jsonStringEscape("\b"));
-		assertEquals("\\f", jp.jsonStringEscape("\f"));
-		assertEquals("\\t", jp.jsonStringEscape("\t"));
+		assertEquals("", jp.stringEncode(""));
+		assertEquals("1", jp.stringEncode("1"));
+		assertEquals("\\\\", jp.stringEncode("\\"));
+		assertEquals("é", jp.stringEncode("é"));
+		assertEquals("\\\\u1234", jp.stringEncode("\\u1234"));
+		assertEquals("ሴ", jp.stringEncode("\u1234"));
+		assertEquals("\\n", jp.stringEncode("\n"));
+		assertEquals("\\\"", jp.stringEncode("\""));
+		assertEquals("\\r", jp.stringEncode("\r"));
+		assertEquals("\\b", jp.stringEncode("\b"));
+		assertEquals("\\f", jp.stringEncode("\f"));
+		assertEquals("\\t", jp.stringEncode("\t"));
 		
 	}
 
 	@Test
 	public void testUnicode() {
 		JsonPrinter jp = new JsonPrinter(DevNull.asWriter(),false, true, true);
-		System.err.println(jp.jsonStringEscape("u"));
-		assertEquals("", jp.jsonStringEscape(""));
-		assertEquals("1", jp.jsonStringEscape("1"));
-		assertEquals("\\\\", jp.jsonStringEscape("\\"));
-		assertEquals("\\\\u1234", jp.jsonStringEscape("\\u1234"));
-		assertEquals("\\u1234", jp.jsonStringEscape("\u1234"));
-		assertEquals("\\u1234", jp.jsonStringEscape("ሴ"));
-		assertEquals("\\n", jp.jsonStringEscape("\n"));
-		assertEquals("\\\"", jp.jsonStringEscape("\""));
-		assertEquals("\\r", jp.jsonStringEscape("\r"));
-		assertEquals("\\b", jp.jsonStringEscape("\b"));
-		assertEquals("\\f", jp.jsonStringEscape("\f"));
-		assertEquals("\\t", jp.jsonStringEscape("\t"));
-		assertEquals("\\/\\/", jp.jsonStringEscape("//"));
+		assertEquals("", jp.stringEncode(""));
+		assertEquals("1", jp.stringEncode("1"));
+		assertEquals("\\\\", jp.stringEncode("\\"));
+		assertEquals("\\\\u1234", jp.stringEncode("\\u1234"));
+		assertEquals("\\u1234", jp.stringEncode("\u1234"));
+		assertEquals("\\u1234", jp.stringEncode("ሴ"));
+		assertEquals("\\n", jp.stringEncode("\n"));
+		assertEquals("\\\"", jp.stringEncode("\""));
+		assertEquals("\\r", jp.stringEncode("\r"));
+		assertEquals("\\b", jp.stringEncode("\b"));
+		assertEquals("\\f", jp.stringEncode("\f"));
+		assertEquals("\\t", jp.stringEncode("\t"));
+		assertEquals("\\/\\/", jp.stringEncode("//"));
 	}
 }

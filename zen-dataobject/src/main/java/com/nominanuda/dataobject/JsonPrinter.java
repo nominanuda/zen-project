@@ -3,10 +3,9 @@ package com.nominanuda.dataobject;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Formatter;
 import java.util.Stack;
 
+import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
 
@@ -72,7 +71,9 @@ public class JsonPrinter implements JsonContentHandler {
 	public boolean startObjectEntry(String key) throws RuntimeException {
 		try {
 			commas.startObjectEntry(key);
-			w.write("\""+jsonStringEscape(key)+"\":");
+			w.write("\"");
+			stringEncode((String) key, w);
+			w.write("\":");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -114,16 +115,13 @@ public class JsonPrinter implements JsonContentHandler {
 			if (o == null) {
 				w.write("null");
 			} else if (o instanceof Number) {
-				Number n = (Number) o;
-				if (Maths.isInteger(n.doubleValue())) {
-					w.write(new Long(n.longValue()).toString());
-				} else {
-					w.write(n.toString());
-				}
+				w.write(numberEncode((Number) o));
 			} else if (o instanceof String) {
-				w.write("\"" + jsonStringEscape((String) o) + "\"");
+				w.write("\"");
+				stringEncode((String) o, w);
+				w.write("\"");
 			} else if (o instanceof Boolean) {
-				w.write(((Boolean) o).toString());
+				w.write(booleanEncode((Boolean) o));
 			} else {
 				throw new IllegalStateException();
 			}
@@ -134,22 +132,30 @@ public class JsonPrinter implements JsonContentHandler {
 		return true;
 	}
 
-	public String jsonStringEscape(String s) {
+	@ThreadSafe public String numberEncode(Number n) {
+		return Maths.isInteger(n.doubleValue())
+			? new Long(n.longValue()).toString()
+			: n.toString();
+	}
+
+	@ThreadSafe public String booleanEncode(Boolean b) {
+		return b.toString();
+	}
+
+	@ThreadSafe public String stringEncode(String s) {
 		StringWriter sw = new StringWriter();
 		try {
-			jsonStringEscape(s, sw);
+			stringEncode(s, sw);
 		} catch (IOException e) {
 			throw new RuntimeException(e);//never happens
 		}
 		return sw.toString();
-//		return s.replace("\\", "\\\\").replace("\"", "\\\"")
-//				.replace("\n", "\\n");
 	}
 
 	/**
 	 * \" \\ \/ \b \f \n \r \t \u1234 four-hex-digits
 	 */
-	public void jsonStringEscape(String s, Writer writer) throws IOException {
+	@ThreadSafe public void stringEncode(String s, Writer writer) throws IOException {
 		char[] carr = s.toCharArray();
 		int len = carr.length;
 		for(int i = 0; i < len; i++) {
@@ -208,7 +214,7 @@ public class JsonPrinter implements JsonContentHandler {
 			}
 		}
 	}
-	private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+
 	private class Cx {
 		public DataType t;
 		public boolean firstGone;
