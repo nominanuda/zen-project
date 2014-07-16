@@ -1,20 +1,37 @@
 package com.nominanuda.dataobject;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Formatter;
 import java.util.Stack;
 
+import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
+
 import static com.nominanuda.dataobject.DataType.*;
 
 public class JsonPrinter implements JsonContentHandler {
 	private final Writer w;
 	private final CommaInsCtx commas = new CommaInsCtx();
 	private final boolean pretty;
+	private final boolean unicodeEscapeAll;
+	private boolean escapeSlash;
+
+	public JsonPrinter(Writer writer) {
+		this(writer, false, false, false);
+	}
 
 	public JsonPrinter(Writer writer, boolean pretty) {
-		w = writer;
+		this(writer, false, false, false);
+	}
+
+	public JsonPrinter(Writer writer, boolean pretty, boolean unicodeEscapeAll, boolean escapeSlash) {
+		this.w = Check.notNull(writer);
 		this.pretty = pretty;
+		this.unicodeEscapeAll = unicodeEscapeAll;
+		this.escapeSlash = escapeSlash;
 	}
 
 	public void startJSON() throws RuntimeException {
@@ -118,10 +135,80 @@ public class JsonPrinter implements JsonContentHandler {
 	}
 
 	public String jsonStringEscape(String s) {
-		return s.replace("\\", "\\\\").replace("\"", "\\\"")
-				.replace("\n", "\\n");
+		StringWriter sw = new StringWriter();
+		try {
+			jsonStringEscape(s, sw);
+		} catch (IOException e) {
+			throw new RuntimeException(e);//never happens
+		}
+		return sw.toString();
+//		return s.replace("\\", "\\\\").replace("\"", "\\\"")
+//				.replace("\n", "\\n");
 	}
 
+	/**
+	 * \" \\ \/ \b \f \n \r \t \u1234 four-hex-digits
+	 */
+	public void jsonStringEscape(String s, Writer writer) throws IOException {
+		char[] carr = s.toCharArray();
+		int len = carr.length;
+		for(int i = 0; i < len; i++) {
+			char c = carr[i];
+			switch (c) {
+			case '"':
+				writer.write("\\\"");
+				break;
+			case '/':
+				writer.write(escapeSlash ? "\\/" : "/");
+				break;
+			case '\\':
+				writer.write("\\\\");
+				break;
+			case '\b':
+				writer.write("\\b");
+				break;
+			case '\f':
+				writer.write("\\f");
+				break;
+			case '\n':
+				writer.write("\\n");
+				break;
+			case '\r':
+				writer.write("\\r");
+				break;
+			case '\t':
+				writer.write("\\t");
+				break;
+			default:
+				if(unicodeEscapeAll) {
+					if(c < 127) {
+						writer.append(c);
+					} else {
+						String hex = Integer.toHexString(c);
+						writer.write("\\u");
+						switch (hex.length()) {
+						case 1:
+							writer.write("000");
+							break;
+						case 2:
+							writer.write("00");
+							break;
+						case 3:
+							writer.write("0");
+							break;
+						default:
+							break;
+						}
+						writer.write(Integer.toHexString(c));
+					}
+				} else {
+					writer.append(c);
+				}
+				break;
+			}
+		}
+	}
+	private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 	private class Cx {
 		public DataType t;
 		public boolean firstGone;
