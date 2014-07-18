@@ -51,6 +51,7 @@ public class JclValidatorTest {
 		valid("MyType@[b] MyType2@[b]", "MyType2", "[true]");
 		valid("MyType1@{x:@MyType2} MyType2@[b!]", "{x:[true]}");
 		valid("MyType1@{x:@MyType2} MyType2@[b]", "{x:[null]}");
+		invalid("MyType1@{x:@MyType2} MyType2@[b]", "{x:[1]}");
 		invalid("MyType1@{x:@MyType2} MyType2@[b!]", "{x:[null]}");
 	}
 

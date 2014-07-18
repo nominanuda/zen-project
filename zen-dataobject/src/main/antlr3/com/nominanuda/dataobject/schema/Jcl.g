@@ -20,6 +20,10 @@ package com.nominanuda.dataobject.schema;
 }
 
 @members { 
+  @Override
+  public void reportError(RecognitionException e) {
+    throw new IllegalArgumentException(e);
+  }
 protected void mismatch(IntStream input, int ttype, BitSet follow) 
 throws RecognitionException 
 { 
@@ -41,8 +45,8 @@ throw e;
 } 
 
 program
-	: value
-	| (LvalTkn '@' value)+
+	: value EOF
+	| (LvalTkn '@' value)+ EOF
 	 -> ^(TYPEDEF LvalTkn value)+
 	;
 

@@ -13,11 +13,12 @@ import com.nominanuda.dataobject.WrappingRecognitionException;
 
 public class JclParseTest {
 	private String[] validExprs = new String[] {
-			"[n]","n","{}","[]","{a:n,a:s,z:b}","{at:n,a:s,z}","{a,a,z}","{a,a,z : [({}|n|[])]}"
+		"(n|b)","[n]","n","{}","[]","{a:n,a:s,z:b}","{at:n,a:s,z}","{a,a,z}","{a,a,z : [({}|n|[])]}"
 	};
 	private String[] invalidExprs = new String[] {
-		"a,b ", " ", "", "{[]} ", ":", "{a b}"
+		"a,b ", " ", "", "{[]} ", ":", "{a b}", "{} {}"
 	};
+
 	@Test
 	public void testValid() throws Exception {
 		for(String expr : validExprs) {
@@ -30,9 +31,10 @@ public class JclParseTest {
 		for(String expr : invalidExprs) {
 			try {
 				parse(expr);
-				fail();
+				fail(expr + " -- should not be valid");
 			} catch(Exception e) {
-				assertTrue(e.getClass().getName().startsWith("org.antlr"));
+				assertTrue(e.getClass().getName().startsWith("org.antlr")
+					|| e instanceof IllegalArgumentException);
 			}
 		}
 	}
