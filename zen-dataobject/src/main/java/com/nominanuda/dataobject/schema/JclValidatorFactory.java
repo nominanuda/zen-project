@@ -58,7 +58,7 @@ public class JclValidatorFactory {
 				String tname = cur.getChild(0).getText();
 				tMap.put(tname, cur.getChild(1));
 				tMap.put("", cur.getChild(1));
-		} else if(cur.getText() != null) {
+			} else if(cur.getText() != null) {
 				tMap.put("", cur);
 			} else {
 				int len = cur.getChildCount();

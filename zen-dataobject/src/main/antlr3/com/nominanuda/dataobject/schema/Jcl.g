@@ -45,8 +45,12 @@ throw e;
 } 
 
 program
-	: value EOF
-	| (LvalTkn '@' value)+ EOF
+	: jcl EOF!
+	;
+
+jcl
+	: value
+	| (LvalTkn '@' value)+
 	 -> ^(TYPEDEF LvalTkn value)+
 	;
 
