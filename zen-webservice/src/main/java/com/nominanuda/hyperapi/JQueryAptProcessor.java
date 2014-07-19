@@ -159,6 +159,7 @@ public class JQueryAptProcessor implements Processor {
 					jsonPath = qp.value();
 				}
 			}
+			@SuppressWarnings("unused")
 			String clsType = null;//p.asType().getClass().getName();
 			TypeMirror tm = p.asType();
 			if(tm instanceof DeclaredType) {
