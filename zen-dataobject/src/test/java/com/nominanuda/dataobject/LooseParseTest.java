@@ -17,19 +17,6 @@ package com.nominanuda.dataobject;
 
 import static org.junit.Assert.*;
 
-import java.io.StringReader;
-
-import javax.jws.Oneway;
-
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.TokenRewriteStream;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.antlr.runtime.tree.TreeNodeStream;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 
