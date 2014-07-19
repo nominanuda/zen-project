@@ -17,6 +17,8 @@ package com.nominanuda.hyperapi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -38,7 +40,7 @@ public class HyperApiIntrospector {
 		return null;
 	}
 
-	public @Nullable Annotation findHttpMethod(Method method) {
+	public @Nullable Annotation findFirstHttpMethod(Method method) {
 		Annotation[] methodAnnotations = method.getAnnotations();
 		for(Annotation a : methodAnnotations) {
 			if(a instanceof GET
@@ -49,6 +51,20 @@ public class HyperApiIntrospector {
 			}
 		}
 		return null;
+	}
+
+	public @Nullable Set<Annotation> findAllHttpMethods(Method method) {
+		Set<Annotation> res = new LinkedHashSet<Annotation>();
+		Annotation[] methodAnnotations = method.getAnnotations();
+		for(Annotation a : methodAnnotations) {
+			if(a instanceof GET
+			|| a instanceof POST
+			|| a instanceof PUT
+			|| a instanceof DELETE) {
+				res.add(a);
+			}
+		}
+		return res.isEmpty() ? null : res;
 	}
 
 }
