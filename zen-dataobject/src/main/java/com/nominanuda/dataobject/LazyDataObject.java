@@ -45,6 +45,7 @@ public class LazyDataObject implements DataObject {
 		return delegee.get(key);
 	}
 
+	@SuppressWarnings("deprecation")
 	public DataStruct getParent() {
 		explode();
 		return delegee.getParent();
@@ -55,6 +56,7 @@ public class LazyDataObject implements DataObject {
 		return delegee.getStrict(key);
 	}
 
+	@SuppressWarnings("deprecation")
 	public DataStruct getRoot() {
 		explode();
 		return delegee.getRoot();
@@ -117,7 +119,7 @@ public class LazyDataObject implements DataObject {
 
 	public boolean isPrimitiveOrNull(Object o) {
 		explode();
-		return delegee.isPrimitiveOrNull(o);
+		return DataStructHelper.STRUCT.isPrimitiveOrNull(o);
 	}
 
 	public void setPathProperty(String path, Object value) {

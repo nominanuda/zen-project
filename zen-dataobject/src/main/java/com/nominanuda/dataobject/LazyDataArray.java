@@ -55,6 +55,7 @@ public class LazyDataArray implements DataArray {
 		return delegee.get(key);
 	}
 
+	@SuppressWarnings("deprecation")
 	public DataStruct getParent() {
 		explode();
 		return delegee.getParent();
@@ -65,6 +66,7 @@ public class LazyDataArray implements DataArray {
 		return delegee.getStrict(key);
 	}
 
+	@SuppressWarnings("deprecation")
 	public DataStruct getRoot() {
 		explode();
 		return delegee.getRoot();
@@ -107,7 +109,7 @@ public class LazyDataArray implements DataArray {
 
 	public boolean isPrimitiveOrNull(Object o) {
 		explode();
-		return delegee.isPrimitiveOrNull(o);
+		return DataStructHelper.STRUCT.isPrimitiveOrNull(o);
 	}
 
 	public Object getPathSafe(String path) {
