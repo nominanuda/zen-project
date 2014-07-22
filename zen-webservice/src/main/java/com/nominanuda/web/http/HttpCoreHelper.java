@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,6 +79,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicLineFormatter;
 import org.apache.http.message.BasicLineParser;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
@@ -233,7 +235,7 @@ public class HttpCoreHelper implements HttpProtocol {
 
 	public List<NameValuePair> parseEntityWithDefaultUtf8(
 			final HttpEntity entity) throws IOException {
-		List<NameValuePair> result = Collections.emptyList();
+		List<NameValuePair> result = new LinkedList<NameValuePair>();
 		String contentType = null;
 		String charset = UTF_8;
 		Header h = entity.getContentType();
@@ -250,13 +252,84 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		if (contentType != null
 		&& contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
-			final String content = EntityUtils.toString(entity, UTF_8);
-			if (content != null && content.length() > 0) {
-				result = new ArrayList<NameValuePair>();
-				URLEncodedUtils.parse(result, new Scanner(content), charset);
-			}
+			final String content = EntityUtils.toString(entity, charset);
+			parseUrlEncodedParamList(result, content, charset);
 		}
 		return result;
+	}
+
+	private void parseUrlEncodedParamList(List<NameValuePair> result,
+			String content, String charset) {
+		try {
+			content = URLDecoder.decode(content, charset);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		if (content != null && content.length() > 0) {
+			char[] carr = content.toCharArray();
+			int len = carr.length;
+			StringBuilder name = new StringBuilder();
+			StringBuilder value = new StringBuilder();
+			int STATE_PARSING_KEY = 0;
+			int STATE_PARSING_VAL = 1;
+			int state = STATE_PARSING_KEY;
+			for(int i = 0; i < len; i++) {
+				char c = carr[i];
+				switch (c) {
+//				case '%':
+//					Check.illegalargument.assertTrue(len > i + 2);
+//					String sss = new StringBuilder(2)
+//						.append(carr[i+1])
+//						.append(carr[i+2])
+//						.toString();
+//					i += 2;
+//					char rr = Character.forDigit(Integer.parseInt(sss, 16), 16);
+//					if(state == STATE_PARSING_KEY) {
+//						name.append(rr);
+//					} else {
+//						value.append(rr);
+//					}
+//					break;
+				case '=':
+					if(state == STATE_PARSING_KEY) {
+						state = STATE_PARSING_VAL;
+						Check.illegalargument.assertTrue(name.length() > 0);
+					} else {
+						value.append(c);
+					}
+					break;
+				case '&':
+					Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
+					result.add(new BasicNameValuePair(
+						name.toString(), 
+						value.toString()));
+					name = new StringBuilder();
+					value = new StringBuilder();
+					break;
+//				case '+':
+//					if(state == STATE_PARSING_KEY) {
+//						name.append(' ');
+//					} else {
+//						value.append(' ');
+//					}
+//					break;
+				default:
+					if(state == STATE_PARSING_KEY) {
+						name.append(c);
+					} else {
+						value.append(c);
+					}
+					break;
+				}
+			}
+			if(name.length() > 0) {
+				result.add(new BasicNameValuePair(
+						name.toString(), 
+						value.toString()));
+			}
+//				result = new ArrayList<NameValuePair>();
+//				URLEncodedUtils.parse(result, new Scanner(content), charset);
+		}
 	}
 
 	public @Nullable String getQueryParamFirstOccurrence(HttpRequest request, String name) {
