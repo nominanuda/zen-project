@@ -160,4 +160,22 @@ public class Collections {
 		}
 		return result;
 	}
+
+	public static <T> boolean find(T needle, Iterable<? extends T> haystack) {
+		for(T x : haystack) {
+			if(needle.equals(x)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static <T> boolean find(T needle, T[] haystack) {
+		for(T x : haystack) {
+			if(needle.equals(x)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

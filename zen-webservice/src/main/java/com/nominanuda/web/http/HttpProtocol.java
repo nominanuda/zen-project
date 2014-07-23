@@ -26,6 +26,10 @@ import static org.apache.http.HttpStatus.*;
 
 
 public interface HttpProtocol {
+	String[] RFC2616_COMMON_METHODS = {"GET"};
+	String[] RFC2616_ENTITY_ENC_METHODS = {"POST", "PUT"};
+	String[] RFC2616_SPECIAL_METHODS = {"HEAD", "OPTIONS", "DELETE", "TRACE", "CONNECT"};
+
 	String GET = "GET";
 	String POST = "POST";
 	String PUT = "PUT";
@@ -50,6 +54,7 @@ public interface HttpProtocol {
 	Charset CS_UTF_8 = Charset.forName(UTF_8);
 	String ISO_8859_1 = "ISO-8859-1";
 	String ASCII = "ASCII";
+	Charset CS_ASCII = Charset.forName(ASCII);
 	String CT_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	String CT_WWW_FORM_URLENCODED_CS_UTF8 = "application/x-www-form-urlencoded; charset=UTF-8";
 	String CT_APPLICATION_JAVASCRIPT = "application/javascript";
