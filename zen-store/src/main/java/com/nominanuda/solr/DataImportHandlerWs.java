@@ -28,9 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.xml.sax.InputSource;

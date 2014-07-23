@@ -15,7 +15,6 @@
  */
 package com.nominanuda.dataobject.schema;
 
-import java.nio.channels.IllegalSelectorException;
 import java.util.Stack;
 
 import com.nominanuda.dataobject.JsonContentHandler;

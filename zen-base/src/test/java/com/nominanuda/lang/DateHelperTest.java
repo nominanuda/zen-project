@@ -15,13 +15,8 @@
  */
 package com.nominanuda.lang;
 
-import java.util.Locale;
-
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -81,11 +76,10 @@ public class DateHelperTest {
 	@Test
 	public void testParseRfc882() {
 //		DateTimeZone zz = DateTimeZone.forID("PDT");
-		DateTimeFormatter f = 
+		//DateTimeFormatter f = 
 //		DateTimeFormat.forPattern("EEE dd MMM yyyy HH:mm:ss zzz").withLocale(Locale.US)
-		DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
-		;
-		DateTime t = f.parseDateTime("Fri, 21 Oct 2011 00:00:41 PST");
+		//DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss zzz");
+		//TODO DateTime t = f.parseDateTime("Fri, 21 Oct 2011 00:00:41 PST");
 		//dt.parseHttpDate822("Fri, 21 Oct 2011 00:00:41 PDT");
 	}
 }

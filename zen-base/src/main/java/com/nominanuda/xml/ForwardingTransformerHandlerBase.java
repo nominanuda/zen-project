@@ -34,6 +34,7 @@ import com.nominanuda.lang.Check;
 
 public class ForwardingTransformerHandlerBase implements TransformerHandler {
 	protected static final XmlHelper saxHelper = new XmlHelper();
+	@SuppressWarnings("unused")
 	private Locator locator;//TODO
 	private ContentHandler contentHandler;
 	private LexicalHandler lexicalHandler = new NullLexicalHandler();

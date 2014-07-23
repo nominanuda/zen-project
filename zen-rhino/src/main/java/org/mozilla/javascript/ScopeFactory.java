@@ -115,9 +115,6 @@ public class ScopeFactory implements ObjectFactory<Scriptable> {
 		return createInContext(Context.getCurrentContext());
 	}
 	public Scriptable createInContext(Context cx) throws RuntimeException {
-		if(this == null) {
-			throw new IllegalArgumentException("no scope configuration found");
-		}
 		if(cachedScope != null) {
 			return this.isSealed() ? cachedScope 
 					: helper.protocloneScriptable(cx, cachedScope);

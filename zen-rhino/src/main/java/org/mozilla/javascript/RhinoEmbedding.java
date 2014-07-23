@@ -28,6 +28,7 @@ import com.nominanuda.lang.Initializable;
 public class RhinoEmbedding extends ContextFactory implements Initializable, MethodArgCoercer {
 	private static final AtomicBoolean exclusiveContextMaker = new AtomicBoolean(false);
 	private boolean debug = false;
+	@SuppressWarnings("unused")
 	private Object securityDomain = null;
 	private RegExpProxy regExpProxy = new HtmlUnitRegExpProxy(new RegExpImpl());
 

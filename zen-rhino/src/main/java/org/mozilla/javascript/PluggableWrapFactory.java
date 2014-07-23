@@ -19,9 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.ObjectConvertor;
 
 public class PluggableWrapFactory extends WrapFactory {
+	@SuppressWarnings("unused")
 	private final RhinoEmbedding rhinoEmbedding;
 	private final List<ToScriptableConvertor> convertors = new LinkedList<ToScriptableConvertor>();
 

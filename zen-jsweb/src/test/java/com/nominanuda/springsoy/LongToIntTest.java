@@ -41,8 +41,8 @@ public class LongToIntTest {
 		m1.put("l", l);
 		l2i.longToInt(m1);
 		assertEquals(new Integer(1), m1.get("a1"));
-		assertEquals(new Integer(1), ((List)m1.get("l")).get(1));
-		assertEquals(new Integer(1), ((Map)((List)m1.get("l")).get(0)).get("a2"));
+		assertEquals(new Integer(1), ((List<?>)m1.get("l")).get(1));
+		assertEquals(new Integer(1), ((Map<?,?>)((List<?>)m1.get("l")).get(0)).get("a2"));
 	}
 
 }

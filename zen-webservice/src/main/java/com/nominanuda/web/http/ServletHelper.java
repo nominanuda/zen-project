@@ -189,16 +189,19 @@ public class ServletHelper implements CodeConstants {
 								return is.read(b, off, len);
 							}
 							//@Override
+							@SuppressWarnings("unused")
 							public boolean isFinished() {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
+							@SuppressWarnings("unused")
 							public boolean isReady() {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
+							@SuppressWarnings("unused")
 							public void setReadListener(ReadListener arg0) {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 							}

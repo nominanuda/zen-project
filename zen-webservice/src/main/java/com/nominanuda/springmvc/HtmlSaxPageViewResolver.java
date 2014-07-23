@@ -241,6 +241,7 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 					return true;
 				}
 				//@Override
+				@SuppressWarnings("unused")
 				public void setWriteListener(WriteListener arg0) {
 					Check.illegalstate.fail(NOT_IMPLEMENTED);
 				}

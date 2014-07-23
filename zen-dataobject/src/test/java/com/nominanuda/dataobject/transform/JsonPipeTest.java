@@ -16,8 +16,6 @@
  */
 package com.nominanuda.dataobject.transform;
 
-import static org.junit.Assert.*;
-
 import java.io.StringReader;
 
 import org.junit.Test;
@@ -25,7 +23,6 @@ import org.junit.Test;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.xml.SAXPipeline;
 
 public class JsonPipeTest {
 

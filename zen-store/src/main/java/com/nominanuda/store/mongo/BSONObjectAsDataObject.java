@@ -72,7 +72,7 @@ public class BSONObjectAsDataObject implements DataObject {
 	}
 	@SuppressWarnings("unchecked")
 	static PropertyBag<Object> asObjectKeyedDataStruct(Object o) {
-		return (PropertyBag)o;
+		return (PropertyBag<Object>)o;
 	}
 	static Object toStringOrIntKey(String s) {
 		Check.notNull(s);

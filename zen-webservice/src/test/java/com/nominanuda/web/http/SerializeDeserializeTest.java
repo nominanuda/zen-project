@@ -15,29 +15,22 @@
  */
 package com.nominanuda.web.http;
 
-import static org.junit.Assert.*;
+import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.apache.http.HttpException;
-import org.apache.http.HttpMessage;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicLineFormatter;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.http.message.LineFormatter;
 import org.junit.Test;
-
-import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
 
 public class SerializeDeserializeTest {
 	private static final String PAYLOAD = "lavispateresa";
