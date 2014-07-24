@@ -188,10 +188,10 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		private List<JqFragmentAndManipulationStmt> getSpringViewsAndModels(Map<String, ?> model) throws Exception {
 			List<JqFragmentAndManipulationStmt> mavs = new LinkedList<JqFragmentAndManipulationStmt>();
 			List<ViewResolver> resolvers = getViewResolvers();
-			@SuppressWarnings("unchecked")
 			List<Map<String, ?>> viewDefs = (List<Map<String, ?>>)model.get("views_");
 			for(Map<String, ?> viewDef : viewDefs) {
 				String viewName = (String)viewDef.get("view_");

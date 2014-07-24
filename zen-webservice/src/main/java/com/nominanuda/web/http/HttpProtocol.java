@@ -88,6 +88,7 @@ public interface HttpProtocol {
 "proxy-connection","connection","keep-alive","transfer-encoding","te","trailer","proxy-authorization","proxy-authenticate","upgrade","content-length"
 	);
 
+	@SuppressWarnings("unchecked")
 	Map<Integer, String> statusToReason = Collections.buildMap(HashMap.class,
 			SC_OK, "200 OK",
 			SC_CREATED, "201 Created",

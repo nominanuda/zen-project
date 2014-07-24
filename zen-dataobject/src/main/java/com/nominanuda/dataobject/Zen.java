@@ -17,7 +17,7 @@ package com.nominanuda.dataobject;
 
 import java.util.*;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unchecked"})
 public class Zen {
 
 	public static final Zen Z = new Zen();

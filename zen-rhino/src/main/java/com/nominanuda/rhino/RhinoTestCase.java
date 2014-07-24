@@ -57,6 +57,7 @@ public abstract class RhinoTestCase {
 		new PluggableURLStreamHandlerFactory().installToJvm();
 		rhinoEmbedding = new RhinoEmbedding();
 		rhinoEmbedding.setDebug(isDebug());
+		@SuppressWarnings("unchecked")
 		Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> coerceTypeMap = 
 			Collections.buildMap(LinkedHashMap.class, DataStruct.class, new Tuple2<ObjectConvertor<?, ?, ?>,Integer>(
 					new ToDataStructCoercer(), 1));

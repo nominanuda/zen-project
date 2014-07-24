@@ -54,6 +54,7 @@ public class BSONObjectAsDataObject implements DataObject {
 	public Object getPathSafe(String path) {
 		return getPathSafe(this, path);
 	}
+	@SuppressWarnings("unchecked")
 	static Object getPathSafe(Object o, String path) {
 		PropertyBag<Object> _target = asObjectKeyedDataStruct(o);
 		String[] pathBits = path.split("\\.");
