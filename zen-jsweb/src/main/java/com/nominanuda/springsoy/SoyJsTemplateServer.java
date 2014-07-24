@@ -18,6 +18,7 @@ package com.nominanuda.springsoy;
 import java.net.URI;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
 import com.nominanuda.dataobject.DataObject;
@@ -36,7 +37,7 @@ public class SoyJsTemplateServer implements CommandRequestHandler, HttpProtocol 
 			throws Exception {
 		String lang = ((DataObject)cmd).getString("lang");
 		String tpl = soySource.getJsTemplate(getTemplateName(cmd, request), lang);
-		StringEntity entity = new StringEntity(tpl, CT_TEXT_JAVASCRIPT, UTF_8);
+		StringEntity entity = new StringEntity(tpl, ContentType.create(CT_TEXT_JAVASCRIPT, CS_UTF_8));
 		return entity;
 	}
 

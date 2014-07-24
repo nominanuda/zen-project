@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,19 +50,25 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.cookie.CookieSpec;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipart;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.impl.cookie.NetscapeDraftSpec;
@@ -77,9 +84,6 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.http.message.LineFormatter;
 import org.apache.http.message.LineParser;
 import org.apache.http.message.ParserCursor;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
@@ -484,29 +488,22 @@ public class HttpCoreHelper implements HttpProtocol {
 	public HttpResponse resp404TextPlainUtf8(String msg) {
 		BasicHttpResponse resp = new BasicHttpResponse(
 				statusLine(404));
-		try {
-			resp.setEntity(new StringEntity(msg, CT_TEXT_PLAIN, UTF_8));
-		} catch (UnsupportedEncodingException e) {}
+		resp.setEntity(new StringEntity(msg, ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
 	public HttpResponse resp500TextPlainUtf8(Exception e) {
 		BasicHttpResponse resp = new BasicHttpResponse(
 				statusLine(500));
-		try {
-			resp.setEntity(new StringEntity(
-				Exceptions.toStackTrace(e), CT_TEXT_PLAIN, UTF_8));
-		} catch (UnsupportedEncodingException ex) {}
+		resp.setEntity(new StringEntity(Exceptions.toStackTrace(e), ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
 	public HttpResponse respInternalServerError() {
 		BasicHttpResponse resp = new BasicHttpResponse(
 				statusLine(500));
-		try {
-			resp.setEntity(new StringEntity(
-				"Internal Server Error", CT_TEXT_PLAIN, UTF_8));
-		} catch (UnsupportedEncodingException ex) {}
+		resp.setEntity(new StringEntity(
+			"Internal Server Error", ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
@@ -518,9 +515,9 @@ public class HttpCoreHelper implements HttpProtocol {
 			HttpCoreHelper d = new HttpCoreHelper();
 			String charset = Check.ifNullOrBlank(d.guessCharset(contentType), "UTF-8");
 			HttpEntity e = new StringEntity(
-					message, contentType, charset);
+					message, ContentType.create(contentType, charset));
 			resp.setEntity(e);
-		} catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedCharsetException ex) {
 			throw new IllegalArgumentException(ex);
 		}
 		return resp;
@@ -550,30 +547,29 @@ public class HttpCoreHelper implements HttpProtocol {
 	
 
 	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis) {
-		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
-		cm.setMaxTotal(maxConnPerRoute );
-		cm.setDefaultMaxPerRoute(maxConnPerRoute);
-		HttpParams p = new BasicHttpParams();
-		p.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, new Long(connTimeoutMillis).intValue());
-		p.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, new Long(soTimeoutMillis).intValue());
-		HttpClient httpClient = new DefaultHttpClient(cm, p);
-		return httpClient;
+		return createClient(maxConnPerRoute, connTimeoutMillis, soTimeoutMillis, null);
 	}
 
 	//if proxyHostAnPort value is jvm the normal jvm settings apply
-	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis, String proxyHostAnPort) {
-		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
-		cm.setMaxTotal(maxConnPerRoute );
-		cm.setDefaultMaxPerRoute(maxConnPerRoute);
-		HttpParams p = new BasicHttpParams();
-		p.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, new Long(connTimeoutMillis).intValue());
-		p.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, new Long(soTimeoutMillis).intValue());
-		DefaultHttpClient httpClient = new DefaultHttpClient(cm, p);
-		if("jvm".equalsIgnoreCase(proxyHostAnPort)) {
-			ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
-					httpClient.getConnectionManager().getSchemeRegistry(),
-					ProxySelector.getDefault());
-			httpClient.setRoutePlanner(routePlanner);
+	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis, @Nullable String proxyHostAnPort) {
+		Registry<ConnectionSocketFactory> defaultRegistry = RegistryBuilder
+				.<ConnectionSocketFactory> create()
+				.register("http", PlainConnectionSocketFactory.getSocketFactory())
+				.register("https", SSLConnectionSocketFactory.getSocketFactory())
+				.build();
+			PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(defaultRegistry);
+			connMgr.setDefaultMaxPerRoute(maxConnPerRoute);
+			SocketConfig sCfg = SocketConfig.custom()
+				.setSoTimeout((int)soTimeoutMillis)
+				.setSoTimeout((int)connTimeoutMillis)
+				.build();
+			connMgr.setDefaultSocketConfig(sCfg);
+		HttpClientBuilder hcb = HttpClientBuilder.create();
+		hcb.setDefaultSocketConfig(sCfg).setConnectionManager(connMgr);
+		if(proxyHostAnPort == null) {
+		} else if("jvm".equalsIgnoreCase(proxyHostAnPort)) {
+			SystemDefaultRoutePlanner rp = new SystemDefaultRoutePlanner(ProxySelector.getDefault());
+			hcb.setRoutePlanner(rp);
 		} else {
 			String[] hostAndPort = proxyHostAnPort.split(":");
 			Check.illegalargument.assertTrue(hostAndPort.length < 3, "wrong hostAndPort:"+proxyHostAnPort);
@@ -583,8 +579,9 @@ public class HttpCoreHelper implements HttpProtocol {
 				port = Integer.valueOf(hostAndPort[1]);
 			}
 			HttpHost proxy = new HttpHost(host, port);
-			httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+			hcb.setProxy(proxy);
 		}
+		HttpClient httpClient = hcb.build();
 		return httpClient;
 	}
 

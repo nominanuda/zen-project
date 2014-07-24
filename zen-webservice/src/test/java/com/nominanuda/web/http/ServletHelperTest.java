@@ -61,7 +61,7 @@ public class ServletHelperTest extends BaseHttpTest {
 		});
 		HttpClient c = buildClient(1);
 		HttpPut req = new HttpPut("http://localhost:10000/foo/bar?a=b&a=");
-		req.setEntity(new StringEntity(msg, mediaType, CS_UTF_8.name()));
+		req.setEntity(new StringEntity(msg, ContentType.create(mediaType, CS_UTF_8)));
 		req.addHeader("X-foo","bar");
 		c.execute(req);
 		server.stop();

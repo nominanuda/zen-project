@@ -15,8 +15,6 @@
  */
 package com.nominanuda.rhino;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -108,11 +106,7 @@ public abstract class RhinoTestCase {
 			if(e instanceof WrappedException) {
 				WrappedException ee = (WrappedException)e;
 				//TODO
-				String s = ee.getScriptStackTrace(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return true;
-					}
-				});
+				String s = ee.getScriptStackTrace();
 				System.err.println(s);
 				Throwable t = ee.getWrappedException();
 				if(t instanceof Error) {

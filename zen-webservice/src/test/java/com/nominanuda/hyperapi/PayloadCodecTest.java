@@ -41,6 +41,7 @@ import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.mvc.WebService;
 
+@SuppressWarnings("deprecation")
 public class PayloadCodecTest {
 	private static final String HTTP_LOCALHOST_12000 = "http://localhost:12000";
 
