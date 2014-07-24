@@ -15,18 +15,29 @@
  */
 package com.nominanuda.dataobject;
 
-public interface DataStruct extends Cloneable {
-	//Pattern VALID_OBJ_KEY = Pattern.compile("[\\$_A-Za-z][\\$_A-Za-z0-9]*");
-//	@Deprecated
-//	@Nullable DataStruct getParent();	
-//	@Deprecated
-//	@Nullable /*root returns itself */ DataStruct getRoot();
-//	//DataStruct<K> cloneStruct();
+import static org.junit.Assert.*;
 
-	boolean isArray();
-	boolean isObject();
-	String getType();//object or array
-	DataArray asArray() throws ClassCastException;
-	DataObject asObject() throws ClassCastException;
-	
+import org.junit.Test;
+
+public class DataStructContentHandlerTest {
+
+	@Test
+	public void test() {
+		DataStructContentHandler dsch = new DataStructContentHandler();
+		dsch.startJSON();
+		dsch.startObject();
+		dsch.startObjectEntry("a");
+		dsch.primitive(1);
+		dsch.endObjectEntry();
+		dsch.startObjectEntry("b");
+		dsch.startArray();
+		dsch.primitive(2);
+		dsch.endArray();
+		dsch.endObjectEntry();
+		dsch.endObject();
+		dsch.endJSON();
+		DataObject o = dsch.getResult().asObject();
+		assertEquals(1, o.get("a"));
+		assertEquals(DataStructHelper.STRUCT.newArray().with(2) , o.get("b"));
+	}
 }

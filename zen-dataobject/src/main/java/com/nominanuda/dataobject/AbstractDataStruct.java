@@ -29,22 +29,23 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
 
 
-public abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
+abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	protected final DataStruct parent;
 
-	public AbstractDataStruct(DataStruct parent) {
+	AbstractDataStruct(DataStruct parent) {
 		this.parent = parent;
 	}
 	
-	public DataStruct getParent() {
-		return parent;
-	}
-
-	public DataStruct getRoot() {
-		return parent == null
-			? this
-			: parent.getRoot();
-	}
+//	public DataStruct getParent() {
+//		return parent;
+//	}
+//
+//	@SuppressWarnings("deprecation")
+//	public DataStruct getRoot() {
+//		return parent == null
+//			? this
+//			: parent.getRoot();
+//	}
 
 	public DataStruct cloneStruct() {
 		return cloneStruct(null);

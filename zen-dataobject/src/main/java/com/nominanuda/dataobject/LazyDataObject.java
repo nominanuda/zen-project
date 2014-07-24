@@ -45,22 +45,22 @@ public class LazyDataObject implements DataObject {
 		return delegee.get(key);
 	}
 
-	@SuppressWarnings("deprecation")
-	public DataStruct getParent() {
-		explode();
-		return delegee.getParent();
-	}
+//	@SuppressWarnings("deprecation")
+//	public DataStruct getParent() {
+//		explode();
+//		return delegee.getParent();
+//	}
 
 	public Object getStrict(String key) throws NullPointerException {
 		explode();
 		return delegee.getStrict(key);
 	}
 
-	@SuppressWarnings("deprecation")
-	public DataStruct getRoot() {
-		explode();
-		return delegee.getRoot();
-	}
+//	@SuppressWarnings("deprecation")
+//	public DataStruct getRoot() {
+//		explode();
+//		return delegee.getRoot();
+//	}
 
 	public Object put(String key, Object o) {
 		explode();

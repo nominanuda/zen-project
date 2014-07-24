@@ -16,6 +16,8 @@
  */
 package com.nominanuda.dataobject;
 
+import java.util.Stack;
+
 import com.nominanuda.lang.Check;
 
 public class DataStructContentHandler implements JsonContentHandler {
@@ -24,7 +26,7 @@ public class DataStructContentHandler implements JsonContentHandler {
 	private DataStruct result;
 	private DataStruct cur;
 	private String pendingKey;
-//	private Object pendingValue;
+	private Stack<DataStruct> parentHierarchy = new Stack<DataStruct>();
 
 	public void startJSON() throws RuntimeException {
 	}
@@ -44,11 +46,13 @@ public class DataStructContentHandler implements JsonContentHandler {
 				cur = ((DataObject)cur).putNewObject(pendingKey);
 			}
 		}
+		parentHierarchy.push(cur);
 		return true;
 	}
 
 	public boolean endObject() throws RuntimeException {
-		cur = cur.getParent();
+		//cur = cur.getParent();
+		cur = parentHierarchy.pop();
 		return true;
 	}
 
@@ -72,11 +76,13 @@ public class DataStructContentHandler implements JsonContentHandler {
 				cur = ((DataObject)cur).putNewArray(pendingKey);
 			}
 		}
+		parentHierarchy.push(cur);
 		return true;
 	}
 
 	public boolean endArray() throws RuntimeException {
-		cur = cur.getParent();
+		cur = parentHierarchy.pop();
+//		cur = cur.getParent();
 		return true;
 	}
 

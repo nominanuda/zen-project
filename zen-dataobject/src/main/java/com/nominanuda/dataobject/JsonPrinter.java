@@ -23,7 +23,7 @@ public class JsonPrinter implements JsonContentHandler {
 	}
 
 	public JsonPrinter(Writer writer, boolean pretty) {
-		this(writer, false, false, false);
+		this(writer, pretty, false, false);
 	}
 
 	public JsonPrinter(Writer writer, boolean pretty, boolean unicodeEscapeAll, boolean escapeSlash) {
