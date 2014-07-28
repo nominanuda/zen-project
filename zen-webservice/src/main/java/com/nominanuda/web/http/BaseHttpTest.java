@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -160,8 +162,8 @@ public abstract class BaseHttpTest implements HttpProtocol {
 			if(HttpStatus.SC_OK != resp.getStatusLine().getStatusCode()) {
 				throw new RuntimeException();
 			}
-			String cs = EntityUtils.getContentCharSet(entity);
-			return new String(io.readAndClose(entity.getContent()), cs == null ? "UTF-8" : cs);
+			Charset cs = ContentType.get(entity).getCharset();
+			return new String(io.readAndClose(entity.getContent()), cs == null ? CS_UTF_8 : cs);
 		} finally {
 			EntityUtils.consume(entity);
 		}
