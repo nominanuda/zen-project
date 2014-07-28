@@ -512,10 +512,11 @@ public class HttpCoreHelper implements HttpProtocol {
 		BasicHttpResponse resp = new BasicHttpResponse(
 				statusLine(status));
 		try {
-			HttpCoreHelper d = new HttpCoreHelper();
-			String charset = Check.ifNullOrBlank(d.guessCharset(contentType), "UTF-8");
-			HttpEntity e = new StringEntity(
-					message, ContentType.create(contentType, charset));
+			String declaredCharset = guessCharset(contentType);
+			HttpEntity e = new StringEntity(message, 
+				declaredCharset == null
+					? ContentType.create(contentType, CS_UTF_8)
+					: ContentType.create(contentType));
 			resp.setEntity(e);
 		} catch (UnsupportedCharsetException ex) {
 			throw new IllegalArgumentException(ex);
