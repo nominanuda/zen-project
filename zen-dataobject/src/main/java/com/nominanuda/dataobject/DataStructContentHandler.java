@@ -19,20 +19,22 @@ package com.nominanuda.dataobject;
 import java.util.Stack;
 
 import com.nominanuda.lang.Check;
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class DataStructContentHandler implements JsonContentHandler {
-	private final DataStructHelper dataStructHelper = new DataStructHelper();
 	private volatile boolean finished = false;
 	private DataStruct result;
 	private DataStruct cur;
 	private String pendingKey;
-	private Stack<DataStruct> parentHierarchy = new Stack<DataStruct>();
+	private Stack<DataStruct> parentHierarchy = null;
 
 	public void startJSON() throws RuntimeException {
+		parentHierarchy = new Stack<DataStruct>();
 	}
 
 	public void endJSON() throws RuntimeException {
 		finished = true;
+		parentHierarchy = null;
 	}
 
 	public boolean startObject() throws RuntimeException {
@@ -40,7 +42,7 @@ public class DataStructContentHandler implements JsonContentHandler {
 			result = new DataObjectImpl();
 			cur = result;
 		} else {
-			if(dataStructHelper.isDataArray(cur)) {
+			if(STRUCT.isDataArray(cur)) {
 				cur = ((DataArray)cur).addNewObject();
 			} else {
 				cur = ((DataObject)cur).putNewObject(pendingKey);
@@ -51,8 +53,8 @@ public class DataStructContentHandler implements JsonContentHandler {
 	}
 
 	public boolean endObject() throws RuntimeException {
-		//cur = cur.getParent();
-		cur = parentHierarchy.pop();
+		parentHierarchy.pop();
+		cur = parentHierarchy.isEmpty() ? null : parentHierarchy.peek();
 		return true;
 	}
 
@@ -70,7 +72,7 @@ public class DataStructContentHandler implements JsonContentHandler {
 			result = new DataArrayImpl();
 			cur = result;
 		} else {
-			if(dataStructHelper.isDataArray(cur)) {
+			if(STRUCT.isDataArray(cur)) {
 				cur = ((DataArray)cur).addNewArray();
 			} else {
 				cur = ((DataObject)cur).putNewArray(pendingKey);
@@ -81,14 +83,14 @@ public class DataStructContentHandler implements JsonContentHandler {
 	}
 
 	public boolean endArray() throws RuntimeException {
-		cur = parentHierarchy.pop();
-//		cur = cur.getParent();
+		parentHierarchy.pop();
+		cur = parentHierarchy.isEmpty() ? null : parentHierarchy.peek();
 		return true;
 	}
 
 	public boolean primitive(Object value) throws RuntimeException {
-		Check.illegalargument.assertTrue(dataStructHelper.isPrimitiveOrNull(value));
-		if(dataStructHelper.isDataArray(cur)) {
+		Check.illegalargument.assertTrue(STRUCT.isPrimitiveOrNull(value));
+		if(STRUCT.isDataArray(cur)) {
 			((DataArray)cur).add(value);
 		} else {
 			((DataObject)cur).put(pendingKey, value);
