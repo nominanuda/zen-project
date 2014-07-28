@@ -87,7 +87,6 @@ public class HyperApiWsSkelton implements WebService {
 		if(methodUriCache == null) {
 			populateMethodUriCache();
 		}
-
 		for(Tuple3<Method, DataObjectURISpec, Set<String>> cachedMethod : methodUriCache) {
 			Method m = cachedMethod.get0();
 			DataObjectURISpec spec = cachedMethod.get1();
@@ -119,7 +118,7 @@ public class HyperApiWsSkelton implements WebService {
 					}
 				}
 				DataObjectURISpec spec = new DataObjectURISpec(pathAnno.value());
-				methodUriCache.add(new Tuple3<Method, DataObjectURISpec, Set<String>>(m, spec, httpMethods));
+				muc.add(new Tuple3<Method, DataObjectURISpec, Set<String>>(m, spec, httpMethods));
 			}
 		}
 		methodUriCache = muc;
