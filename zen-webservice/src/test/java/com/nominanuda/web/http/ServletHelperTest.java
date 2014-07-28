@@ -55,7 +55,7 @@ public class ServletHelperTest extends BaseHttpTest {
 				HttpEntity e = ((HttpEntityEnclosingRequest)r).getEntity();
 				asyncAssert(msg.getBytes("UTF-8").length == e.getContentLength(), "length");
 				asyncAssert(e.getContentType().getValue().startsWith(mediaType));
-				asyncAssertEquals(mediaType, EntityUtils.getContentMimeType(e));
+				asyncAssertEquals(mediaType, ContentType.get(e).getMimeType());
 				asyncAssertEquals(msg, EntityUtils.toString(e));
 			}
 		});
