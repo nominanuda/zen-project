@@ -47,7 +47,7 @@ public class HyperApiWsSkeltonTest {
 		DataObject foo = new DataObjectImpl();
 		foo.put("foo", "FOO");
 		request.setEntity(new StringEntity(new DataStructHelper().toJsonString(foo),
-			ContentType.create(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8, HttpProtocol.CS_UTF_8)));
+			ContentType.create(HttpProtocol.CT_APPLICATION_JSON, HttpProtocol.CS_UTF_8)));
 		HttpResponse response = skelton.handle(request);
 		DataStruct result = new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
 		Assert.assertEquals("FOO", ((DataObject)result).get("foo"));
