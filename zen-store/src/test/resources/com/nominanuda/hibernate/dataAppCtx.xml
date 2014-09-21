@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+  <bean id="dataView" class="com.nominanuda.dataobject.dataview.DataView" abstract="true">
+    <property name="propertyReader">
+      <bean class="com.nominanuda.dataobject.dataview.MapPropertyReader"/>
+    </property>
+    <property name="wildcardProps">
+      <list>
+        <value>id</value>
+        <value>tstamp</value>
+        <value>published</value>
+        <value>title</value>
+      </list>
+    </property>
+  </bean>
+  <bean id="hibStore" abstract="true">
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="dataViewRegistry">
+      <map>
+        <entry>
+          <key><value>article</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="signer,vm18,numRatings,totRating,price,ownerPubOnly,updated,author,lang,body,rightsOwner,tstamp,gallery.(rightsOwner,author,url,width,height,media),tagFolk,tagPersons,tagPlaces,tagOrganizations,tagDomains,mainLemmas,mainSentences,locations.(latitude,longitude)"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>authviewarticle</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="forbidden,signer,vm18,numRatings,totRating,price,ownerPubOnly,updated,author,lang,body,rightsOwner.(price,subscriptionDuration),tstamp,gallery.(rightsOwner,author,url,width,height,media),tagFolk,tagPersons,tagPlaces,tagOrganizations,tagDomains,mainLemmas,mainSentences,locations.(latitude,longitude)"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>user</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="userTastePrivate,email,password,defaultPublication,preferredPublication,description,lang,showLang,firstname,lastname,showFullname,profileSex,showProfileSex,profileRelationship,showProfileRelationship,facebook,showFacebook,twitter,showTwitter,linkedin,showLinkedin,gplus,showGplus,youtube,showYoutube,flickr,showFlickr,website,showWebsite,skype,showSkype,birthdate,showBirthdate,profileFamily,showProfileFamily,phone,mobile,street,streetNumber,cap,city,showAddress,locations.(name,longitude,latitude)"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>publication</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="price,subscriptionDuration,owner,pages.(title,description)"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>staticpage</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="price,description,layout,creator,articles.(updated,author,lang,body,rightsOwner,tstamp,gallery.(rightsOwner,author,url,width,height,media),tagFolk,tagPersons,tagPlaces,tagOrganizations,tagDomains,mainLemmas,mainSentences,locations.(latitude,longitude))"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>authviewstaticpage</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="rightsOwner.(price,subscriptionDuration),forbidden,price,description,layout,creator,articles.(updated,author,lang,body,rightsOwner,tstamp,gallery.(rightsOwner,author,url,width,height,media),tagFolk,tagPersons,tagPlaces,tagOrganizations,tagDomains,mainLemmas,mainSentences,locations.(latitude,longitude))"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>dynamicpage</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="description,layout,creator,searchCriteria.(fulltext,minDateFilter,withMultimedia,maxDateFilter,recencyFilter,recencyBoost,popularityBoost,locationBoost,lang,userSimilarityId,userSimilarityBoost,mainLocation,tagsFilter,authorsFilter,publicationsFilter)"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>comment</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="body,article,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>publicationbookmark</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,publication"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>articlebookmark</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,article,labels"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>media</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="rightsOwner,author,url,media,width,height,format"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>message</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="body,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>messagethread</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="participants"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>adaccount</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="balance,balanceDate,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>savingaccount</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="balance,balanceDate,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>spendingaccount</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="balance,balanceDate,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>accountoperation</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="value,reason,accountType,accountId"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>staffrole</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,publication,roleEditor,contentEditor,pageEditor"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>articlepurchase</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,article,price"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>pagepurchase</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,page,price"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>publicationsubscription</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="user,publication,price,start,end"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>notification</value></key>
+          <bean parent="dataView">
+            <property name="viewDef" value="kind,thread,message,text,link,user"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>deletelog</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="type_"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>iptc</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="it,en"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>banner</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="kind,format,code,altText,altUrl"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>campaign</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="brand,startDate,endDate,targetGender,targetAgeStart,targetAgeEnd,accessDevice,kind,budgetKind,maxBid,budgetStart,spentBudget,budget,user,banners.(kind,format,code,altText,altUrl),channelPublications,bannedPublications,channelTags,targetLangs,targetCountries,targetTags"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>accountaddop</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="user,accounttype,amount,orderid"/>
+          </bean>
+        </entry>
+        <entry>
+          <key><value>accountingdata</value></key>
+          <bean parent="dataView">
+            <property name="viewDef"
+              value="user,issuerKind,issuerName,issuerAddress,issuerPaypal,issuerIVA,issuerHasIVA,issuerRegion,issuerItaNoIVA,issuerItaIVA,buyPerson,buyAddress,buyRegion,buyIVA,hasIVA"/>
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  <bean id="mapStore" class="com.nominanuda.hibernate.HibernateDataObjectStore" parent="hibStore"/>
+  <bean id="qStore" class="com.nominanuda.hibernate.HibernateQuerableStore" parent="hibStore"/>
+
+  <bean id="sessionFactory" factory-bean="domainHibConf" factory-method="getSessionFactory" />
+  <bean id="dataSource" factory-bean="domainHibConf" factory-method="getDataSource" />
+
+  <bean id="domainHibConf" class="com.nominanuda.hibernate.HibernateConfiguration">
+    <property name="connectionUrl" value="jdbc:mysql://localhost:3306/etalia"/>
+    <property name="username" value="root"/>
+    <property name="password" value="root"/>
+    <property name="resource" value="net/etalia/contentapi/data/contentapi.hbm.xml"/>
+    <property name="showSql" value="false"/>
+    <property name="c3p0" value="true"/>
+    <property name="listeners">
+      <map>
+        <entry>
+          <key><value>delete</value></key>
+          <bean class="net.etalia.domain.EntityDeleteListener"/>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  <bean id="issuerFactory" class="net.etalia.domain.IssuerFactory"/>
+
+</beans>

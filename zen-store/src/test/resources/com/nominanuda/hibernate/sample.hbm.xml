@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.nominanuda.hibernate">
+  <class entity-name="User">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="published" type="boolean"/>
+    <property name="tstamp" type="long"/>
+    <property name="title" type="string" not-null="true"/>
+    <property name="email" type="string">
+      <column name="email" unique="true" index="email_unq_constr"/>
+    </property>
+    <many-to-one name="blog" entity-name="Blog" cascade="none" not-null="false"/>
+    <!-- TODO list name="locations" table="user_locations" cascade="all-delete-orphan">
+      <key column="user_id"/>
+      <list-index column="i" />
+      <composite-element class="com.nominanuda.hibernate.Location">
+        <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+        <property name="name" type="string" not-null="true"/>
+        <property name="longitude" type="double" not-null="true"/>
+        <property name="latitude" type="double" not-null="true"/>
+      </composite-element>
+    </list-->
+  </class>
+  <class entity-name="Blog">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <many-to-one name="owner" entity-name="User"/><!-- should also be not-null="true" -->
+    <property name="rating" type="double"/>
+    <property name="link" type="string"/>
+  </class>
+
+</hibernate-mapping>

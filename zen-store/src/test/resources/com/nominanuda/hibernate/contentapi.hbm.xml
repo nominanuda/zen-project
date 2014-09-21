@@ -1,0 +1,576 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping 
+ default-lazy="false"
+>
+<!-- 
+package="net.etalia.domain" 
+xmlns="http://www.hibernate.org/xsd/hibernate-mapping"
+ -->
+
+  <class entity-name="article" name="net.etalia.domain.Article">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="vm18" type="boolean" not-null="true"/>
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" not-null="true"/>
+    <property name="updated" type="long" not-null="true"/>
+    <property name="lang" type="string" />
+    <property name="body" type="text" not-null="true"/>
+    <property name="ownerPubOnly" type="boolean" not-null="true"/>
+    <property name="price" type="double"/>
+    <property name="numRatings" type="long">
+      <column name="numRatings" default="0"/>
+    </property>
+    <property name="totRating" type="long">
+      <column name="totRating" default="0"/>
+    </property>
+    <many-to-one name="rightsOwner" entity-name="publication" not-null="true"/>
+    <many-to-one name="author" entity-name="user" not-null="true"/>
+    <property name="signer" type="string"/>
+    <list name="tagFolk" table="article_tagfolk" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="tagPersons" table="article_tagpersons" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="tagPlaces" table="article_tagplaces" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="locations" table="article_locations" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <composite-element class="net.etalia.domain.Location">
+        <property name="name" type="string" not-null="true"/>
+        <property name="longitude" type="double" not-null="true"/>
+        <property name="latitude" type="double" not-null="true"/>
+      </composite-element>
+    </list>
+    <list name="tagOrganizations" table="article_tagorganizations" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="tagDomains" table="article_tagdomains" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="mainLemmas" table="article_mainlemmas" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="mainSentences" table="article_mainsentences" cascade="all-delete-orphan">
+      <key column="article_id"/>
+      <list-index column="i" />
+      <element column="term" type="text"/>
+    </list>
+    <list name="gallery" table="article_media"><!--  cascade="all" -->
+      <key column="article" />
+      <list-index column="i"/>
+      <many-to-many entity-name="media"/>
+    </list>
+  </class>
+
+  <class entity-name="comment" name="net.etalia.domain.Comment">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="body" type="text" not-null="true"/>
+    <many-to-one name="article" entity-name="article" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+  </class>
+
+  <class entity-name="user" name="net.etalia.domain.User">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="userTastePrivate" type="boolean" not-null="true"/>
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" not-null="true"/>
+    <property name="email" type="string" not-null="true">
+      <column name="email" unique="true" index="email_unq_constr"/>
+    </property>
+    <property name="password" type="string" not-null="true"/>
+    <many-to-one name="defaultPublication" entity-name="publication" cascade="none" not-null="false"/>
+    <many-to-one name="preferredPublication" entity-name="publication" cascade="none" not-null="false"/>
+<!--     <one-to-one name="defaultPublication" entity-name="publication" foreign-key="defaultPublication"/> -->
+    
+    <property name="description" type="string"/>
+    <property name="lang" type="string"/>
+    <property name="showLang" type="boolean"/>
+    <property name="firstname" type="string"/>
+    <property name="lastname" type="string"/>
+    <property name="showFullname" type="boolean"/>
+    <property name="profileSex" type="string"/>
+    <property name="showProfileSex" type="boolean"/>
+    <property name="profileRelationship" type="string"/>
+    <property name="showProfileRelationship" type="boolean"/>
+    <property name="facebook" type="string"/>
+    <property name="showFacebook" type="boolean"/>
+    <property name="twitter" type="string"/>
+    <property name="showTwitter" type="boolean"/>
+    <property name="linkedin" type="string"/>
+    <property name="showLinkedin" type="boolean"/>
+    <property name="gplus" type="string"/>
+    <property name="showGplus" type="boolean"/>
+    <property name="youtube" type="string"/>
+    <property name="showYoutube" type="boolean"/>
+    <property name="flickr" type="string"/>
+    <property name="showFlickr" type="boolean"/>
+    <property name="website" type="string"/>
+    <property name="showWebsite" type="boolean"/>
+    <property name="skype" type="string"/>
+    <property name="showSkype" type="boolean"/>
+    <property name="birthdate" type="long"/>
+    <property name="showBirthdate" type="boolean"/>
+    <property name="profileFamily" type="string"/>
+    <property name="showProfileFamily" type="boolean"/>
+    <property name="phone" type="string"/>
+    <property name="mobile" type="string"/>
+    <property name="street" type="string"/>
+    <property name="streetNumber" type="string"/>
+    <property name="cap" type="string"/>
+    <property name="city" type="string"/>
+    <property name="showAddress" type="boolean"/>
+    <list name="locations" table="user_locations" cascade="all-delete-orphan">
+      <key column="user_id"/>
+      <list-index column="i" />
+      <composite-element class="net.etalia.domain.Location">
+        <property name="name" type="string" not-null="true"/>
+        <property name="longitude" type="double" not-null="true"/>
+        <property name="latitude" type="double" not-null="true"/>
+      </composite-element>
+    </list>
+  </class>
+
+  <class entity-name="publication" name="net.etalia.domain.Publication">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="price" type="double"/>
+    <property name="subscriptionDuration" type="long"/>
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" not-null="true"/>
+    <property name="description" type="text"/>
+    <property name="link" type="string"/>
+    <many-to-one name="owner" entity-name="user"/><!-- should also be not-null="true" -->
+    <list name="pages" table="publication_page"><!-- ?? one-to-many | cascade="all"-->
+      <key column="publication" />
+      <list-index column="i"/>
+      <many-to-many entity-name="page"/>
+    </list>
+  </class>
+
+  <class entity-name="articlebookmark" name="net.etalia.domain.ArticleBookmark">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="article" entity-name="article" not-null="true"/>
+    <list name="labels" table="publicationbookmark_label" cascade="all">
+      <key column="publicationbookmark" />
+      <list-index column="i"/>
+      <element column="label" type="string"/>
+    </list>
+  </class>
+
+  <class entity-name="publicationbookmark" name="net.etalia.domain.PublicationBookmark">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="publication" entity-name="publication" not-null="true"/>
+  </class>
+
+  <class entity-name="articlepurchase" name="net.etalia.domain.ArticlePurchase">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="price" type="double"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="article" entity-name="article" not-null="true"/>
+  </class>
+
+  <class entity-name="pagepurchase" name="net.etalia.domain.PagePurchase">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="price" type="double"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="page" entity-name="staticpage" not-null="true"/>
+  </class>
+
+  <class entity-name="publicationsubscription" name="net.etalia.domain.PublicationSubscription">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="price" type="double" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="publication" entity-name="publication" not-null="true"/>
+    <property name="start" type="long" not-null="true"/>
+    <property name="end" type="long" not-null="true"/>
+  </class>
+
+  <class entity-name="page" name="net.etalia.domain.Page" abstract="true">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <discriminator column="pageType"/>
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" not-null="true"/>
+    <property name="description" type="string"/>
+    <property name="layout" type="text"/>
+    <many-to-one name="creator" entity-name="user" not-null="true"/>
+    <many-to-one name="publication" entity-name="publication"/>
+  <subclass entity-name="dynamicpage"  discriminator-value="dynamic" name="net.etalia.domain.DynamicPage">
+    <component name="searchCriteria"><!--  entity-name="searchcriteria" -->
+      <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapComponentTuplizer"/>
+      <property name="fulltext" type="string" column="ftext"/>
+      <property name="minDateFilter" type="long" not-null="true">
+        <column name="minDateFilter" default="-1"/>
+      </property>
+      <property name="withMultimedia" type="boolean"/>
+      <property name="maxDateFilter" type="long" not-null="true">
+        <column name="maxDateFilter" default="-1"/>
+      </property>
+      <property name="recencyFilter" type="long" not-null="true">
+        <column name="recencyFilter" default="-1"/>
+      </property>
+      <property name="recencyBoost" type="long" not-null="true">
+        <column name="recencyBoost" default="5"/>
+      </property>
+      <property name="popularityBoost" type="long" not-null="true">
+        <column name="popularityBoost" default="5"/>
+      </property>
+      <property name="locationBoost" type="long" not-null="true">
+        <column name="locationBoost" default="5"/>
+      </property>
+      <property name="lang" type="string"/>
+      <property name="userSimilarityId" type="string"/>
+      <property name="userSimilarityBoost" type="long" not-null="true">
+        <column name="userSimilarityBoost" default="5"/>
+      </property>
+      <property name="vm18" type="boolean" not-null="true">
+        <column name="vm18" default="false"/>
+      </property>
+      <property name="mainLocation" type="string"/>
+      <list name="tagsFilter" table="page_tagsfilter" cascade="all-delete-orphan">
+        <key column="page_id"/>
+        <list-index column="i" />
+        <element column="term" type="string"/>
+      </list>
+      <list name="authorsFilter" table="page_authorsfilter" cascade="all-delete-orphan">
+        <key column="page_id"/>
+        <list-index column="i" />
+        <element column="term" type="string"/>
+      </list>
+      <list name="publicationsFilter" table="page_publicationsfilter" cascade="all-delete-orphan">
+        <key column="page_id"/>
+        <list-index column="i" />
+        <element column="term" type="string"/>
+      </list>
+    </component>
+  </subclass>
+  <subclass entity-name="staticpage"  discriminator-value="static" name="net.etalia.domain.StaticPage">
+    <property name="price" type="double"/>
+    <list name="articles" table="staticpage_article">
+      <key column="staticpage" />
+      <list-index column="i"/>
+      <many-to-many entity-name="article"/>
+    </list>
+  </subclass>
+  </class>
+
+  <class entity-name="media" name="net.etalia.domain.Media">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" />
+    <property name="published" type="boolean" not-null="true"/>
+    <many-to-one name="rightsOwner" entity-name="publication" not-null="true"/>
+    <many-to-one name="author" entity-name="user" not-null="true"/>
+    <property name="url" type="string"/>
+    <property name="media" type="string" not-null="true"/>
+    <property name="width" type="long"/>
+    <property name="height" type="long"/>
+    <property name="format" type="string"/><!-- jpeg,png,... -->
+  </class>
+
+  <class entity-name="message" name="net.etalia.domain.Message">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="body" type="text" />
+    <many-to-one name="thread" entity-name="messagethread" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+  </class>
+
+  <class entity-name="messagethread" name="net.etalia.domain.MessageThread">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <list name="participants" table="messagethread_participants">
+      <key column="thread" />
+      <list-index column="i"/>
+      <many-to-many entity-name="user"/>
+    </list>
+  </class>
+
+  <!-- adplanner -->
+
+  <class entity-name="campaign" name="net.etalia.domain.Campaign">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" />
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="brand" type="string" not-null="true"/>
+    <property name="startDate" type="long" not-null="true"/>
+    <property name="endDate" type="long"/>
+    <property name="targetGender" type="string"/><!-- "m" "f" null -->
+    <property name="targetAgeStart" type="long"/>
+    <property name="targetAgeEnd" type="long"/>
+    <property name="accessDevice" type="string"/><!-- p(c) m(obile) -->
+    <property name="kind" type="string" not-null="true"/><!-- (cp)c (cp)m -->
+    <property name="budgetKind" type="string" not-null="true"/><!-- u(nlimited), l(imited), w(eek), m(onth) d(ay) -->
+    <property name="maxBid" type="double" not-null="true"/>
+    <property name="budgetStart" type="long" not-null="true"/>
+    <property name="spentBudget" type="double"/>
+    <property name="budget" type="double" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+
+    <list name="banners" table="campaign_banner">
+      <key column="campaign" />
+      <list-index column="i"/>
+      <many-to-many entity-name="banner"/>
+    </list>
+    <list name="channelPublications" table="campaign_channelpublications">
+      <key column="campaign" />
+      <list-index column="i"/>
+      <many-to-many entity-name="publication"/>
+    </list>
+    <list name="bannedPublications" table="campaign_bannedpublications">
+      <key column="campaign" />
+      <list-index column="i"/>
+      <many-to-many entity-name="publication"/>
+    </list>
+    <list name="channelTags" table="campaign_channeltags" cascade="all-delete-orphan">
+      <key column="campaign"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="targetLangs" table="campaign_targetlangs" cascade="all-delete-orphan">
+      <key column="campaign"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="targetCountries" table="campaign_targetcountries" cascade="all-delete-orphan">
+      <key column="campaign"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+    <list name="targetTags" table="campaign_targettags" cascade="all-delete-orphan">
+      <key column="campaign"/>
+      <list-index column="i" />
+      <element column="term" type="string"/>
+    </list>
+  </class>
+
+  <class entity-name="banner" name="net.etalia.domain.Banner">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="title" type="string" />
+    <property name="published" type="boolean" not-null="true"/>
+    <property name="kind" type="string" not-null="true"/>
+    <property name="format" type="string" not-null="true"/>
+    <property name="code" type="string" not-null="true"/>
+    <property name="altText" type="text"/>
+    <property name="altUrl" type="string"/>
+  </class>
+
+  <class entity-name="usertaste" >
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <!-- tutte csv -->
+    <property name="publications" type="text"/>
+    <property name="authors" type="text"/>
+    <property name="tagFolk" type="text"/>
+    <property name="tagPersons" type="text"/>
+    <property name="tagPlaces" type="text"/>
+    <property name="tagOrganizations" type="text"/>
+    <property name="tagDomains" type="text"/>
+  </class>
+
+  <class entity-name="moneyaccount" abstract="true">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <discriminator column="moneyaccounttype"/>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <property name="balance" type="double" not-null="true"/>
+    <property name="balanceDate" type="long" not-null="true"/>
+    <subclass entity-name="adaccount" name="net.etalia.domain.AdAccount" discriminator-value="adaccount">
+    </subclass>
+    <subclass entity-name="savingaccount" name="net.etalia.domain.SavingAccount" discriminator-value="savingaccount">
+    </subclass>
+    <subclass entity-name="spendingaccount" name="net.etalia.domain.SpendingAccount" discriminator-value="spendingaccount">
+    </subclass>
+  </class>
+
+  <class entity-name="accountoperation" name="net.etalia.domain.AccountOperation">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="accountType" type="string" not-null="true"/><!-- char value -->
+    <property name="accountId" type="string" not-null="true"/>
+    <property name="value" type="double" not-null="true"/>
+    <property name="reason" type="string" not-null="true"/>
+  </class>
+
+  <class entity-name="staffrole" name="net.etalia.domain.StaffRole">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="roleEditor" type="boolean"/>
+    <property name="contentEditor" type="boolean"/>
+    <property name="pageEditor" type="boolean"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="publication" entity-name="publication" not-null="true"/>
+  </class>
+
+  <class entity-name="notification" name="net.etalia.domain.Notification">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <property name="kind" type="string" not-null="true"/><!-- m message -->
+    <property name="text" type="text"/>
+    <property name="link" type="string"/>
+    <many-to-one name="thread" entity-name="messagethread"/>
+    <many-to-one name="message" entity-name="message"/>
+  </class>
+  <class entity-name="iptc" name="net.etalia.domain.Iptc">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="it" type="string" not-null="true"/>
+    <property name="en" type="string" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+  </class>
+  <class entity-name="deletelog" name="net.etalia.domain.DeleteLog">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="type_" type="string" not-null="true"/>
+    <property name="tstamp" type="long" not-null="true"/>
+  </class>
+  <class entity-name="payarticleaccess" name="net.etalia.domain.PayArticleAccess">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="article" entity-name="article" not-null="true"/>
+  </class>
+  <class entity-name="paystaticpageaccess" name="net.etalia.domain.PayStaticPageAccess">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <many-to-one name="staticpage" entity-name="staticpage" not-null="true"/>
+  </class>
+  <class entity-name="accountaddop">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <property name="user" type="string" not-null="true"/>
+    <property name="accounttype" type="string" not-null="true"/>
+    <property name="amount" type="double" not-null="true"/>
+    <property name="orderid" type="string" not-null="true"/>
+  </class>
+
+  <class entity-name="accountingdata" name="net.etalia.domain.AccountingData">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="string">
+      <generator class="assigned"/>
+    </id>
+    <property name="tstamp" type="long" not-null="true"/>
+    <many-to-one name="user" entity-name="user" not-null="true"/>
+    <property name="issuerKind" type="string"/>
+    <property name="issuerName" type="string"/>
+    <property name="issuerAddress" type="string"/>
+    <property name="issuerPaypal" type="string"/>
+    <property name="issuerIVA" type="string"/>
+    <property name="issuerHasIVA" type="boolean"/>
+    <property name="issuerRegion" type="string"/>
+    <property name="issuerItaNoIVA" type="string"/>
+    <property name="issuerItaIVA" type="string"/>
+    <property name="buyPerson" type="string"/>
+    <property name="buyAddress" type="string"/>
+    <property name="buyRegion" type="string"/>
+    <property name="buyIVA" type="string"/>
+    <property name="hasIVA" type="boolean"/>
+  </class>
+</hibernate-mapping>
