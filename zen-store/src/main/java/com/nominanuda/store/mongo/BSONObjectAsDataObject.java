@@ -1,5 +1,7 @@
 package com.nominanuda.store.mongo;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +17,6 @@ import com.nominanuda.dataobject.DataType;
 import com.nominanuda.dataobject.PropertyBag;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Maths;
-
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 
 public class BSONObjectAsDataObject implements DataObject {
 	private final BSONObject bson;
