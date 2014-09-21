@@ -3,11 +3,13 @@ package com.nominanuda.store.mongo;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.bson.BSONObject;
 
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataType;
 import com.nominanuda.dataobject.PropertyBag;
@@ -251,4 +253,10 @@ public class BSONObjectAsDataObject implements DataObject {
 	public DataObject with(String k, Object v) {
 		return Check.unsupportedoperation.fail();
 	}
+
+	@Override
+	public Iterator<Entry<String, Object>> iterator() {
+		return DataObjectImpl.iteratorOf(this);
+	}
+
 }

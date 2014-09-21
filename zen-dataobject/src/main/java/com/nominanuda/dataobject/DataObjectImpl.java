@@ -16,8 +16,13 @@
 package com.nominanuda.dataobject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import com.nominanuda.lang.Check;
 
 public class DataObjectImpl extends AbstractDataStruct<String> implements DataObject{
 	private final Map<String, ? super Object> m;
@@ -117,5 +122,30 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 	public DataObject with(String k, Object v) {
 		put(k, v);
 		return this;
+	}
+
+	@Override
+	public Iterator<Entry<String, Object>> iterator() {
+		return iteratorOf(this);
+	}
+
+	public static Iterator<Entry<String, Object>> iteratorOf(DataObject o) {
+		List<Entry<String, Object>> l = new LinkedList<Map.Entry<String,Object>>();
+		for(final String k : o.getKeys()) {
+			final Object v = o.get(k);
+			l.add(new Entry<String, Object>() {
+				public Object setValue(Object arg0) {
+					Check.unsupportedoperation.fail();
+					return null;
+				}
+				public Object getValue() {
+					return v;
+				}
+				public String getKey() {
+					return k;
+				}
+			});
+		}
+		return l.iterator();
 	}
 }

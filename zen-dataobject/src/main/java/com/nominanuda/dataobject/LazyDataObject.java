@@ -2,6 +2,7 @@ package com.nominanuda.dataobject;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 
 public class LazyDataObject implements DataObject {
@@ -266,5 +267,10 @@ public class LazyDataObject implements DataObject {
 	public DataArray putArray(String key, DataArray o) {
 		explode();
 		return delegee.putArray(key, o);
+	}
+
+	public Iterator<Entry<String, Object>> iterator() {
+		explode();
+		return delegee.iterator();
 	}
 }
