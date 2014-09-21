@@ -15,6 +15,7 @@
  */
 package com.nominanuda.dataobject.schema;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -46,8 +47,12 @@ public class JclValidatorFactory {
 	private final LinkedHashMap<String, Tree> tMap = new LinkedHashMap<String, Tree>();
 
 	public JclValidatorFactory(String jclExpr) throws Exception {
+		this(new StringReader(jclExpr));
+	}
+
+	public JclValidatorFactory(Reader jclExpr) throws Exception {
 		try {
-			CharStream cs = new ANTLRReaderStream(new StringReader(jclExpr));
+			CharStream cs = new ANTLRReaderStream(jclExpr);
 			JclLexer lexer = new JclLexer(cs);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			JclParser parser = new JclParser(tokens);
