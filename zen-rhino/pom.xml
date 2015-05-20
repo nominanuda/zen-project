@@ -40,8 +40,8 @@
       <artifactId>zen-dataobject</artifactId>
     </dependency>
     <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
+      <groupId>org.mozilla</groupId>
+      <artifactId>rhino</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -76,8 +76,8 @@
         <configuration>
           <weaveDependencies>
             <weaveDependency>
-              <groupId>rhino</groupId>
-              <artifactId>js</artifactId>
+              <groupId>org.mozilla</groupId>
+              <artifactId>rhino</artifactId>
             </weaveDependency>
           </weaveDependencies>
         </configuration>

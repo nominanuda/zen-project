@@ -59,8 +59,8 @@ limitations under the License.
       <artifactId>zen-webservice</artifactId>
     </dependency>
     <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
+      <groupId>org.mozilla</groupId>
+      <artifactId>rhino</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
