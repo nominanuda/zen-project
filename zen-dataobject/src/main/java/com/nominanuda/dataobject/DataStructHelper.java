@@ -611,6 +611,17 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 
+	/**
+	 * members in the form key, val, key, val etc.
+	 */
+	public DataObject buildObject(Object... members) {
+		DataObject o = new DataObjectImpl();
+		for(int i = 0; i < members.length; i+=2) {
+			o.put((String)members[i], members[i+1]);
+		}
+		return o;
+	}
+
 	public DataObject newObject() {
 		return new DataObjectImpl();
 	}
