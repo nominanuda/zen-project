@@ -17,10 +17,9 @@
 package com.nominanuda.dataobject.transform;
 
 import java.io.Reader;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -33,20 +32,33 @@ import com.nominanuda.dataobject.JsonStreamingParser;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Fun0;
 import com.nominanuda.lang.ObjectFactory;
+import com.nominanuda.lang.Tuple2;
 
 public class JsonPipeline {
-	private List<Object> components = new LinkedList<Object>();
-	private boolean completed = false;
+	private final List<Object> components = new LinkedList<Object>();
 	private boolean looseParser = false;
+
+	class WrappingTransformer extends BaseJsonTransformer {
+		JsonTransformer last;
+
+		public WrappingTransformer(Tuple2<JsonTransformer, JsonTransformer> pair) {
+			super.setTarget(pair.get0());
+			this.last = pair.get1();
+		}
+
+		@Override
+		public void setTarget(JsonContentHandler target) {
+			last.setTarget(target);
+		}
+	}
+	
 	
 	public JsonPipeline add(ObjectFactory<? extends JsonTransformer> transformer) {
-		Check.illegalstate.assertFalse(completed);
 		components.add(transformer);
 		return this;
 	}
 
 	public JsonPipeline setComponents(List<?> components) {
-		Check.illegalstate.assertFalse(completed);
 		this.components.clear();
 		for(Object c : components) {
 			this.components.add(c);
@@ -60,17 +72,26 @@ public class JsonPipeline {
 	}
 	
 
+	@Deprecated
 	public JsonPipeline complete() {
-		Check.illegalstate.assertFalse(completed);
-		completed = true;
-		Collections.reverse(components);
 		return this;
 	}
 
-	public Runnable build(final JsonStreamer starter, final JsonContentHandler ender) {
-		if(! completed) {
-			complete();
+
+	/**
+	 * Build a raw pipeline without a terminating transformer. It is the caller's responsibility to set the final transformer (@see JsonTransformer.setTarget()) and to apply the pipeline to a stream.
+	 * @return
+	 */
+	public JsonTransformer build() {
+		try {
+			return new WrappingTransformer(buildPipe());
 		}
+		catch(Exception e) {
+			throw new RuntimeException("Failed to build pipeline: " + e.getMessage(), e);
+		}
+	}
+
+	public Runnable build(final JsonStreamer starter, final JsonContentHandler ender) {
 		return new Runnable() {
 			public void run() {
 				try {
@@ -88,7 +109,6 @@ public class JsonPipeline {
 		final Runnable r = build(starter, dsch);
 		return runnableToFun(r, dsch);
 	}
-
 
 	public Runnable build(final Reader json, final JsonContentHandler ender) {
 		return build(new JsonStreamingParser(looseParser, json), ender);
@@ -111,7 +131,6 @@ public class JsonPipeline {
 	}
 
 	private JsonTransformer buildJsonTransformer(Object c) throws TransformerConfigurationException {
-		Check.illegalstate.assertTrue(completed);
 		if(c instanceof ObjectFactory) {
 			return (JsonTransformer)((ObjectFactory<?>)c).getObject();
 		} else {
@@ -120,20 +139,43 @@ public class JsonPipeline {
 	}
 
 	private JsonContentHandler buildPipe(final JsonContentHandler ender) throws TransformerConfigurationException {
-		Check.illegalstate.assertTrue(completed);
+		if(ender == null)
+			throw new TransformerConfigurationException("Terminating transformer not supplied.");
 		JsonContentHandler nextTarget = ender;
-		Iterator<Object> itr = components.iterator();
-		boolean first = true;
-		while (itr.hasNext()) {
-			Object c = itr.next();
+		ListIterator<Object> litr = components.listIterator(components.size());
+		while(litr.hasPrevious()) {
+			Object c = litr.previous();
 			JsonTransformer th = buildJsonTransformer(c);
-			if(first) {
-				first = false;
-			}
 			th.setTarget(nextTarget);
 			nextTarget = th;
 		}
 		return nextTarget;
+	}
+
+	private Tuple2<JsonTransformer, JsonTransformer> buildPipe() throws TransformerConfigurationException {
+		JsonTransformer lastTarget = null;
+		JsonTransformer nextTarget = null;
+		int n = components.size();
+		if(n == 0) {
+			// let's guarantee at least one transformer, so that we always return a pipeline
+			JsonTransformer tr = new BaseJsonTransformer();
+			tr.setTarget(null);
+			nextTarget = tr;
+			lastTarget = tr;
+		}
+		else {
+			// Iterate backwards and finish with first target in pipeline
+			ListIterator<Object> litr = components.listIterator(n);
+			while(litr.hasPrevious()) {
+				Object c = litr.previous();
+				JsonTransformer th = buildJsonTransformer(c);
+				th.setTarget(nextTarget);
+				nextTarget = th;
+				if(lastTarget == null)
+					lastTarget = th;
+			}
+		}
+		return new Tuple2<JsonTransformer, JsonTransformer>(nextTarget, lastTarget);
 	}
 
 	private Fun0<DataStruct> runnableToFun(final Runnable r, final DataStructContentHandler dsch) {
