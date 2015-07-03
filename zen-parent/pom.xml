@@ -27,6 +27,15 @@ limitations under the License.
     <connection>scm:git:git@github.com:michelegonella/zen-project.git</connection>
     <url>scm:git:git@github.com:michelegonella/zen-project.git</url>
   </scm>
+  <modules>
+    <module>../zen-urispec</module>
+    <module>../zen-base</module>
+    <module>../zen-dataobject</module>
+    <module>../zen-rhino</module>
+    <module>../zen-webservice</module>
+    <module>../zen-store</module>
+    <module>../zen-jsweb</module>
+  </modules>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>

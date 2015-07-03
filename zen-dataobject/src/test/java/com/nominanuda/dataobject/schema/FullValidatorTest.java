@@ -26,7 +26,7 @@ public class FullValidatorTest {
 		for(String json : jsons) {
 			String type = json.split("::")[0];
 			DataStruct ds = DataStructHelper.STRUCT.parse(json.split("::")[1], true);
-			JsonPipeline p = validator.buildValidatorPipe(type).withLooseParser().complete();
+			JsonPipeline p = validator.buildValidatorPipe(type).withLooseParser();
 			p.build(new StringReader(json.split("::")[1]), new DevNullJsonContentHandler()).run();
 			assertTrue(validator.buildValidatorFor(ds, type).apply(ds));
 		}
