@@ -47,6 +47,7 @@ import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 
+@SuppressWarnings("deprecation")
 @ThreadSafe
 public class ServletHelper implements CodeConstants {
 	private final static IOHelper ioHelper = new IOHelper();
@@ -166,7 +167,6 @@ public class ServletHelper implements CodeConstants {
 		return req;
 	}
 
-	@SuppressWarnings("unchecked")
 	private HttpEntity buildEntity(HttpServletRequest servletRequest, final InputStream is, long contentLength, String ct, String cenc) throws IOException {
 		if(ServletFileUpload.isMultipartContent(servletRequest)) {
 			FileItemFactory factory = new DiskFileItemFactory();
@@ -189,19 +189,16 @@ public class ServletHelper implements CodeConstants {
 								return is.read(b, off, len);
 							}
 							//@Override
-							@SuppressWarnings("unused")
 							public boolean isFinished() {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
-							@SuppressWarnings("unused")
 							public boolean isReady() {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 								return false;
 							}
 							//@Override
-							@SuppressWarnings("unused")
 							public void setReadListener(ReadListener arg0) {
 								Check.illegalstate.fail(NOT_IMPLEMENTED);
 							}

@@ -87,6 +87,7 @@ public class ObjectExpander {
 		} else if(struct.isPrimitiveOrNull(v)) {
 			return v;
 		} else if(v instanceof Map<?,?>) {
+			@SuppressWarnings("unchecked")
 			Map<String, Object> m = (Map<String, Object>)v;
 			if(pathMap.isTraversable(k)) {
 				return compileObject(m, pathMap.traverse(k));

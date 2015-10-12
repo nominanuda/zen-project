@@ -26,24 +26,28 @@ public class Utils {
 
 	public static LinkedHashMap<String, List<String>> parseQueryString(String queryString) {
 		final Scanner scanner = new Scanner(queryString);
-		scanner.useDelimiter("&");
-		LinkedHashMap<String, List<String>> res = new LinkedHashMap<String, List<String>>();
-		while (scanner.hasNext()) {
-			final String[] nameValue = scanner.next().split("=");
-			if (nameValue.length == 0 || nameValue.length > 2) {
-				throw new IllegalArgumentException("bad parameter");
+		try {
+			scanner.useDelimiter("&");
+			LinkedHashMap<String, List<String>> res = new LinkedHashMap<String, List<String>>();
+			while (scanner.hasNext()) {
+				final String[] nameValue = scanner.next().split("=");
+				if (nameValue.length == 0 || nameValue.length > 2) {
+					throw new IllegalArgumentException("bad parameter");
+				}
+				final String name = nameValue[0];
+				String value = null;
+				if (nameValue.length == 2) {
+					value = nameValue[1];
+				}
+				if (value == null) {
+					value = "";
+				}
+				putVarVal(res, name, value);
 			}
-			final String name = nameValue[0];
-			String value = null;
-			if (nameValue.length == 2) {
-				value = nameValue[1];
-			}
-			if (value == null) {
-				value = "";
-			}
-			putVarVal(res, name, value);
+			return res;
+		} finally {
+			scanner.close();
 		}
-		return res;
 	}
 	public static void putVarVal(Map<String, List<String>> m, String key, String val) {
 		if(key == null || val == null) {

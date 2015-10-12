@@ -38,6 +38,7 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
 
+@SuppressWarnings("deprecation")
 public class SolrHelper {
 	public static final SolrHelper SOLR = new SolrHelper();
 	private static final DataStructHelper struct = new DataStructHelper();

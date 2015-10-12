@@ -30,9 +30,11 @@ public class DynaMapDynamicMapInstantiator extends DynamicMapInstantiator {
 		super(mappingInfo);
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected Map generateMap() {
 		return new InnerMap();
 	}
+	@SuppressWarnings("serial")
 	private static class InnerMap<K, V> extends LinkedHashMap<K, V> {
 		private final Object oo = new Object();
 

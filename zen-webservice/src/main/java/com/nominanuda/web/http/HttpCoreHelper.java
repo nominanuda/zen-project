@@ -97,6 +97,7 @@ import com.nominanuda.lang.Exceptions;
 import com.nominanuda.lang.ReflectionHelper;
 import com.nominanuda.lang.Strings;
 
+@SuppressWarnings("deprecation")
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
 	public static final HttpCoreHelper HTTP = new HttpCoreHelper();

@@ -237,12 +237,10 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 					baos.write(b);
 				}
 				//@Override
-				@SuppressWarnings("unused")
 				public boolean isReady() {
 					return true;
 				}
 				//@Override
-				@SuppressWarnings("unused")
 				public void setWriteListener(WriteListener arg0) {
 					Check.illegalstate.fail(NOT_IMPLEMENTED);
 				}

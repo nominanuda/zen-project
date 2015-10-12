@@ -68,6 +68,7 @@ public final class DataView<T> {
 		} else if(struct.isPrimitiveOrNull(v)) {
 			return v;
 		} else if(pReader.accepts(v)) {
+			@SuppressWarnings("unchecked")
 			T m = (T)v;
 			if(viewDef.isTraversable(k)) {
 				return compileObject(m, viewDef.traverse(k));

@@ -49,6 +49,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 			if(o == null) {
 				return null;
 			} else if(o instanceof Map<?,?>) {
+				@SuppressWarnings("unchecked")
 				Map<String,Object> m = (Map<String,Object>)o;
 				return render(m, viewName);
 			} else {

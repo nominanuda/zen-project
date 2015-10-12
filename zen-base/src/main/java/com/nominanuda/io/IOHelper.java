@@ -289,49 +289,53 @@ public class IOHelper {
 		int dirPathInJarLen = dirPathInJar.length();
 		File f = new File(jarPath);
 		JarFile jf = new JarFile(f);
-		Enumeration<JarEntry> entries = jf.entries();
-		while (entries.hasMoreElements()) {
-			JarEntry entry = entries.nextElement();
-			String entryName = entry.getName();
-			if (entryName.startsWith(dirPathInJar)
-					&& !dirPathInJar.equals(entryName)) {
-				String subResource = entryName.substring(dirPathInJarLen);
-				if (subResource.endsWith("/")) {
-					File subResourceAsDir = new File(dstDir, subResource);
-					if (!subResourceAsDir.exists()) {
-						subResourceAsDir.mkdirs();
-					} else if (!subResourceAsDir.isDirectory()) {
-						throw new IOException(subResourceAsDir
-								+ " is a file and not a directory");
-					}
-				} else {
-					int lastSlashPos = subResource.lastIndexOf("/");
-					if (lastSlashPos == -1) {
-						File dstFile = new File(dstDir, subResource);
-						writeToFile(
-								dstFile,
-								simpleTemplate(jf.getInputStream(entry),
-										replacementMap,
-										Charset.forName("UTF-8")));
-					} else {
-						File destDir = new File(dstDir, subResource.substring(
-								0, lastSlashPos));
-						if (!destDir.exists()) {
-							destDir.mkdirs();
-						} else if (!destDir.isDirectory()) {
-							throw new IOException(destDir
+		try {
+			Enumeration<JarEntry> entries = jf.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				String entryName = entry.getName();
+				if (entryName.startsWith(dirPathInJar)
+						&& !dirPathInJar.equals(entryName)) {
+					String subResource = entryName.substring(dirPathInJarLen);
+					if (subResource.endsWith("/")) {
+						File subResourceAsDir = new File(dstDir, subResource);
+						if (!subResourceAsDir.exists()) {
+							subResourceAsDir.mkdirs();
+						} else if (!subResourceAsDir.isDirectory()) {
+							throw new IOException(subResourceAsDir
 									+ " is a file and not a directory");
 						}
-						File dstFile = new File(destDir,
-								getLastPathSegment(entryName));
-						writeToFile(
-								dstFile,
-								simpleTemplate(jf.getInputStream(entry),
-										replacementMap,
-										Charset.forName("UTF-8")));
+					} else {
+						int lastSlashPos = subResource.lastIndexOf("/");
+						if (lastSlashPos == -1) {
+							File dstFile = new File(dstDir, subResource);
+							writeToFile(
+									dstFile,
+									simpleTemplate(jf.getInputStream(entry),
+											replacementMap,
+											Charset.forName("UTF-8")));
+						} else {
+							File destDir = new File(dstDir, subResource.substring(
+									0, lastSlashPos));
+							if (!destDir.exists()) {
+								destDir.mkdirs();
+							} else if (!destDir.isDirectory()) {
+								throw new IOException(destDir
+										+ " is a file and not a directory");
+							}
+							File dstFile = new File(destDir,
+									getLastPathSegment(entryName));
+							writeToFile(
+									dstFile,
+									simpleTemplate(jf.getInputStream(entry),
+											replacementMap,
+											Charset.forName("UTF-8")));
+						}
 					}
 				}
 			}
+		} finally {
+			jf.close();
 		}
 	}
 

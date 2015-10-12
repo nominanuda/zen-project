@@ -60,6 +60,7 @@ public class HibernateConfiguration {
 		return cfg;
 	}
 
+	@SuppressWarnings("deprecation")
 	public SessionFactory getSessionFactory() {
 		if(sessionFactory == null) {
 			Configuration cfg = getConfiguration();

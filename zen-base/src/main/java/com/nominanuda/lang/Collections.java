@@ -45,6 +45,7 @@ public class Collections {
 		}
 	}
 
+	@SafeVarargs
 	public static <T> T[] array(T... ts) {
 		return ts;
 	}
@@ -59,6 +60,7 @@ public class Collections {
 		return arr;
 	}
 
+	@SafeVarargs
 	public static <T> List<T> fixedList(T... ts) {
 		return Arrays.asList(array(ts));
 	}
@@ -67,6 +69,7 @@ public class Collections {
 		return new LinkedList<T>();
 	}
 
+	@SafeVarargs
 	public static <T> LinkedList<T> linkedList(T... ts) {
 		LinkedList<T> res = new LinkedList<T>();
 		for (T item : ts) {

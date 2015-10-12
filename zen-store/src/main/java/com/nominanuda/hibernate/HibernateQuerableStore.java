@@ -79,6 +79,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			if(o == null) {
 				return null;
 			} else if(o instanceof Map<?,?>) {
+				@SuppressWarnings("unchecked")
 				Map<String,Object> m = (Map<String,Object>)o;
 				return render(m, Check.notNull(viewName));
 			} else {
@@ -106,6 +107,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 		try {
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
+			@SuppressWarnings("unchecked")
 			Map<String, Object> obj = (Map<String, Object>)session.get(type, id);
 			if (obj == null) {
 				return null;
