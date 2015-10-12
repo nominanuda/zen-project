@@ -18,6 +18,8 @@ package com.nominanuda.lang;
 import java.util.AbstractList;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
 
 public class SetList<E> extends AbstractList<E> implements Set<E> {
 	private LinkedList<E> l = new LinkedList<E>();
@@ -48,5 +50,9 @@ public class SetList<E> extends AbstractList<E> implements Set<E> {
 		if(-1 == indexOf(element)) {
 			l.add(index, element);
 		}
+	}
+	@Override
+	public Spliterator<E> spliterator() {
+		 return Spliterators.spliterator(this, Spliterator.DISTINCT);
 	}
 }
