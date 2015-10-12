@@ -43,6 +43,11 @@ limitations under the License.
       <artifactId>zen-base</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <exclusions>

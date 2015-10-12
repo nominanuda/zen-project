@@ -39,9 +39,23 @@ limitations under the License.
   </properties>
   <dependencies>
     <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <scope>test</scope>
+      </dependency>
     <dependency>
       <groupId>nu.validator.htmlparser</groupId>
       <artifactId>htmlparser</artifactId>
