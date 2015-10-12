@@ -1,0 +1,20 @@
+@namespace("com.nominanuda.koan.format")
+protocol TestProtocol1 {
+
+record Post {
+  string title;
+  string body;
+  boolean published = true;
+  long date
+}
+
+record Author {
+  string name;
+}
+
+record Blog {
+  Author author;
+  array<Post> posts;
+}
+
+}
