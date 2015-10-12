@@ -14,6 +14,7 @@
  * limitations under the License.
  */package com.nominanuda.solr;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -45,7 +46,12 @@ public class SolrHelper {
 		DataArray res = new DataArrayImpl();
 		sq.setStart(start);
 		sq.setRows(count);
-		QueryResponse qr = solr.query(sq);
+		QueryResponse qr;
+		try {
+			qr = solr.query(sq);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		qr.getResults();
 		SolrDocumentList sdl = qr.getResults();
 		for(Map<String,Object> d : sdl) {
