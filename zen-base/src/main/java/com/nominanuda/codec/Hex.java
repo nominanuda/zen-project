@@ -21,6 +21,7 @@ import java.math.BigInteger;
 public class Hex {
 
 	public static String encode(byte[] msg) {
-		return new BigInteger(1, msg).toString(16);
+		String s = new BigInteger(1, msg).toString(16);
+		return s.length() % 2 == 0 ? s : "0" + s;
 	}
 }
