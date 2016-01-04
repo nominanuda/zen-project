@@ -26,15 +26,18 @@ import com.nominanuda.lang.Tuple2;
 public class PluggableMethodArgCoercer implements MethodArgCoercer {
 	private final Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> convertors = new HashMap<Class<?>, Tuple2<ObjectConvertor<Object,Object,Exception>,Integer>>();
 
+	public PluggableMethodArgCoercer(Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
+		setConvertors(convertors);
+	}
+	
 	public int getConversionWeight(Object value, Class<?> type) {
-		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type);
+		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type, value);
 		return t == null ? Integer.MIN_VALUE : t.get1();
 	}
 
-	private @Nullable Tuple2<ObjectConvertor<Object, Object, Exception>, Integer> findConvertor(
-			Class<?> type) {
-		for(Entry<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> e : convertors.entrySet()) {
-			if(e.getKey().isAssignableFrom(type)) {
+	private @Nullable Tuple2<ObjectConvertor<Object, Object, Exception>, Integer> findConvertor(Class<?> type, Object value) {
+		for (Entry<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> e : convertors.entrySet()) {
+			if (e.getKey().equals(type) && e.getValue().get0().canConvert(value)) {
 				return e.getValue();
 			}
 		}
@@ -42,8 +45,8 @@ public class PluggableMethodArgCoercer implements MethodArgCoercer {
 	}
 
 	public Object coerceTypeImpl(Class<?> type, Object value) {
-		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type);
-		if(t != null) {
+		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type, value);
+		if (t != null) {
 			try {
 				return t.get0().apply(value);
 			} catch (Exception e) {
@@ -54,8 +57,7 @@ public class PluggableMethodArgCoercer implements MethodArgCoercer {
 		}
 	}
 
-	public void setConvertors(
-			Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
+	public void setConvertors(Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
 		this.convertors.clear();
 		this.convertors.putAll(convertors);
 	}
