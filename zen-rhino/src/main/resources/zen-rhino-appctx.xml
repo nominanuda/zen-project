@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+		
+		
+	<bean id="zen-rhino-embedding" class="org.mozilla.javascript.DebuggableRhinoEmbedding" init-method="init">
+		<property name="wrapFactory">
+			<bean class="org.mozilla.javascript.PluggableWrapFactory">
+				<constructor-arg ref="zen-rhino-embedding" />
+				<property name="convertors">
+					<list>
+						<bean class="com.nominanuda.rhino.DataStructConvertor" />
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="methodArgCoercer">
+			<bean class="org.mozilla.javascript.PluggableMethodArgCoercer">
+				<property name="convertors">
+					<map>
+						<entry key="java.lang.String">
+							<bean class="com.nominanuda.lang.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.UndefinedCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">1</value>
+								</constructor-arg>
+							</bean>
+						</entry>
+						<entry key="com.nominanuda.dataobject.DataArray">
+							<bean class="com.nominanuda.lang.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.ToDataArrayCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">1</value>
+								</constructor-arg>
+							</bean>
+						</entry>
+						<entry key="com.nominanuda.dataobject.DataObject">
+							<bean class="com.nominanuda.lang.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.ToDataObjectCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">1</value>
+								</constructor-arg>
+							</bean>
+						</entry>
+						<entry key="com.nominanuda.dataobject.DataStruct">
+							<bean class="com.nominanuda.lang.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.ToDataStructCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">1</value>
+								</constructor-arg>
+							</bean>
+						</entry>
+						<entry key="java.lang.Object">
+							<bean class="com.nominanuda.lang.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.ToDataStructCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">2</value>
+								</constructor-arg>
+							</bean>
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="debug" value="false" /><!-- TODO -->
+	</bean>
+</beans>
