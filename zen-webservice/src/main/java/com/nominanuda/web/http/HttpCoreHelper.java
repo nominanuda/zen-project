@@ -30,6 +30,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -100,14 +101,15 @@ import com.nominanuda.lang.Strings;
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
 	public static final HttpCoreHelper HTTP = new HttpCoreHelper();
+
 	private static final ReflectionHelper reflect = new ReflectionHelper();
-	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion(
-			"HTTP", 1, 1);
 	private final static byte CR = 13;/*US-ASCII CR carriage return*/
 	private final static byte LF = 10;/*US-ASCII LF linefeed*/
 	private static final byte[] CRLF = new byte[] {CR, LF};
 	private static final LineFormatter lineFormatter = BasicLineFormatter.INSTANCE;
 	private static final LineParser lineParser = BasicLineParser.INSTANCE;
+	
+	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion("HTTP", 1, 1);
 
 	public HttpMessage deserialize(InputStream is) throws IOException, HttpException {
 		PushbackInputStream pis = new PushbackInputStream(is, 4);
@@ -342,8 +344,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		return null;
 	}
 
-	public List<NameValuePair> parseEntityWithDefaultUtf8(
-			final HttpEntity entity) throws IOException {
+	public List<NameValuePair> parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
 		List<NameValuePair> result = new LinkedList<NameValuePair>();
 		String contentType = null;
 		String charset = UTF_8;
@@ -359,85 +360,85 @@ public class HttpCoreHelper implements HttpProtocol {
 				}
 			}
 		}
-		if (contentType != null
-		&& contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
+		if (contentType != null && contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
 			final String content = EntityUtils.toString(entity, charset);
 			parseUrlEncodedParamList(result, content, charset);
 		}
 		return result;
 	}
 
-	private void parseUrlEncodedParamList(List<NameValuePair> result,
-			String content, String charset) {
-		try {
-			content = URLDecoder.decode(content, charset);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		if (content != null && content.length() > 0) {
-			char[] carr = content.toCharArray();
-			int len = carr.length;
-			StringBuilder name = new StringBuilder();
-			StringBuilder value = new StringBuilder();
-			int STATE_PARSING_KEY = 0;
-			int STATE_PARSING_VAL = 1;
-			int state = STATE_PARSING_KEY;
-			for(int i = 0; i < len; i++) {
-				char c = carr[i];
-				switch (c) {
-//				case '%':
-//					Check.illegalargument.assertTrue(len > i + 2);
-//					String sss = new StringBuilder(2)
-//						.append(carr[i+1])
-//						.append(carr[i+2])
-//						.toString();
-//					i += 2;
-//					char rr = Character.forDigit(Integer.parseInt(sss, 16), 16);
-//					if(state == STATE_PARSING_KEY) {
-//						name.append(rr);
-//					} else {
-//						value.append(rr);
-//					}
-//					break;
-				case '=':
-					if(state == STATE_PARSING_KEY) {
-						state = STATE_PARSING_VAL;
-						Check.illegalargument.assertTrue(name.length() > 0);
-					} else {
-						value.append(c);
+	private void parseUrlEncodedParamList(List<NameValuePair> result, String content, String charset) {
+		if (true) { // TODO fix other implementation, for the time being we used the apache one
+			URLEncodedUtils.parse(result, new Scanner(content), charset);
+		} else {
+			try {
+				content = URLDecoder.decode(content, charset);
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+			if (content != null && content.length() > 0) {
+				char[] carr = content.toCharArray();
+				int len = carr.length;
+				StringBuilder name = new StringBuilder();
+				StringBuilder value = new StringBuilder();
+				int STATE_PARSING_KEY = 0;
+				int STATE_PARSING_VAL = 1;
+				int state = STATE_PARSING_KEY;
+				for(int i = 0; i < len; i++) {
+					char c = carr[i];
+					switch (c) {
+//					case '%':
+//						Check.illegalargument.assertTrue(len > i + 2);
+//						String sss = new StringBuilder(2)
+//							.append(carr[i+1])
+//							.append(carr[i+2])
+//							.toString();
+//						i += 2;
+//						char rr = Character.forDigit(Integer.parseInt(sss, 16), 16);
+//						if(state == STATE_PARSING_KEY) {
+//							name.append(rr);
+//						} else {
+//							value.append(rr);
+//						}
+//						break;
+					case '=':
+						if(state == STATE_PARSING_KEY) {
+							state = STATE_PARSING_VAL;
+							Check.illegalargument.assertTrue(name.length() > 0);
+						} else {
+							value.append(c);
+						}
+						break;
+					case '&':
+						Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
+						result.add(new BasicNameValuePair(
+							name.toString(), 
+							value.toString()));
+						name = new StringBuilder();
+						value = new StringBuilder();
+						break;
+//					case '+':
+//						if(state == STATE_PARSING_KEY) {
+//							name.append(' ');
+//						} else {
+//							value.append(' ');
+//						}
+//						break;
+					default:
+						if(state == STATE_PARSING_KEY) {
+							name.append(c);
+						} else {
+							value.append(c);
+						}
+						break;
 					}
-					break;
-				case '&':
-					Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
+				}
+				if (name.length() > 0) {
 					result.add(new BasicNameValuePair(
-						name.toString(), 
-						value.toString()));
-					name = new StringBuilder();
-					value = new StringBuilder();
-					break;
-//				case '+':
-//					if(state == STATE_PARSING_KEY) {
-//						name.append(' ');
-//					} else {
-//						value.append(' ');
-//					}
-//					break;
-				default:
-					if(state == STATE_PARSING_KEY) {
-						name.append(c);
-					} else {
-						value.append(c);
-					}
-					break;
+							name.toString(), 
+							value.toString()));
 				}
 			}
-			if(name.length() > 0) {
-				result.add(new BasicNameValuePair(
-						name.toString(), 
-						value.toString()));
-			}
-//				result = new ArrayList<NameValuePair>();
-//				URLEncodedUtils.parse(result, new Scanner(content), charset);
 		}
 	}
 
