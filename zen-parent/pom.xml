@@ -59,7 +59,7 @@ limitations under the License.
     <cache-api.version>1.0.0</cache-api.version>
     <httpasyncclient.version>4.0.1</httpasyncclient.version>
     <aspectjrt.version>1.6.11</aspectjrt.version><!--TODO 1.7.4 -->
-    <rhino.js.version>1.7.6</rhino.js.version>
+    <rhino.js.version>1.7R3</rhino.js.version>
     <xmlbeans.version>2.4.0</xmlbeans.version>
     <cglib.version>3.1</cglib.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
@@ -221,13 +221,7 @@ limitations under the License.
       <dependency>
         <groupId>org.mozilla</groupId>
         <artifactId>rhino</artifactId>
-        <version>1.7.6</version>
-      </dependency>
-      <dependency>
-        <groupId>rhino</groupId>
-        <artifactId>js</artifactId>
         <version>${rhino.js.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
