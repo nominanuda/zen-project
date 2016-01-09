@@ -38,7 +38,7 @@ public class Console extends ScriptableObject {
 	}
 	
 	public static void jsFunction_log(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log. info(Strings.join(",", Arrays.asList(args)));
+		log.info(Strings.join(",", Arrays.asList(args)));
 	}
 	
 	public static void jsFunction_info(Context cx, Scriptable thisObj,Object[] args, Function funObj){

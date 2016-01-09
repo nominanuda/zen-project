@@ -26,6 +26,7 @@ import com.nominanuda.lang.Tuple2;
 public class PluggableMethodArgCoercer implements MethodArgCoercer {
 	private final Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> convertors = new HashMap<Class<?>, Tuple2<ObjectConvertor<Object,Object,Exception>,Integer>>();
 
+	public PluggableMethodArgCoercer() {}
 	public PluggableMethodArgCoercer(Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
 		setConvertors(convertors);
 	}
