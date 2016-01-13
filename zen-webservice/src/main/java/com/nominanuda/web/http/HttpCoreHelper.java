@@ -368,25 +368,22 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	private void parseUrlEncodedParamList(List<NameValuePair> result, String content, String charset) {
-		if (true) { // TODO fix other implementation, for the time being we used the apache one
-			URLEncodedUtils.parse(result, new Scanner(content), charset);
-		} else {
-			try {
-				content = URLDecoder.decode(content, charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
-			if (content != null && content.length() > 0) {
-				char[] carr = content.toCharArray();
-				int len = carr.length;
-				StringBuilder name = new StringBuilder();
-				StringBuilder value = new StringBuilder();
-				int STATE_PARSING_KEY = 0;
-				int STATE_PARSING_VAL = 1;
-				int state = STATE_PARSING_KEY;
-				for(int i = 0; i < len; i++) {
-					char c = carr[i];
-					switch (c) {
+		try {
+			content = URLDecoder.decode(content, charset);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		if (content != null && content.length() > 0) {
+			char[] carr = content.toCharArray();
+			int len = carr.length;
+			StringBuilder name = new StringBuilder();
+			StringBuilder value = new StringBuilder();
+			int STATE_PARSING_KEY = 0;
+			int STATE_PARSING_VAL = 1;
+			int state = STATE_PARSING_KEY;
+			for (int i = 0; i < len; i++) {
+				char c = carr[i];
+				switch (c) {
 //					case '%':
 //						Check.illegalargument.assertTrue(len > i + 2);
 //						String sss = new StringBuilder(2)
@@ -401,22 +398,23 @@ public class HttpCoreHelper implements HttpProtocol {
 //							value.append(rr);
 //						}
 //						break;
-					case '=':
-						if(state == STATE_PARSING_KEY) {
-							state = STATE_PARSING_VAL;
-							Check.illegalargument.assertTrue(name.length() > 0);
-						} else {
-							value.append(c);
-						}
-						break;
-					case '&':
-						Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
-						result.add(new BasicNameValuePair(
-							name.toString(), 
-							value.toString()));
-						name = new StringBuilder();
-						value = new StringBuilder();
-						break;
+				case '=':
+					if (state == STATE_PARSING_KEY) {
+						state = STATE_PARSING_VAL;
+						Check.illegalargument.assertTrue(name.length() > 0);
+					} else {
+						value.append(c);
+					}
+					break;
+				case '&':
+					Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
+					result.add(new BasicNameValuePair(
+						name.toString(), 
+						value.toString()));
+					name = new StringBuilder();
+					value = new StringBuilder();
+					state = STATE_PARSING_KEY;
+					break;
 //					case '+':
 //						if(state == STATE_PARSING_KEY) {
 //							name.append(' ');
@@ -424,20 +422,19 @@ public class HttpCoreHelper implements HttpProtocol {
 //							value.append(' ');
 //						}
 //						break;
-					default:
-						if(state == STATE_PARSING_KEY) {
-							name.append(c);
-						} else {
-							value.append(c);
-						}
-						break;
+				default:
+					if (state == STATE_PARSING_KEY) {
+						name.append(c);
+					} else {
+						value.append(c);
 					}
+					break;
 				}
-				if (name.length() > 0) {
-					result.add(new BasicNameValuePair(
-							name.toString(), 
-							value.toString()));
-				}
+			}
+			if (name.length() > 0) {
+				result.add(new BasicNameValuePair(
+						name.toString(), 
+						value.toString()));
 			}
 		}
 	}
