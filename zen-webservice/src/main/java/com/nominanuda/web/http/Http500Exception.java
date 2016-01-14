@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.http;
 
+
+
 public class Http500Exception extends Http5xxException {
 	private static final long serialVersionUID = 343943985438591L;
 
@@ -25,5 +27,13 @@ public class Http500Exception extends Http5xxException {
 	public Http500Exception(String msg) {
 		super(msg);
 	}
-
+	
+	public Http500Exception(IApiError err) {
+		this(serialize(err));
+	}
+	
+	@Override
+	public int getStatusCode() {
+		return 500;
+	}
 }

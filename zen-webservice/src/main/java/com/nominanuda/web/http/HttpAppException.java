@@ -15,6 +15,11 @@
  */
 package com.nominanuda.web.http;
 
+import java.util.List;
+
+import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Strings;
+
 public abstract class HttpAppException extends RuntimeException {
 	private static final long serialVersionUID = 7813677042673120866L;
 
@@ -25,5 +30,33 @@ public abstract class HttpAppException extends RuntimeException {
 	public HttpAppException(String msg) {
 		super(msg);
 	}
-
+	
+	public int getStatusCode() {
+		return 0;
+	}
+	
+	
+	public static HttpAppException from(Exception e) {
+		if (e instanceof HttpAppException) {
+			return (HttpAppException) e;
+		} else if (e instanceof IllegalArgumentException) {
+			return new Http400Exception(e);
+		} else if (e instanceof NullPointerException) {
+			return new Http400Exception(e);
+		}
+		return new Http500Exception(e);
+	}
+	
+	
+	/* IApiError <-> String */
+	
+	protected static String serialize(IApiError err) {
+		return Strings.join("|", err.name(), Check.ifNull(err.param(), ""));
+	}
+	
+	public static <E extends Enum<E> & IApiError> IApiError deserialize(String msg, Class<E> apiErrorEnum) {
+		List<String> parts = Strings.splitAndTrim(msg, "\\|");
+		IApiError err = Enum.valueOf(apiErrorEnum, parts.get(0));
+		return err.param(parts.size() > 1 ? parts.get(1) : null);
+	}
 }

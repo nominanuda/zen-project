@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.http;
 
+
+
 public class Http404Exception extends Http4xxException {
 	private static final long serialVersionUID = 1743745753945084329L;
 
@@ -25,5 +27,13 @@ public class Http404Exception extends Http4xxException {
 	public Http404Exception(String msg) {
 		super(msg);
 	}
-
+	
+	public Http404Exception(IApiError err) {
+		this(serialize(err));
+	}
+	
+	@Override
+	public int getStatusCode() {
+		return 404;
+	}
 }
