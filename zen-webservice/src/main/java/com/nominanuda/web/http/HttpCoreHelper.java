@@ -31,6 +31,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -90,6 +97,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
+import com.nominanuda.codec.Base64Codec;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Check;
@@ -106,8 +114,10 @@ public class HttpCoreHelper implements HttpProtocol {
 	private final static byte CR = 13;/*US-ASCII CR carriage return*/
 	private final static byte LF = 10;/*US-ASCII LF linefeed*/
 	private static final byte[] CRLF = new byte[] {CR, LF};
-	private static final LineFormatter lineFormatter = BasicLineFormatter.INSTANCE;
-	private static final LineParser lineParser = BasicLineParser.INSTANCE;
+	private static final LineFormatter LINE_FORMATTER = BasicLineFormatter.INSTANCE;
+	private static final LineParser LINE_PARSER = BasicLineParser.INSTANCE;
+	private final static Pattern MULTIPART_NAME_RE = Pattern.compile("^.*\\bname=\"([^\"]+)\";?.*$");
+	private final Base64Codec base64 = new Base64Codec();
 	
 	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion("HTTP", 1, 1);
 
@@ -124,7 +134,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	private HttpRequest deserializeRequest(InputStream is) throws IOException, HttpException {
 		CharArrayBuffer lineBuf = readLine(is);
 		final ParserCursor cursor = new ParserCursor(0, lineBuf.length());
-		RequestLine requestline = lineParser.parseRequestLine(lineBuf, cursor);
+		RequestLine requestline = LINE_PARSER.parseRequestLine(lineBuf, cursor);
 		HttpRequest req = createRequest(requestline.getMethod(), requestline.getUri());
 		fillMessageHeadersAndContent(req, is);
 		return req;
@@ -133,7 +143,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	private HttpResponse deserializeResponse(InputStream is) throws IOException, HttpException {
 		CharArrayBuffer lineBuf = readLine(is);
 		final ParserCursor cursor = new ParserCursor(0, lineBuf.length());
-		StatusLine requestline = lineParser.parseStatusLine(lineBuf, cursor);
+		StatusLine requestline = LINE_PARSER.parseStatusLine(lineBuf, cursor);
 		HttpResponse resp = createBasicResponse(requestline.getStatusCode(), requestline.getReasonPhrase());
 		fillMessageHeadersAndContent(resp, is);
 		return resp;
@@ -145,7 +155,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		Header ct = null;
 		Header ce = null;
 		while((lineBuf = readLine(is)).length() > 0) {
-			Header h = lineParser.parseHeader(lineBuf);
+			Header h = LINE_PARSER.parseHeader(lineBuf);
 			String hn = h.getName();
 			if(HDR_CONTENT_LENGTH.equalsIgnoreCase(hn)) {
 				cl = Long.valueOf(h.getValue());
@@ -234,14 +244,14 @@ public class HttpCoreHelper implements HttpProtocol {
 		HttpEntity entity = null;
 		if (message instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) message;
-			hl = new String(lineFormatter.formatRequestLine(null,
+			hl = new String(LINE_FORMATTER.formatRequestLine(null,
 					req.getRequestLine()).toCharArray());
 			if (req instanceof HttpEntityEnclosingRequest) {
 				entity = ((HttpEntityEnclosingRequest) req).getEntity();
 			}
 		} else {
 			HttpResponse resp = (HttpResponse) message;
-			hl = new String(lineFormatter.formatStatusLine(null,
+			hl = new String(LINE_FORMATTER.formatStatusLine(null,
 					resp.getStatusLine()).toCharArray());
 			entity = resp.getEntity();
 		}
@@ -278,7 +288,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		if(header == null || header.getValue() == null) {
 			return;
 		}
-		char[] carr = lineFormatter.formatHeader(null, header).toCharArray();
+		char[] carr = LINE_FORMATTER.formatHeader(null, header).toCharArray();
 		os.write(new String(carr).getBytes(CS_ASCII));
 		os.write(CRLF);
 	}
@@ -362,7 +372,33 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		if (contentType != null && contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
 			final String content = EntityUtils.toString(entity, charset);
-			parseUrlEncodedParamList(result, content, charset);
+			URLEncodedUtils.parse(result, new Scanner(content), charset);
+//			parseUrlEncodedParamList(result, content, charset);
+		} else if (isMultipart(entity)) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			entity.writeTo(baos);
+			try {
+				MimeMultipart mm = new MimeMultipart(new ByteArrayDataSource(baos.toByteArray(), CT_APPLICATION_OCTET_STREAM));
+				for (int i=0; i<mm.getCount(); i++) {
+					BodyPart bp = mm.getBodyPart(i);
+					String name = getBodyPartName(bp);
+					if (name != null) {
+						String value = null;
+						switch (bp.getContentType()) {
+						case CT_TEXT_PLAIN:
+							value = bp.getContent().toString();
+							break;
+						case CT_APPLICATION_OCTET_STREAM:
+							byte[] bytes = IO.readAndClose(bp.getInputStream());
+							value = base64.encodeClassic(bytes);
+							break;
+						}
+						result.add(new BasicNameValuePair(name, value));
+					}
+				}
+			} catch (MessagingException e) { // to avoid propagation of a javax exception
+				throw new IOException();
+			}
 		}
 		return result;
 	}
@@ -438,6 +474,18 @@ public class HttpCoreHelper implements HttpProtocol {
 			}
 		}
 	}
+	
+	private String getBodyPartName(BodyPart bp) throws MessagingException {
+		String[] d = bp.getHeader("Content-Disposition");
+		if (d.length == 1) {
+			Matcher matcher = MULTIPART_NAME_RE.matcher(d[0]);
+			if (matcher.matches()) {
+				return matcher.group(1);
+			}
+		}
+		return null;
+	}
+	
 
 	public @Nullable String getQueryParamFirstOccurrence(HttpRequest request, String name) {
 		List<NameValuePair> l = URLEncodedUtils.parse(
