@@ -396,7 +396,7 @@ public class HttpCoreHelper implements HttpProtocol {
 						result.add(new BasicNameValuePair(name, value));
 					}
 				}
-			} catch (MessagingException e) { // to avoid propagation of a javax exception
+			} catch (Exception e) { // Exception instead of MessagingException (causes failure when building com.nominanuda.springsoy.SoySourceTest... why?)
 				throw new IOException();
 			}
 		}
