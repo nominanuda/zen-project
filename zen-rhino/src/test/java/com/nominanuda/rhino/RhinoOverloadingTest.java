@@ -3,8 +3,8 @@ package com.nominanuda.rhino;
 import java.util.Map;
 
 import com.nominanuda.dataobject.DataArray;
+import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.rhino.RhinoTestCase;
 
 public class RhinoOverloadingTest extends RhinoTestCase {
 	@Override
@@ -50,6 +50,15 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 			}
 		});
 		
+		m.put("mapOverload", new Object() {
+			public String method(DataObject a) {
+				return "map";
+			}
+			public String method(Object o) {
+				return "object";
+			}
+		});
+		
 		m.put("jsonOverload", new Object() {
 			public String method(DataStruct j) {
 				return "json";
@@ -61,6 +70,18 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		
 		m.put("noOverloads", new Object() {
 			public String method(Object o) {
+				return "object";
+			}
+		});
+		
+		m.put("instanceOf", new Object() {
+			public String method(Object o) {
+				if(o instanceof DataArray) {
+					return "array";
+				}
+				if(o instanceof DataObject) {
+					return "map";
+				}
 				return "object";
 			}
 		});
