@@ -15,15 +15,38 @@
  */
 package com.nominanuda.dataobject;
 
-import static com.nominanuda.dataobject.DataType.*;
+import static com.nominanuda.dataobject.DataType.array;
+import static com.nominanuda.dataobject.DataType.bool;
+import static com.nominanuda.dataobject.DataType.nil;
+import static com.nominanuda.dataobject.DataType.number;
+import static com.nominanuda.dataobject.DataType.object;
+import static com.nominanuda.dataobject.DataType.string;
 
-import java.io.*;
-import java.util.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.nominanuda.code.*;
+import com.nominanuda.code.Nullable;
+import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.io.DevNull;
-import com.nominanuda.lang.*;
+import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Maths;
+import com.nominanuda.lang.SafeConvertor;
+import com.nominanuda.lang.SetList;
+import com.nominanuda.lang.Strings;
 
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
@@ -615,11 +638,19 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	 * members in the form key, val, key, val etc.
 	 */
 	public DataObject buildObject(Object... members) {
-		DataObject o = new DataObjectImpl();
-		for(int i = 0; i < members.length; i+=2) {
+		DataObject o = newObject();
+		for (int i = 0; i < members.length; i+=2) {
 			o.put((String)members[i], members[i+1]);
 		}
 		return o;
+	}
+	
+	public DataArray buildArray(Object... members) {
+		DataArray a = newArray();
+		for (Object member : members) {
+			a.add(member);
+		}
+		return a;
 	}
 
 	public DataObject newObject() {
