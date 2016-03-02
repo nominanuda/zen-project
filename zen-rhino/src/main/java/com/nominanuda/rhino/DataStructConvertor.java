@@ -15,6 +15,8 @@
  */
 package com.nominanuda.rhino;
 
+import static com.nominanuda.rhino.DataStructScriptableConvertor.DSS_CONVERTOR;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ToScriptableConvertor;
@@ -22,11 +24,8 @@ import org.mozilla.javascript.ToScriptableConvertor;
 import com.nominanuda.dataobject.DataStruct;
 
 public class DataStructConvertor implements ToScriptableConvertor {
-	private DataStructScriptableConvertor convertor = new DataStructScriptableConvertor();
-
-	public Scriptable convert(Context cx, Scriptable prototypeSearchScope,
-			Object o) {
-		return convertor.toScriptable(cx, (DataStruct)o, prototypeSearchScope);
+	public Scriptable convert(Context cx, Scriptable prototypeSearchScope, Object o) {
+		return DSS_CONVERTOR.toScriptable(cx, (DataStruct)o, prototypeSearchScope);
 	}
 
 	public boolean canConvert(Object obj) {

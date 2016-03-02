@@ -15,6 +15,8 @@
  */
 package org.mozilla.javascript;
 
+import static com.nominanuda.io.IOHelper.IO;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -29,15 +31,14 @@ import org.mozilla.javascript.tools.ToolErrorReporter;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 
 @ThreadSafe
 public class RhinoHelper {
+	public static final RhinoHelper RHINO = new RhinoHelper();
 	private final static String[] TOP_JAVA_NAMES = { 
 		"Packages", "java", "javax", "org", "com", "edu", "net" };
 	protected Object securityDomain;
-	private static final IOHelper ioHelper = new IOHelper();
 
 	public ScriptableObject protocloneScriptable(Context cx, Scriptable scope) {
 		ScriptableObject res = new NativeObject();
@@ -237,7 +238,7 @@ public class RhinoHelper {
 	}
 
 	public Scriptable jsonToScriptable(Context cx, Reader json) {
-		Reader r = ioHelper.concat(
+		Reader r = IO.concat(
 			new StringReader("(function(){return "),
 			json, new StringReader("})();"));
 		return (Scriptable)evaluateReader(cx, r, " - ", scopeFactory.createInContext(cx));

@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import com.nominanuda.code.ThreadSafe;
 
 @ThreadSafe
 public class DateTimeHelper {
+	public static final DateTimeHelper DT = new DateTimeHelper();
 	private final DatatypeFactory dtf;
 	{
 		try {
@@ -199,4 +201,28 @@ public class DateTimeHelper {
 		return dtf.newDuration(msDur).toString();
 	}
 	
+	
+	public <T extends Comparable<?>> T min(T... dts) {
+		switch (dts.length) {
+		case 0:
+			return null;
+		case 1:
+			return dts[0];
+		default:
+			Arrays.sort(dts, DateTimeComparator.getInstance());
+			return dts[0];
+		}
+	}
+	
+	public <T extends Comparable<?>> T max(T... dts) {
+		switch (dts.length) {
+		case 0:
+			return null;
+		case 1:
+			return dts[0];
+		default:
+			Arrays.sort(dts, DateTimeComparator.getInstance());
+			return dts[dts.length - 1];
+		}
+	}
 }

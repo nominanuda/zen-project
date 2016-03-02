@@ -15,9 +15,11 @@
  */
 package com.nominanuda.rhino;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.RhinoHelper;
 import org.mozilla.javascript.Scriptable;
 
 import com.nominanuda.dataobject.DataArray;
@@ -25,36 +27,34 @@ import com.nominanuda.dataobject.DataArrayImpl;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
 
 public class DataStructScriptableConvertor {
-	private static final DataStructHelper structHelper = new DataStructHelper();
-	private static final RhinoHelper rhino = new RhinoHelper();
-
+	public static final DataStructScriptableConvertor DSS_CONVERTOR = new DataStructScriptableConvertor();
+	
 	public Scriptable toScriptable(Context cx, DataStruct source, Scriptable topScope) {
 		Scriptable res;
-		if(source.isArray()) {
-			res = rhino.newArray(cx, topScope);
+		if (source.isArray()) {
+			res = RHINO.newArray(cx, topScope);
 			DataArray a = (DataArray)source;
 			final int len = a.getLength();
-			for(int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++) {
 				Object val = a.get(i);
-				if(structHelper.isPrimitiveOrNull(val)) {
-					rhino.putProperty(res, i, convertPrimitiveToRhino(val));
+				if (STRUCT.isPrimitiveOrNull(val)) {
+					RHINO.putProperty(res, i, convertPrimitiveToRhino(val));
 				} else {
-					rhino.putProperty(res, i, 
+					RHINO.putProperty(res, i, 
 						toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
 		} else {
-			res = rhino.newObject(cx, topScope);
+			res = RHINO.newObject(cx, topScope);
 			DataObject o = (DataObject)source;
-			for(String k : o.getKeys()) {
+			for (String k : o.getKeys()) {
 				Object val = o.get(k);
-				if(structHelper.isPrimitiveOrNull(val)) {
-					rhino.putProperty(res, k, convertPrimitiveToRhino(val));
+				if (STRUCT.isPrimitiveOrNull(val)) {
+					RHINO.putProperty(res, k, convertPrimitiveToRhino(val));
 				} else {
-					rhino.putProperty(res, k, 
+					RHINO.putProperty(res, k, 
 						toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
@@ -68,28 +68,28 @@ public class DataStructScriptableConvertor {
 
 	public DataStruct fromScriptable(Scriptable s) {
 		DataStruct res;
-		if(rhino.isArray(s)) {
+		if (RHINO.isArray(s)) {
 			res = new DataArrayImpl();
 			NativeArray a = (NativeArray)s;//TODO unsafe
 			final int len = (int)a.getLength();
-			for(int i = 0; i < len; i++) {
-				Object val = rhino.getProperty(s, i);
-				if(structHelper.isPrimitiveOrNull(val)) {
+			for (int i = 0; i < len; i++) {
+				Object val = RHINO.getProperty(s, i);
+				if (STRUCT.isPrimitiveOrNull(val)) {
 					((DataArray)res).put(i, val);
-				} else if(rhino.isUndefined(val)) {
+				} else if (RHINO.isUndefined(val)) {
 				} else {
 					((DataArray)res).put(i, fromScriptable((Scriptable)val));
 				}
 			}
 		} else {
 			res = new DataObjectImpl();
-			for(Object k : s.getIds()) {
-				Object val = rhino.getProperty(s, k);
-				if(structHelper.isPrimitiveOrNull(val)) {
-					((DataObject)res).put((String)k, val);
-				} else if(rhino.isUndefined(val)) {
+			for (Object k : s.getIds()) {
+				Object val = RHINO.getProperty(s, k);
+				if (STRUCT.isPrimitiveOrNull(val)) {
+					((DataObject)res).put(k.toString(), val);
+				} else if (RHINO.isUndefined(val)) {
 				} else {
-					((DataObject)res).put((String)k, fromScriptable((Scriptable)val));
+					((DataObject)res).put(k.toString(), fromScriptable((Scriptable)val));
 				}
 			}
 		}

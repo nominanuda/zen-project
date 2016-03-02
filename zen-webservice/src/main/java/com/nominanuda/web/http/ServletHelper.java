@@ -15,14 +15,20 @@
  */
 package com.nominanuda.web.http;
 
+import static com.nominanuda.io.IOHelper.IO;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpCookie;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -44,12 +50,12 @@ import com.nominanuda.code.CodeConstants;
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.lang.Check;
 
 @ThreadSafe
 public class ServletHelper implements CodeConstants {
-	private final static IOHelper ioHelper = new IOHelper();
+	public final static ServletHelper SERVLET = new ServletHelper();
+	
 	/**
 	 * @param request
 	 * @param stripContextPath 
@@ -71,7 +77,7 @@ public class ServletHelper implements CodeConstants {
 	 */
 	public @Nullable InputStream getServletRequestBody(HttpServletRequest servletRequest) throws IOException {
 		ServletInputStream sis = servletRequest.getInputStream();
-		if(servletRequest.getContentLength() > 0) {
+		if (servletRequest.getContentLength() > 0) {
 			return sis;
 		} else {
 			return null;
@@ -86,12 +92,11 @@ public class ServletHelper implements CodeConstants {
 		return servletRequest.getHeader("Content-Encoding");
 	}
 
-	public void copyResponse(HttpResponse response, HttpServletResponse servletResponse)
-			throws IOException {
+	public void copyResponse(HttpResponse response, HttpServletResponse servletResponse) throws IOException {
 		servletResponse.setStatus(response.getStatusLine().getStatusCode());
-		for(Header h : response.getAllHeaders()) {
-			if("Set-Cookie".equals(h.getName()) || "Set-Cookie2".equals(h.getName())) {
-				for(HttpCookie c : HttpCookie.parse(h.getValue())) {
+		for (Header h : response.getAllHeaders()) {
+			if ("Set-Cookie".equals(h.getName()) || "Set-Cookie2".equals(h.getName())) {
+				for (HttpCookie c : HttpCookie.parse(h.getValue())) {
 					servletResponse.addCookie(servletCookie(c));
 				}
 			}
@@ -100,32 +105,32 @@ public class ServletHelper implements CodeConstants {
 			}
 		}
 		HttpEntity entity = response.getEntity();
-		if(entity != null) {
+		if (entity != null) {
 			Header ct = entity.getContentType();
-			if(ct != null) {
+			if (ct != null) {
 				servletResponse.setContentType(ct.getValue());
 			}
 			Header ce = entity.getContentEncoding();
-			if(ce != null) {
+			if (ce != null) {
 				servletResponse.setHeader(ce.getName(), ce.getValue());
 			}
 			long len = entity.getContentLength();
-			if(len >= 0) {
+			if (len >= 0) {
 				servletResponse.setContentLength((int)len);
 			}
-			ioHelper.pipe(entity.getContent(), servletResponse.getOutputStream(), true, false);
+			IO.pipe(entity.getContent(), servletResponse.getOutputStream(), true, false);
 		}
 	}
 
 	public Cookie servletCookie(HttpCookie c) {
 		Cookie _c = new Cookie(c.getName(), c.getValue());
-		if(c.getComment() != null) {
+		if (c.getComment() != null) {
 			_c.setComment(c.getComment());
 		}
-		if(c.getDomain() != null) {
+		if (c.getDomain() != null) {
 			_c.setDomain(c.getDomain());
 		}
-		if(c.getPath() != null) {
+		if (c.getPath() != null) {
 			_c.setPath(c.getPath());
 		}
 		_c.setSecure(c.getSecure());
@@ -145,7 +150,7 @@ public class ServletHelper implements CodeConstants {
 		String cenc = getContentEncoding(servletRequest);
 		long contentLength = servletRequest.getContentLength();
 		HttpRequest req;
-		if(is == null) {
+		if (is == null) {
 			req  = new BasicHttpRequest(method, uri);
 		} else {
 			req = new BasicHttpEntityEnclosingRequest(method, uri);
@@ -155,10 +160,10 @@ public class ServletHelper implements CodeConstants {
 			}
 		}
 		Enumeration<?> names = servletRequest.getHeaderNames();
-		while(names.hasMoreElements()) {
+		while (names.hasMoreElements()) {
 			String name = (String)names.nextElement();
 			Enumeration<?> vals = servletRequest.getHeaders(name);
-			while(vals.hasMoreElements()) {
+			while (vals.hasMoreElements()) {
 				String value = (String)vals.nextElement();
 				req.addHeader(name, value);
 			}
@@ -168,15 +173,13 @@ public class ServletHelper implements CodeConstants {
 
 	@SuppressWarnings("unchecked")
 	private HttpEntity buildEntity(HttpServletRequest servletRequest, final InputStream is, long contentLength, String ct, String cenc) throws IOException {
-		if(ServletFileUpload.isMultipartContent(servletRequest)) {
+		if (ServletFileUpload.isMultipartContent(servletRequest)) {
 			FileItemFactory factory = new DiskFileItemFactory();
 			ServletFileUpload upload = new ServletFileUpload(factory);
 			List<FileItem> items;
 			try {
-				items = upload.parseRequest(new HttpServletRequestWrapper(
-						servletRequest) {
-					public ServletInputStream getInputStream()
-							throws IOException {
+				items = upload.parseRequest(new HttpServletRequestWrapper(servletRequest) {
+					public ServletInputStream getInputStream() throws IOException {
 						return new ServletInputStream() {
 							public int read() throws IOException {
 								return is.read();
@@ -184,8 +187,7 @@ public class ServletHelper implements CodeConstants {
 							public int read(byte[] arg0) throws IOException {
 								return is.read(arg0);
 							}
-							public int read(byte[] b, int off, int len)
-									throws IOException {
+							public int read(byte[] b, int off, int len) throws IOException {
 								return is.read(b, off, len);
 							}
 							//@Override
@@ -212,7 +214,7 @@ public class ServletHelper implements CodeConstants {
 				throw new IOException(e);
 			}
 			MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-			for(FileItem i : items) {
+			for (FileItem i : items) {
 				multipartEntity.addPart(i.getFieldName(), new InputStreamBody(i.getInputStream(), i.getName()));
 			}
 			return multipartEntity;
@@ -228,7 +230,7 @@ public class ServletHelper implements CodeConstants {
 
 	public HttpRequest getOrCreateRequest(HttpServletRequest servletRequest, boolean stripContextPath) throws IOException {
 		HttpRequest req = (HttpRequest)servletRequest.getAttribute("__HttpRequest__");
-		if(req == null) {
+		if (req == null) {
 			req = copyRequest(servletRequest, stripContextPath);
 			servletRequest.setAttribute("__HttpRequest__", req);
 		}

@@ -15,6 +15,9 @@
  */
 package com.nominanuda.springmvc;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.web.http.ServletHelper.SERVLET;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,17 +32,13 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Tuple2;
-import com.nominanuda.web.http.ServletHelper;
 import com.nominanuda.web.mvc.HandlerAndFilters;
 import com.nominanuda.web.mvc.HandlerFilter;
 import com.nominanuda.web.mvc.HandlerMatcher;
 
 public class HandlerMatcherMapping implements HandlerMapping, ApplicationContextAware {
-	private static final DataStructHelper DS = new DataStructHelper();
-	private static final ServletHelper servletHelper = new ServletHelper();
 	private HandlerMatcher handlerMatcher;
 	private transient DispatcherServletHelper dispatcherServletHelper;
 	private ApplicationContext applicationContext;
@@ -48,11 +47,8 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 		this.handlerMatcher = handlerMatcher;
 	}
 
-	public HandlerExecutionChain getHandler(HttpServletRequest request)
-			throws Exception {
-		HttpRequest httpRequest = servletHelper.getOrCreateRequest(request,
-				true);
-		;
+	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		HttpRequest httpRequest = SERVLET.getOrCreateRequest(request, true);
 		Tuple2<Object, DataStruct> res = handlerMatcher.match(httpRequest);
 		if (res == null) {
 			return null;
@@ -68,7 +64,7 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 			} else {
 				hec = new HandlerExecutionChain(h);
 			}
-			servletHelper.storeCommand(request, res.get1());
+			SERVLET.storeCommand(request, res.get1());
 			return hec;
 		}
 	}
@@ -79,15 +75,13 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 			public boolean preHandle(HttpServletRequest request,
 					HttpServletResponse response, Object handler)
 					throws Exception {
-				HttpRequest req = servletHelper.getOrCreateRequest(request,
-						true);
-				DataStruct cmd = Check.ifNull(
-						servletHelper.getCommand(request), DS.newObject());
+				HttpRequest req = SERVLET.getOrCreateRequest(request, true);
+				DataStruct cmd = Check.ifNull(SERVLET.getCommand(request), STRUCT.newObject());
 				Object handlerOutput = f.before(req, cmd, handler);
 				if (handlerOutput == null) {
 					return true;
 				} else {
-					servletHelper.storeHandlerOutput(request, handlerOutput);
+					SERVLET.storeHandlerOutput(request, handlerOutput);
 					getDispatcherServletHelper().renderHandlerOutput(request, response, handlerOutput);
 					return false;
 				}
@@ -105,24 +99,23 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 			public void postHandle(HttpServletRequest request,
 					HttpServletResponse response, Object handler,
 					ModelAndView modelAndView) throws Exception {
-				f.after(servletHelper.getOrCreateRequest(request, true),
-						servletHelper.getCommand(request), handler,
-						servletHelper.getHandlerOutput(request));
+				f.after(SERVLET.getOrCreateRequest(request, true),
+						SERVLET.getCommand(request), handler,
+						SERVLET.getHandlerOutput(request));
 			}
 
 			public void afterCompletion(HttpServletRequest request,
 					HttpServletResponse response, Object handler, Exception ex)
 					throws Exception {
 				f.afterCompletion(
-						servletHelper.getOrCreateRequest(request, true),
-						servletHelper.getResponse(request), handler,
-						servletHelper.getHandlerOutput(request), ex);
+						SERVLET.getOrCreateRequest(request, true),
+						SERVLET.getResponse(request), handler,
+						SERVLET.getHandlerOutput(request), ex);
 			}
 		};
 	}
 
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 }
