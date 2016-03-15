@@ -28,6 +28,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -272,6 +273,18 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return o;
 	}
 
+	public DataArray fromStringsCollection(Collection<String> list) {
+		return fromMapsAndCollections(list);
+	}
+	
+	public DataObject fromStringsMap(Map<String, ?> map) {
+		DataObject obj = newObject();
+		for (String key : map.keySet()) {
+			obj.put(key, map.get(key));
+		}
+		return obj;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void deepCopy(Map<String, Object> m, DataObject o) {
 		for (Entry<String, Object> e : m.entrySet()) {
@@ -594,6 +607,37 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return res;
 	}
+	
+	public Collection<String> toStringsCollection(DataArray arr, boolean allowNulls) {
+		Collection<String> list = new ArrayList<String>(arr.getLength());
+		for (Object obj : arr) {
+			if (obj != null || allowNulls) {
+				list.add(obj.toString());
+			}
+		}
+		return list;
+	}
+	public Collection<String> toStringsCollection(DataArray arr) {
+		return toStringsCollection(arr, true);
+	}
+	
+	public Map<String, String> toStringsMap(DataObject obj, boolean allowNulls) {
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		for (String key : obj.getKeys()) {
+			Object v = obj.get(key);
+			if (v != null) {
+				map.put(key, v.toString());
+			} else if (allowNulls) {
+				map.put(key, null);
+			}
+		}
+		return map;
+	}
+	public Map<String, String> toStringsMap(DataObject obj) {
+		return toStringsMap(obj, true);
+	}
+	
+	
 	//if convertor#canConvert returns false value is not added to result
 	@SuppressWarnings("unchecked")
 	public <X extends DataStruct> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
@@ -741,5 +785,4 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public Iterable<DataObject> asObjSeq(DataArray arr) {
 		return (Iterable<DataObject>)(Iterable<?>)arr;
 	}
-
 }
