@@ -1,6 +1,7 @@
 package org.mozilla.javascript;
 
 
+import static org.mozilla.javascript.RhinoHelper.RHINO;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -20,7 +21,6 @@ import com.nominanuda.lang.ObjectFactory;
  *
  */
 public class ScopeFactory implements ObjectFactory<Scriptable> {
-	private final static 	RhinoHelper helper = new RhinoHelper();;
 	private final static int FIXED_ROOT = ScriptableObject.DONTENUM | ScriptableObject.READONLY;
 	private ScriptableObject cachedScope = null;
 	private RhinoEmbedding embedding;
@@ -115,64 +115,73 @@ public class ScopeFactory implements ObjectFactory<Scriptable> {
 		return createInContext(Context.getCurrentContext());
 	}
 	public Scriptable createInContext(Context cx) throws RuntimeException {
-		if(cachedScope != null) {
-			return this.isSealed() ? cachedScope 
-					: helper.protocloneScriptable(cx, cachedScope);
+		if (cachedScope != null) {
+			return this.isSealed() ? cachedScope : RHINO.protocloneScriptable(cx, cachedScope);
 		} else {
 			ScriptableObject s;
 			try {
-				s = helper.createTopScope(cx, allowJavaPackageAccess );
+				s = RHINO.createTopScope(cx, allowJavaPackageAccess);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-			for(String k : this.getJavaObjects().keySet()) {
+			for (String k : this.getJavaObjects().keySet()) {
 				s.defineProperty(k, this.getJavaObjects().get(k), FIXED_ROOT);
 			}
-			for(Class<? extends Scriptable> cl : this.getDefinedClasses()) {
-				helper.defineClassInScope(s, cl);
-	//TODO remove me				if(MixedHostObject.class.isAssignableFrom(cl)){
-//						handleMixedHostObject(cl, s, cx);
-//					}
+			for (Class<? extends Scriptable> cl : this.getDefinedClasses()) {
+				RHINO.defineClassInScope(s, cl);
+//				TODO remove me
+//				if(MixedHostObject.class.isAssignableFrom(cl)){
+//					handleMixedHostObject(cl, s, cx);
+//				}
 			}
-			for(Class<? extends Script> cl : this.getCompiledScripts()) {
-				Script script = helper.instantiate(cl, cx);
-				helper.evaluateScript(script, cx, s);
+			for (Class<? extends Script> cl : this.getCompiledScripts()) {
+				Script script = RHINO.instantiate(cl, cx);
+				RHINO.evaluateScript(script, cx, s);
 			}
-			for(String path : this.getSourceScripts()) {
+			for (String path : this.getSourceScripts()) {
 				Reader r;
 				try {
 					r = new InputStreamReader(new URL(path).openStream());
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-				helper.evaluateReader(cx, r, path, s);
+				RHINO.evaluateReader(cx, r, path, s);
 			}
-			if(this.isSealed()) {
+			if (this.isSealed()) {
 				s.sealObject();
 			}
 			cachedScope = s;
-			return this.isSealed() ? s : helper.protocloneScriptable(cx, s);
+			return this.isSealed() ? s : RHINO.protocloneScriptable(cx, s);
 		}
+	}
+
+	public void setAllowJavaPackageAccess(boolean allowJavaPackageAccess) {
+		this.allowJavaPackageAccess = allowJavaPackageAccess;
+		cachedScope = null; // reset;
 	}
 
 	public void setSourceScripts(List<String> sourceScripts) {
 		Check.illegalstate.assertFalse(immutable);
 		this.sourceScripts = sourceScripts;
+		cachedScope = null; // reset;
 	}
 
 	public void setCompiledScripts(List<Class<? extends Script>> compiledScripts) {
 		Check.illegalstate.assertFalse(immutable);
 		this.compiledScripts = compiledScripts;
+		cachedScope = null; // reset;
 	}
 
 	public void setDefinedClasses(List<Class<? extends Scriptable>> definedClasses) {
 		Check.illegalstate.assertFalse(immutable);
 		this.definedClasses = definedClasses;
+		cachedScope = null; // reset;
 	}
 
 	public void setJavaObjects(Map<String, Object> javaObjects) {
 		Check.illegalstate.assertFalse(immutable);
 		this.javaObjects = javaObjects;
+		cachedScope = null; // reset;
 	}
 
 	public void setSealed(boolean sealed) {
@@ -182,10 +191,6 @@ public class ScopeFactory implements ObjectFactory<Scriptable> {
 
 	public void setEmbedding(RhinoEmbedding embedding) {
 		this.embedding = embedding;
-	}
-
-	public void setAllowJavaPackageAccess(boolean allowJavaPackageAccess) {
-		this.allowJavaPackageAccess = allowJavaPackageAccess;
 	}
 
 	public boolean isAllowJavaPackageAccess() {

@@ -31,8 +31,7 @@ public class URISpec<T> {
 			URISpecLexer lexer = new URISpecLexer(src);
 			CommonTokenStream dd = new CommonTokenStream(lexer);
 			URISpecParser p = new URISpecParser(dd);
-			NodeAdapter treeAdaptor = 
-				new NodeAdapter();
+			NodeAdapter treeAdaptor = new NodeAdapter();
 			treeAdaptor.setModelAdapter((StringModelAdapter<? super Object>)ma);
 			p.setTreeAdaptor(treeAdaptor);
 			uriSpecTree = (URISpecNode)p.program().tree;
