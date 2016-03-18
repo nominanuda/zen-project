@@ -51,7 +51,7 @@ public class IOHelper {
 	private static final Base64Codec base64 = new Base64Codec();
 
 	public String readAndCloseUtf8(InputStream is) throws IOException {
-		return readAndClose(is, Charset.forName("UTF-8"));
+		return readAndClose(is, CSUTF8);
 	}
 
 	public String readAndClose(InputStream is, Charset cs) throws IOException {
@@ -212,8 +212,7 @@ public class IOHelper {
 		return pipe(is, os, true, true);
 	}
 
-	public int pipe(InputStream is, OutputStream os, boolean closeIs,
-			boolean closeOs) throws IOException {
+	public int pipe(InputStream is, OutputStream os, boolean closeIs, boolean closeOs) throws IOException {
 		byte[] buffer = new byte[4096];
 		int totWritten = 0;
 		try {
@@ -262,8 +261,7 @@ public class IOHelper {
 	public void copyRecursive(URL srcDir, File dstDir) throws IOException {
 		copyRecursive(srcDir, dstDir, null);
 	}
-	public void copyRecursive(URL srcDir, File dstDir,
-			Map<String, ?> replacementMap) throws IOException {
+	public void copyRecursive(URL srcDir, File dstDir, Map<String, ?> replacementMap) throws IOException {
 		if (replacementMap == null) {
 			replacementMap = Collections.emptyMap();
 		}
@@ -281,54 +279,40 @@ public class IOHelper {
 		}
 	}
 
-	private void copyJarContentRecursive(String jarSrcDir, File dstDir,
-			Map<String, ?> replacementMap) throws IOException {
+	private void copyJarContentRecursive(String jarSrcDir, File dstDir, Map<String, ?> replacementMap) throws IOException {
 		String[] arr = jarSrcDir.substring("jar:file:".length()).split("!");
 		String jarPath = arr[0];
 		String dirPathInJar = arr[1].substring(1) + "/";
 		int dirPathInJarLen = dirPathInJar.length();
-		File f = new File(jarPath);
-		JarFile jf = new JarFile(f);
-		Enumeration<JarEntry> entries = jf.entries();
-		while (entries.hasMoreElements()) {
-			JarEntry entry = entries.nextElement();
-			String entryName = entry.getName();
-			if (entryName.startsWith(dirPathInJar)
-					&& !dirPathInJar.equals(entryName)) {
-				String subResource = entryName.substring(dirPathInJarLen);
-				if (subResource.endsWith("/")) {
-					File subResourceAsDir = new File(dstDir, subResource);
-					if (!subResourceAsDir.exists()) {
-						subResourceAsDir.mkdirs();
-					} else if (!subResourceAsDir.isDirectory()) {
-						throw new IOException(subResourceAsDir
-								+ " is a file and not a directory");
-					}
-				} else {
-					int lastSlashPos = subResource.lastIndexOf("/");
-					if (lastSlashPos == -1) {
-						File dstFile = new File(dstDir, subResource);
-						writeToFile(
-								dstFile,
-								simpleTemplate(jf.getInputStream(entry),
-										replacementMap,
-										Charset.forName("UTF-8")));
-					} else {
-						File destDir = new File(dstDir, subResource.substring(
-								0, lastSlashPos));
-						if (!destDir.exists()) {
-							destDir.mkdirs();
-						} else if (!destDir.isDirectory()) {
-							throw new IOException(destDir
-									+ " is a file and not a directory");
+		try (JarFile jf = new JarFile(new File(jarPath))) {
+			Enumeration<JarEntry> entries = jf.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				String entryName = entry.getName();
+				if (entryName.startsWith(dirPathInJar) && !dirPathInJar.equals(entryName)) {
+					String subResource = entryName.substring(dirPathInJarLen);
+					if (subResource.endsWith("/")) {
+						File subResourceAsDir = new File(dstDir, subResource);
+						if (!subResourceAsDir.exists()) {
+							subResourceAsDir.mkdirs();
+						} else if (!subResourceAsDir.isDirectory()) {
+							throw new IOException(subResourceAsDir + " is a file and not a directory");
 						}
-						File dstFile = new File(destDir,
-								getLastPathSegment(entryName));
-						writeToFile(
-								dstFile,
-								simpleTemplate(jf.getInputStream(entry),
-										replacementMap,
-										Charset.forName("UTF-8")));
+					} else {
+						int lastSlashPos = subResource.lastIndexOf("/");
+						if (lastSlashPos == -1) {
+							File dstFile = new File(dstDir, subResource);
+							writeToFile(dstFile, simpleTemplate(jf.getInputStream(entry), replacementMap, CSUTF8));
+						} else {
+							File destDir = new File(dstDir, subResource.substring(0, lastSlashPos));
+							if (!destDir.exists()) {
+								destDir.mkdirs();
+							} else if (!destDir.isDirectory()) {
+								throw new IOException(destDir + " is a file and not a directory");
+							}
+							File dstFile = new File(destDir, getLastPathSegment(entryName));
+							writeToFile(dstFile, simpleTemplate(jf.getInputStream(entry), replacementMap, CSUTF8));
+						}
 					}
 				}
 			}
@@ -361,8 +345,7 @@ public class IOHelper {
 		}
 	}
 
-	public InputStream simpleTemplate(InputStream is, Map<String, ?> map, Charset cs)
-			throws IOException {
+	public InputStream simpleTemplate(InputStream is, Map<String, ?> map, Charset cs) throws IOException {
 		String s = readAndClose(is, cs);
 		String replaced = simpleTemplate(s, map);
 		byte[] buf = replaced.getBytes(cs.name());
@@ -374,9 +357,7 @@ public class IOHelper {
 		pipeAndClose(src, fos);
 	}
 
-	public void copyRecursive(File srcDir, File dstDir,
-			Map<String, ?> replacementMap) throws FileNotFoundException,
-			IOException {
+	public void copyRecursive(File srcDir, File dstDir, Map<String, ?> replacementMap) throws FileNotFoundException, IOException {
 		if (replacementMap == null) {
 			replacementMap = Collections.emptyMap();
 		}
@@ -395,9 +376,7 @@ public class IOHelper {
 					throw new IllegalStateException();
 				}
 				//TODO user given charset
-				pipeAndClose(
-						simpleTemplate(new FileInputStream(f), replacementMap, CSUTF8),
-						new FileOutputStream(dst));
+				pipeAndClose(simpleTemplate(new FileInputStream(f), replacementMap, CSUTF8), new FileOutputStream(dst));
 			}
 		}
 	}
