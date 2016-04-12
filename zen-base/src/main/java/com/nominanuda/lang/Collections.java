@@ -44,6 +44,18 @@ public class Collections {
 			throw new IllegalArgumentException(e);
 		}
 	}
+	
+	public static <T> List<T> reversedClone(List<T> list) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<T> l2 = list.getClass().newInstance();
+			l2.addAll(list);
+			java.util.Collections.reverse(l2);
+			return l2;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public static <T> T[] array(T... ts) {
 		return ts;
