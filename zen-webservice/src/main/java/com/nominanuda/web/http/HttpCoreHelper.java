@@ -105,18 +105,19 @@ import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.Exceptions;
 import com.nominanuda.lang.ReflectionHelper;
 import com.nominanuda.lang.Strings;
+import com.nominanuda.lang.Tuple2;
 
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
 	public static final HttpCoreHelper HTTP = new HttpCoreHelper();
 
 	private static final ReflectionHelper reflect = new ReflectionHelper();
-	private final static byte CR = 13;/*US-ASCII CR carriage return*/
-	private final static byte LF = 10;/*US-ASCII LF linefeed*/
+	private static final byte CR = 13;/*US-ASCII CR carriage return*/
+	private static final byte LF = 10;/*US-ASCII LF linefeed*/
 	private static final byte[] CRLF = new byte[] {CR, LF};
 	private static final LineFormatter LINE_FORMATTER = BasicLineFormatter.INSTANCE;
 	private static final LineParser LINE_PARSER = BasicLineParser.INSTANCE;
-	private final static Pattern MULTIPART_NAME_RE = Pattern.compile("^.*\\bname=\"([^\"]+)\";?.*$");
+	private static final Pattern MULTIPART_NAME_RE = Pattern.compile("^.*\\bname=\"([^\"]+)\";?.*$");
 	private final Base64Codec base64 = new Base64Codec();
 	
 	public final ProtocolVersion ProtocolVersion_1_1 = new ProtocolVersion("HTTP", 1, 1);
@@ -231,21 +232,18 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 	}
 
-	public byte[] serialize(HttpMessage message) throws IOException,
-			HttpException {
+	public byte[] serialize(HttpMessage message) throws IOException, HttpException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		serializeTo(message, baos);
 		return baos.toByteArray();
 	}
 
-	public void serializeTo(HttpMessage message, OutputStream os)
-			throws IOException, HttpException {
+	public void serializeTo(HttpMessage message, OutputStream os) throws IOException, HttpException {
 		String hl = null;
 		HttpEntity entity = null;
 		if (message instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) message;
-			hl = new String(LINE_FORMATTER.formatRequestLine(null,
-					req.getRequestLine()).toCharArray());
+			hl = new String(LINE_FORMATTER.formatRequestLine(null, req.getRequestLine()).toCharArray());
 			if (req instanceof HttpEntityEnclosingRequest) {
 				entity = ((HttpEntityEnclosingRequest) req).getEntity();
 			}
@@ -285,7 +283,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	private void writeHeaderTo(@Nullable Header header, OutputStream os) throws IOException {
-		if(header == null || header.getValue() == null) {
+		if (header == null || header.getValue() == null) {
 			return;
 		}
 		char[] carr = LINE_FORMATTER.formatHeader(null, header).toCharArray();
@@ -309,7 +307,7 @@ public class HttpCoreHelper implements HttpProtocol {
 
 	public void setContentType(HttpResponse resp, String contentType) {
 		HttpEntity e = resp.getEntity();
-		if(e != null && e instanceof AbstractHttpEntity) {
+		if (e != null && e instanceof AbstractHttpEntity) {
 			AbstractHttpEntity ae = (AbstractHttpEntity)e;
 			ae.setContentType(contentType);
 		} else {
@@ -319,7 +317,7 @@ public class HttpCoreHelper implements HttpProtocol {
 
 	public void setContentEncoding(HttpResponse resp, String contentEncoding) {
 		HttpEntity e = resp.getEntity();
-		if(e != null && e instanceof AbstractHttpEntity) {
+		if (e != null && e instanceof AbstractHttpEntity) {
 			AbstractHttpEntity ae = (AbstractHttpEntity)e;
 			ae.setContentEncoding(contentEncoding);
 		} else {
@@ -328,8 +326,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public void setContentLength(HttpResponse resp, int contentLength) {
-		resp.setHeader(HDR_CONTENT_LENGTH, Integer.valueOf(contentLength)
-				.toString());
+		resp.setHeader(HDR_CONTENT_LENGTH, Integer.valueOf(contentLength).toString());
 	}
 
 	public @Nullable String guessCharset(HttpEntity entity) {
@@ -488,8 +485,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	
 
 	public @Nullable String getQueryParamFirstOccurrence(HttpRequest request, String name) {
-		List<NameValuePair> l = URLEncodedUtils.parse(
-				URI.create(request.getRequestLine().getUri()), UTF_8);
+		List<NameValuePair> l = URLEncodedUtils.parse(URI.create(request.getRequestLine().getUri()), UTF_8);
 		for(NameValuePair nvp : l) {
 			if(name.equals(nvp.getName())) {
 				return nvp.getValue();
@@ -498,8 +494,7 @@ public class HttpCoreHelper implements HttpProtocol {
 		return null;
 	}
 	public DataStruct getQueryParams(HttpRequest request) {
-		List<NameValuePair> l = URLEncodedUtils.parse(
-				URI.create(request.getRequestLine().getUri()), UTF_8);
+		List<NameValuePair> l = URLEncodedUtils.parse(URI.create(request.getRequestLine().getUri()), UTF_8);
 		return toDataStruct(l);
 	}
 	public DataStruct toDataStruct(List<NameValuePair> l) {
@@ -532,37 +527,30 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public HttpResponse resp404TextPlainUtf8(String msg) {
-		BasicHttpResponse resp = new BasicHttpResponse(
-				statusLine(404));
+		BasicHttpResponse resp = new BasicHttpResponse(statusLine(404));
 		resp.setEntity(new StringEntity(msg, ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
 	public HttpResponse resp500TextPlainUtf8(Exception e) {
-		BasicHttpResponse resp = new BasicHttpResponse(
-				statusLine(500));
+		BasicHttpResponse resp = new BasicHttpResponse(statusLine(500));
 		resp.setEntity(new StringEntity(Exceptions.toStackTrace(e), ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
 	public HttpResponse respInternalServerError() {
-		BasicHttpResponse resp = new BasicHttpResponse(
-				statusLine(500));
-		resp.setEntity(new StringEntity(
-			"Internal Server Error", ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
+		BasicHttpResponse resp = new BasicHttpResponse(statusLine(500));
+		resp.setEntity(new StringEntity("Internal Server Error", ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
-	public HttpResponse createBasicResponse(int status, String message,
-			String contentType) {
-		BasicHttpResponse resp = new BasicHttpResponse(
-				statusLine(status));
+	public HttpResponse createBasicResponse(int status, String message, String contentType) {
+		BasicHttpResponse resp = new BasicHttpResponse(statusLine(status));
 		try {
 			String declaredCharset = guessCharset(contentType);
-			HttpEntity e = new StringEntity(message, 
-				declaredCharset == null
-					? ContentType.create(contentType, CS_UTF_8)
-					: ContentType.create(contentType));
+			HttpEntity e = new StringEntity(message, declaredCharset == null
+				? ContentType.create(contentType, CS_UTF_8)
+				: ContentType.create(contentType));
 			resp.setEntity(e);
 		} catch (UnsupportedCharsetException ex) {
 			throw new IllegalArgumentException(ex);
@@ -571,8 +559,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public HttpResponse createBasicResponse(int status, String reason) {
-		BasicHttpResponse resp = new BasicHttpResponse(
-				statusLine(status, reason));
+		BasicHttpResponse resp = new BasicHttpResponse(statusLine(status, reason));
 		return resp;
 	}
 
@@ -588,8 +575,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	public ContentBody extractFirstPartBody(MultipartEntity entity) {
 		HttpMultipart mp = extractHttpMultipart(entity);
 		FormBodyPart part = mp.getBodyParts().get(0);
-		ContentBody cb = part.getBody();
-		return cb;
+		return part.getBody();
 	}
 	
 
@@ -641,7 +627,10 @@ public class HttpCoreHelper implements HttpProtocol {
 			return ((HttpEntityEnclosingRequest)msg).getEntity();
 		}
 	}
-	//Cookies....
+	
+	
+	/* cookies */
+	
 	public enum CookieSpecKind {
 		rfc2965Spec(new RFC2965Spec()), 
 		rfc2109Spec(new RFC2109Spec()), 
@@ -672,8 +661,7 @@ public class HttpCoreHelper implements HttpProtocol {
 					if (w > 0) {
 						String cname = nav.substring(0, w);
 						if (name.equals(cname)) {
-							cookies.add(new NameValueCookie(cname, nav
-									.substring(w)));
+							cookies.add(new NameValueCookie(cname, nav.substring(w)));
 						}
 					}
 				}
@@ -691,5 +679,35 @@ public class HttpCoreHelper implements HttpProtocol {
 	public void setResponseCookie(HttpResponse req, String name, String value, CookieSpecKind cookieSpec) {
 		BasicClientCookie c = new BasicClientCookie(name, value);
 		setResponseCookie(req, c, cookieSpec);
+	}
+	
+	
+	/* basic auth */
+	
+	public Tuple2<String, String> extractBasicAuth(String value) {
+		if (value != null) {
+			String[] parts = value.split("\\s+");
+			if (parts.length == 2 && "basic".equals(parts[0].toLowerCase())) {
+				String credentials = new String(base64.decodeNoGzip(parts[1]));
+				int colon = credentials.indexOf(':'); // not using credentials.split() as password can contain ":"
+				if (colon > -1) {
+					return new Tuple2<String, String>(credentials.substring(0, colon), credentials.substring(colon + 1));
+				}
+			}
+		}
+		return null;
+	}
+	public Tuple2<String, String> extractBasicAuth(Header header) {
+		return (header != null ? extractBasicAuth(header.getValue()) : null);
+	}
+	public Tuple2<String, String> extractBasicAuth(HttpRequest request) {
+		return extractBasicAuth(request.getFirstHeader("Authorization"));
+	}
+	
+	public String basicAuthString(String name, String value) {
+		return Strings.join(" ", "Basic", base64.encodeClassic(Strings.join(":", name, value).getBytes()));
+	}
+	public Header basicAuthHeader(String name, String value) {
+		return new BasicHeader("Authorization", basicAuthString(name, value));
 	}
 }

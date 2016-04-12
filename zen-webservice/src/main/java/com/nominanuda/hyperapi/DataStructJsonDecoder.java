@@ -36,8 +36,7 @@ public class DataStructJsonDecoder extends AbstractEntityDecoder<DataStruct> {
 	protected DataStruct decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
 		String cs = Check.ifNull(HTTP.guessCharset(entity), UTF_8);
 		try {
-			DataStruct dataEntity = STRUCT.parse(new InputStreamReader(
-					entity.getContent(), cs));
+			DataStruct dataEntity = STRUCT.parse(new InputStreamReader(entity.getContent(), cs));
 			return dataEntity;
 		} catch (IOException e) {
 			throw e;

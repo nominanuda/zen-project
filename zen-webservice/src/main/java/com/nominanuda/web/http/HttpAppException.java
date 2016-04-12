@@ -48,6 +48,27 @@ public abstract class HttpAppException extends RuntimeException {
 	}
 	
 	
+	/* generic situations */
+	
+	public static void badParamExAssertTrue(boolean cond, IApiError msg) throws Http400Exception {
+		if (!cond) {
+			throw new Http400Exception(msg != null ? msg : BasicApiError.generic_badParameter);
+		}
+	}
+	public static void badParamExAssertTrue(boolean cond) throws Http400Exception {
+		authExAssertTrue(cond, null);
+	}
+	
+	public static void authExAssertTrue(boolean cond, IApiError msg) throws Http401Exception {
+		if (!cond) {
+			throw new Http401Exception(msg != null ? msg : BasicApiError.generic_unauthorized);
+		}
+	}
+	public static void authExAssertTrue(boolean cond) throws Http401Exception {
+		authExAssertTrue(cond, null);
+	}
+	
+	
 	/* IApiError <-> String */
 	
 	protected static String serialize(IApiError err) {
