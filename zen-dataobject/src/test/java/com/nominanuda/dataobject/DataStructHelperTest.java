@@ -15,15 +15,19 @@
  */
 package com.nominanuda.dataobject;
 
-import static org.junit.Assert.*;
-
-import java.io.*;
-import java.util.*;
-
-import org.junit.*;
-import org.xml.sax.*;
-
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class DataStructHelperTest {
 
@@ -110,5 +114,21 @@ public class DataStructHelperTest {
 			fail();
 		} catch(ClassCastException e) {}
 	}
-
+	
+	@Test
+	public void testSorting() {
+		DataArray a = STRUCT.buildArray(
+			STRUCT.buildObject("pos", 3),
+			STRUCT.buildObject("pos", 1),
+			STRUCT.buildObject("pos", 0),
+			STRUCT.buildObject("pos", 2)
+		);
+		STRUCT.sort(a, new Comparator<DataObject>() {
+			@Override
+			public int compare(DataObject o1, DataObject o2) {
+				return (int)(o1.getLong("pos") - o2.getLong("pos"));
+			}
+		});
+		assertTrue(a.getObject(0).getLong("pos") == 0);
+	}
 }
