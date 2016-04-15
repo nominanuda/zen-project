@@ -31,7 +31,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -758,12 +757,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	
 	// can lead to classcastexception if comparator is not of the right type
 	@SuppressWarnings("unchecked")
-	public <T> DataArray sort(DataArray arr, Comparator<T> c) {
-		List<T> list = new ArrayList<T>(arr.getLength());
-		for (Object o : arr) {
-			list.add((T) o);
+	public <T> void sort(DataArray arr, Comparator<T> c) {
+		int l = arr.getLength();
+		Object[] objs = new Object[l];
+		for (int i=0; i<l; i++) {
+			objs[i] = arr.get(i);
 		}
-		Collections.sort(list, c);
-		return fromMapsAndCollections(list);
+		Arrays.sort((T[])objs, c);
+		for (int i=0; i<l; i++) {
+			arr.put(i, objs[i]);
+		}
 	}
 }
