@@ -116,7 +116,7 @@ public class DataStructHelperTest {
 	}
 	
 	@Test
-	public void testSorting() {
+	public void testSort() {
 		DataArray a = STRUCT.buildArray(
 			STRUCT.buildObject("pos", 3),
 			STRUCT.buildObject("pos", 1),
@@ -130,5 +130,23 @@ public class DataStructHelperTest {
 			}
 		});
 		assertTrue(a.getObject(0).getLong("pos") == 0);
+		
+		DataArray b = STRUCT.buildArray(3, 2, 5, 6, 0, 1);
+		STRUCT.sort(b, new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return o1 - o2;
+			}
+		});
+		assertTrue(b.getLong(0) == 0);
+		
+		DataArray c = STRUCT.buildArray("abcd", "abc", "a", "ab");
+		STRUCT.sort(c, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.length() - o2.length();
+			}
+		});
+		assertEquals(c.getString(0), "a");
 	}
 }
