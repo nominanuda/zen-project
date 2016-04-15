@@ -31,6 +31,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -780,9 +782,21 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray parseArray(String json) {
 		return parseArray(json, false);
 	}
+	
 	//can lead to classcastexception in case it is not a dataobjectarray
 	@SuppressWarnings("unchecked")
 	public Iterable<DataObject> asObjSeq(DataArray arr) {
 		return (Iterable<DataObject>)(Iterable<?>)arr;
+	}
+	
+	// can lead to classcastexception if comparator is not of the right type
+	@SuppressWarnings("unchecked")
+	public <T> DataArray sort(DataArray arr, Comparator<T> c) {
+		List<T> list = new LinkedList<T>();
+		for (Object o : arr) {
+			list.add((T) o);
+		}
+		Collections.sort(list, c);
+		return fromMapsAndCollections(list);
 	}
 }
