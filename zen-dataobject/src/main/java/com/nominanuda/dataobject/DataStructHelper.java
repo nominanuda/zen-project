@@ -62,17 +62,17 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	private static final int MULTIVALUE_SUFFIX_LEN = MULTIVALUE_SUFFIX.length();
 
 	public boolean isPrimitiveOrNull(Object o) {
-		return o == null || o instanceof Boolean || o instanceof Number
-				|| o instanceof String;
+		return o == null || o instanceof Boolean || o instanceof Number || o instanceof String;
 	}
 
 	public DataType getDataType(Object o) {
-		return o == null ? nil : o instanceof Boolean ? bool
-				: o instanceof Number ? number : o instanceof String ? string
+		return o == null ? nil
+			: o instanceof Boolean ? bool
+				: o instanceof Number ? number
+					: o instanceof String ? string
 						: o instanceof DataArray ? array
 								: o instanceof DataObject ? object
-										: (DataType) Check.illegalargument
-												.fail();
+									: (DataType) Check.illegalargument.fail();
 	}
 
 	public boolean isDataStruct(Object o) {
@@ -132,15 +132,11 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 				return "\"" + n.toString() + "\"";
 			}
 		} else if (o instanceof String) {
-			return "\""
-					+ ((String) o).replace("\\", "\\\\").replace("\"", "\\\"")
-					+ "\"";
+			return "\"" + ((String) o).replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
 		} else if (o instanceof Boolean) {
 			return "\"" + ((Boolean) o).toString() + "\"";
 		} else {
-			throw new IllegalArgumentException(
-					"cannot convert to string an object of type:"
-							+ o.getClass().getName());
+			throw new IllegalArgumentException("cannot convert to string an object of type:" + o.getClass().getName());
 		}
 	}
 
@@ -169,9 +165,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		} else if (o instanceof Boolean) {
 			return ((Boolean) o).toString();
 		} else {
-			throw new IllegalArgumentException(
-					"cannot convert to string an object of type:"
-							+ o.getClass().getName());
+			throw new IllegalArgumentException("cannot convert to string an object of type:" + o.getClass().getName());
 		}
 	}
 
@@ -188,8 +182,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return parserUtils.parseStringContent(s);
 	}
 
-	public void copy(DataObject src, DataObject dst, int policy)
-			throws UnsupportedOperationException {
+	public void copy(DataObject src, DataObject dst, int policy) throws UnsupportedOperationException {
 		switch (policy) {
 		case MERGE_POLICY_OVERRIDE:
 			copyOverwite(src, dst);
@@ -198,13 +191,11 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			copyPush(src, dst);
 			break;
 		default:
-			throw new UnsupportedOperationException("unknown merge policy:"
-					+ policy);
+			throw new UnsupportedOperationException("unknown merge policy:" + policy);
 		}
 	}
 
-	public <K, T extends DataStruct> void copyOverwite(PropertyBag<K> source,
-			PropertyBag<K> target) {
+	public <K, T extends DataStruct> void copyOverwite(PropertyBag<K> source, PropertyBag<K> target) {
 		Iterator<K> itr = source.keyIterator();
 		while (itr.hasNext()) {
 			K key = itr.next();
@@ -216,9 +207,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			} else if (isDataObject(o)) {
 				copyOverwite((DataObject) o, target.putNewObject(key));
 			} else {
-				throw new IllegalStateException(
-						o.getClass().getName()
-								+ " is neither a DataStruct nor a primitive type or null");
+				throw new IllegalStateException(o.getClass().getName() + " is neither a DataStruct nor a primitive type or null");
 			}
 		}
 	}
@@ -258,8 +247,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 
 	public String primitiveOrNullToString(@Nullable Object o) {
 		Check.illegalargument.assertTrue(isPrimitiveOrNull(o));
-		return o == null ? "null" : o instanceof Number ? Maths
-				.toString((Number) o) : o.toString();
+		return o == null ? "null" : o instanceof Number ? Maths.toString((Number) o) : o.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -369,8 +357,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
-		T target = (T) (struct instanceof DataArray ? new DataArrayImpl()
-				: new DataObjectImpl());
+		T target = (T) (struct instanceof DataArray ? new DataArrayImpl() : new DataObjectImpl());
 		while (keyItr.hasNext()) {
 			K key = keyItr.next();
 			Object val = struct.get(key);
@@ -388,8 +375,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
-		T target = (T) (struct instanceof DataArray ? new DataArrayImpl(parent)
-				: new DataObjectImpl(parent));
+		T target = (T) (struct instanceof DataArray ? new DataArrayImpl(parent) : new DataObjectImpl(parent));
 		while (keyItr.hasNext()) {
 			K key = keyItr.next();
 			Object val = struct.get(key);
@@ -413,8 +399,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		toFlatMap(map, "", from);
 	}
 
-	private void toFlatMap(Map<String, Object> map, String key,
-			@Nullable Object value) {
+	private void toFlatMap(Map<String, Object> map, String key, @Nullable Object value) {
 		switch (getDataType(value)) {
 		case object:
 			DataObject obj = (DataObject) value;
@@ -442,10 +427,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	private String keyJoin(String prefix, Object suffix) {
-		Check.illegalstate.assertTrue(suffix instanceof Integer
-				|| suffix instanceof String);
-		return (prefix.length() > 0) ? prefix + "." + suffix.toString()
-				: suffix.toString();
+		Check.illegalstate.assertTrue(suffix instanceof Integer || suffix instanceof String);
+		return (prefix.length() > 0) ? prefix + "." + suffix.toString() : suffix.toString();
 	}
 
 	private void writeFlatMapTo(Map<String, Object> pMap, DataObject dest) {
@@ -460,15 +443,13 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return dest;
 	}
 
-	private void writeScalarOrMultivaluedProperty(DataObject target,
-			String path, Object val) {
+	private void writeScalarOrMultivaluedProperty(DataObject target, String path, Object val) {
 		if (val.getClass().isArray()) {
 			val = Arrays.asList((Object[]) val);
 		}
 		if (!(val == null || val instanceof Collection<?>)) {// scalar
 			if (path.endsWith(MULTIVALUE_SUFFIX)) {
-				path = path.substring(0, path.length() - MULTIVALUE_SUFFIX_LEN)
-						+ ".0";
+				path = path.substring(0, path.length() - MULTIVALUE_SUFFIX_LEN) + ".0";
 			}
 			writeScalarProperty(target, path, val);
 		} else {// Collection
@@ -479,15 +460,12 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 				// writeScalarProperty(path, null);
 			} else if (len == 1) {
 				if (path.endsWith(MULTIVALUE_SUFFIX)) {
-					path = path.substring(0, path.length()
-							- MULTIVALUE_SUFFIX_LEN)
-							+ ".0";
+					path = path.substring(0, path.length() - MULTIVALUE_SUFFIX_LEN) + ".0";
 				}
 				writeScalarProperty(target, path, l.iterator().next());
 			} else {
 				if (path.endsWith(MULTIVALUE_SUFFIX)) {
-					path = path.substring(0, path.length()
-							- MULTIVALUE_SUFFIX_LEN);
+					path = path.substring(0, path.length() - MULTIVALUE_SUFFIX_LEN);
 				}
 				int i = 0;
 				for (Object v : l) {
@@ -500,10 +478,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	private void writeScalarProperty(DataObject target, String path, Object val) {
-		if (val != null
-				&& (val.getClass().isArray() || val instanceof Collection<?>)) {
-			throw new IllegalArgumentException(val.getClass()
-					+ " is not a scalar type");
+		if (val != null && (val.getClass().isArray() || val instanceof Collection<?>)) {
+			throw new IllegalArgumentException(val.getClass() + " is not a scalar type");
 		}
 		// to allow alternative array syntax a[0] instead of a.0
 		path = path.replaceAll("\\[(\\d+)\\]", "\\.$1");
@@ -511,24 +487,20 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		writeScalarProperty(target, bits, val);
 	}
 
-	private void writeScalarProperty(DataObject target, String[] path,
-			Object val) {
+	private void writeScalarProperty(DataObject target, String[] path, Object val) {
 		String k = path[0];
 		if (path.length == 1) {
 			target.put(k, val);
 		} else {
 			Object o = target.get(k);
-			String[] subPath = new String[path.length - 1];// Arrays.copyOfRange(path,
-															// 1, path.length);
+			String[] subPath = new String[path.length - 1];// Arrays.copyOfRange(path, 1, path.length);
 			System.arraycopy(path, 1, subPath, 0, subPath.length);
 			String nextKey = subPath[0];
 			if (Maths.isInteger(nextKey)) {
-				DataArray newTarget = isDataArray(o) ? (DataArray) o : target
-						.putNewArray(k);
+				DataArray newTarget = isDataArray(o) ? (DataArray) o : target.putNewArray(k);
 				writeScalarProperty(newTarget, subPath, val);
 			} else {
-				DataObject newTarget = isDataObject(o) ? (DataObject) o
-						: target.putNewObject(k);
+				DataObject newTarget = isDataObject(o) ? (DataObject) o : target.putNewObject(k);
 				writeScalarProperty(newTarget, subPath, val);
 			}
 		}
@@ -541,18 +513,14 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		} else {
 			Object o = target.getLength() > k ? target.get(k) : null;
 			// String[] subPath = Arrays.copyOfRange(path, 1, path.length);
-			String[] subPath = new String[path.length - 1];// Arrays.copyOfRange(path,
-															// 1, path.length);
+			String[] subPath = new String[path.length - 1];// Arrays.copyOfRange(path, 1, path.length);
 			System.arraycopy(path, 1, subPath, 0, subPath.length);
 			String nextKey = subPath[0];
 			if (Maths.isInteger(nextKey)) {
-				DataArray newTarget = isDataArray(o) ? (DataArray) o : target
-						.putNewArray(k);
-
+				DataArray newTarget = isDataArray(o) ? (DataArray) o : target.putNewArray(k);
 				writeScalarProperty(newTarget, subPath, val);
 			} else {
-				DataObject newTarget = isDataObject(o) ? (DataObject) o
-						: target.putNewObject(k);
+				DataObject newTarget = isDataObject(o) ? (DataObject) o : target.putNewObject(k);
 				writeScalarProperty(newTarget, subPath, val);
 			}
 		}
@@ -560,7 +528,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 
 	public Map<String, ? super Object> toMapsAndLists(DataObject o) {
 		Map<String,Object> res = new LinkedHashMap<String, Object>();
-		for(String k : o.getKeys()) {
+		for (String k : o.getKeys()) {
 			Object v = o.get(k);
 			Object vToPut = 
 				v == null ? null
@@ -573,7 +541,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	public List<? super Object> toMapsAndLists(DataArray arr) {
 		List<? super Object> res = new LinkedList<Object>();
-		for(Object v : arr) {
+		for (Object v : arr) {
 			Object vToPut = 
 				v == null ? null
 				: v instanceof DataObject ? toMapsAndLists((DataObject)v)
@@ -586,7 +554,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	
 	public Map<String, ? super Object> toMapsAndSetLists(DataObject o) {
 		Map<String,Object> res = new LinkedHashMap<String, Object>();
-		for(String k : o.getKeys()) {
+		for (String k : o.getKeys()) {
 			Object v = o.get(k);
 			Object vToPut = 
 				v == null ? null
@@ -599,7 +567,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	public SetList<? super Object> toMapsAndSetLists(DataArray arr) {
 		SetList<? super Object> res = new SetList<Object>();
-		for(Object v : arr) {
+		for (Object v : arr) {
 			Object vToPut = 
 				v == null ? null
 				: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
@@ -650,7 +618,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 
 	private DataObject convertLeavesInternal(DataObject source, SafeConvertor<Object, Object> convertor) {
 		DataObject res = new DataObjectImpl();
-		for(String k : source.getKeys()) {
+		for (String k : source.getKeys()) {
 			Object v = source.get(k);
 			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
 				res.put(k, convertor.apply(v));
@@ -663,11 +631,10 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 
-	private DataArray convertLeavesInternal(DataArray source,
-			SafeConvertor<Object, Object> convertor) {
+	private DataArray convertLeavesInternal(DataArray source, SafeConvertor<Object, Object> convertor) {
 		DataArray res = new DataArrayImpl();
 		int len = source.getLength();
-		for(int i = 0; i < len; i++) {
+		for (int i = 0; i < len; i++) {
 			Object v = source.get(i);
 			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
 				res.add(convertor.apply(v));
@@ -792,7 +759,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	// can lead to classcastexception if comparator is not of the right type
 	@SuppressWarnings("unchecked")
 	public <T> DataArray sort(DataArray arr, Comparator<T> c) {
-		List<T> list = new LinkedList<T>();
+		List<T> list = new ArrayList<T>(arr.getLength());
 		for (Object o : arr) {
 			list.add((T) o);
 		}
