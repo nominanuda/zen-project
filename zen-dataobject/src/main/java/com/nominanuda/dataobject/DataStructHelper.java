@@ -577,8 +577,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 	
-	public Collection<String> toStringsCollection(DataArray arr, boolean allowNulls) {
-		Collection<String> list = new ArrayList<String>(arr.getLength());
+	public List<String> toStringsList(DataArray arr, boolean allowNulls) {
+		List<String> list = new ArrayList<String>(arr.getLength());
 		for (Object obj : arr) {
 			if (obj != null || allowNulls) {
 				list.add(obj.toString());
@@ -586,8 +586,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return list;
 	}
-	public Collection<String> toStringsCollection(DataArray arr) {
-		return toStringsCollection(arr, true);
+	public List<String> toStringsList(DataArray arr) {
+		return toStringsList(arr, true);
 	}
 	
 	public Map<String, String> toStringsMap(DataObject obj, boolean allowNulls) {
