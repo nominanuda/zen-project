@@ -16,7 +16,8 @@
 package com.nominanuda.lang;
 
 import java.nio.charset.Charset;
-import java.text.*;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,29 +44,50 @@ public abstract class Strings {
 	public static String join(String separator, Object... strings) {
 		int len = strings.length;
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < len; i++) {
+		for (int i = 0; i < len; i++) {
 			sb.append(strings[i].toString());
-			if(i < len - 1) {
+			if (i < len - 1) {
 				sb.append(separator);
 			}
 		}
 		return sb.toString();
 	}
-
 	public static String join(String separator, Iterable<?> collection) {
 		return join(separator, collection.iterator());
 	}
-
 	public static String join(String separator, Iterator<?> itr) {
 		StringBuilder sb = new StringBuilder();
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			sb.append(itr.next().toString());
-			if(itr.hasNext()) {
+			if (itr.hasNext()) {
 				sb.append(separator);
 			}
 		}
 		return sb.toString();
 	}
+	
+	public static String joinNotNull(String separator, Object... strings) {
+		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
+			@Override public Boolean apply(Object param) {
+				return param != null;
+			}
+		}));
+	}
+	public static String joinNotNullOrEmpty(String separator, Object... strings) {
+		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
+			@Override public Boolean apply(Object param) {
+				return param != null && notNullOrEmpty(param.toString());
+			}
+		}));
+	}
+	public static String joinNotNullOrBlank(String separator, Object... strings) {
+		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
+			@Override public Boolean apply(Object param) {
+				return param != null && notNullOrBlank(param.toString());
+			}
+		}));
+	}
+	
 	public static List<String> splitAndTrim(String str, String regex) {
 		return splitAndTrim(str, Pattern.compile(regex));
 	}
@@ -77,6 +99,7 @@ public abstract class Strings {
 		}
 		return l;
 	}
+	
 	public static String pathConcat(String... segments) {
 		StringBuilder sb = new StringBuilder();
 		boolean lastEndsWithSlash = false;

@@ -194,7 +194,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 
-	public <K, T extends DataStruct> void copyOverwite(PropertyBag<K> source, PropertyBag<K> target) {
+	public <K> void copyOverwite(PropertyBag<K> source, PropertyBag<K> target) {
 		Iterator<K> itr = source.keyIterator();
 		while (itr.hasNext()) {
 			K key = itr.next();

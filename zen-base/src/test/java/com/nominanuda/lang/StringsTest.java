@@ -19,4 +19,10 @@ public class StringsTest {
 		} catch (NullPointerException expectedException) {
 		}
 	}
+	
+	@Test
+	public void testJoins() {
+		Assert.assertEquals(Strings.joinNotNull("-", 1, "sdfd", null, "sdfd", "", "aaaa"), "1-sdfd-sdfd--aaaa");
+		Assert.assertEquals(Strings.joinNotNullOrEmpty("-", 1, "sdfd", null, "sdfd", "", "aaaa"), "1-sdfd-sdfd-aaaa");
+	}
 }
