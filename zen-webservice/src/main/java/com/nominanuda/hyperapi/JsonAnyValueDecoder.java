@@ -43,9 +43,11 @@ public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 		} else if ("true".equals(s) || "false".equals(s)) {
 			return Boolean.valueOf(s);
 		} else if (Maths.isNumber(s)) {
-			return Maths.isInteger(s)
-				? Long.valueOf(s)
-				: Double.valueOf(s);
+			if (Maths.isInteger(s)) { // don't use ?: operator or it will always return Double!!!
+				return Long.valueOf(s);
+			} else {
+				return Double.valueOf(s);
+			}
 		} else if (s.startsWith("\"") && s.length() > 1) {
 			return STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
 		} else {

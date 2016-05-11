@@ -73,8 +73,7 @@ public class HyperApiWsSkelton implements WebService {
 
 		Tuple2<Method, DataObject> boundMethod = bindMethod(reqHttpMethod, apiRequestUri);
 		if(boundMethod == null) {
-			throw new IllegalArgumentException("could not find any suitable method to call " +
-					"for api request: "+apiRequestUri);
+			throw new IllegalArgumentException("could not find any suitable method to call for api request: " + apiRequestUri);
 		} else {
 			Method m = boundMethod.get0();
 			DataObject uriParams = boundMethod.get1();
@@ -148,8 +147,7 @@ public class HyperApiWsSkelton implements WebService {
 		return entityCodec.decode(entity, p);
 	}
 
-	protected Object[] createArgs(DataObject uriParams, HttpEntity entity,
-			Class<?> api2, Method method) throws IOException {
+	protected Object[] createArgs(DataObject uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		Object[] args = new Object[parameterTypes.length];
