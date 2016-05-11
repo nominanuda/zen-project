@@ -16,6 +16,8 @@
 
 package com.nominanuda.codec;
 
+import java.math.BigInteger;
+
 
 public class Hex {
 
@@ -41,8 +43,8 @@ public class Hex {
 //	(e.g. gives back 50b65b1444cd228f8d636b7ba3556e instead of 0050b65b1444cd228f8d636b7ba3556e)
 //	(use com.nominanuda.codec.HexTest for testing)
 //	
-//	public static String encode(byte[] msg) {
-//		String s = new BigInteger(1, msg).toString(16);
-//		return s.length() % 2 == 0 ? s : "0" + s;
-//	}
+	public static String encodeAlternative(byte[] msg) {
+		String s = new BigInteger(1, msg).toString(16);
+		return s.length() % 2 == 0 ? s : "0" + s;
+	}
 }

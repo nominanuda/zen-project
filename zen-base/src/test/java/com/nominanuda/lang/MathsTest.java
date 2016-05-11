@@ -28,8 +28,7 @@ public class MathsTest {
 	public void testGetBytes() {
 		long l = 0xFF00EE11DD22CC33L;
 		byte[] b = Maths.getBytes(l);
-		Assert.assertEquals("00FF00EE11DD22CC33".toLowerCase(),
-				Hex.encode(b));
+		Assert.assertEquals("FF00EE11DD22CC33".toLowerCase(), Hex.encode(b));
 	}
 
 	@Test

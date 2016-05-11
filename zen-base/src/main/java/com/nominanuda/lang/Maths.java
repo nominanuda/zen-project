@@ -39,7 +39,10 @@ public abstract class Maths {
 	}
 
 	public static  byte[] getBytes(long n) {
-		return new BigInteger(Long.toHexString(n), 16).toByteArray();
+		byte[] b0 = new BigInteger(Long.toHexString(n), 16).toByteArray();
+		byte[] b1 = new byte[b0.length - 1]; // b0 without the sign bit
+		System.arraycopy(b0, 1, b1, 0, b1.length);
+		return b1;
 	}
 
 	public static  byte[] getBytes(UUID uuid) {

@@ -11,7 +11,7 @@ public class HexTest {
 	private final static String[] STRINGS = new String[] {};
 	private final static int RANDOMS = 4096;
 	
-	@Ignore @Test
+	@Test @Ignore
 	public void test() throws NoSuchAlgorithmException {
 		for (String s : STRINGS) {
 			doHex(s.getBytes());
