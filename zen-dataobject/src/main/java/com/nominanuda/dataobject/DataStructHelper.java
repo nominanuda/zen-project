@@ -443,7 +443,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	private void writeScalarOrMultivaluedProperty(DataObject target, String path, Object val) {
-		if (val.getClass().isArray()) {
+		if (val != null && val.getClass().isArray()) {
 			val = Arrays.asList((Object[]) val);
 		}
 		if (!(val == null || val instanceof Collection<?>)) {// scalar

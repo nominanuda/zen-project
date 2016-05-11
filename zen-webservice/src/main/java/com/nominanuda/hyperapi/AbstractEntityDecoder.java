@@ -39,7 +39,7 @@ public abstract class AbstractEntityDecoder<T> implements EntityDecoder, HttpPro
 	@Override
 	public boolean supports(AnnotatedType p, HttpEntity entity) {
 		String ct = Check.ifNullOrBlank(getContentType(entity), CT_APPLICATION_OCTET_STREAM);
-		return contentTypeMatches(ct) && p.isAssignableFrom(cl);
+		return contentTypeMatches(ct) && p.isAssignableTo(cl);
 	}
 
 	@Override

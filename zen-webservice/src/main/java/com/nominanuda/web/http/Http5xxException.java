@@ -17,14 +17,31 @@ package com.nominanuda.web.http;
 
 public class Http5xxException extends HttpAppException {
 	private static final long serialVersionUID = 8974587487945387945L;
-
+	private int status = 0;
+	
 	public Http5xxException(Exception e) {
 		super(e);
+	}
+	public Http5xxException(Exception e, int status) {
+		this(e);
+		this.status = status;
 	}
 
 	public Http5xxException(String msg) {
 		super(msg);
 	}
+	public Http5xxException(String msg, int status) {
+		this(msg);
+		this.status = status;
+	}
+	
+	public Http5xxException(IApiError err, int status) {
+		this(serialize(err));
+		this.status = status;
+	}
 
-
+	@Override
+	public int getStatusCode() {
+		return status;
+	}
 }

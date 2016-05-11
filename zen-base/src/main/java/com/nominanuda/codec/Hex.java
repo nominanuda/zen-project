@@ -16,12 +16,33 @@
 
 package com.nominanuda.codec;
 
-import java.math.BigInteger;
 
 public class Hex {
 
 	public static String encode(byte[] msg) {
-		String s = new BigInteger(1, msg).toString(16);
-		return s.length() % 2 == 0 ? s : "0" + s;
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < msg.length; i++) {
+			int halfbyte = (msg[i] >>> 4) & 0x0F;
+			int two_halfs = 0;
+			do {
+				if ((0 <= halfbyte) && (halfbyte <= 9)) {
+					builder.append((char) ('0' + halfbyte));
+				} else {
+					builder.append((char) ('a' + (halfbyte - 10)));
+				}
+				halfbyte = msg[i] & 0x0F;
+			} while (two_halfs++ < 1);
+		}
+		return builder.toString();
 	}
+
+	
+//	TODO check if this implementation could be more efficient, and in case FIX IT! because it drops the first '00'
+//	(e.g. gives back 50b65b1444cd228f8d636b7ba3556e instead of 0050b65b1444cd228f8d636b7ba3556e)
+//	(use com.nominanuda.codec.HexTest for testing)
+//	
+//	public static String encode(byte[] msg) {
+//		String s = new BigInteger(1, msg).toString(16);
+//		return s.length() % 2 == 0 ? s : "0" + s;
+//	}
 }

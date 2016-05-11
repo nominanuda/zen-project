@@ -15,6 +15,10 @@
  */
 package com.nominanuda.codec;
 
+import static com.nominanuda.codec.Base62.B62;
+import static javax.crypto.Cipher.DECRYPT_MODE;
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -28,10 +32,7 @@ import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import static javax.crypto.Cipher.*;
-
 public class Digester {
-	private static final Base62 base62 = new Base62();
 	private static final String BLOWFISH = "Blowfish";
 	private static final String SHA1 = "SHA1";
 	private static final String AES = "AES";
@@ -42,8 +43,7 @@ public class Digester {
 	private SecretKeySpec blowfish128SecretKey;
 	private Charset charset = Charset.forName("UTF-8");
 
-	public Digest hmacSHA256(String value)
-			throws NoSuchAlgorithmException, InvalidKeyException {
+	public Digest hmacSHA256(String value) throws NoSuchAlgorithmException, InvalidKeyException {
 		Mac mac = Mac.getInstance(HMAC_SHA256);
 		mac.init(sha256SecretKey);
 		return new Digest(mac.doFinal(stringToBytes(value)));
@@ -203,7 +203,7 @@ public class Digester {
 			return base64.encodeUrlSafeNoPad(b);
 		}
 		public String toBase62() {
-			return base62.encode(b);
+			return B62.encode(b);
 		}
 		public String toBase64GzipUrlSafeNoPad() {
 			return base64.gzipEncodeUrlSafeNoPad(b);

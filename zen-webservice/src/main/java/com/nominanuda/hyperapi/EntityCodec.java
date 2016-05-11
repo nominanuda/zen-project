@@ -25,44 +25,45 @@ import com.nominanuda.lang.Collections;
 
 public class EntityCodec {
 	private List<EntityEncoder> encoders = Collections.linkedList(
-			(EntityEncoder)new InputStreamEntityEncoder(), 
-			(EntityEncoder)new ByteArrayEntityEncoder(),
-			(EntityEncoder)new JsonAnyValueEntityEncoder()
-		);
+		(EntityEncoder)new InputStreamEntityEncoder(), 
+		(EntityEncoder)new ByteArrayEntityEncoder(),
+		(EntityEncoder)new JsonAnyValueEntityEncoder()
+	);
 
 	private List<EntityDecoder> decoders = Collections.linkedList(
-			//(EntityDecoder)new DataStructJsonDecoder(),
-			(EntityDecoder)new JsonAnyValueDecoder(),
-			(EntityDecoder)new ByteArrayEntityDecoder(),
-			(EntityDecoder)new InputStreamEntityDecoder(),
-			(EntityDecoder)new JsonAnyValueDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE)//this is for buggy server compat 
-			);
+		(EntityDecoder)new JsonAnyValueDecoder(),
+		(EntityDecoder)new ByteArrayEntityDecoder(),
+		(EntityDecoder)new InputStreamEntityDecoder(),
+		(EntityDecoder)new JsonAnyValueDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE) // fallback for buggy server compat 
+	);
 
 	public static EntityCodec createBasic() {
 		return new EntityCodec();
 	}
-	public void setEntityEncoders(Collection<EntityEncoder> encoders) {
-		this.encoders.clear();
-		this.encoders.addAll(encoders);
-	}
+	
 	public HttpEntity encode(Object arg, AnnotatedType ap) {
-		for(EntityEncoder c : encoders) {
-			if(c.supports(ap, arg)) {
+		for (EntityEncoder c : encoders) {
+			if (c.supports(ap, arg)) {
 				return c.encode(ap, arg);
 			}
 		}
 		throw new IllegalArgumentException("no suitable converter found for encoding payload");
 	}
-	public void setEntityDecoders(List<? extends EntityDecoder> l) {
-		decoders.clear();
-		decoders.addAll(l);
-	}
 	public Object decode(HttpEntity entity, AnnotatedType p) throws IOException {
-		for(EntityDecoder d : decoders) {
-			if(d.supports(p, entity)) {
+		for (EntityDecoder d : decoders) {
+			if (d.supports(p, entity)) {
 				return d.decode(p, entity);
 			}
 		}
 		throw new IllegalArgumentException("cannot find a suitable entity decoder");
+	}
+	
+	public void setEntityEncoders(Collection<EntityEncoder> encoders) {
+		this.encoders.clear();
+		this.encoders.addAll(encoders);
+	}
+	public void setEntityDecoders(List<? extends EntityDecoder> l) {
+		decoders.clear();
+		decoders.addAll(l);
 	}
 }

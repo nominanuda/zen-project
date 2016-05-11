@@ -28,28 +28,25 @@ import com.nominanuda.lang.Maths;
 
 public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 
-	public JsonAnyValueDecoder() {
-		this(CT_APPLICATION_JSON);
-	}
-
 	public JsonAnyValueDecoder(String contentType) {
 		super(Object.class, contentType);
+	}
+	public JsonAnyValueDecoder() {
+		this(CT_APPLICATION_JSON);
 	}
 
 	@Override
 	protected Object decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
 		String s = IO.readAndCloseUtf8(entity.getContent());
-		if("null".equals(s)) {
+		if ("null".equals(s)) {
 			return null;
-		} else if("true".equals(s)||"false".equals(s)) {
+		} else if ("true".equals(s) || "false".equals(s)) {
 			return Boolean.valueOf(s);
-		} else if(Maths.isNumber(s)) {
-			if(Maths.isInteger(s)) {
-				return Long.valueOf(s);
-			} else {
-				return Double.valueOf(s);
-			}
-		} else if(s.startsWith("\"") && s.length() > 1) {
+		} else if (Maths.isNumber(s)) {
+			return Maths.isInteger(s)
+				? Long.valueOf(s)
+				: Double.valueOf(s);
+		} else if (s.startsWith("\"") && s.length() > 1) {
 			return STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
 		} else {
 			DataStruct ds = STRUCT.parse(new StringReader(s));

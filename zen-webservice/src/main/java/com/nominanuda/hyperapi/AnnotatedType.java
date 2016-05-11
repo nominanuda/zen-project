@@ -34,7 +34,7 @@ public class AnnotatedType {
 		this.annotations = Check.ifNull(annotations, new Annotation[0]);
 	}
 
-	public boolean isAssignableFrom(Class<?> cl) {
+	public boolean isAssignableTo(Class<?> cl) {
 		return cl.isAssignableFrom(type);
 	}
 

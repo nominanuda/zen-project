@@ -32,7 +32,7 @@ public abstract class AbstractEntityEncoder<T> implements EntityEncoder, HttpPro
 
 	@Override
 	public boolean supports(AnnotatedType p, Object value) {
-		return value == null || p.isAssignableFrom(cl) && cl.isAssignableFrom(value.getClass());
+		return value == null || p.isAssignableTo(cl) && cl.isAssignableFrom(value.getClass());
 	}
 
 	@SuppressWarnings("unchecked")

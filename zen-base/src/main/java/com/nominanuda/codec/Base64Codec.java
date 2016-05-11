@@ -21,6 +21,7 @@ import com.nominanuda.code.ThreadSafe;
 
 @ThreadSafe
 public class Base64Codec {
+	public static final Base64Codec B64 = new Base64Codec();
 	private static final String[] PADS = {null, "=", "=="};
 
 	public String encodeUrlSafeNoPad(byte[] msg) {
