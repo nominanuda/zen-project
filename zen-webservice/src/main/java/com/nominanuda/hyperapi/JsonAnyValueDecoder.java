@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import org.apache.http.HttpEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Maths;
 
 public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public JsonAnyValueDecoder(String contentType) {
 		super(Object.class, contentType);
@@ -38,21 +41,26 @@ public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 	@Override
 	protected Object decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
 		String s = IO.readAndCloseUtf8(entity.getContent());
-		if ("null".equals(s)) {
-			return null;
-		} else if ("true".equals(s) || "false".equals(s)) {
-			return Boolean.valueOf(s);
-		} else if (Maths.isNumber(s)) {
-			if (Maths.isInteger(s)) { // don't use ?: operator or it will always return Double!!!
-				return Long.valueOf(s);
+		try {
+			if ("null".equals(s)) {
+				return null;
+			} else if ("true".equals(s) || "false".equals(s)) {
+				return Boolean.valueOf(s);
+			} else if (Maths.isNumber(s)) {
+				if (Maths.isInteger(s)) { // don't use ?: operator or it will always return Double!!!
+					return Long.valueOf(s);
+				} else {
+					return Double.valueOf(s);
+				}
+			} else if (s.startsWith("\"") && s.length() > 1) {
+				return STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
 			} else {
-				return Double.valueOf(s);
+				DataStruct ds = STRUCT.parse(new StringReader(s));
+				return ds;
 			}
-		} else if (s.startsWith("\"") && s.length() > 1) {
-			return STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
-		} else {
-			DataStruct ds = STRUCT.parse(new StringReader(s));
-			return ds;
+		} catch (Exception e) {
+			log.error("error trying to parse: " + s);
+			throw e;
 		}
 	}
 }

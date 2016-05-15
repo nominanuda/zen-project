@@ -28,7 +28,7 @@ import com.nominanuda.lang.Strings;
 
 public class Console extends ScriptableObject {
 	private static final long serialVersionUID = 924498336863426363L;
-	private static final Logger log = LoggerFactory.getLogger("console");
+	private static final Logger log = LoggerFactory.getLogger("rhinoConsole");
 
 	public void jsConstructor() {}
 
@@ -38,6 +38,7 @@ public class Console extends ScriptableObject {
 	}
 	
 	public static void jsFunction_log(Context cx, Scriptable thisObj,Object[] args, Function funObj){
+		System.out.println(Strings.join(",", Arrays.asList(args)));
 		log.info(Strings.join(",", Arrays.asList(args)));
 	}
 	
