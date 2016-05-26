@@ -26,7 +26,7 @@ public class Require extends ScriptableObject implements Callable {
 
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
 		String key = (String) args[0];
-		if(registry.has(key)) {
+		if (registry.has(key)) {
 			return registry.get(key);
 		} else {
 			return registry.createAndStore(key, cx, thisObj, scope, args);

@@ -6,12 +6,14 @@ public enum BasicApiError implements IApiError {
 	generic_unauthorized,
 	generic_unknown;
 	
+	private String p;
 	@Override
 	public String param() {
-		return null;
+		return p;
 	}
 	@Override
 	public BasicApiError param(String param) {
+		this.p = param;
 		return this;
 	}
 }

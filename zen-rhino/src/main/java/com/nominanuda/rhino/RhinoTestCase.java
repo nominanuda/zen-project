@@ -17,8 +17,6 @@ package com.nominanuda.rhino;
 
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URL;
 
 import org.junit.After;
@@ -37,6 +35,7 @@ public class RhinoTestCase extends AbsRhinoTestCase {
 	
 	@Before
 	public void setup() throws Exception {
+		super.setup();
 		rhinoEmbedding = buildRhinoEmbedding();
 		testContext = rhinoEmbedding.enterContext();
 		testScope = RHINO.protocloneScriptable(testContext, RHINO.createTopScope(testContext, true));
@@ -47,6 +46,7 @@ public class RhinoTestCase extends AbsRhinoTestCase {
 	}
 
 	protected void onSetup() throws Exception {
+		// to override
 	}
 	
 	@After
@@ -61,12 +61,7 @@ public class RhinoTestCase extends AbsRhinoTestCase {
 			if (e instanceof WrappedException) {
 				WrappedException ee = (WrappedException)e;
 				//TODO
-				String s = ee.getScriptStackTrace(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return true;
-					}
-				});
-				System.err.println(s);
+				System.err.println(ee.getScriptStackTrace());
 				Throwable t = ee.getWrappedException();
 				if (t instanceof Error) {
 					throw (Error)t;

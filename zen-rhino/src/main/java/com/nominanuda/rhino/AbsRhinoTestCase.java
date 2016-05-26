@@ -40,6 +40,7 @@ public abstract class AbsRhinoTestCase {
 		new PluggableURLStreamHandlerFactory().installToJvm();
 	}
 	
+	
 	protected RhinoEmbedding buildRhinoEmbedding() {
 		RhinoEmbedding embedding = new DebuggableRhinoEmbedding();
 		embedding.setWrapFactory(getWrapFactory(embedding));
@@ -49,14 +50,6 @@ public abstract class AbsRhinoTestCase {
 		return embedding;
 	}
 	
-	protected Require buildRhinoRequire() {
-		ModuleRegistry moduleRegistry = new ModuleRegistry();
-		moduleRegistry.setModuleFactories(buildModuleFactories());
-		Require require = new Require();
-		require.setRegistry(moduleRegistry);
-		return require;
-	}
-
 	protected WrapFactory getWrapFactory(RhinoEmbedding rhinoEmbedding) {
 		PluggableWrapFactory wf = new PluggableWrapFactory(rhinoEmbedding);
 		wf.setConvertors(Arrays.asList(new DataStructConvertor()));
@@ -72,12 +65,21 @@ public abstract class AbsRhinoTestCase {
 			Object.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToDataStructCoercer(), 2)));
 	}
 	
+	
+	protected Require buildRhinoRequire() {
+		ModuleRegistry moduleRegistry = new ModuleRegistry();
+		moduleRegistry.setModuleFactories(buildModuleFactories());
+		Require require = new Require();
+		require.setRegistry(moduleRegistry);
+		return require;
+	}
+	
 	protected List<? extends ModuleFactory> buildModuleFactories() {
-		List<ModuleFactory> l = new LinkedList<ModuleFactory>();
+		List<ModuleFactory> l = new LinkedList<>();
 		l.add(new SourceModuleFactory());
-		HostObjectFactory mf = new HostObjectFactory();
-		mf.addObject("console", "com.nominanuda.rhino.host.Console");
-		l.add(mf);
+		HostObjectFactory hof = new HostObjectFactory();
+		hof.addObject("console", "com.nominanuda.rhino.host.Console");
+		l.add(hof);
 		l.add(new JavaObjectFactory(buildJavaObjectsMap()));
 		return l;
 	}

@@ -15,24 +15,23 @@
  */
 package com.nominanuda.rhino.host;
 
+import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoHelper;
 import org.mozilla.javascript.Scriptable;
 
 public class HostObjectFactory implements ModuleFactory {	
-	private static final RhinoHelper rhino = new RhinoHelper();
 	private Map<String,String> hostObjects = new HashMap<String,String>();
 
 	@SuppressWarnings("unchecked")
-	public Object create(String key, Scriptable thisObj, Scriptable scope,
-			Context context) throws Exception {
+	public Object create(String key, Scriptable thisObj, Scriptable scope, Context context) throws Exception {
 		if (hostObjects.containsKey(key)){
 			String defClass = hostObjects.get(key);
-			BaseFunction baseFunction = rhino.buildClassCtor(scope,(Class<? extends Scriptable>)Class.forName(defClass),false,false);
+			BaseFunction baseFunction = RHINO.buildClassCtor(scope,(Class<? extends Scriptable>)Class.forName(defClass),false,false);
 			Scriptable scp = baseFunction.createObject(context,scope);//TODO review
 			return scp == null ? baseFunction : scp;
 		}

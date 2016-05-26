@@ -30,8 +30,7 @@ public class JavaObjectFactory implements ModuleFactory {
 		registry.putAll(javaObjMap);
 	}
 
-	public Object create(String key, Scriptable thisObj, Scriptable scope,
-			Context context) throws Exception {
+	public Object create(String key, Scriptable thisObj, Scriptable scope, Context context) throws Exception {
 		Object registryObject = registry.get(key);
 		return registryObject == null ? null : instantiate(registryObject);
 	}

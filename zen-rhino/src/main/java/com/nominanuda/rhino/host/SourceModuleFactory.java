@@ -15,6 +15,9 @@
  */
 package com.nominanuda.rhino.host;
 
+import static com.nominanuda.io.IOHelper.IO;
+import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -23,36 +26,31 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoHelper;
 import org.mozilla.javascript.Scriptable;
 
 import com.nominanuda.code.Nullable;
-import com.nominanuda.io.IOHelper;
 
 public class SourceModuleFactory implements ModuleFactory {
-	private static final IOHelper io = new IOHelper();
-	private static final RhinoHelper rhino = new RhinoHelper();
 	private URI baseUri = null;
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	public @Nullable Object create(String key, Scriptable thisObj, Scriptable scope,
-			Context context) throws Exception {
+	public @Nullable Object create(String key, Scriptable thisObj, Scriptable scope, Context context) throws Exception {
 		URI uri = baseUri == null ? URI.create(key) : baseUri.resolve(key);
-		Scriptable moduleScope = rhino.newObject(context, scope);
+		Scriptable moduleScope = RHINO.newObject(context, scope);
 		try {
 			Reader reader = new InputStreamReader(uri.toURL().openStream(), UTF8);
-			Reader src = new StringReader("" + io.readAndClose(reader) + "");
-			rhino.putProperty(moduleScope, "exports", rhino.newObject(context, moduleScope));
-			rhino.putProperty(moduleScope, "require", rhino.getProperty(scope, "require"));
-			rhino.evaluateReader(context, src, uri.toString(), moduleScope);
+			Reader src = new StringReader("" + IO.readAndClose(reader) + "");
+			RHINO.putProperty(moduleScope, "exports", RHINO.newObject(context, moduleScope));
+			RHINO.putProperty(moduleScope, "require", RHINO.getProperty(scope, "require"));
+			RHINO.evaluateReader(context, src, uri.toString(), moduleScope);
 		} catch(IllegalArgumentException e) {
 			return null;
 		} catch(IOException e) {
 			return null;
 		}
-		Object result = rhino.getProperty(moduleScope, "exports");
-		rhino.deleteProperty(moduleScope, "require");
-		rhino.deleteProperty(moduleScope, "exports");
+		Object result = RHINO.getProperty(moduleScope, "exports");
+		RHINO.deleteProperty(moduleScope, "require");
+		RHINO.deleteProperty(moduleScope, "exports");
 		return result;
 	}
 

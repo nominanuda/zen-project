@@ -15,6 +15,8 @@
  */
 package com.nominanuda.io;
 
+import static com.nominanuda.codec.Base64Codec.B64;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,18 +39,14 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.nominanuda.codec.Base64Codec;
 import com.nominanuda.lang.Maths;
 
 public class IOHelper {
 	public static final IOHelper IO = new IOHelper();
-	private static File TMP = new File(System.getProperty("java.io.tmpdir"));
+	private static final File TMP = new File(System.getProperty("java.io.tmpdir"));
 	private static final Charset CSUTF8 = Charset.forName("UTF-8");
-	public static final Pattern NAMED_PLACEHOLDER = Pattern.compile(
-			"(\\{[^\\}]+\\})", Pattern.MULTILINE);
-	public static final Pattern UNNAMED_PLACEHOLDER = Pattern.compile("\\{\\}",
-			Pattern.MULTILINE);
-	private static final Base64Codec base64 = new Base64Codec();
+	public static final Pattern NAMED_PLACEHOLDER = Pattern.compile("(\\{[^\\}]+\\})", Pattern.MULTILINE);
+	public static final Pattern UNNAMED_PLACEHOLDER = Pattern.compile("\\{\\}", Pattern.MULTILINE);
 
 	public String readAndCloseUtf8(InputStream is) throws IOException {
 		return readAndClose(is, CSUTF8);
@@ -241,7 +239,7 @@ public class IOHelper {
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = Maths.getBytes(d.longValue());
-			res = new File(TMP, prefix + base64.encodeUrlSafeNoPad(b));
+			res = new File(TMP, prefix + B64.encodeUrlSafeNoPad(b));
 		} while (res.exists());
 		res.mkdir();
 		return res;
@@ -252,7 +250,7 @@ public class IOHelper {
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = Maths.getBytes(d.longValue());
-			res = new File(TMP, prefix + base64.encodeUrlSafeNoPad(b));
+			res = new File(TMP, prefix + B64.encodeUrlSafeNoPad(b));
 		} while (res.exists());
 		res.createNewFile();
 		return res;

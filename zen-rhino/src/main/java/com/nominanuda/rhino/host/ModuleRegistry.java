@@ -39,21 +39,6 @@ public class ModuleRegistry {
 		return cache ? resolvedModules.get(key) : null;
 	}
 
-	public Object createAndForget(String key, Context cx, Scriptable thisObj, Scriptable scope, Object... args) {
-		try {
-			Object result = null;
-			for (ModuleFactory f : moduleFactories) {
-				result = f.create(key, thisObj, scope, cx);
-				if(result != null) { 
-					return result;
-				}
-			}
-			throw new IllegalArgumentException("require could not find a module named "+key);
-		} catch (Exception e) {
-			throw new EvaluatorException(Exceptions.toStackTrace(e));
-		}
-	}
-
 	public Object createAndStore(String key, Context cx, Scriptable thisObj, Scriptable scope, Object... args) {
 		try {
 			Object o = createAndForget(key, cx, thisObj, scope, args);
@@ -63,6 +48,24 @@ public class ModuleRegistry {
 			throw new EvaluatorException(Exceptions.toStackTrace(e));
 		}
 	}
+	
+	public Object createAndForget(String key, Context cx, Scriptable thisObj, Scriptable scope, Object... args) {
+		try {
+			Object result = null;
+			for (ModuleFactory f : moduleFactories) {
+				result = f.create(key, thisObj, scope, cx);
+				if (result != null) { 
+					return result;
+				}
+			}
+			throw new IllegalArgumentException("require could not find a module named " + key);
+		} catch (Exception e) {
+			throw new EvaluatorException(Exceptions.toStackTrace(e));
+		}
+	}
+	
+	
+	/* setters */
 
 	public void setModuleFactories(List<? extends ModuleFactory> moduleFactories) {
 		this.moduleFactories.clear();
