@@ -75,7 +75,7 @@ public abstract class AbsRhinoTestCase {
 	}
 	
 	protected List<? extends ModuleFactory> buildModuleFactories() {
-		List<ModuleFactory> l = new LinkedList<>();
+		List<ModuleFactory> l = new LinkedList<ModuleFactory>();
 		l.add(new SourceModuleFactory());
 		HostObjectFactory hof = new HostObjectFactory();
 		hof.addObject("console", "com.nominanuda.rhino.host.Console");
