@@ -16,6 +16,7 @@
 package com.nominanuda.codec;
 
 import static com.nominanuda.codec.Base62.B62;
+import static com.nominanuda.codec.Base64Codec.B64;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 
@@ -188,25 +189,24 @@ public class Digester {
 
 	public static class Digest {
 		private byte[] b;
-		private static final Base64Codec base64 = new Base64Codec();
 
 		public Digest(byte[] digest) {
 			b = digest;
 		}
 		public String toBase64Classic() {
-			return base64.encodeClassic(b);
+			return B64.encodeClassic(b);
 		}
 		public String toBase64GzipClassic() {
-			return base64.gzipEncodeClassic(b);
+			return B64.gzipEncodeClassic(b);
 		}
 		public String toBase64UrlSafeNoPad() {
-			return base64.encodeUrlSafeNoPad(b);
+			return B64.encodeUrlSafeNoPad(b);
 		}
 		public String toBase62() {
 			return B62.encode(b);
 		}
 		public String toBase64GzipUrlSafeNoPad() {
-			return base64.gzipEncodeUrlSafeNoPad(b);
+			return B64.gzipEncodeUrlSafeNoPad(b);
 		}
 		public String toHex() {
 			return Hex.encode(b);
