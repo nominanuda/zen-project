@@ -54,13 +54,13 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.RequestLine;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -579,27 +579,28 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 	
 
-	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis) {
+	public HttpClient createClient(int maxConnPerRoute, int connTimeoutMillis, int soTimeoutMillis) {
 		return createClient(maxConnPerRoute, connTimeoutMillis, soTimeoutMillis, null);
 	}
 
 	//if proxyHostAnPort value is jvm the normal jvm settings apply
-	public HttpClient createClient(int maxConnPerRoute, long connTimeoutMillis, long soTimeoutMillis, @Nullable String proxyHostAnPort) {
+	public HttpClient createClient(int maxConnPerRoute, int connTimeoutMillis, int soTimeoutMillis, @Nullable String proxyHostAnPort) {
 		Registry<ConnectionSocketFactory> defaultRegistry = RegistryBuilder
-				.<ConnectionSocketFactory> create()
-				.register("http", PlainConnectionSocketFactory.getSocketFactory())
-				.register("https", SSLConnectionSocketFactory.getSocketFactory())
-				.build();
-			PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(defaultRegistry);
+			.<ConnectionSocketFactory> create()
+			.register("http", PlainConnectionSocketFactory.getSocketFactory())
+			.register("https", SSLConnectionSocketFactory.getSocketFactory())
+			.build();
+		PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(defaultRegistry);
 			connMgr.setDefaultMaxPerRoute(maxConnPerRoute);
-			SocketConfig sCfg = SocketConfig.custom()
-				.setSoTimeout((int)soTimeoutMillis)
-				.setSoTimeout((int)connTimeoutMillis)
-				.build();
-			connMgr.setDefaultSocketConfig(sCfg);
-		HttpClientBuilder hcb = HttpClientBuilder.create();
-		hcb.setDefaultSocketConfig(sCfg).setConnectionManager(connMgr);
-		if(proxyHostAnPort == null) {
+		RequestConfig rCfg = RequestConfig.custom()
+			.setConnectTimeout(connTimeoutMillis)
+			.setSocketTimeout(soTimeoutMillis)
+			.build();
+		HttpClientBuilder hcb = HttpClientBuilder.create()
+			.setConnectionManager(connMgr)
+			.setDefaultRequestConfig(rCfg);
+		if (proxyHostAnPort == null) {
+			// do something?
 		} else if("jvm".equalsIgnoreCase(proxyHostAnPort)) {
 			SystemDefaultRoutePlanner rp = new SystemDefaultRoutePlanner(ProxySelector.getDefault());
 			hcb.setRoutePlanner(rp);
@@ -608,7 +609,7 @@ public class HttpCoreHelper implements HttpProtocol {
 			Check.illegalargument.assertTrue(hostAndPort.length < 3, "wrong hostAndPort:"+proxyHostAnPort);
 			String host = hostAndPort[0];
 			int port = 80;
-			if(hostAndPort.length > 1) {
+			if (hostAndPort.length > 1) {
 				port = Integer.valueOf(hostAndPort[1]);
 			}
 			HttpHost proxy = new HttpHost(host, port);
