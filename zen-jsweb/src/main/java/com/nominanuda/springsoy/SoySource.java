@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springsoy;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -34,6 +36,7 @@ import java.util.regex.Pattern;
 import org.springframework.core.io.Resource;
 
 import com.google.template.soy.SoyFileSet;
+import com.google.template.soy.data.SoyMapData;
 import com.google.template.soy.jssrc.SoyJsSrcOptions;
 import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.msgs.SoyMsgBundleHandler;
@@ -41,6 +44,7 @@ import com.google.template.soy.msgs.SoyMsgException;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import com.nominanuda.code.Nullable;
+import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.Strings;
@@ -85,6 +89,23 @@ public class SoySource {
 			compile(lang);
 		}
 		return tofuCache.get(lang);
+	}
+	
+	/**
+	 * simple helper method to quickly render a template
+	 * @param model
+	 * @param view
+	 * @return
+	 * @throws IOException 
+	 */
+	public String render(SoyMapData model, String view) throws IOException {
+		return getSoyTofu(null).newRenderer(view).setData(model).render();
+	}
+	public String render(Map<String, ?> model, String view) throws IOException {
+		return getSoyTofu(null).newRenderer(view).setData(model).render();
+	}
+	public String render(DataObject model, String view) throws IOException {
+		return render(STRUCT.toMapsAndLists(model), view);
 	}
 
 	private void compile(String lang) throws IOException {
@@ -160,5 +181,4 @@ public class SoySource {
 	public void setI18n(boolean i18n) {
 		this.i18n = i18n;
 	}
-
 }
