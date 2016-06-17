@@ -234,26 +234,34 @@ public class IOHelper {
 		}
 	}
 
-	public File newTmpDir(String prefix) {
+	public File newTmpDir(File tmpPath, String prefix) {
+		if (tmpPath == null) tmpPath = TMP;
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = Maths.getBytes(d.longValue());
-			res = new File(TMP, prefix + B64.encodeUrlSafeNoPad(b));
+			res = new File(tmpPath, prefix + B64.encodeUrlSafeNoPad(b));
 		} while (res.exists());
 		res.mkdir();
 		return res;
 	}
+	public File newTmpDir(String prefix) {
+		return newTmpDir(null, prefix);
+	}
 
-	public File newTmpFile(String prefix) throws IOException {
+	public File newTmpFile(File tmpPath, String prefix) throws IOException {
+		if (tmpPath == null) tmpPath = TMP;
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = Maths.getBytes(d.longValue());
-			res = new File(TMP, prefix + B64.encodeUrlSafeNoPad(b));
+			res = new File(tmpPath, prefix + B64.encodeUrlSafeNoPad(b));
 		} while (res.exists());
 		res.createNewFile();
 		return res;
+	}
+	public File newTmpFile(String prefix) throws IOException {
+		return newTmpFile(null, prefix);
 	}
 	
 	public static boolean deleteRecursive(File path) throws FileNotFoundException {

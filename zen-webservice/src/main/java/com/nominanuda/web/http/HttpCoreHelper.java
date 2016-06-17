@@ -74,6 +74,7 @@ import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipart;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
@@ -82,6 +83,8 @@ import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.impl.cookie.NetscapeDraftSpec;
 import org.apache.http.impl.cookie.RFC2109Spec;
 import org.apache.http.impl.cookie.RFC2965Spec;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicHttpResponse;
@@ -517,13 +520,22 @@ public class HttpCoreHelper implements HttpProtocol {
 		return resp;
 	}
 
-	public boolean hasEntity(HttpMessage message) {
-		return
-		Check.notNull(message) instanceof HttpResponse
-			? ((HttpResponse)message).getEntity() != null
-			: message instanceof HttpEntityEnclosingRequest
-				? ((HttpEntityEnclosingRequest)message).getEntity() != null
+	public boolean hasEntity(HttpMessage msg) {
+		return Check.notNull(msg) instanceof HttpResponse
+			? ((HttpResponse)msg).getEntity() != null
+			: msg instanceof HttpEntityEnclosingRequest
+				? ((HttpEntityEnclosingRequest)msg).getEntity() != null
 				: false;
+	}
+
+	public @Nullable HttpEntity getEntity(HttpMessage msg) {
+		if (! hasEntity(msg)) {
+			return null;
+		} else if(msg instanceof HttpResponse) {
+			return ((HttpResponse)msg).getEntity();
+		} else {
+			return ((HttpEntityEnclosingRequest)msg).getEntity();
+		}
 	}
 
 	public HttpResponse resp404TextPlainUtf8(String msg) {
@@ -578,6 +590,8 @@ public class HttpCoreHelper implements HttpProtocol {
 		return part.getBody();
 	}
 	
+	
+	/* clients */
 
 	public HttpClient createClient(int maxConnPerRoute, int connTimeoutMillis, int soTimeoutMillis) {
 		return createClient(maxConnPerRoute, connTimeoutMillis, soTimeoutMillis, null);
@@ -618,15 +632,17 @@ public class HttpCoreHelper implements HttpProtocol {
 		HttpClient httpClient = hcb.build();
 		return httpClient;
 	}
-
-	public @Nullable HttpEntity getEntity(HttpMessage msg) {
-		if(! hasEntity(msg)) {
-			return null;
-		} else if(msg instanceof HttpResponse) {
-			return ((HttpResponse)msg).getEntity();
-		} else {
-			return ((HttpEntityEnclosingRequest)msg).getEntity();
-		}
+	
+	
+	public CloseableHttpAsyncClient createAsyncClient(int maxConnPerRoute) {
+		CloseableHttpAsyncClient httpclient = HttpAsyncClients
+			.custom()
+			.setMaxConnPerRoute(maxConnPerRoute)
+			.setMaxConnTotal(maxConnPerRoute)
+			.setConnectionReuseStrategy(DefaultConnectionReuseStrategy.INSTANCE)
+			.build();
+		httpclient.start();
+		return httpclient;
 	}
 	
 	
