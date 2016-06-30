@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -152,6 +153,15 @@ public class Collections {
 
 	public static <T> Set<T> emptySet() {
 		return java.util.Collections.emptySet();
+	}
+	
+	public static <T> Iterable<T> emptyIterable() {
+		return new Iterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return java.util.Collections.emptyIterator();
+			}
+		};
 	}
 
 	public static <T> List<T> asList(Iterable<T> iterable) {

@@ -15,12 +15,13 @@
  */
 package com.nominanuda.lang;
 
+import static com.nominanuda.lang.Strings.nullOrBlank;
+import static com.nominanuda.lang.Strings.nullOrEmpty;
+
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import com.nominanuda.code.ThreadSafe;
-
-import static com.nominanuda.lang.Strings.*;
 
 @ThreadSafe
 public enum Check {
@@ -166,6 +167,13 @@ public enum Check {
 		}
 		return null;
 	}
+	
+	
+	/* utils */
+	
+	public static <T> boolean equals(T o1, T o2) {
+		return (o1 == null ? o2 == null : o1.equals(o2));
+	}
 	public static <T> T ifNull(T o, T defaultVal) {
 		return o == null ? defaultVal : o;
 	}
@@ -174,5 +182,13 @@ public enum Check {
 	}
 	public static String ifNullOrBlank(String s, String defaultVal) {
 		return nullOrBlank(s) ? defaultVal : s;
+	}
+	public static <T> T ifNotOneOf(T o, T defaultVal, T... allowedVals) {
+		for (T v : allowedVals) {
+			if (equals(o, v)) {
+				return o;
+			}
+		}
+		return defaultVal;
 	}
 }

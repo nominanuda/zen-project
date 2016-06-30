@@ -45,10 +45,12 @@ import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.io.DevNull;
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.Maths;
 import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
 import com.nominanuda.lang.Strings;
+import com.nominanuda.lang.Tuple2;
 
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
@@ -749,10 +751,62 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return parseArray(json, false);
 	}
 	
-	//can lead to classcastexception in case it is not a dataobjectarray
+	
+	
+	// can lead to classcastexception in case it is not a dataobject array
 	@SuppressWarnings("unchecked")
 	public Iterable<DataObject> asObjSeq(DataArray arr) {
-		return (Iterable<DataObject>)(Iterable<?>)arr;
+		if (arr != null) {
+			return (Iterable<DataObject>)(Iterable<?>)arr;
+		}
+		return Collections.emptyIterable();
+	}
+	
+	// can lead to classcastexception in case it is not a map of dataobjects
+	public Iterable<DataObject> asObjSeq(final DataObject obj) {
+		return new Iterable<DataObject>() {
+			@Override public Iterator<DataObject> iterator() {
+				if (obj != null) {
+					final Iterator<Entry<String, Object>> i = obj.iterator();
+					return new Iterator<DataObject>() {
+						@Override public boolean hasNext() {
+							return i.hasNext();
+						}
+						@Override public DataObject next() {
+							return (DataObject) i.next().getValue();
+						}
+						@Override public void remove() {
+							Check.unsupportedoperation.fail();
+						}
+					};
+				}
+				return java.util.Collections.emptyIterator();
+			}
+		};
+	}
+	
+	// can lead to classcastexception in case it is not a map of dataobjects
+	public Iterable<Tuple2<String, DataObject>> asKeyObjSeq(final DataObject obj) {
+		return new Iterable<Tuple2<String, DataObject>>() {
+			@Override public Iterator<Tuple2<String, DataObject>> iterator() {
+				if (obj != null) {
+					final Iterator<Entry<String, Object>> i = obj.iterator();
+					return new Iterator<Tuple2<String, DataObject>>() {
+						@Override public boolean hasNext() {
+							return i.hasNext();
+						}
+						@Override public Tuple2<String, DataObject> next() {
+							Entry<String, Object> entry = i.next();
+							return new Tuple2<String, DataObject>(entry.getKey(), (DataObject) entry.getValue());
+						}
+						@Override public void remove() {
+							Check.unsupportedoperation.fail();
+						}
+					};
+				}
+				return java.util.Collections.emptyIterator();
+			}
+		};
 	}
 	
 	// can lead to classcastexception if comparator is not of the right type
