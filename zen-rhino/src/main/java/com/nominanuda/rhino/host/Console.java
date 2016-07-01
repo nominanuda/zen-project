@@ -38,7 +38,6 @@ public class Console extends ScriptableObject {
 	}
 	
 	public static void jsFunction_log(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		System.out.println(Strings.join(",", Arrays.asList(args)));
 		log.info(Strings.join(",", Arrays.asList(args)));
 	}
 	
@@ -57,5 +56,4 @@ public class Console extends ScriptableObject {
 	public static void jsFunction_error(Context cx, Scriptable thisObj,Object[] args, Function funObj){
 		log.error(Strings.join(",", Arrays.asList(args)));
 	}
-
 }
