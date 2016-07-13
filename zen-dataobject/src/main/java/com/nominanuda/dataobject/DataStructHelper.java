@@ -755,7 +755,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	
 	// can lead to classcastexception in case it is not a dataobject array
 	@SuppressWarnings("unchecked")
-	public Iterable<DataObject> asObjSeq(DataArray arr) {
+	public Iterable<DataObject> asObjSeq(@Nullable DataArray arr) {
 		if (arr != null) {
 			return (Iterable<DataObject>)(Iterable<?>)arr;
 		}
@@ -763,7 +763,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	
 	// can lead to classcastexception in case it is not a map of dataobjects
-	public Iterable<DataObject> asObjSeq(final DataObject obj) {
+	public Iterable<DataObject> asObjSeq(final @Nullable DataObject obj) {
 		return new Iterable<DataObject>() {
 			@Override public Iterator<DataObject> iterator() {
 				if (obj != null) {
@@ -786,7 +786,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	
 	// can lead to classcastexception in case it is not a map of dataobjects
-	public Iterable<Tuple2<String, DataObject>> asKeyObjSeq(final DataObject obj) {
+	public Iterable<Tuple2<String, DataObject>> asKeyObjSeq(final @Nullable DataObject obj) {
 		return new Iterable<Tuple2<String, DataObject>>() {
 			@Override public Iterator<Tuple2<String, DataObject>> iterator() {
 				if (obj != null) {

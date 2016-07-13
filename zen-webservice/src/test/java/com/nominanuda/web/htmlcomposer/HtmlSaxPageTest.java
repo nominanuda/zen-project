@@ -34,7 +34,6 @@ import javax.xml.transform.sax.SAXSource;
 
 import nu.validator.htmlparser.sax.HtmlParser;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -50,9 +49,7 @@ import com.nominanuda.xml.SaxBuffer;
 import com.nominanuda.xml.XHtml5Serializer;
 
 public class HtmlSaxPageTest implements HttpProtocol {
-	static {
-		BasicConfigurator.configure();
-	}
+	
 	@Test
 	public void test() throws SAXException {
 		LinkedList<DomManipulationStmt> stmts = new LinkedList<DomManipulationStmt>();
