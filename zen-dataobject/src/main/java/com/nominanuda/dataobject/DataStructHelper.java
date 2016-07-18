@@ -390,12 +390,6 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return target;
 	}
-	public <T> T clone(T struct, DataArray parent) { // wrapper for DataArray signature
-		return clone(struct, (DataArrayImpl) parent);
-	}
-	public <T> T clone(T struct, DataObject parent) { // wrapper for DataObject signature
-		return clone(struct, (DataObjectImpl) parent);
-	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Iterable<T> castAsIterable(DataArray arr) {

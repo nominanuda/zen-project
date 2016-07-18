@@ -77,8 +77,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 	}
 
 	@Override
-	protected AbstractDataStruct<String> cloneStruct(
-			AbstractDataStruct<?> parent) {
+	protected AbstractDataStruct<String> cloneStruct(AbstractDataStruct<?> parent) {
 		Map<String, Object> map = createInnerMap();
 		DataObjectImpl res = new DataObjectImpl(map, parent);
 		for (String k : getKeys()) {

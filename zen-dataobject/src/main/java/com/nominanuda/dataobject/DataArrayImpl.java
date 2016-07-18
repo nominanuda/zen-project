@@ -94,8 +94,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	}
 
 	@Override
-	protected AbstractDataStruct<Integer> cloneStruct(
-			@Nullable AbstractDataStruct<?> parent) {
+	protected AbstractDataStruct<Integer> cloneStruct(@Nullable AbstractDataStruct<?> parent) {
 		List<Object> list = createInnerList();
 		DataArrayImpl res = new DataArrayImpl(list, parent);
 		int len = getLength();
