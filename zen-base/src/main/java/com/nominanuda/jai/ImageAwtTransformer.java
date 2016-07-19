@@ -51,7 +51,7 @@ public class ImageAwtTransformer {
 		return new Tuple2<BufferedImage, String>(src, inputFormat);
 	}
 
-	public long transform(InputStream is, OutputStream os, @Nullable Integer _targetWidth,
+	public long transform(InputStream is, OutputStream os, @Nullable Integer targetWidth,
 			@Nullable Integer targetHeigth, @Nullable String outputFormat,
 			boolean allowDistort) throws IOException, IllegalArgumentException {
 		Tuple2<BufferedImage, String> biAndFmt = readImageAndFormat(is);
@@ -60,7 +60,7 @@ public class ImageAwtTransformer {
 		if (outputFormat == null) {
 			outputFormat = inputFormat;
 		}
-		return transform(src, os, _targetWidth, targetHeigth, outputFormat, allowDistort);
+		return transform(src, os, targetWidth, targetHeigth, outputFormat, allowDistort);
 	}
 
 	public long transform(InputStream is, OutputStream os, @Nullable String outputFormat, int[] g/*see clipCalc*/) throws IOException, IllegalArgumentException {

@@ -31,10 +31,6 @@ public class Base62 {
 	public static final Base62 B62 = new Base62();
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	public String encodeUtf8(String s) {
-		return encode(s.getBytes(UTF8));
-	}
-
 	public String encode(byte[] b) {
 		char[] b64 = B64.encodeUrlSafeNoPad(b).toCharArray();
 		char[] b62 = new char[b64.length*2];
@@ -58,13 +54,19 @@ public class Base62 {
 				break;
 			}
 		}
-		return new String(b62,0,count);
+		return new String(b62, 0, count);
+	}
+	
+	public String encodeUtf8(String s) {
+		return encode(s.getBytes(UTF8));
+	}
+	
+	public String encodeHex(String hex) {
+		return encode(Hex.decode(hex));
 	}
 
-	public String decodeUtf8(String s) {
-		return new String(decode(s), UTF8);
-	}
-
+	
+	
 	public byte[] decode(String s) {
 		char[] b62 = s.toCharArray();
 		char[] b64 = new char[b62.length];
@@ -101,5 +103,13 @@ public class Base62 {
 		}
 		String b64s = new String(b64, 0, count);
 		return  B64.decodeNoGzip(b64s);
+	}
+	
+	public String decodeUtf8(String s) {
+		return new String(decode(s), UTF8);
+	}
+	
+	public String decodeHex(String s) {
+		return Hex.encode(decode(s));
 	}
 }
