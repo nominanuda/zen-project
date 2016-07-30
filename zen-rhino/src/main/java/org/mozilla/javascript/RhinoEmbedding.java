@@ -194,8 +194,7 @@ public class RhinoEmbedding extends ContextFactory implements Initializable, Met
 	public void setFeatureEnhancedJavaAccess(boolean featureEnhancedJavaAccess) {
 		this.featureEnhancedJavaAccess = featureEnhancedJavaAccess;
 	}
-	public void setFeatureLocationInformationInError(
-			boolean featureLocationInformationInError) {
+	public void setFeatureLocationInformationInError(boolean featureLocationInformationInError) {
 		this.featureLocationInformationInError = featureLocationInformationInError;
 	}
 	public void setFeatureNonEcmaGetYear(boolean featureNonEcmaGetYear) {
