@@ -15,14 +15,14 @@
  */
 package com.nominanuda.codec;
 
+import static com.nominanuda.codec.Base64Codec.B64;
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class Base64Test {
-	private static final Base64Codec base64 = new Base64Codec();
-
 	@Test
 	public void testUrlSafe() throws UnsupportedEncodingException {
 		String[] ss = new String[] {"la","la1","la22","la333","la4444","la55555",};
@@ -44,10 +44,10 @@ public class Base64Test {
 		}
 	}
 	private void doTest(byte[] msg) throws UnsupportedEncodingException {
-		assertArrayEquals(msg, base64.decodeGzipDetect(base64.encodeClassic(msg)));
-		assertArrayEquals(msg, base64.decodeGzipDetect(base64.gzipEncodeClassic(msg)));
-		assertArrayEquals(msg, base64.decodeGzipDetect(base64.encodeUrlSafeNoPad(msg)));
-		assertArrayEquals(msg, base64.decodeGzipDetect(base64.gzipEncodeUrlSafeNoPad(msg)));
+		assertArrayEquals(msg, B64.decodeGzipDetect(B64.encodeClassic(msg)));
+		assertArrayEquals(msg, B64.decodeGzipDetect(B64.gzipEncodeClassic(msg)));
+		assertArrayEquals(msg, B64.decodeGzipDetect(B64.encodeUrlSafeNoPad(msg)));
+		assertArrayEquals(msg, B64.decodeGzipDetect(B64.gzipEncodeUrlSafeNoPad(msg)));
 	}
 	private byte[] rand(int numbytes) {
 		byte[] res = new byte[numbytes];

@@ -128,12 +128,24 @@ public enum Check {
 		assertFalse(Collections.nullOrEmpty(coll));
 		return coll;
 	}
+	public <T> Collection<T> notNullOrEmpty(Collection<T> coll, String reason) {
+		assertFalse(Collections.nullOrEmpty(coll), reason);
+		return coll;
+	}
 	public String notNullOrEmpty(String s) {
 		assertFalse(nullOrEmpty(s));
 		return s;
 	}
+	public String notNullOrEmpty(String s, String reason) {
+		assertFalse(nullOrEmpty(s), reason);
+		return s;
+	}
 	public String notNullOrBlank(String s) {
 		assertFalse(nullOrBlank(s));
+		return s;
+	}
+	public String notNullOrBlank(String s, String reason) {
+		assertFalse(nullOrBlank(s), reason);
 		return s;
 	}
 
