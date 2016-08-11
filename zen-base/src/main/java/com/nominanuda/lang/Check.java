@@ -43,8 +43,7 @@ public enum Check {
 	}
 	private RuntimeException buildEx() {
 		try {
-			RuntimeException re = exClass.newInstance();
-			return re;
+			return exClass.newInstance();
 		} catch (Exception e) {
 			throw new IllegalStateException();
 		}
