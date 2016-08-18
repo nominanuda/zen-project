@@ -44,20 +44,20 @@ public class SingletonSolrAware extends SearchComponent implements SolrCoreAware
 			serverMap = new HashMap<String, EmbeddedSolrServer>();
 		}
 	};
-	public SingletonSolrAware() {
-		if(INSTANCE != null) {
+	private SingletonSolrAware() {
+		if (INSTANCE != null) {
 			throw new IllegalStateException("SolrAware already created");
 		}
 		INSTANCE = this;
 	}
 	public void inform(SolrCore core) {
-		if(coreContainer == null) {
+		if (coreContainer == null) {
 			coreContainer = core.getCoreDescriptor().getCoreContainer();
 		}
 		core.addCloseHook(closeHook);
 	}
-	public static SingletonSolrAware getInstance() {
-		if(INSTANCE == null) {
+	public synchronized static SingletonSolrAware getInstance() {
+		if (INSTANCE == null) {
 			new SingletonSolrAware();
 		}
 		return INSTANCE;
@@ -70,7 +70,7 @@ public class SingletonSolrAware extends SearchComponent implements SolrCoreAware
 	}
 	public synchronized EmbeddedSolrServer getEmbeddedSolrServerByCoreName(String coreName) {
 		EmbeddedSolrServer server = serverMap.get(coreName);
-		if(server == null) {
+		if (server == null) {
 			if(coreContainer.getCoreNames().contains(coreName)) {
 				server = new EmbeddedSolrServer(coreContainer, coreName);
 				serverMap.put(coreName, server);
