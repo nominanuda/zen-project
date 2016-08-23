@@ -42,8 +42,7 @@ public class DataStructScriptableConvertor {
 				if (STRUCT.isPrimitiveOrNull(val)) {
 					RHINO.putProperty(res, i, convertPrimitiveToRhino(val));
 				} else {
-					RHINO.putProperty(res, i, 
-						toScriptable(cx, (DataStruct)val, topScope));
+					RHINO.putProperty(res, i, toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
 		} else {
@@ -54,8 +53,7 @@ public class DataStructScriptableConvertor {
 				if (STRUCT.isPrimitiveOrNull(val)) {
 					RHINO.putProperty(res, k, convertPrimitiveToRhino(val));
 				} else {
-					RHINO.putProperty(res, k, 
-						toScriptable(cx, (DataStruct)val, topScope));
+					RHINO.putProperty(res, k, toScriptable(cx, (DataStruct)val, topScope));
 				}
 			}
 		}

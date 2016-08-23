@@ -282,7 +282,7 @@ public class RhinoHelper {
 	}
 	public void putProperty(Scriptable obj, Object index, Object value) {
 		Check.notNull(index);
-		if(index instanceof String) {
+		if (index instanceof String) {
 			ScriptableObject.putProperty(obj, (String)index, value);
 		} else {
 			ScriptableObject.putProperty(obj, ((Number)index).intValue(), value);

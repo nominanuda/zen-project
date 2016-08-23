@@ -60,7 +60,7 @@ public class JsonPipeline {
 
 	public JsonPipeline setComponents(List<?> components) {
 		this.components.clear();
-		for(Object c : components) {
+		for (Object c : components) {
 			this.components.add(c);
 		}
 		return this;
@@ -71,12 +71,7 @@ public class JsonPipeline {
 		return this;
 	}
 	
-
-	@Deprecated
-	public JsonPipeline complete() {
-		return this;
-	}
-
+	
 
 	/**
 	 * Build a raw pipeline without a terminating transformer. It is the caller's responsibility to set the final transformer (@see JsonTransformer.setTarget()) and to apply the pipeline to a stream.
@@ -85,8 +80,7 @@ public class JsonPipeline {
 	public JsonTransformer build() {
 		try {
 			return new WrappingTransformer(buildPipe());
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			throw new RuntimeException("Failed to build pipeline: " + e.getMessage(), e);
 		}
 	}
@@ -131,7 +125,7 @@ public class JsonPipeline {
 	}
 
 	private JsonTransformer buildJsonTransformer(Object c) throws TransformerConfigurationException {
-		if(c instanceof ObjectFactory) {
+		if (c instanceof ObjectFactory) {
 			return (JsonTransformer)((ObjectFactory<?>)c).getObject();
 		} else {
 			return Check.illegalstate.fail();
@@ -139,11 +133,12 @@ public class JsonPipeline {
 	}
 
 	private JsonContentHandler buildPipe(final JsonContentHandler ender) throws TransformerConfigurationException {
-		if(ender == null)
+		if (ender == null) {
 			throw new TransformerConfigurationException("Terminating transformer not supplied.");
+		}
 		JsonContentHandler nextTarget = ender;
 		ListIterator<Object> litr = components.listIterator(components.size());
-		while(litr.hasPrevious()) {
+		while (litr.hasPrevious()) {
 			Object c = litr.previous();
 			JsonTransformer th = buildJsonTransformer(c);
 			th.setTarget(nextTarget);
@@ -156,23 +151,23 @@ public class JsonPipeline {
 		JsonTransformer lastTarget = null;
 		JsonTransformer nextTarget = null;
 		int n = components.size();
-		if(n == 0) {
+		if (n == 0) {
 			// let's guarantee at least one transformer, so that we always return a pipeline
 			JsonTransformer tr = new BaseJsonTransformer();
 			tr.setTarget(null);
 			nextTarget = tr;
 			lastTarget = tr;
-		}
-		else {
+		} else {
 			// Iterate backwards and finish with first target in pipeline
 			ListIterator<Object> litr = components.listIterator(n);
-			while(litr.hasPrevious()) {
+			while (litr.hasPrevious()) {
 				Object c = litr.previous();
 				JsonTransformer th = buildJsonTransformer(c);
 				th.setTarget(nextTarget);
 				nextTarget = th;
-				if(lastTarget == null)
+				if (lastTarget == null) {
 					lastTarget = th;
+				}
 			}
 		}
 		return new Tuple2<JsonTransformer, JsonTransformer>(nextTarget, lastTarget);

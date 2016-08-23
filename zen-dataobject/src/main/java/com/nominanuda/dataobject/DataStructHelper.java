@@ -529,63 +529,73 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 
-	public Map<String, ? super Object> toMapsAndLists(DataObject o) {
-		Map<String,Object> res = new LinkedHashMap<String, Object>();
-		for (String k : o.getKeys()) {
-			Object v = o.get(k);
-			Object vToPut = 
-				v == null ? null
-				: v instanceof DataObject ? toMapsAndLists((DataObject)v)
-				: v instanceof DataArray ? toMapsAndLists((DataArray)v)
-				: v;
-			res.put(k, vToPut);
+	public Map<String, ? super Object> toMapsAndLists(DataObject obj) {
+		Map<String,Object> res = new LinkedHashMap<>();
+		if (obj != null) {
+			for (String k : obj.getKeys()) {
+				Object v = obj.get(k);
+				Object vToPut = 
+					v == null ? null
+					: v instanceof DataObject ? toMapsAndLists((DataObject)v)
+					: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+					: v;
+				res.put(k, vToPut);
+			}
 		}
 		return res;
 	}
 	public List<? super Object> toMapsAndLists(DataArray arr) {
-		List<? super Object> res = new LinkedList<Object>();
-		for (Object v : arr) {
-			Object vToPut = 
-				v == null ? null
-				: v instanceof DataObject ? toMapsAndLists((DataObject)v)
-				: v instanceof DataArray ? toMapsAndLists((DataArray)v)
-				: v;
-			res.add(vToPut);
+		List<? super Object> res = new LinkedList<>();
+		if (arr != null) {
+			for (Object v : arr) {
+				Object vToPut = 
+					v == null ? null
+					: v instanceof DataObject ? toMapsAndLists((DataObject)v)
+					: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+					: v;
+				res.add(vToPut);
+			}
 		}
 		return res;
 	}
 	
-	public Map<String, ? super Object> toMapsAndSetLists(DataObject o) {
-		Map<String,Object> res = new LinkedHashMap<String, Object>();
-		for (String k : o.getKeys()) {
-			Object v = o.get(k);
-			Object vToPut = 
-				v == null ? null
-				: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
-				: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
-				: v;
-			res.put(k, vToPut);
+	public Map<String, ? super Object> toMapsAndSetLists(DataObject obj) {
+		Map<String,Object> res = new LinkedHashMap<>();
+		if (obj != null) {
+			for (String k : obj.getKeys()) {
+				Object v = obj.get(k);
+				Object vToPut = 
+					v == null ? null
+					: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
+					: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
+					: v;
+				res.put(k, vToPut);
+			}
 		}
 		return res;
 	}
 	public SetList<? super Object> toMapsAndSetLists(DataArray arr) {
-		SetList<? super Object> res = new SetList<Object>();
-		for (Object v : arr) {
-			Object vToPut = 
-				v == null ? null
-				: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
-				: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
-				: v;
-			res.add(vToPut);
+		SetList<? super Object> res = new SetList<>();
+		if (arr != null) {
+			for (Object v : arr) {
+				Object vToPut = 
+					v == null ? null
+					: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
+					: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
+					: v;
+				res.add(vToPut);
+			}
 		}
 		return res;
 	}
 	
 	public List<String> toStringsList(DataArray arr, boolean allowNulls) {
-		List<String> list = new ArrayList<String>(arr.getLength());
-		for (Object obj : arr) {
-			if (obj != null || allowNulls) {
-				list.add(obj.toString());
+		List<String> list = new ArrayList<>();
+		if (arr != null) {
+			for (Object obj : arr) {
+				if (obj != null || allowNulls) {
+					list.add(obj.toString());
+				}
 			}
 		}
 		return list;
@@ -596,12 +606,14 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	
 	public Map<String, String> toStringsMap(DataObject obj, boolean allowNulls) {
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		for (String key : obj.getKeys()) {
-			Object v = obj.get(key);
-			if (v != null) {
-				map.put(key, v.toString());
-			} else if (allowNulls) {
-				map.put(key, null);
+		if (obj != null) {
+			for (String key : obj.getKeys()) {
+				Object v = obj.get(key);
+				if (v != null) {
+					map.put(key, v.toString());
+				} else if (allowNulls) {
+					map.put(key, null);
+				}
 			}
 		}
 		return map;

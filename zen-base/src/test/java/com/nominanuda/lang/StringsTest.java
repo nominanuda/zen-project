@@ -1,8 +1,10 @@
 package com.nominanuda.lang;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class StringsTest {
 	@Test
