@@ -18,6 +18,7 @@ package com.nominanuda.lang;
 import static com.nominanuda.lang.Strings.nullOrBlank;
 import static com.nominanuda.lang.Strings.nullOrEmpty;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
@@ -193,6 +194,9 @@ public enum Check {
 	}
 	public static String ifNullOrBlank(String s, String defaultVal) {
 		return nullOrBlank(s) ? defaultVal : s;
+	}
+	public static File ifNullOrNotExistent(File f, File defaultVal) {
+		return f != null && f.exists() ? f : defaultVal;
 	}
 	public static <T> T ifNotOneOf(T o, T defaultVal, T... allowedVals) {
 		for (T v : allowedVals) {
