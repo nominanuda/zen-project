@@ -1,5 +1,7 @@
 package com.nominanuda.store.mongo;
 
+import static com.nominanuda.store.mongo.BSONObjectAsDataObject.wrapIfNecessary;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,8 +11,6 @@ import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.DataType;
 import com.nominanuda.lang.Check;
-
-import static com.nominanuda.store.mongo.BSONObjectAsDataObject.*;
 
 public class BSONListAsDataArray implements DataArray {
 	private final List<?> l;
@@ -244,6 +244,11 @@ public class BSONListAsDataArray implements DataArray {
 
 	public int getLength() {
 		return l.size();
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return l.isEmpty();
 	}
 
 	public DataArray with(Object val) {
