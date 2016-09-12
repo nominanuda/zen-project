@@ -44,6 +44,11 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	public int getLength() {
 		return l.size();
 	}
+	
+	@Override
+	public boolean isEmpty() {
+		return l.isEmpty();
+	}
 
 	public Object put(Integer i, Object v) {
 		Object obj = isPrimitiveOrNull(v)

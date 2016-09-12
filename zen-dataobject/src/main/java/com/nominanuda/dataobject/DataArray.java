@@ -21,6 +21,7 @@ public interface DataArray extends PropertyBag<Integer>, Iterable<Object> {
 	DataObject addNewObject();
 	DataArray addNewArray();
 	int getLength();
+	boolean isEmpty();
 	DataArray with(Object val);
 }
 

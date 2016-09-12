@@ -49,6 +49,11 @@ public class LazyDataArray implements DataArray {
 		explode();
 		return delegee.getLength();
 	}
+	
+	@Override
+	public boolean isEmpty() {
+		return getLength() == 0;
+	}
 
 	public Object get(Integer key) {
 		explode();

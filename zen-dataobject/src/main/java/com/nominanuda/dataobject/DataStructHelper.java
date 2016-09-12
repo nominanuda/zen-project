@@ -861,4 +861,13 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			arr.put(i, objs[i]);
 		}
 	}
+	
+	public DataArray subArray(DataArray arr, int from, int to) {
+		DataArray res = newArray();
+		int limit = Math.min(arr.getLength(), to) - from;
+		for (int i = 0; i < limit; i++) {
+			res.put(i, arr.get(i + from));
+		}
+		return res;
+	}
 }
