@@ -31,10 +31,8 @@ import com.nominanuda.urispec.URISpec;
 
 @ThreadSafe
 public class URISpecMatcher implements HandlerMatcher {
-	private static final String ALLHTTPMETHODS = 
-		"GET|POST|PUT|DELETE|HEAD|OPTIONS|TRACE";
-	private static final Pattern PIPEDMETHODS = Pattern.compile(
-		"\\s*\\p{Upper}+(?:\\s*\\|\\s*\\p{Upper}+)*\\s*");
+	private static final String ALLHTTPMETHODS = "GET|POST|PUT|DELETE|HEAD|OPTIONS|TRACE";
+	private static final Pattern PIPEDMETHODS = Pattern.compile("\\s*\\p{Upper}+(?:\\s*\\|\\s*\\p{Upper}+)*\\s*");
 	private Object handler;
 	private URISpec<DataObject> spec;
 	private Pattern methodPattern;
@@ -71,9 +69,9 @@ public class URISpecMatcher implements HandlerMatcher {
 		spec = spec.trim();
 		String method = null;
 		String urispec = null;
-		if(spec.contains(" ")) {
+		if (spec.contains(" ")) {
 			String[] parts = spec.split("\\s+");
-			if(PIPEDMETHODS.matcher(parts[0]).matches()) {
+			if (PIPEDMETHODS.matcher(parts[0]).matches()) {
 				method = parts[0];
 				urispec = spec.substring(parts[0].length()).trim();
 			} else {
@@ -85,8 +83,7 @@ public class URISpecMatcher implements HandlerMatcher {
 			urispec = spec;
 		}
 		methodPattern = Pattern.compile(method);
-		this.spec = new URISpec<DataObject>(urispec,
-				new DataObjectStringModelAdapter());
+		this.spec = new URISpec<DataObject>(urispec, new DataObjectStringModelAdapter());
 	}
 
 	public void setHandlerFilters(List<HandlerFilter> hfs) {

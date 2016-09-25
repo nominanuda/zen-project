@@ -20,9 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 
 public class Utils {
+	private static final Pattern PIPEDMETHODS = Pattern.compile("\\s*\\p{Upper}+(?:\\s*\\|\\s*\\p{Upper}+)*\\s*");
 
 	public static LinkedHashMap<String, List<String>> parseQueryString(String queryString) {
 		final Scanner scanner = new Scanner(queryString);
@@ -45,15 +47,26 @@ public class Utils {
 		}
 		return res;
 	}
+	
 	public static void putVarVal(Map<String, List<String>> m, String key, String val) {
 		if(key == null || val == null) {
 			throw new IllegalArgumentException();
 		}
 		List<String> o = m.get(key);
-		if(o == null) {
+		if (o == null) {
 			o = new LinkedList<String>();
 			m.put(key, o); 
 		}
 		o.add(val);
+	}
+	
+	public static String uriSpec(String spec) {
+		if (spec.contains(" ")) {
+			String[] parts = spec.split("\\s+");
+			if (PIPEDMETHODS.matcher(parts[0]).matches()) {
+				return spec.substring(parts[0].length()).trim();
+			}
+		}
+		return spec;
 	}
 }
