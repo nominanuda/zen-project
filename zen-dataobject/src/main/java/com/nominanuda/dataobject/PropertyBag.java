@@ -37,16 +37,22 @@ public interface PropertyBag<K> extends DataStruct {
 	//void setProperty(Object key, @Nullable Object value);
 	void setOrPushProperty(Object key, @Nullable Object value);
 	Object getPathSafe(String path);
+	Object getPathSafe(String... pathBits);
 	@Nullable String getString(K key) throws ClassCastException;
 	@Nullable Number getNumber(K key) throws ClassCastException;
 	@Nullable Boolean getBoolean(K key) throws ClassCastException;
 	@Nullable DataObject getObject(K key) throws ClassCastException;
 	@Nullable DataArray getArray(K key) throws ClassCastException;
 	@Nullable String getPathSafeString(String path) throws ClassCastException;
+	@Nullable String getPathSafeString(String... pathBits) throws ClassCastException;
 	@Nullable Number getPathSafeNumber(String path) throws ClassCastException;
+	@Nullable Number getPathSafeNumber(String... pathBits) throws ClassCastException;
 	@Nullable Boolean getPathSafeBoolean(String path) throws ClassCastException;
+	@Nullable Boolean getPathSafeBoolean(String... pathBits) throws ClassCastException;
 	@Nullable DataObject getPathSafeObject(String path) throws ClassCastException;
+	@Nullable DataObject getPathSafeObject(String... pathBits) throws ClassCastException;
 	@Nullable DataArray getPathSafeArray(String path) throws ClassCastException;
+	@Nullable DataArray getPathSafeArray(String... pathBits) throws ClassCastException;
 	@Nullable Long getLong(K key) throws ClassCastException;
 	@Nullable Double getDouble(K key) throws ClassCastException;
 

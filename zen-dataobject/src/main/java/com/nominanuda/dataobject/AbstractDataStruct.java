@@ -31,6 +31,8 @@ import com.nominanuda.lang.Maths;
 
 abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	protected final DataStruct parent;
+	private String json = null;
+	
 
 	AbstractDataStruct(DataStruct parent) {
 		this.parent = parent;
@@ -51,6 +53,7 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		return cloneStruct(null);
 	}
 
+	@Override
 	public Iterator<K> keyIterator() {
 		return getKeys().iterator();
 	}
@@ -90,56 +93,72 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		return key;
 	}
 */
+	@Override
 	public boolean isPrimitiveOrNull(Object o) {
 		return STRUCT.isPrimitiveOrNull(o);
 	}
+	
+	@Override
 	public DataArray asArray() throws ClassCastException {
 		return (DataArray)this;
 	}
 
+	@Override
 	public DataObject asObject() throws ClassCastException {
 		return (DataObject)this;
 	}
 
+	@Override
 	public boolean isArray() {
 		return this instanceof DataArray;
 	}
 
+	@Override
 	public boolean isObject() {
 		return this instanceof DataObject;
 	}
 
+	@Override
 	public DataObject putNewObject(K key) {
 		DataObject o = new DataObjectImpl(this);
 		return (DataObject)put(key, o);
 	}
 
+	@Override
 	public DataArray putNewArray(K key) {
 		DataArray a = new DataArrayImpl(this);
 		return (DataArray)put(key, a);
 	}
+	
+	@Override
 	public Object getStrict(K k) throws NullPointerException {
 		return Check.notNull(get(k));
 	}
 
+	@Override
 	public DataArray getArray(K k) throws IllegalArgumentException{
 		return (DataArray)get(k);
 	}
 
+	@Override
 	public DataObject getObject(K k) throws IllegalArgumentException {
 		return (DataObject)get(k);
 	}
 
+	@Override
 	public void setPathProperty(String path, @Nullable Object value) {
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		explodePath(path).put(pathBits[len-1], value);
 	}
+	
+	@Override
 	public void setOrPushPathProperty(String path, @Nullable  Object value) {
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		explodePath(path).setOrPushProperty(pathBits[len-1], value);
 	}
+	
 	@SuppressWarnings("unchecked")
 	private PropertyBag<Object> explodePath(String path) {
 		PropertyBag<Object> _target = asObjectKeyedDataStruct();
@@ -164,6 +183,8 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	private void setProperty(Object key, @Nullable Object value) {
 		asObjectKeyedDataStruct().put(key, value);
 	}
+	
+	@Override
 	public void setOrPushProperty(Object key, @Nullable Object value) {
 		PropertyBag<Object> _this = asObjectKeyedDataStruct();
 		if(_this.exists(key)) {
@@ -194,10 +215,10 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		return (PropertyBag<Object>)ds;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public Object getPathSafe(String path) {
+	public Object getPathSafe(String... pathBits) {
 		PropertyBag<Object> _target = asObjectKeyedDataStruct();
-		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		for(int i = 0; i < len; i++) {
 			String pathBit = pathBits[i];
@@ -211,99 +232,145 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		}
 		return _target;
 	}
-
+	
+	@Override
+	public Object getPathSafe(String path) {
+		return getPathSafe(path.split("\\."));
+	}
+	
+	@Override
 	public String getString(K key) throws ClassCastException {
 		return (String)get(key);
 	}
 
+	@Override
 	public Number getNumber(K key) throws ClassCastException {
 		return (Number)get(key);
 	}
 
+	@Override
 	public Boolean getBoolean(K key) throws ClassCastException {
 		return (Boolean)get(key);
 	}
 
+	@Override
 	public String getPathSafeString(String path) throws ClassCastException {
 		return (String)getPathSafe(path);
 	}
+	
+	@Override
+	public String getPathSafeString(String... pathBits) throws ClassCastException {
+		return (String)getPathSafe(pathBits);
+	}
 
+	@Override
 	public Number getPathSafeNumber(String path) throws ClassCastException {
 		return (Number)getPathSafe(path);
 	}
+	
+	@Override
+	public Number getPathSafeNumber(String... pathBits) throws ClassCastException {
+		return (Number)getPathSafe(pathBits);
+	}
 
+	@Override
 	public Boolean getPathSafeBoolean(String path) throws ClassCastException {
 		return (Boolean)getPathSafe(path);
 	}
+	
+	@Override
+	public Boolean getPathSafeBoolean(String... pathBits) throws ClassCastException {
+		return (Boolean)getPathSafe(pathBits);
+	}
 
+	@Override
 	public DataObject getPathSafeObject(String path) throws ClassCastException {
 		return (DataObject)getPathSafe(path);
 	}
+	
+	@Override
+	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
+		return (DataObject)getPathSafe(pathBits);
+	}
 
+	@Override
 	public DataArray getPathSafeArray(String path) throws ClassCastException {
 		return (DataArray)getPathSafe(path);
 	}
+	
+	@Override
+	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
+		return (DataArray)getPathSafe(pathBits);
+	}
 
+	@Override
 	public Long getLong(K key) throws ClassCastException {
 		Number n = getNumber(key);
 		return n == null ? null : n.longValue();
 	}
 
+	@Override
 	public Double getDouble(K key) throws ClassCastException {
 		Number n = getNumber(key);
 		return n == null ? null : n.doubleValue();
 	}
 
-	public String getStrictString(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public String getStrictString(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getString(key));
 	}
 
-	public Long getStrictLong(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public Long getStrictLong(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getLong(key));
 	}
 
-	public Double getStrictDouble(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public Double getStrictDouble(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getDouble(key));
 	}
 
-	public Boolean getStrictBoolean(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public Boolean getStrictBoolean(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getBoolean(key));
 	}
 
-	public DataObject getStrictObject(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public DataObject getStrictObject(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getObject(key));
 	}
 
-	public DataArray getStrictArray(K key) throws ClassCastException,
-			NullPointerException {
+	@Override
+	public DataArray getStrictArray(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getArray(key));
 	}
 
+	@Override
 	public Long putLong(K key, Long o) {
 		return (Long)put(key, o);
 	}
 
+	@Override
 	public Double putDouble(K key, Double o) {
 		return (Double)put(key, o);
 	}
 
+	@Override
 	public String putString(K key, String o) {
 		return (String)put(key, o);
 	}
 
+	@Override
 	public Boolean putBoolean(K key, Boolean o) {
 		return (Boolean)put(key, o);
 	}
 
+	@Override
 	public DataObject putObject(K key, DataObject o) {
 		return (DataObject)put(key, o);
 	}
 
+	@Override
 	public DataArray putArray(K key, DataArray o) {
 		return (DataArray)put(key, o);
 	}
@@ -311,6 +378,7 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	protected void onMutate() {
 		json = null;
 	}
+	
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return STRUCT.clone(this);
@@ -326,10 +394,9 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		return STRUCT.equals(this, obj);
 	}
 
-	private String json = null;
 	@Override
 	public int hashCode() {
-		if(json == null) {
+		if (json == null) {
 			json = toString();
 		}
 		return json.hashCode();

@@ -121,6 +121,11 @@ public class LazyDataArray implements DataArray {
 		explode();
 		return delegee.getPathSafe(path);
 	}
+	
+	public Object getPathSafe(String... pathBits) {
+		explode();
+		return delegee.getPathSafe(pathBits);
+	}
 
 	public String getString(Integer key) throws ClassCastException {
 		explode();
@@ -151,25 +156,50 @@ public class LazyDataArray implements DataArray {
 		explode();
 		return delegee.getPathSafeString(path);
 	}
+	
+	public String getPathSafeString(String... pathBits) throws ClassCastException {
+		explode();
+		return delegee.getPathSafeString(pathBits);
+	}
 
 	public Number getPathSafeNumber(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeNumber(path);
+	}
+	
+	public Number getPathSafeNumber(String... pathBits) throws ClassCastException {
+		explode();
+		return delegee.getPathSafeNumber(pathBits);
 	}
 
 	public Boolean getPathSafeBoolean(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeBoolean(path);
 	}
+	
+	public Boolean getPathSafeBoolean(String... pathBits) throws ClassCastException {
+		explode();
+		return delegee.getPathSafeBoolean(pathBits);
+	}
 
 	public DataObject getPathSafeObject(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeObject(path);
 	}
+	
+	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
+		explode();
+		return delegee.getPathSafeObject(pathBits);
+	}
 
 	public DataArray getPathSafeArray(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeArray(path);
+	}
+	
+	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
+		explode();
+		return delegee.getPathSafeArray(pathBits);
 	}
 
 	public Long getLong(Integer key) throws ClassCastException {
