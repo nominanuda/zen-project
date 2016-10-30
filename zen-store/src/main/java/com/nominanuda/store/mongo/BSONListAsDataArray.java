@@ -99,6 +99,10 @@ public class BSONListAsDataArray implements DataArray {
 	public Object getPathSafe(String path) {
 		return BSONObjectAsDataObject.getPathSafe(this, path);
 	}
+	
+	public Object getPathSafe(String... path) {
+		return BSONObjectAsDataObject.getPathSafe(this, path);
+	}
 
 	public String getString(Integer key) throws ClassCastException {
 		return (String)get(key);
@@ -124,20 +128,40 @@ public class BSONListAsDataArray implements DataArray {
 		return (String)getPathSafe(path);
 	}
 
+	public String getPathSafeString(String... pathBits) throws ClassCastException {
+		return (String)getPathSafe(pathBits);
+	}
+
 	public Number getPathSafeNumber(String path) throws ClassCastException {
 		return (Number)getPathSafe(path);
+	}
+
+	public Number getPathSafeNumber(String... pathBits) throws ClassCastException {
+		return (Number)getPathSafe(pathBits);
 	}
 
 	public Boolean getPathSafeBoolean(String path) throws ClassCastException {
 		return (Boolean)getPathSafe(path);
 	}
 
+	public Boolean getPathSafeBoolean(String... pathBits) throws ClassCastException {
+		return (Boolean)getPathSafe(pathBits);
+	}
+
 	public DataObject getPathSafeObject(String path) throws ClassCastException {
 		return (DataObject)getPathSafe(path);
 	}
 
+	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
+		return (DataObject)getPathSafe(pathBits);
+	}
+
 	public DataArray getPathSafeArray(String path) throws ClassCastException {
 		return (DataArray)getPathSafe(path);
+	}
+	
+	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
+		return (DataArray)getPathSafe(pathBits);
 	}
 
 	public Long getLong(Integer key) throws ClassCastException {

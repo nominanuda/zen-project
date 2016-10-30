@@ -37,13 +37,11 @@ public class SpringMvcServerEmbed implements FilterChain, HttpRequestHandler {
 	private SolrDispatchFilter solrDispatchFilter;
 	private String notHandledReqAttr = "NO_HANDLER_FOUND";
 
-	public void doFilter(ServletRequest request, ServletResponse response)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 		request.setAttribute(notHandledReqAttr, true);
 	}
 
-	public void handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		solrDispatchFilter.doFilter(request, response, this);
 	}
 
@@ -63,11 +61,8 @@ public class SpringMvcServerEmbed implements FilterChain, HttpRequestHandler {
 				throw new UnsupportedOperationException();
 			}
 		};
-		solrDispatchFilter = new SolrDispatchFilter();
-		solrDispatchFilter.init(fc);
-
-		Check.illegalstate.assertFalse(
-			SolrAware.getInstance().getCoreNames().isEmpty());
+		(solrDispatchFilter = new SolrDispatchFilter()).init(fc);
+		Check.illegalstate.assertFalse(SolrAware.getInstance().getCoreNames().isEmpty());
 	}
 
 	public void destroy() {
