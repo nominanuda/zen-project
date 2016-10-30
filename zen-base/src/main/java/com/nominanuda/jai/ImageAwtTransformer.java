@@ -48,7 +48,7 @@ public class ImageAwtTransformer {
 		BufferedImage src = reader.read(0);
 		reader.dispose();
 		iis.close();
-		return new Tuple2<BufferedImage, String>(src, inputFormat);
+		return new Tuple2<BufferedImage, String>(src, inputFormat.toLowerCase());
 	}
 
 	public long transform(InputStream is, OutputStream os, @Nullable Integer targetWidth,
@@ -80,8 +80,7 @@ public class ImageAwtTransformer {
 		return transform(src, os, outputFormat, g);
 	}
 
-	public long transform(BufferedImage src, OutputStream os,
-			String outputFormat, int[] g/*see clipCalc*/) throws IOException {
+	public long transform(BufferedImage src, OutputStream os, String outputFormat, int[] g/*see clipCalc*/) throws IOException {
 		BufferedImage bi = new BufferedImage(g[4], g[5], BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = (Graphics2D) bi.getGraphics();
 		g2d.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR);
@@ -115,8 +114,7 @@ public class ImageAwtTransformer {
 	 *         and P2 are the src clipping points and W,H are the actual dest
 	 *         width/height
 	 */
-	protected int[] clipCalc(int sw, int sh, int dw, @Nullable Integer dh,
-			boolean allowDistort/*, boolean allowExpand */) {
+	protected int[] clipCalc(int sw, int sh, int dw, @Nullable Integer dh, boolean allowDistort/*, boolean allowExpand */) {
 		Check.notNull(dw);
 		boolean allowExpand = allowDistort;
 		if (dh == null) {// full
