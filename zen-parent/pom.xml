@@ -18,7 +18,7 @@ limitations under the License.
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nominanuda</groupId>
   <artifactId>zen-parent</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>zen-parent</name>
   <description>zen-framework for building web applications</description>
@@ -44,7 +44,7 @@ limitations under the License.
     </license>
   </licenses>
   <properties>
-    <zen.version>1.2.0</zen.version>
+    <zen.version>1.3.0-SNAPSHOT</zen.version>
     <spring.version>4.2.5.RELEASE</spring.version>
     <jetty.version>8.1.14.v20131031</jetty.version><!-- 9.1.3.v20140225 -->
     <luceneandsolr.version>4.10.4</luceneandsolr.version>
