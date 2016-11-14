@@ -202,7 +202,7 @@ public class DateTimeHelper {
 	}
 	
 	
-	public <T extends Comparable<?>> T min(T... dts) {
+	public <T extends Comparable<?>> T min(@SuppressWarnings("unchecked") T... dts) {
 		switch (dts.length) {
 		case 0:
 			return null;
@@ -214,7 +214,7 @@ public class DateTimeHelper {
 		}
 	}
 	
-	public <T extends Comparable<?>> T max(T... dts) {
+	public <T extends Comparable<?>> T max(@SuppressWarnings("unchecked") T... dts) {
 		switch (dts.length) {
 		case 0:
 			return null;

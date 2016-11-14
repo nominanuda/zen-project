@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -355,7 +356,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public List<NameValuePair> parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
-		List<NameValuePair> result = new LinkedList<NameValuePair>();
+		List<NameValuePair> result;// = new LinkedList<NameValuePair>();
 		String contentType = null;
 		String charset = UTF_8;
 		Header h = entity.getContentType();
@@ -372,32 +373,35 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		if (contentType != null && contentType.trim().toLowerCase().startsWith(CT_WWW_FORM_URLENCODED.toLowerCase())) {
 			final String content = EntityUtils.toString(entity, charset);
-			URLEncodedUtils.parse(result, new Scanner(content), charset);
+			result = URLEncodedUtils.parse(content, Charset.forName(charset));
 //			parseUrlEncodedParamList(result, content, charset);
-		} else if (isMultipart(entity)) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			entity.writeTo(baos);
-			try {
-				MimeMultipart mm = new MimeMultipart(new ByteArrayDataSource(baos.toByteArray(), CT_APPLICATION_OCTET_STREAM));
-				for (int i=0; i<mm.getCount(); i++) {
-					BodyPart bp = mm.getBodyPart(i);
-					String name = getBodyPartName(bp);
-					if (name != null) {
-						String value = null;
-						switch (bp.getContentType()) {
-						case CT_TEXT_PLAIN:
-							value = bp.getContent().toString();
-							break;
-						case CT_APPLICATION_OCTET_STREAM:
-							byte[] bytes = IO.readAndClose(bp.getInputStream());
-							value = base64.encodeClassic(bytes);
-							break;
+		} else {
+			result = new LinkedList<NameValuePair>();
+			if (isMultipart(entity)) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				entity.writeTo(baos);
+				try {
+					MimeMultipart mm = new MimeMultipart(new ByteArrayDataSource(baos.toByteArray(), CT_APPLICATION_OCTET_STREAM));
+					for (int i=0; i<mm.getCount(); i++) {
+						BodyPart bp = mm.getBodyPart(i);
+						String name = getBodyPartName(bp);
+						if (name != null) {
+							String value = null;
+							switch (bp.getContentType()) {
+							case CT_TEXT_PLAIN:
+								value = bp.getContent().toString();
+								break;
+							case CT_APPLICATION_OCTET_STREAM:
+								byte[] bytes = IO.readAndClose(bp.getInputStream());
+								value = base64.encodeClassic(bytes);
+								break;
+							}
+							result.add(new BasicNameValuePair(name, value));
 						}
-						result.add(new BasicNameValuePair(name, value));
 					}
+				} catch (Exception e) { // Exception instead of MessagingException (causes failure when building com.nominanuda.springsoy.SoySourceTest... why?)
+					throw new IOException();
 				}
-			} catch (Exception e) { // Exception instead of MessagingException (causes failure when building com.nominanuda.springsoy.SoySourceTest... why?)
-				throw new IOException();
 			}
 		}
 		return result;

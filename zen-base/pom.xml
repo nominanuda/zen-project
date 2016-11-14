@@ -39,11 +39,6 @@ limitations under the License.
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.reactivestreams</groupId>
-      <artifactId>reactive-streams</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
@@ -57,14 +52,9 @@ limitations under the License.
         <scope>test</scope>
       </dependency>
     <dependency>
-      <groupId>nu.validator.htmlparser</groupId>
-      <artifactId>htmlparser</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

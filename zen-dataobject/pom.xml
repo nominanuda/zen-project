@@ -43,11 +43,6 @@ limitations under the License.
       <artifactId>zen-base</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
       <exclusions>
@@ -60,6 +55,7 @@ limitations under the License.
           <artifactId>stringtemplate</artifactId>
         </exclusion>
       </exclusions>
+      <optional>true</optional><!-- for jcl -->
     </dependency>
     <dependency>
       <groupId>junit</groupId>

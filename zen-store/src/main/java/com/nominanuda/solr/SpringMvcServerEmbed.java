@@ -53,11 +53,11 @@ public class SpringMvcServerEmbed implements FilterChain, HttpRequestHandler {
 			public ServletContext getServletContext() {
 				throw new UnsupportedOperationException();
 			}
-			@SuppressWarnings("rawtypes")
-			public Enumeration getInitParameterNames() {
+			public String getFilterName() {
 				throw new UnsupportedOperationException();
 			}
-			public String getFilterName() {
+			@Override
+			public Enumeration<String> getInitParameterNames() {
 				throw new UnsupportedOperationException();
 			}
 		};

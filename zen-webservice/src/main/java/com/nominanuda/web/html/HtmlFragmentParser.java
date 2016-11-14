@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.xml;
+package com.nominanuda.web.html;
 
 import java.io.IOException;
 import java.io.InputStream;

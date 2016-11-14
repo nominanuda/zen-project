@@ -15,7 +15,8 @@
  */
 package com.nominanuda.dataobject;
 
-import junit.framework.Assert;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -26,13 +27,13 @@ public class DataArrayRandomSetTest {
 		DataArray aaa = new DataArrayImpl();
 		aaa.with("1").with("2").with("3").with("4").with("5");
 		aaa.remove(1);
-		Assert.assertEquals("3", aaa.get(1));
+		assertEquals("3", aaa.get(1));
 	}
 
 	@Test
 	public void testLazyArray() {
 		DataArray aaa = new LazyDataArray("[\"1\",\"2\",\"3\",\"4\",\"5\"]");
 		aaa.remove(1);
-		Assert.assertEquals("3", aaa.get(1));
+		assertEquals("3", aaa.get(1));
 	}
 }

@@ -54,15 +54,15 @@ import com.nominanuda.code.Immutable;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Initializable;
 import com.nominanuda.lang.InstanceFactory;
+import com.nominanuda.web.html.HtmlFragmentParser;
+import com.nominanuda.web.html.XHtml5Serializer;
 import com.nominanuda.web.htmlcomposer.DomManipulationStmt;
 import com.nominanuda.web.htmlcomposer.DomOp;
 import com.nominanuda.web.htmlcomposer.HtmlSaxPage;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.xml.ForwardingTransformerHandlerBase;
-import com.nominanuda.xml.HtmlFragmentParser;
 import com.nominanuda.xml.SAXPipeline;
 import com.nominanuda.xml.SaxBuffer;
-import com.nominanuda.xml.XHtml5Serializer;
 
 public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;
@@ -237,12 +237,10 @@ public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, App
 					baos.write(b);
 				}
 				//@Override
-				@SuppressWarnings("unused")
 				public boolean isReady() {
 					return true;
 				}
 				//@Override
-				@SuppressWarnings("unused")
 				public void setWriteListener(WriteListener arg0) {
 					Check.illegalstate.fail(NOT_IMPLEMENTED);
 				}

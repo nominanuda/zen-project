@@ -198,6 +198,7 @@ public enum Check {
 	public static File ifNullOrNotExistent(File f, File defaultVal) {
 		return f != null && f.exists() ? f : defaultVal;
 	}
+	@SafeVarargs
 	public static <T> T ifNotOneOf(T o, T defaultVal, T... allowedVals) {
 		for (T v : allowedVals) {
 			if (equals(o, v)) {

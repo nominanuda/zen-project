@@ -125,6 +125,7 @@ public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefiniti
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void registerPattern(ParserContext parserContext, String id, String pattern) {
 		BeanDefinitionRegistry registry = parserContext.getRegistry();
 		BeanDefinition sitemapBean;

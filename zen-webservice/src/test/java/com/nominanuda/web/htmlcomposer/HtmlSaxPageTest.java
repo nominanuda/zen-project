@@ -42,11 +42,11 @@ import org.xml.sax.helpers.AttributesImpl;
 import com.nominanuda.io.ReaderInputStream;
 import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.lang.ObjectFactory;
+import com.nominanuda.web.html.HtmlFragmentParser;
+import com.nominanuda.web.html.XHtml5Serializer;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.xml.HtmlFragmentParser;
 import com.nominanuda.xml.SAXPipeline;
 import com.nominanuda.xml.SaxBuffer;
-import com.nominanuda.xml.XHtml5Serializer;
 
 public class HtmlSaxPageTest implements HttpProtocol {
 	

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.nominanuda.xml;
+package com.nominanuda.web.html;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,6 +24,7 @@ import nu.validator.htmlparser.sax.HtmlSerializer;
 import org.xml.sax.SAXException;
 
 import com.nominanuda.lang.ReflectionHelper;
+import com.nominanuda.xml.HtmlConstants;
 
 public class XHtml5Serializer extends HtmlSerializer implements HtmlConstants {
 		private static final String[] VOID_ELEMENTS = { area, base,

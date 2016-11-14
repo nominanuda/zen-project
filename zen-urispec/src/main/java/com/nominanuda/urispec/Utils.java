@@ -28,6 +28,7 @@ public class Utils {
 
 	public static LinkedHashMap<String, List<String>> parseQueryString(String queryString) {
 		final Scanner scanner = new Scanner(queryString);
+		try {
 		scanner.useDelimiter("&");
 		LinkedHashMap<String, List<String>> res = new LinkedHashMap<String, List<String>>();
 		while (scanner.hasNext()) {
@@ -46,6 +47,9 @@ public class Utils {
 			putVarVal(res, name, value);
 		}
 		return res;
+		} finally {
+			scanner.close();
+		}
 	}
 	
 	public static void putVarVal(Map<String, List<String>> m, String key, String val) {

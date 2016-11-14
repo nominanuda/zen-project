@@ -23,17 +23,17 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.TransformerHandler;
 
-import nu.validator.htmlparser.sax.HtmlParser;
-
 import org.xml.sax.InputSource;
 
 import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.xml.HtmlFragmentParser;
+import com.nominanuda.web.html.HtmlFragmentParser;
+import com.nominanuda.web.html.XHtml5Serializer;
 import com.nominanuda.xml.HtmlPurifyTransformer;
 import com.nominanuda.xml.SAXPipeline;
 import com.nominanuda.xml.TextSelectTransformer;
 import com.nominanuda.xml.WhiteSpaceNormalizingTransformer;
-import com.nominanuda.xml.XHtml5Serializer;
+
+import nu.validator.htmlparser.sax.HtmlParser;
 
 public class HtmlSanitizer {
 
