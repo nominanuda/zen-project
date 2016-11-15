@@ -28,7 +28,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 
-public class RhinoTestCase extends AbsRhinoTestCase {
+public abstract class RhinoTestCase extends AbsRhinoTestCase {
 	protected RhinoEmbedding rhinoEmbedding;
 	protected ScriptableObject testScope;
 	protected Context testContext;
