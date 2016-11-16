@@ -55,7 +55,6 @@ limitations under the License.
           <artifactId>stringtemplate</artifactId>
         </exclusion>
       </exclusions>
-      <optional>true</optional><!-- for jcl -->
     </dependency>
     <dependency>
       <groupId>junit</groupId>
