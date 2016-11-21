@@ -33,4 +33,13 @@ public class Exceptions {
 			throw new IllegalStateException(ex);
 		}
 	}
+
+	public static Exception asException(Throwable t) {
+		if(t instanceof Exception) {
+			return (Exception)t;
+		} else {
+			return new RuntimeException(t);
+		}
+	}
+
 }
