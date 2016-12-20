@@ -15,31 +15,58 @@
  */
 package com.nominanuda.hyperapi;
 
-import java.lang.reflect.InvocationHandler;
+import static com.nominanuda.lang.Check.ifNull;
+
 import java.lang.reflect.Proxy;
 
 import org.apache.http.client.HttpClient;
 
-import static com.nominanuda.lang.Check.*;
+import com.nominanuda.hyperapi.HyperApiFactory;
+import com.nominanuda.lang.Strings;
 
-public class HttpClientHyperApiFactory implements HyperApiFactory {
-	private HttpClient client;
+public class HttpClientHyperApiFactory extends ExceptionCatcherFactory implements HyperApiFactory {
+	private boolean allowExceptions = true;
+	private HttpClient httpClient;
 	private String uriPrefix;
+	private String userAgent;
 
-	public <T> T getInstance(String instanceHint, Class<? extends T> cl) {
-		InvocationHandler handler = new HyperApiHttpInvocationHandler(cl, client, 
-			ifNull(uriPrefix,"")+ifNull(instanceHint,""));
-		Object p = Proxy.newProxyInstance(cl.getClassLoader(),
-				new Class[] { cl }, handler);
-		return cl.cast(p);
+	public <T> T getInstance(String instanceHint, Class<? extends T> apiInterface) {
+		String prefix = ifNull(uriPrefix, "") + ifNull(instanceHint, "");
+		return apiInterface.cast(Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[] { apiInterface },
+			new HyperApiHttpInvocationHandler(httpClient, prefix, userAgent, allowExceptions ? exceptionRenderer : null)));
 	}
-
+	
+	/**
+	 * This one allows to spring-configure both remote prefix and local implementation of apiInterface:
+	 * if remote url is blank then local implementation will be used.
+	 * @param instanceHint
+	 * @param apiImpl
+	 * @param apiInterface
+	 * @return
+	 */
+	public <T> T getInstance(String instanceHint, Class<? extends T> apiInterface, T apiImpl) {
+		return Strings.notNullOrBlank(instanceHint) ? getInstance(instanceHint, apiInterface) : allowExceptions ? apiImpl : getInstance(apiImpl, apiInterface);
+	}
+	public <T> T getInstance(Class<? extends T> apiInterface, T apiImpl) { // useful when commenting out instanceHint line in Spring xml
+		return getInstance(null, apiInterface, apiImpl);
+	}
+	
+	
+	/* setters */
+	
+	public void setAllowExceptions(boolean allow) {
+		allowExceptions = allow;
+	}
+	
 	public void setHttpClient(HttpClient client) {
-		this.client = client;
+		this.httpClient = client;
 	}
 
 	public void setUriPrefix(String uriPrefix) {
 		this.uriPrefix = uriPrefix;
 	}
-
+	
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
 }
