@@ -15,66 +15,52 @@
  */
 package com.nominanuda.web.mvc;
 
+import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.lang.Check;
-import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
 public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProtocol {
-	protected static final HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
+	protected abstract Object handleInternal(Object handler, HttpRequest request, DataStruct command) throws Exception;
 
-	protected abstract Object handleInternal(Object handler, HttpRequest request,
-			DataStruct command) throws Exception;
-
-	public Object invoke(Object handler, HttpRequest request,
-			DataStruct command) throws Exception {
+	public Object invoke(Object handler, HttpRequest request, DataStruct command) throws Exception {
 		Object handlerResponse = handleInternal(handler, request, command);
 		return adaptHandlerResponse(handlerResponse);
 	}
 
 	protected final Object adaptHandlerResponse(Object response) throws Exception {
 		Check.notNull(response);
-		if(response instanceof ViewSpec) {
-			return response;
-		} else if(response instanceof DataStruct) {
+		if (response instanceof DataStruct) {
 			DataStruct ds = (DataStruct)response;
-			if(ds instanceof DataObject && ((DataObject)ds).exists("view_")) {
-				String view = ((DataObject)ds).getString("view_");
-				if(view.startsWith("redirect:")) {
-					String redirUrl = view.substring("redirect:".length());
-					HttpResponse resp = httpCoreHelper.createBasicResponse(302);
-					resp.setHeader(HDR_LOCATION, redirUrl);
-					return resp;
-				} else {
-					DataObject data = ((DataObject)ds).getObject("data_");
-					PathAndJsonViewSpec mav = new PathAndJsonViewSpec(view, data);
-					return mav;
+			if (ds.isObject()) {
+				DataObject obj = ds.asObject();
+				String view = obj.getString("view_");
+				if (view != null) {
+					return (view.startsWith("redirect:"))
+						? HTTP.redirectTo(view.substring("redirect:".length()))
+						: new PathAndJsonViewSpec(view, obj.getObject("data_"));
 				}
-			} else {
-				return new JsonEntity(ds);
 			}
-		} else if(response instanceof HttpEntity) {
+			return new JsonEntity(ds, "text/plain"); // text/plain for old shitty m$ browsers
+		} else if (response instanceof ViewSpec
+				|| response instanceof HttpEntity
+				|| response instanceof HttpResponse
+				|| response instanceof ModelAndView) {
 			return response;
-		} else if(response instanceof HttpResponse) {
-			return response;
-		} else {
-			throw new HttpException("cannot render response of type "
-					+ response.getClass().getName());
 		}
-	}
-
-	protected HttpResponse createResponse(int status) {
-		return httpCoreHelper.createBasicResponse(status);
+		throw new HttpException("cannot render response of type " + response.getClass().getName());
 	}
 
 	public static Object unwrapHandlerIfNeeded(Object handlerOrHandlerAndFilters) {
-		if(handlerOrHandlerAndFilters instanceof HandlerAndFilters) {
+		if (handlerOrHandlerAndFilters instanceof HandlerAndFilters) {
 			return ((HandlerAndFilters)handlerOrHandlerAndFilters).getHandler();
 		} else {
 			return handlerOrHandlerAndFilters;

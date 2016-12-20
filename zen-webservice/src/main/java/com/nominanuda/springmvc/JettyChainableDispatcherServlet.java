@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.nominanuda.lang.ReflectionHelper;
 
@@ -30,10 +31,9 @@ public class JettyChainableDispatcherServlet extends DispatcherServlet {
 	private static final String SETHANDLED_FALSE_CALLED = "SETHANDLED_FALSE_CALLED";
 
 	@Override
-	protected void noHandlerFound(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		if(request.getAttribute(SETHANDLED_FALSE_CALLED) == null) {
-			if(reflect.safeInstanceOf(request, "org.eclipse.jetty.server.Request")
+	protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		if (request.getAttribute(SETHANDLED_FALSE_CALLED) == null) {
+			if (reflect.safeInstanceOf(request, "org.eclipse.jetty.server.Request")
 			|| reflect.safeInstanceOf(request, "org.mortbay.jetty.Request")) {
 				reflect.invokeMethod(request, "setHandled", new Object[] { false });
 			}
@@ -42,10 +42,17 @@ public class JettyChainableDispatcherServlet extends DispatcherServlet {
 	}
 	@Override
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		HttpContext.getInstance().init(request);
 		super.doDispatch(request, response);
-		if(request.getAttribute(UNHANDLED_REQUEST) != null) {
+		if (request.getAttribute(UNHANDLED_REQUEST) != null) {
 			noHandlerFound(request, response);
 		}
+	}
+	
+	@Override
+	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		HttpContext.getInstance().writeTo(response);
+		super.render(mv, request, response);
 	}
 
 	public static void markRequestAsUnhandled(ServletRequest request) {
@@ -53,4 +60,3 @@ public class JettyChainableDispatcherServlet extends DispatcherServlet {
 	}
 
 }
-

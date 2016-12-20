@@ -31,7 +31,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -636,7 +635,6 @@ public class HttpCoreHelper implements HttpProtocol {
 		HttpClient httpClient = hcb.build();
 		return httpClient;
 	}
-	
 	
 	public CloseableHttpAsyncClient createAsyncClient(int maxConnPerRoute) {
 		CloseableHttpAsyncClient httpclient = HttpAsyncClients

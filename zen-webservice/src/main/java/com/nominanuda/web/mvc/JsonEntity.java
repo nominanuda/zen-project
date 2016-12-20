@@ -15,25 +15,40 @@
  */
 package com.nominanuda.web.mvc;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.entity.StringEntity;
 
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.lang.Check;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class JsonEntity extends StringEntity implements HttpProtocol {
-	private static final DataStructHelper dataStructHelper = new DataStructHelper();
-
-	public JsonEntity(DataStruct json) throws UnsupportedEncodingException {
-		this(json, "UTF-8");
+	public JsonEntity(DataStruct json, String charset, String contentType) throws UnsupportedEncodingException {
+		super(parseStringContent(STRUCT.toJsonString(Check.notNull(json))), charset);
+		setContentType(contentType);
 	}
-
-	public JsonEntity(DataStruct json, String charset) throws UnsupportedEncodingException {
-		super(dataStructHelper.toJsonString(
-			Check.notNull(json)), charset);
-		setContentType(CT_APPLICATION_JSON);
+	public JsonEntity(DataStruct json, String contentType) throws UnsupportedEncodingException {
+		this(json, "UTF-8", contentType);
+	}
+	public JsonEntity(DataStruct json) throws UnsupportedEncodingException {
+		this(json, CT_APPLICATION_JSON);
+	}
+	
+	private static String parseStringContent(String token) {
+		StringBuilder b = new StringBuilder();
+		char[] ch = token.toCharArray();
+		int len = ch.length;
+		for (int i = 0; i < len; i++) {
+			char c = ch[i];
+			if ('\t' == c) {
+				b.append("\\t");
+			} else if ('\r' != c && 0x0b != c) {
+				b.append(c);
+			}
+		}
+		return b.toString();
 	}
 }
