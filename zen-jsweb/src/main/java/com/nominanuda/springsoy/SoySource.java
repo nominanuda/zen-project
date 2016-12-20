@@ -21,7 +21,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +57,6 @@ public class SoySource {
 	private boolean cache = true;
 	private String bundleUrlPrefix;
 	private Resource templatesLocation;
-	private List<String> templatesLocations = initTemplatesLocations();
 	private ConcurrentHashMap<String, Map<String, String>> jsTemplatesCache = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, SoyTofu> tofuCache = new ConcurrentHashMap<>();
 	private Set<String> functionNames = new HashSet<>();
@@ -67,10 +65,6 @@ public class SoySource {
 
 	private Set<String> skipLangs = Collections.emptySet();
 	
-	protected List<String> initTemplatesLocations() {
-		return Collections.emptyList();
-	}
-
 	public String getJsTemplate(String name, @Nullable String lang) throws IOException {
 		lang = Check.ifNull(lang, NULL_LANG_KEY);
 		if (jsTemplatesCache.get(lang) == null || !cache) {
@@ -116,20 +110,23 @@ public class SoySource {
 	public String render(DataObject model, String view) throws IOException {
 		return render(SoyHelper.model2soy(model), view);
 	}
-
-	protected void compile(String lang) throws IOException {
-		File[] templateFiles = templatesLocation.getFile().listFiles(
-			new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".soy");
-				}
-			});
-		SoyFileSet.Builder builder = new SoyFileSet.Builder();
-		List<String> jsTplNames = new LinkedList<String>();
+	
+	protected void cumulate(SoyFileSet.Builder builder, List<String> jsTplNames) throws IOException {
+		File[] templateFiles = templatesLocation.getFile().listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".soy");
+			}
+		});
 		for (File templateFile: templateFiles) {
 			builder.add(templateFile);
 			jsTplNames.add(templateFile.getName());
 		}
+	}
+
+	private void compile(String lang) throws IOException {
+		final List<String> jsTplNames = new LinkedList<String>();
+		final SoyFileSet.Builder builder = new SoyFileSet.Builder();
+		cumulate(builder, jsTplNames);
 		SoyFileSet soyFileSet = builder.build();
 		List<String> jsTpls = soyFileSet.compileToJsSrc(new SoyJsSrcOptions(), getBundle(lang));
 		for(String jsSrc : jsTpls) {
@@ -167,10 +164,6 @@ public class SoySource {
 		this.templatesLocation = templatesLocation;
 	}
 	
-	public void setTemplatesLocations(String... templatesLocation) {
-		templatesLocations = Arrays.asList(templatesLocation);
-	}
-
 	public void setCache(boolean cache) {
 		this.cache = cache;
 	}
