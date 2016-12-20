@@ -19,11 +19,10 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.StringEntity;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;

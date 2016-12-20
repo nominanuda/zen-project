@@ -15,10 +15,8 @@
  */
 package com.nominanuda.springsoy;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,94 +24,47 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.tofu.SoyTofu;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
 import com.nominanuda.web.http.HttpProtocol;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 public class SoyViewResolver implements ViewResolver {
-	private SoySource soySource;
-
-	public View resolveViewName(String viewName, Locale locale)
-			throws Exception {
+private SoySource soySource;
+	
+	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		return soySource.hasFunction(viewName, locale.getLanguage())
-				? new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()), soySource.getBundle(locale.getLanguage()))
-				: null;
-	}
-
-	public void setSoySource(SoySource soySource) {
-		this.soySource = soySource;
+			? new SoyView(viewName, soySource.getSoyTofu(locale.getLanguage()))
+			: null;
 	}
 
 	public static class SoyView implements View {
 		private final SoyTofu tofu;
 		private final String name;
-		private final SoyMsgBundle bundle;
-		private static final LongToInt longToInt = new LongToInt();
 
-		public SoyView(String name, SoyTofu tofu, SoyMsgBundle bundle) {
+		public SoyView(String name, SoyTofu tofu) {
 			this.name = name;
 			this.tofu = tofu;
-			this.bundle = bundle;
 		}
 
 		public String getContentType() {
 			return "text/html;charset=UTF-8";
 		}
 
-		public void render(Map<String, ?> model, HttpServletRequest request,
-				HttpServletResponse response) throws Exception {
-			if(model instanceof MapsAndListsObjectDecorator) {
-				DataObject o = ((MapsAndListsObjectDecorator)model).unwrap();
-				Map<String, ? super Object> mm = STRUCT.toMapsAndLists(o);
-				model = mm;
-			}
-			@SuppressWarnings("unchecked")
-			String s = tofu.newRenderer(name)
-						.setData(longToInt.longToInt((Map<String, Object>)model))
-						.setMsgBundle(bundle)
-						.render();
-			byte[] b = s.getBytes(HttpProtocol.CS_UTF_8);
+		@SuppressWarnings("unchecked")
+		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+			byte[] b = tofu.newRenderer(name)
+						.setData(SoyHelper.model2soy((Map<String, ? super Object>)model))
+						.render()
+						.getBytes(HttpProtocol.CS_UTF_8);
 			response.setContentType(getContentType());
 			response.setContentLength(b.length);
 			response.getOutputStream().write(b);
 		}
-		static class LongToInt {
-			@SuppressWarnings("unchecked")
-			public Map<String, ?> longToInt(Map<String, Object> m) {
-				for(Entry<String, Object> e : m.entrySet()) {
-					Object o = e.getValue();
-					if(o != null) {
-						if(o instanceof Long) {
-							e.setValue(((Long) o).intValue());
-						} else if(o instanceof Map) {
-							longToInt((Map<String, Object>)o);
-						} else if(o instanceof List) {
-							longToInt((List<Object>)o);
-						}
-					}
-				}
-				return m;
-			}
-			@SuppressWarnings("unchecked")
-			public void longToInt(List<Object> l) {
-				int len = l.size();
-				for(int i = 0; i < len; i++) {
-					Object o = l.get(i);
-					if(o != null) {
-						if(o instanceof Long) {
-							l.set(i, ((Long)o).intValue());
-						} else if(o instanceof Map) {
-							longToInt((Map<String, Object>)o);
-						} else if(o instanceof List) {
-							longToInt((List<Object>)o);
-						}
-					}
-				}
-			}
-		}
+	}
+	
+	
+	/* setters */
+
+	public void setSoySource(SoySource soySource) {
+		this.soySource = soySource;
 	}
 }

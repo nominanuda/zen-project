@@ -15,15 +15,26 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -31,36 +42,47 @@ import javax.ws.rs.QueryParam;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.nominanuda.code.Nullable;
+import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.hyperapi.AnnotatedType;
+import com.nominanuda.hyperapi.EntityCodec;
+import com.nominanuda.hyperapi.HyperApiIntrospector;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Tuple2;
-import com.nominanuda.lang.Tuple3;
-import com.nominanuda.web.http.Http404Exception;
 import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 import com.nominanuda.web.mvc.WebService;
 
-import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
-
 public class HyperApiWsSkelton implements WebService {
-	private EntityCodec entityCodec = EntityCodec.createBasic();
-	private HyperApiIntrospector apiIntrospector = new HyperApiIntrospector();
+	private final EntityCodec entityCodec = EntityCodec.createBasic();
+	private final HyperApiIntrospector apiIntrospector = new HyperApiIntrospector();
+	
 	private Class<?> api;
 	private String requestUriPrefix = "";
+	private String jsonDurationProperty;
 	private Object service;
 
+	
 	public HttpResponse handle(HttpRequest request) throws Exception {
+		long start = System.currentTimeMillis();
 		try {
 			Tuple2<Object, AnnotatedType> result = handleCall(request);
-			return response(result.get0(), result.get1());
-		} catch(IllegalArgumentException e) {
-			throw new Http404Exception(e);
-		} catch(Exception e) {
-			throw new Http500Exception(e);
+			Object handlerResult = result.get0();
+			if (jsonDurationProperty != null && handlerResult instanceof DataObject) {
+				((DataObject)handlerResult).put(jsonDurationProperty, System.currentTimeMillis() - start);
+			}
+			return response(handlerResult, result.get1());
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			if (cause != null && cause instanceof Exception) {
+				throw (Exception) cause;
+			} else {
+				throw new Http500Exception(e);
+			}
 		}
 	}
 
@@ -68,151 +90,193 @@ public class HyperApiWsSkelton implements WebService {
 		String requestUri = request.getRequestLine().getUri();
 		Check.illegalargument.assertTrue(requestUri.startsWith(requestUriPrefix));
 		String apiRequestUri = requestUri.substring(requestUriPrefix.length());
-		HttpEntity entity = HTTP.getEntity(request);
-		String reqHttpMethod = request.getRequestLine().getMethod();
-
-		Tuple2<Method, DataObject> boundMethod = bindMethod(reqHttpMethod, apiRequestUri);
-		if(boundMethod == null) {
-			throw new IllegalArgumentException("could not find any suitable method to call for api request: " + apiRequestUri);
-		} else {
-			Method m = boundMethod.get0();
-			DataObject uriParams = boundMethod.get1();
-			return handleFoundMethodCall(entity, m, uriParams);
-		}
-	}
-
-	private List<Tuple3<Method, DataObjectURISpec, Set<String>>> methodUriCache = null;
-	protected @Nullable Tuple2<Method, DataObject> bindMethod(String reqHttpMethod, String apiRequestUri) {
-		if(methodUriCache == null) {
-			populateMethodUriCache();
-		}
-		for(Tuple3<Method, DataObjectURISpec, Set<String>> cachedMethod : methodUriCache) {
-			Method m = cachedMethod.get0();
-			DataObjectURISpec spec = cachedMethod.get1();
-			Set<String> allowedHttpMethods = cachedMethod.get2();
-			DataObject uriParams = spec.match(apiRequestUri);
-			if(uriParams != null && allowedHttpMethods.contains(reqHttpMethod)) {
-				return new Tuple2<Method, DataObject>(m, uriParams);
-			}
-		}
-		return null;
-	}
-
-	private synchronized void populateMethodUriCache() {
-		if(methodUriCache != null) {
-			return;
-		}
-		List<Tuple3<Method, DataObjectURISpec, Set<String>>> muc = 
-				new LinkedList<Tuple3<Method,DataObjectURISpec,Set<String>>>();
-		for(Method m : api.getDeclaredMethods()) {
+		for (Method m : api.getMethods()) { // better than getDeclaredMethods(), as we use interfaces and they could extend one another
 			Path pathAnno = apiIntrospector.findPathAnno(m);
-			if(pathAnno != null) {
-				Set<Annotation> httpMethodAnnots = apiIntrospector.findAllHttpMethods(m);
-				Set<String> httpMethods = new LinkedHashSet<String>();
-				if(httpMethodAnnots == null) {
-					httpMethods.add("GET");
-				} else {
-					for(Annotation a : httpMethodAnnots) {
-						httpMethods.add(a.annotationType().getSimpleName());
+			if (pathAnno != null) {
+				DataObjectURISpec spec = new DataObjectURISpec(pathAnno.value());
+				DataObject uriParams = spec.match(apiRequestUri);
+				if (uriParams != null) {
+					if (supportsHttpMethod(m, request.getRequestLine().getMethod())) {
+						Object[] args = createArgs(uriParams, new HttpCoreHelper().getEntity(request), api, m);
+						Object result = m.invoke(service, args);
+						return new Tuple2<Object, AnnotatedType>(result, new AnnotatedType(m.getReturnType(), m.getAnnotations()));
 					}
 				}
-				DataObjectURISpec spec = new DataObjectURISpec(pathAnno.value());
-				muc.add(new Tuple3<Method, DataObjectURISpec, Set<String>>(m, spec, httpMethods));
 			}
 		}
-		methodUriCache = muc;
+		throw new IllegalArgumentException("could not find any suitable method to call " + "for api request: " + apiRequestUri);
+	}
+	
+	private boolean supportsHttpMethod(Method method, String httpMethod) {
+		for (Annotation a : method.getAnnotations()) {
+			if (a instanceof GET
+				|| a instanceof POST
+				|| a instanceof PUT
+				|| a instanceof DELETE) {
+				if (a.annotationType().getSimpleName().equals(httpMethod)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
-	protected Tuple2<Object, AnnotatedType> handleFoundMethodCall(
-			@Nullable HttpEntity entity, Method m, DataObject uriParams)
-			throws IOException, IllegalAccessException,
-			InvocationTargetException {
-		AnnotatedType at = getAnnotatedReturnType(m);
-		Object[] args = createArgs(uriParams, entity, api, m);
-		Object result = invokeMethod(m, args);
-		return new Tuple2<Object, AnnotatedType>(result, at);
-	}
-
-	private Object invokeMethod(Method m, Object[] args)
-			throws IllegalAccessException, InvocationTargetException {
-		return m.invoke(service, args);
-	}
-
-	protected AnnotatedType getAnnotatedReturnType(Method m) {
-		AnnotatedType at = new AnnotatedType(m.getReturnType(), m.getAnnotations());
-		return at;
-	}
-
-	protected Object decodeEntity(HttpEntity entity, AnnotatedType p) throws IOException {
-		return entityCodec.decode(entity, p);
-	}
-
-	protected Object[] createArgs(DataObject uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+	private Object[] createArgs(DataObject uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
+		List<NameValuePair> formParams = Collections.emptyList();
+		if (entity != null) {
+			formParams = HTTP.parseEntityWithDefaultUtf8(entity);
+		}
 		Class<?>[] parameterTypes = method.getParameterTypes();
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		Object[] args = new Object[parameterTypes.length];
-		for(int i = 0; i < parameterTypes.length; i++) {
+		for (int i = 0; i < parameterTypes.length; i++) {
 			Class<?> parameterType = parameterTypes[i];
 			Annotation[] annotations = parameterAnnotations[i];
 			AnnotatedType p = new AnnotatedType(parameterType, annotations);
 			boolean annotationFound = false;
-			for(Annotation annotation : annotations){
-				if(annotation instanceof PathParam) {
+			for (Annotation annotation : annotations){
+				if (annotation instanceof HeaderParam) {
+					// TODO
+				} else if (annotation instanceof PathParam) {
 					annotationFound = true;
-					String s = (String)uriParams.getPathSafe(((PathParam) annotation).value());
-					args[i] = cast(s, parameterType);
+					Object o = uriParams.getPathSafe(((PathParam) annotation).value());
+					args[i] = decast(o, parameterType);
 					break;
-				} else if(annotation instanceof QueryParam) {
+				} else if (annotation instanceof QueryParam) {
 					annotationFound = true;
-					String s = (String)uriParams.getPathSafe(((QueryParam) annotation).value());
-					args[i] = cast(s, parameterType);
+					Object o = uriParams.getPathSafe(((QueryParam) annotation).value());
+					args[i] = decast(o, parameterType);
+					break;
+				} else if (annotation instanceof FormParam) {
+					annotationFound = true;
+					if (DataObject.class.equals(parameterType)) {
+						args[i] = HTTP.toDataStruct(formParams).asObject();
+					} else {
+						Object o = getFormParams(formParams, ((FormParam) annotation).value());
+						args[i] = decast(o, parameterType);
+					}
 					break;
 				}
 			}
 			if(! annotationFound) {
-				Object dataEntity = entity == null ? null : decodeEntity(entity, p);
-				args[i] = dataEntity;
+				args[i] = (entity == null ? null : entityCodec.decode(entity, p));
 			}
 		}
 		return args;
 	}
-
-	private Object cast(String sval, Class<?> targetType) {
-		if(sval == null) {
+	
+	private Object getFormParams(List<NameValuePair> formParams, String name) {
+		List<Object> params = new ArrayList<>();
+		for (NameValuePair pair : formParams) {
+			if (name.equals(pair.getName())) {
+				params.add(pair.getValue());
+			}
+		}
+		switch (params.size()) {
+		case 0:
 			return null;
-		} else if(String.class.equals(targetType)) {
-			return sval;
-		} else if(Integer.class.equals(targetType) || int.class.equals(targetType) || "int".equals(targetType.getSimpleName())) {
-			return Integer.parseInt(sval);
-		} else if(Long.class.equals(targetType) || long.class.equals(targetType) || "long".equals(targetType.getSimpleName())) {
-			return Long.parseLong(sval);
-		} else if(Double.class.equals(targetType) || double.class.equals(targetType) || "double".equals(targetType.getSimpleName())) {
-			return Double.parseDouble(sval);
-		} else if(Boolean.class.equals(targetType) || boolean.class.equals(targetType) || "boolean".equals(targetType.getSimpleName())) {
-			return Boolean.parseBoolean(sval);
+		case 1:
+			return params.get(0);
+		}
+		return params;
+	}
+
+	private Object decast(Object val, Class<?> targetType) {
+		if (val != null) {
+			if (Collection.class.isAssignableFrom(targetType)) {
+				if (val instanceof Collection) {
+					return val;
+				}
+				if (val instanceof DataArray) {
+					return STRUCT.toMapsAndLists((DataArray) val);
+				}
+				Collection<String> result = new ArrayList<String>();
+				result.add((String) decast(val, String.class));
+				return result;
+			}
+			if (DataArray.class.equals(targetType)) {
+				if (val instanceof DataArray) {
+					return val;
+				}
+				if (val instanceof Collection) {
+					STRUCT.fromMapsAndCollections((Collection<?>) val);
+				}
+				return STRUCT.newArray().with(decast(val, String.class));
+			}
+			String sval = (String) val;
+			if (String.class.equals(targetType)) {
+				return sval;
+			} else if (Integer.class.equals(targetType) || int.class.equals(targetType) || "int".equals(targetType.getSimpleName())) {
+				return Integer.parseInt(sval);
+			} else if (Long.class.equals(targetType) || long.class.equals(targetType) || "long".equals(targetType.getSimpleName())) {
+				return Long.parseLong(sval);
+			} else if (Double.class.equals(targetType) || double.class.equals(targetType) || "double".equals(targetType.getSimpleName())) {
+				return Double.parseDouble(sval);
+			} else if (Boolean.class.equals(targetType) || boolean.class.equals(targetType) || "boolean".equals(targetType.getSimpleName())) {
+				return Boolean.parseBoolean(sval);
+			}
 		}
 		return null;
 	}
+	
 
 	protected HttpResponse response(Object result, AnnotatedType ap) {
 		HttpCoreHelper d = new HttpCoreHelper();
 		BasicHttpResponse resp = new BasicHttpResponse(d.statusLine(200));
 		HttpEntity entity = entityCodec.encode(result, ap);
-		if(entity != null) {
+		if (entity != null) {
 			resp.setEntity(entity);
 		}
 		return resp;
 	}
+	
+	
+	
+	/* proxy magic */
+	
+	private void evCreateProxy() {
+		if (api != null && service != null) {
+			if (!api.isInstance(service)) {
+				final Object origService = service;
+				service = Proxy.newProxyInstance(api.getClassLoader(), new java.lang.Class[] { api }, new InvocationHandler() {
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						try {
+							Method m = origService.getClass().getMethod(method.getName(), method.getParameterTypes()); // "same" method in different objs hierarchy
+							return m.invoke(origService, args);
+						} catch (InvocationTargetException e) {
+							Throwable cause = e.getCause();
+							if (cause != null && cause instanceof Exception) {
+								throw (Exception) cause;
+							} else {
+								throw new Http500Exception(e);
+							}
+						}
+					}
+				});
+			}
+		}
+	}
+	
+	
+	
+	/* setters */
 
 	public void setApi(Class<?> api) {
 		this.api = api;
+		evCreateProxy();
+	}
+
+	public void setService(Object service) {
+		this.service = service;
+		evCreateProxy();
 	}
 
 	public void setRequestUriPrefix(String requestUriPrefix) {
 		this.requestUriPrefix = requestUriPrefix;
 	}
-
-	public void setService(Object service) {
-		this.service = service;
+	
+	public void setJsonDurationProperty(String jsonDurationProperty) {
+		this.jsonDurationProperty = jsonDurationProperty;
 	}
 }

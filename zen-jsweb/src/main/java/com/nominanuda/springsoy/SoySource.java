@@ -15,14 +15,14 @@
  */
 package com.nominanuda.springsoy;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.google.template.soy.SoyFileSet;
@@ -46,30 +48,37 @@ import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import com.nominanuda.code.Nullable;
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
 import com.nominanuda.lang.Strings;
 
 public class SoySource {
 	private final static Pattern FUNC_DECL = Pattern.compile("^\\s*([\\.\\w]+)\\s*=\\s*function\\s*\\(");
 	private final static String NULL_LANG_KEY = "NO LANGUAGE";
+	protected final Logger log = LoggerFactory.getLogger(getClass());
+	
 	private boolean cache = true;
+	private String bundleUrlPrefix;
 	private Resource templatesLocation;
-	private ConcurrentHashMap<String, Map<String, String>> jsTemplatesCache = new ConcurrentHashMap<String, Map<String,String>>();
-	private ConcurrentHashMap<String, SoyTofu> tofuCache = new ConcurrentHashMap<String, SoyTofu>();
-	private Set<String> functionNames = new HashSet<String>();
-	private String i18nXlfUrl;
+	private List<String> templatesLocations = initTemplatesLocations();
+	private ConcurrentHashMap<String, Map<String, String>> jsTemplatesCache = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, SoyTofu> tofuCache = new ConcurrentHashMap<>();
+	private Set<String> functionNames = new HashSet<>();
 	private boolean i18n = false;
+	private String i18nXlfUrl;
 
 	private Set<String> skipLangs = Collections.emptySet();
+	
+	protected List<String> initTemplatesLocations() {
+		return Collections.emptyList();
+	}
 
 	public String getJsTemplate(String name, @Nullable String lang) throws IOException {
 		lang = Check.ifNull(lang, NULL_LANG_KEY);
-		if(jsTemplatesCache.get(lang) == null || !cache) {
+		if (jsTemplatesCache.get(lang) == null || !cache) {
 			compile(lang);
 		}
 		Map<String, String> tpls = jsTemplatesCache.get(lang);
 		String tpl = tpls.get(name);
-		if(tpl == null) {
+		if (tpl == null) {
 			throw new IOException("not found template named "+name);
 		}
 		return tpl;
@@ -77,7 +86,7 @@ public class SoySource {
 	
 	public boolean hasFunction(String name, @Nullable String lang) throws IOException {
 		lang = Check.ifNull(lang, NULL_LANG_KEY);
-		if(jsTemplatesCache.get(lang) == null || !cache) {
+		if (jsTemplatesCache.get(lang) == null || !cache) {
 			compile(lang);
 		}
 		return functionNames.contains(name);
@@ -85,7 +94,7 @@ public class SoySource {
 
 	public SoyTofu getSoyTofu(@Nullable String lang) throws IOException {
 		lang = Check.ifNull(lang, NULL_LANG_KEY);
-		if(tofuCache.get(lang) == null || !cache) {
+		if (tofuCache.get(lang) == null || !cache) {
 			compile(lang);
 		}
 		return tofuCache.get(lang);
@@ -105,10 +114,10 @@ public class SoySource {
 		return getSoyTofu(null).newRenderer(view).setData(model).render();
 	}
 	public String render(DataObject model, String view) throws IOException {
-		return render(STRUCT.toMapsAndLists(model), view);
+		return render(SoyHelper.model2soy(model), view);
 	}
 
-	private void compile(String lang) throws IOException {
+	protected void compile(String lang) throws IOException {
 		File[] templateFiles = templatesLocation.getFile().listFiles(
 			new FilenameFilter() {
 				public boolean accept(File dir, String name) {
@@ -143,21 +152,31 @@ public class SoySource {
 	}
 
 	public @Nullable SoyMsgBundle getBundle(String lang) throws SoyMsgException, IOException {
-		if(!i18n || lang == null || skipLangs.contains(lang)) {
+		if (!i18n || lang == null || skipLangs.contains(lang) || bundleUrlPrefix == null) {
 			return null;
 		} else {
 			SoyMsgBundleHandler msgBundleHandler = new SoyMsgBundleHandler(new XliffMsgPlugin());
-			SoyMsgBundle msgBundle = msgBundleHandler.createFromResource(new URL(i18nXlfUrl+"."+lang+".xlf"));
-			return msgBundle;
+			return msgBundleHandler.createFromResource(new URL(Strings.join(".", Check.ifNull(bundleUrlPrefix, i18nXlfUrl), lang, "xlf")));
 		}
 	}
+	
+	
+	/* setters */
 
 	public void setTemplatesLocation(Resource templatesLocation) {
 		this.templatesLocation = templatesLocation;
 	}
+	
+	public void setTemplatesLocations(String... templatesLocation) {
+		templatesLocations = Arrays.asList(templatesLocation);
+	}
 
 	public void setCache(boolean cache) {
 		this.cache = cache;
+	}
+	
+	public void setBundleUrlPrefix(String bundleUrlPrefix) {
+		this.bundleUrlPrefix = bundleUrlPrefix;
 	}
 
 	/**

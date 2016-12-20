@@ -69,7 +69,7 @@ import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 
 public class HyperApiHttpInvocationHandler implements InvocationHandler {
-private final static String USER_AGENT = "curl/7.22.0 (x86_64-pc-linux-gnu) libcurl/7.22.0 OpenSSL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3";
+	private final static String USER_AGENT = "curl/7.22.0 (x86_64-pc-linux-gnu) libcurl/7.22.0 OpenSSL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3";
 	
 	private final RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
 	private final EntityCodec entityCodec = EntityCodec.createBasic();
