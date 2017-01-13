@@ -17,7 +17,6 @@ package com.nominanuda.io;
 
 import static com.nominanuda.codec.Base64Codec.B64;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,17 +25,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.net.URI;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nominanuda.lang.Maths;
@@ -277,98 +274,10 @@ public class IOHelper {
 		return ret && path.delete();
 	}
 
-	public void copyRecursive(URL srcDir, File dstDir) throws IOException {
-		copyRecursive(srcDir, dstDir, null);
-	}
-	public void copyRecursive(URL srcDir, File dstDir, Map<String, ?> replacementMap) throws IOException {
-		if (replacementMap == null) {
-			replacementMap = Collections.emptyMap();
-		}
-		URI uri;
-		try {
-			uri = srcDir.toURI();
-		} catch (Exception e) {
-			throw new IOException(e);
-		}
-		String uriStr = uri.toString();
-		if (uriStr.startsWith("jar:")) {
-			copyJarContentRecursive(uriStr, dstDir, replacementMap);
-		} else {
-			copyRecursive(new File(uri), dstDir, replacementMap);
-		}
-	}
-
-	private void copyJarContentRecursive(String jarSrcDir, File dstDir, Map<String, ?> replacementMap) throws IOException {
-		String[] arr = jarSrcDir.substring("jar:file:".length()).split("!");
-		String jarPath = arr[0];
-		String dirPathInJar = arr[1].substring(1) + "/";
-		int dirPathInJarLen = dirPathInJar.length();
-		try (JarFile jf = new JarFile(new File(jarPath))) {
-			Enumeration<JarEntry> entries = jf.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				String entryName = entry.getName();
-				if (entryName.startsWith(dirPathInJar) && !dirPathInJar.equals(entryName)) {
-					String subResource = entryName.substring(dirPathInJarLen);
-					if (subResource.endsWith("/")) {
-						File subResourceAsDir = new File(dstDir, subResource);
-						if (!subResourceAsDir.exists()) {
-							subResourceAsDir.mkdirs();
-						} else if (!subResourceAsDir.isDirectory()) {
-							throw new IOException(subResourceAsDir + " is a file and not a directory");
-						}
-					} else {
-						int lastSlashPos = subResource.lastIndexOf("/");
-						if (lastSlashPos == -1) {
-							File dstFile = new File(dstDir, subResource);
-							writeToFile(dstFile, simpleTemplate(jf.getInputStream(entry), replacementMap, CSUTF8));
-						} else {
-							File destDir = new File(dstDir, subResource.substring(0, lastSlashPos));
-							if (!destDir.exists()) {
-								destDir.mkdirs();
-							} else if (!destDir.isDirectory()) {
-								throw new IOException(destDir + " is a file and not a directory");
-							}
-							File dstFile = new File(destDir, getLastPathSegment(entryName));
-							writeToFile(dstFile, simpleTemplate(jf.getInputStream(entry), replacementMap, CSUTF8));
-						}
-					}
-				}
-			}
-		}
-	}
 
 	public String getLastPathSegment(String path) {
 		String[] bits = path.split("/");
 		return bits[bits.length - 1];
-	}
-
-	public String simpleTemplate(String s, Map<String, ?> map) {
-		Matcher m = NAMED_PLACEHOLDER.matcher(s);
-		StringBuffer sb = new StringBuffer();
-		boolean found = false;
-		while (m.find()) {
-			found = true;
-			String k = m.group(1);
-			Object o = map.get(k.substring(1, k.length() - 1));
-			if (o != null) {
-				String repl = o.toString();
-				m.appendReplacement(sb, repl);
-			}
-		}
-		if (found) {
-			m.appendTail(sb);
-			return sb.toString();
-		} else {
-			return s;
-		}
-	}
-
-	public InputStream simpleTemplate(InputStream is, Map<String, ?> map, Charset cs) throws IOException {
-		String s = readAndClose(is, cs);
-		String replaced = simpleTemplate(s, map);
-		byte[] buf = replaced.getBytes(cs.name());
-		return new ByteArrayInputStream(buf);
 	}
 
 	public void writeToFile(File dest, InputStream src) throws IOException {
@@ -376,27 +285,72 @@ public class IOHelper {
 		pipeAndClose(src, fos);
 	}
 
-	public void copyRecursive(File srcDir, File dstDir, Map<String, ?> replacementMap) throws FileNotFoundException, IOException {
-		if (replacementMap == null) {
-			replacementMap = Collections.emptyMap();
+	private void copyFilesRecusively(File toCopy, File destDir, boolean allowCreateDirectory) throws IOException {
+		if(destDir.exists() && !destDir.isDirectory()) {
+			throw new IOException("not a directory:"+destDir.toString());
 		}
-		if (!(srcDir.isDirectory() && dstDir.isDirectory())) {
-			throw new IllegalArgumentException();
-		}
-		for (File f : srcDir.listFiles()) {
-			File dst = new File(dstDir, f.getName());
-			if (f.isDirectory()) {
-				if (dst.exists() || (!dst.mkdir())) {
-					throw new IllegalStateException();
+		if (!toCopy.isDirectory()) {
+			pipeAndClose(new FileInputStream(toCopy), new FileOutputStream(new File(destDir, toCopy.getName())));
+		} else {
+			File newDestDir = new File(destDir, toCopy.getName());
+			if (!newDestDir.exists()) {
+				if(!allowCreateDirectory) {
+					throw new IOException(destDir.toString()+ "target dir does not exist");
 				}
-				copyRecursive(f, dst, replacementMap);
-			} else {
-				if (dst.exists() || (!dst.createNewFile())) {
-					throw new IllegalStateException();
+				if(!newDestDir.mkdir()) {
+					throw new IOException("cannot create dir:"+newDestDir.toString());
 				}
-				//TODO user given charset
-				pipeAndClose(simpleTemplate(new FileInputStream(f), replacementMap, CSUTF8), new FileOutputStream(dst));
+			}
+			for (File child : toCopy.listFiles()) {
+				copyFilesRecusively(child, newDestDir, allowCreateDirectory);
 			}
 		}
+	}
+
+	public void copyJarResourcesRecursively(JarURLConnection jarConnection, File destDir, boolean allowCreateDirectory)
+			throws IOException {
+		if(destDir.exists()) {
+			if(!destDir.isDirectory()) {
+				throw new IOException("not a directory:"+destDir.toString());
+			} else if(!allowCreateDirectory ){
+				throw new IOException(destDir.toString()+ "target dir does not exist");
+			} else if(! destDir.mkdir()){
+				throw new IOException("cannot create dir:"+destDir.toString());
+			}
+		}
+
+		JarFile jarFile = jarConnection.getJarFile();
+
+		for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
+			JarEntry entry = e.nextElement();
+			if (entry.getName().startsWith(jarConnection.getEntryName())) {
+				String filename = entry.getName().substring(jarConnection.getEntryName().length());
+
+				File f = new File(destDir, filename);
+				if (!entry.isDirectory()) {
+					InputStream entryInputStream = jarFile.getInputStream(entry);
+					pipeAndClose(entryInputStream, new FileOutputStream(f));
+					entryInputStream.close();
+				} else {
+					if (!tryCreateDirIfNotExists(f)) {
+						throw new IOException("Could not create directory: " + f.getAbsolutePath());
+					}
+				}
+			}
+		}
+	}
+
+	public void copyResourcesRecursively(URL originUrl, File destination, boolean allowCreateDirectory) throws IOException {
+		URLConnection urlConnection = originUrl.openConnection();
+		if (urlConnection instanceof JarURLConnection) {
+			copyJarResourcesRecursively((JarURLConnection) urlConnection, destination, allowCreateDirectory);
+		} else {
+			copyFilesRecusively(new File(originUrl.getPath()), destination, allowCreateDirectory);
+		}
+	}
+
+
+	private boolean tryCreateDirIfNotExists(File f) {
+		return f.exists() || f.mkdir();
 	}
 }
