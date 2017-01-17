@@ -62,6 +62,12 @@
       </exclusions>
       <optional>true</optional>
     </dependency>
+    <!-- HSQL for testing -->
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <optional>true</optional>
+    </dependency>
     <!-- HIBERNATE -->
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -72,11 +78,6 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-c3p0</artifactId>
       <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
