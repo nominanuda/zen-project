@@ -20,23 +20,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import com.nominanuda.dataobject.DataObjectWrapper;
+import com.nominanuda.dataobject.DataObject;
 
 @HyperApi
-public interface TestHyperApi {
+public interface TestHyperApi2 {
 	@PUT @Path("/foo/{bar}?{baz}")
-	Boo putFoo(
+	DataObject putFoo(
 		@PathParam("bar") String bar,
 		@QueryParam("baz") String baz,
-		Moo moo
+		DataObject foo
 	);
-
-	interface Moo extends DataObjectWrapper {
-		default String miao() {return "miao";}
-	}
-
-	interface Boo extends DataObjectWrapper {
-		default String bau() {return "bau";}
-	}
 
 }

@@ -27,10 +27,12 @@ public class EntityCodec {
 	private List<EntityEncoder> encoders = Collections.linkedList(
 		(EntityEncoder)new InputStreamEntityEncoder(), 
 		(EntityEncoder)new ByteArrayEntityEncoder(),
+		(EntityEncoder)new DataObjectWrapperEntityEncoder(),
 		(EntityEncoder)new JsonAnyValueEntityEncoder()
 	);
 
 	private List<EntityDecoder> decoders = Collections.linkedList(
+		(EntityDecoder)new DataObjectWrapperDecoder(),
 		(EntityDecoder)new JsonAnyValueDecoder(),
 		(EntityDecoder)new ByteArrayEntityDecoder(),
 		(EntityDecoder)new InputStreamEntityDecoder(),

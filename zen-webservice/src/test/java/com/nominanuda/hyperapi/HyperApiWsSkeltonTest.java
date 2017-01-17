@@ -15,6 +15,10 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.dataobject.WrappingFactory.WF;
+import static org.junit.Assert.assertEquals;
+
 import java.io.InputStreamReader;
 
 import org.apache.http.HttpResponse;
@@ -35,10 +39,10 @@ import com.nominanuda.web.http.HttpProtocol;
 public class HyperApiWsSkeltonTest {
 
 	@Test
-	public void testFoo() throws Exception {
+	public void testFoo2() throws Exception {
 		HyperApiWsSkelton skelton = new HyperApiWsSkelton();
-		skelton.setApi(TestHyperApi.class);
-		skelton.setService(new TestHyperApi() {
+		skelton.setApi(TestHyperApi2.class);
+		skelton.setService(new TestHyperApi2() {
 			public DataObject putFoo(String bar, String baz, DataObject foo) {
 				return foo;
 			}});
@@ -52,4 +56,27 @@ public class HyperApiWsSkeltonTest {
 		DataStruct result = new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
 		Assert.assertEquals("FOO", ((DataObject)result).get("foo"));
 	}
+
+	@Test
+	public void testFoo() throws Exception {
+		HyperApiWsSkelton skelton = new HyperApiWsSkelton();
+		skelton.setApi(TestHyperApi.class);
+		skelton.setService(new TestHyperApi() {
+			@Override
+			public Boo putFoo(String bar, String baz, Moo moo) {
+//TODO				assertEquals("miao", moo.miao());
+				return WF.wrap(STRUCT.newObject().with("AA", "BB"), Boo.class);
+			}
+		});
+		skelton.setRequestUriPrefix("/mytest");
+		HttpPut request = new HttpPut("/mytest/foo/BAR?baz=BAZ");
+		DataObject foo = new DataObjectImpl();
+		foo.put("foo", "FOO");
+		request.setEntity(new StringEntity(new DataStructHelper().toJsonString(foo),
+			ContentType.create(HttpProtocol.CT_APPLICATION_JSON, HttpProtocol.CS_UTF_8)));
+		HttpResponse response = skelton.handle(request);
+		DataStruct result = new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
+		Assert.assertEquals("BB", ((DataObject)result).get("AA"));
+	}
+
 }

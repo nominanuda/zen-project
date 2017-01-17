@@ -15,28 +15,24 @@
  */
 package com.nominanuda.hyperapi;
 
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
 
 import com.nominanuda.dataobject.DataObjectWrapper;
+import com.nominanuda.lang.Strings;
+import com.nominanuda.web.http.HttpProtocol;
 
-@HyperApi
-public interface TestHyperApi {
-	@PUT @Path("/foo/{bar}?{baz}")
-	Boo putFoo(
-		@PathParam("bar") String bar,
-		@QueryParam("baz") String baz,
-		Moo moo
-	);
+public class DataObjectWrapperEntityEncoder extends AbstractEntityEncoder<DataObjectWrapper> {
 
-	interface Moo extends DataObjectWrapper {
-		default String miao() {return "miao";}
+	public DataObjectWrapperEntityEncoder() {
+		super(DataObjectWrapper.class);
 	}
 
-	interface Boo extends DataObjectWrapper {
-		default String bau() {return "bau";}
+	@Override
+	protected HttpEntity encodeInternal(AnnotatedType p, DataObjectWrapper value) {
+		byte[] payload = value.unwrap().toString().getBytes(Strings.UTF8);
+		ByteArrayEntity e = new ByteArrayEntity(payload);
+		e.setContentType(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
+		return e;
 	}
-
 }

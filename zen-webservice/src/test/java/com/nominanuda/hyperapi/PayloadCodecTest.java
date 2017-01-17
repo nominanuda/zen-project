@@ -47,11 +47,11 @@ public class PayloadCodecTest {
 
 	@Test
 	public void testTestHyperApi() {
-		HyperApiWsSkelton skelton = makeSkelton(TestHyperApi.class, new TestHyperApi() {
+		HyperApiWsSkelton skelton = makeSkelton(TestHyperApi2.class, new TestHyperApi2() {
 			public DataObject putFoo(String bar, String baz, DataObject foo) {
 				return foo;
 			}});
-		TestHyperApi api = makeStub(skelton, TestHyperApi.class);
+		TestHyperApi2 api = makeStub(skelton, TestHyperApi2.class);
 		DataObject o = api.putFoo("BAR", "BAZ", new DataObjectImpl().with("x", "y"));
 		assertEquals("y", o.get("x"));
 	}

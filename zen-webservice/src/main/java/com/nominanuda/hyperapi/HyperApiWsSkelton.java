@@ -16,6 +16,7 @@
 package com.nominanuda.hyperapi;
 
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.dataobject.WrappingFactory.WF;
 import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
 
 import java.io.IOException;
@@ -47,9 +48,7 @@ import org.apache.http.message.BasicHttpResponse;
 
 import com.nominanuda.dataobject.DataArray;
 import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.hyperapi.AnnotatedType;
-import com.nominanuda.hyperapi.EntityCodec;
-import com.nominanuda.hyperapi.HyperApiIntrospector;
+import com.nominanuda.dataobject.DataObjectWrapper;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.http.Http500Exception;
@@ -151,6 +150,8 @@ public class HyperApiWsSkelton implements WebService {
 					annotationFound = true;
 					if (DataObject.class.equals(parameterType)) {
 						args[i] = HTTP.toDataStruct(formParams).asObject();
+					} else if (parameterType.isInterface() && DataObjectWrapper.class.isAssignableFrom(parameterType)) {
+						args[i] = WF.wrap(HTTP.toDataStruct(formParams).asObject(), parameterType);
 					} else {
 						Object o = getFormParams(formParams, ((FormParam) annotation).value());
 						args[i] = decast(o, parameterType);
@@ -159,7 +160,13 @@ public class HyperApiWsSkelton implements WebService {
 				}
 			}
 			if(! annotationFound) {
-				args[i] = (entity == null ? null : entityCodec.decode(entity, p));
+				if(entity == null) {
+					args[i] = null;
+				}/* else if(parameterType.isInterface() && DataObjectWrapper.class.isAssignableFrom(parameterType)) {
+					args[i] = WF.wrap((DataObjectWrapper)entityCodec.decode(entity, p), parameterType);
+				}*/ else {
+					args[i] = entityCodec.decode(entity, p);
+				}
 			}
 		}
 		return args;

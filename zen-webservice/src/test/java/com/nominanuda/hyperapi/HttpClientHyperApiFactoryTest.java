@@ -15,6 +15,8 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.dataobject.WrappingFactory.WF;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -23,12 +25,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.HttpClient;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataObjectImpl;
+import com.nominanuda.hyperapi.TestHyperApi.Boo;
+import com.nominanuda.hyperapi.TestHyperApi.Moo;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.BaseHttpTest;
 import com.nominanuda.web.http.HttpCoreHelper;
@@ -38,7 +43,7 @@ public class HttpClientHyperApiFactoryTest extends BaseHttpTest {
 
 	@Test
 	public void testE() throws Exception {
-		startServer(12000, new AbstractHandler() {
+		Server s =  startServer(12000, new AbstractHandler() {
 			public void handle(String uri, Request arg1, HttpServletRequest req,
 					HttpServletResponse resp) throws IOException, ServletException {
 				IOHelper io = new IOHelper();
@@ -50,10 +55,38 @@ public class HttpClientHyperApiFactoryTest extends BaseHttpTest {
 		HttpClientHyperApiFactory f = new HttpClientHyperApiFactory();
 		f.setHttpClient(client);
 		f.setUriPrefix("http://localhost:12000");
-		TestHyperApi api = f.getInstance("", TestHyperApi.class);
+		TestHyperApi2 api = f.getInstance("", TestHyperApi2.class);
 		DataObject foo = new DataObjectImpl();
 		foo.put("foo", "FOO");
 		DataObject result = api.putFoo("BAR", "BAZ", foo);
 		Assert.assertEquals("FOO", result.get("foo"));
+		s.stop();
+		s.destroy();
+	}
+
+	@Test
+	public void testWrapping() throws Exception {
+		Server s =  startServer(12000, new AbstractHandler() {
+			public void handle(String uri, Request arg1, HttpServletRequest req,
+					HttpServletResponse resp) throws IOException, ServletException {
+				IOHelper io = new IOHelper();
+				resp.setHeader("Content-Type", "application/json");
+				io.pipe(req.getInputStream(), resp.getOutputStream(), false, false);
+			}
+		});
+		HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
+		HttpClient client = httpCoreHelper.createClient(10, 100000000, 100000000);
+		HttpClientHyperApiFactory f = new HttpClientHyperApiFactory();
+		f.setHttpClient(client);
+		f.setUriPrefix("http://localhost:12000");
+		TestHyperApi api = f.getInstance("", TestHyperApi.class);
+		
+		DataObject foo = new DataObjectImpl();
+		foo.put("foo", "FOO");
+		Moo moo = WF.wrap(foo, Moo.class);
+		Boo result = api.putFoo("BAR", "BAZ", moo);
+		Assert.assertEquals("FOO", result.unwrap().get("foo"));
+		s.stop();
+		s.destroy();
 	}
 }
