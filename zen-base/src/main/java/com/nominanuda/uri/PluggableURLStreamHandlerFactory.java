@@ -40,9 +40,9 @@ public class PluggableURLStreamHandlerFactory implements URLStreamHandlerFactory
 			return handler;
 		} else {
 			try {
-				if(isRecursiveCall(protocol)) {//miki
-					System.err.println("MMMMMIIIIIIKKKKKIIIIIII WWWWWAAAAAAASSSSSSS HHHHHEEEEEEERRRRRRREE");
-					throw new RuntimeException("miki was here");//return null;
+				if(isRecursiveCall(protocol)) {
+					System.err.println("SEVERE PluggableURLStreamHandlerFactory isRecursiveCall(protocol) detected");
+					throw new RuntimeException("PluggableURLStreamHandlerFactory isRecursiveCall(protocol) detected");//return null;
 				} else {
 					initRecursionCheck(protocol);
 					Class<? extends URLStreamHandler> clazz = findURLStreamHandlerClass(protocol);
@@ -55,6 +55,7 @@ public class PluggableURLStreamHandlerFactory implements URLStreamHandlerFactory
 					}
 				}
 			} catch (Exception e) {
+				System.err.println(e.getMessage());
 				return null;
 			} finally {
 				disposeRecursionCheck();
