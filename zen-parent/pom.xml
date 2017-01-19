@@ -327,6 +327,11 @@ limitations under the License.
         <version>${luceneandsolr.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.solr</groupId>
+        <artifactId>solr-solrj</artifactId>
+        <version>${luceneandsolr.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>${mongo-java-driver.version}</version>

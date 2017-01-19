@@ -1,28 +1,43 @@
+/*
+ * Copyright 2008-2011 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.nominanuda.dataobject;
 
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 import static com.nominanuda.dataobject.WrappingFactory.WF;
 import static java.util.Arrays.asList;
 
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.PropertyBag;
 import com.nominanuda.lang.Check;
 
 public class WrapperInvocationHandler implements InvocationHandler {
 	private final DataObject o;
 	//private final Class<?> role;
 	private final Set<Method> roleMethods;
+	private final Set<Method> defaultMethods;
 	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
 	static {
 		nonRoleMethods.addAll(asList(Object.class.getDeclaredMethods()));
@@ -36,8 +51,18 @@ public class WrapperInvocationHandler implements InvocationHandler {
 	public WrapperInvocationHandler(DataObject o, Class<?> role) {
 		this.o = o != null ? o : STRUCT.newObject();
 		//this.role = role;
-		roleMethods = new HashSet<Method>(asList(role.getMethods()));
+		roleMethods = new HashSet<Method>();
+		defaultMethods = new HashSet<Method>();
 		roleMethods.removeAll(nonRoleMethods);
+		for(Method m : role.getMethods()) {
+			if(m.isDefault()) {
+				defaultMethods.add(m);
+			} else if(nonRoleMethods.contains(m)) {
+				// standard behaviour
+			} else {
+				roleMethods.add(m);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,7 +70,16 @@ public class WrapperInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		String name = method.getName();
 		try {
-			if ("unwrap".equals(name)) {
+			if(defaultMethods.contains(method)) {
+				Field f = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+				f.setAccessible(true);
+				Lookup lookup = (Lookup)f.get(null);
+				final Object result = lookup
+					.unreflectSpecial(method, method.getDeclaringClass())
+					.bindTo(proxy)
+					.invokeWithArguments(args);
+				return result;
+			} else if ("unwrap".equals(name)) {
 				return o;
 			} else if (roleMethods.contains(method)) {
 				Class<?> type = method.getReturnType();
@@ -57,7 +91,9 @@ public class WrapperInvocationHandler implements InvocationHandler {
 						DataArray arr = o.getArray(name);
 						if (arr != null) {
 							Class<?> itemType = (Class<?>) args[0];
-							Collection<Object> coll = (Collection<Object>) type.newInstance();
+							Collection<Object> coll = type.isInterface()
+								? new LinkedList<>()
+								: (Collection<Object>) type.newInstance();
 							for (Object v : STRUCT.castAsIterable(arr)) {
 								coll.add(fromDataObjectValue(v, itemType));
 							}

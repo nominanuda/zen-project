@@ -57,6 +57,7 @@ import com.nominanuda.lang.Tuple2;
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
 	public static final DataStructHelper STRUCT = new DataStructHelper();
+	public static final DataStructHelper Z = new DataStructHelper();
 
 	private static final long serialVersionUID = -4825883006001134937L;
 	public static final int MERGE_POLICY_OVERRIDE = 0;
@@ -870,4 +871,17 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return res;
 	}
+
+	public DataArray arr(Object... attributes) {
+		return STRUCT.buildArray(attributes);
+	}
+
+	public DataObject obj(Object... attributes) {
+		return STRUCT.buildObject(attributes);
+	}
+
+	public DataObject obj(Map map) {
+		return STRUCT.fromMapsAndCollections(map);
+	}
+
 }
