@@ -4,7 +4,7 @@ import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrCore;
 
-class SolrEndpoint {
+public class SolrEndpoint {
 	private final CoreContainer coreContainer;
 
 	public SolrEndpoint(CoreContainer coreContainer) {
