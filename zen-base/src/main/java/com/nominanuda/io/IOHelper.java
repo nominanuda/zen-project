@@ -261,7 +261,7 @@ public class IOHelper {
 		return newTmpFile(null, prefix);
 	}
 	
-	public static boolean deleteRecursive(File path) throws FileNotFoundException {
+	public boolean deleteRecursive(File path) throws FileNotFoundException {
 		if (!path.exists()) {
 			throw new FileNotFoundException(path.getAbsolutePath());
 		}
