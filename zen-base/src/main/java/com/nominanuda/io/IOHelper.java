@@ -16,6 +16,7 @@
 package com.nominanuda.io;
 
 import static com.nominanuda.codec.Base64Codec.B64;
+import static com.nominanuda.lang.Check.notNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -260,7 +261,7 @@ public class IOHelper {
 	public File newTmpFile(String prefix) throws IOException {
 		return newTmpFile(null, prefix);
 	}
-	
+
 	public boolean deleteRecursive(File path) throws FileNotFoundException {
 		if (!path.exists()) {
 			throw new FileNotFoundException(path.getAbsolutePath());
@@ -274,6 +275,18 @@ public class IOHelper {
 		return ret && path.delete();
 	}
 
+	public void deleteRecursiveContent(File path) throws IOException {
+		if (!path.exists()) {
+			throw new FileNotFoundException(path.getAbsolutePath());
+		}
+		if(!path.isDirectory()) {
+			throw new IOException(path.getAbsolutePath()+" is not a directory");
+		}
+		for (File f : path.listFiles()) {
+			deleteRecursive(f);
+		}
+	}
+
 
 	public String getLastPathSegment(String path) {
 		String[] bits = path.split("/");
@@ -283,6 +296,28 @@ public class IOHelper {
 	public void writeToFile(File dest, InputStream src) throws IOException {
 		FileOutputStream fos = new FileOutputStream(dest);
 		pipeAndClose(src, fos);
+	}
+
+	public void copyResourceContentRecursively(URL originUrl, File destination, boolean allowCreateDirectory) throws IOException {
+		URLConnection urlConnection = originUrl.openConnection();
+		if (urlConnection instanceof JarURLConnection) {
+			copyJarResourcesRecursively((JarURLConnection) urlConnection, destination, allowCreateDirectory);
+		} else {
+			copyDirContentRecusively(new File(originUrl.getPath()), destination, allowCreateDirectory);
+		}
+	}
+
+	private void copyDirContentRecusively(File sourceDir, File destDir, boolean allowCreateDirectory) throws IOException {
+		if(destDir.exists() && !destDir.isDirectory()) {
+			throw new IOException("not a directory:"+destDir.toString());
+		}
+		if (!sourceDir.isDirectory()) {
+			throw new IOException("not a directory:"+sourceDir.toString());
+		} else {
+			for(File f : sourceDir.listFiles()) {
+				copyFilesRecusively(f, destDir, allowCreateDirectory);
+			}
+		}
 	}
 
 	private void copyFilesRecusively(File toCopy, File destDir, boolean allowCreateDirectory) throws IOException {
@@ -307,16 +342,25 @@ public class IOHelper {
 		}
 	}
 
+	public void copyResourcesRecursively(URL originUrl, File destination, boolean allowCreateDirectory) throws IOException {
+		URLConnection urlConnection = originUrl.openConnection();
+		if (urlConnection instanceof JarURLConnection) {
+			copyJarResourcesRecursively((JarURLConnection) urlConnection, destination, allowCreateDirectory);
+		} else {
+			copyFilesRecusively(new File(originUrl.getPath()), destination, allowCreateDirectory);
+		}
+	}
+
 	public void copyJarResourcesRecursively(JarURLConnection jarConnection, File destDir, boolean allowCreateDirectory)
 			throws IOException {
 		if(destDir.exists()) {
 			if(!destDir.isDirectory()) {
 				throw new IOException("not a directory:"+destDir.toString());
-			} else if(!allowCreateDirectory ){
-				throw new IOException(destDir.toString()+ "target dir does not exist");
-			} else if(! destDir.mkdir()){
-				throw new IOException("cannot create dir:"+destDir.toString());
 			}
+		} else if(!allowCreateDirectory ){
+			throw new IOException(destDir.toString()+ "target dir does not exist");
+		} else if(! destDir.mkdir()){
+			throw new IOException("cannot create dir:"+destDir.toString());
 		}
 
 		JarFile jarFile = jarConnection.getJarFile();
@@ -340,17 +384,19 @@ public class IOHelper {
 		}
 	}
 
-	public void copyResourcesRecursively(URL originUrl, File destination, boolean allowCreateDirectory) throws IOException {
-		URLConnection urlConnection = originUrl.openConnection();
-		if (urlConnection instanceof JarURLConnection) {
-			copyJarResourcesRecursively((JarURLConnection) urlConnection, destination, allowCreateDirectory);
-		} else {
-			copyFilesRecusively(new File(originUrl.getPath()), destination, allowCreateDirectory);
-		}
-	}
-
-
 	private boolean tryCreateDirIfNotExists(File f) {
 		return f.exists() || f.mkdir();
+	}
+
+	public boolean isEmptyDir(File dir) throws IOException {
+		if(! notNull(dir).isDirectory()) {
+			return false;
+		} else {
+			String[] content = dir.list();
+			if(content == null) {
+				throw new IOException("unespected error listing "+dir.getAbsolutePath());
+			}
+			return content.length == 0;
+		}
 	}
 }

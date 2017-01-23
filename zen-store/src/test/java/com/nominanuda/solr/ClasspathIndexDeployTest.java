@@ -7,7 +7,11 @@ import java.io.File;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+import com.nominanuda.code.IntegrationTest;
+
+@Category(IntegrationTest.class)
 public class ClasspathIndexDeployTest {
 
 	@Test

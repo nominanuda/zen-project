@@ -106,4 +106,36 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>false</skipTests>
+          <excludedGroups>com.nominanuda.code.IntegrationTest</excludedGroups>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19</version>
+        <configuration>
+          <skipTests>${skipTests}</skipTests>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+          <groups>com.nominanuda.code.IntegrationTest</groups>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
