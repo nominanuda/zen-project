@@ -790,9 +790,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray parseArray(String json) {
 		return parseArray(json, false);
 	}
-	
-	
-	
+
 	// can lead to classcastexception in case it is not a dataobject array
 	@SuppressWarnings("unchecked")
 	public Iterable<DataObject> asObjSeq(@Nullable DataArray arr) {
@@ -801,7 +799,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return Collections.emptyIterable();
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public Iterable<DataArray> asArrSeq(@Nullable DataArray arr) {
+		if (arr != null) {
+			return (Iterable<DataArray>)(Iterable<?>)arr;
+		}
+		return Collections.emptyIterable();
+	}
+
 	// can lead to classcastexception in case it is not a map of dataobjects
 	public Iterable<DataObject> asObjSeq(final @Nullable DataObject obj) {
 		return new Iterable<DataObject>() {
@@ -883,5 +889,4 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataObject obj(Map map) {
 		return STRUCT.fromMapsAndCollections(map);
 	}
-
 }
