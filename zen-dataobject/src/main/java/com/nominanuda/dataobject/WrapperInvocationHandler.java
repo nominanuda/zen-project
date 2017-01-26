@@ -24,6 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,7 +37,6 @@ import com.nominanuda.lang.Check;
 
 public class WrapperInvocationHandler implements InvocationHandler {
 	private final DataObject o;
-	//private final Class<?> role;
 	private final Set<Method> roleMethods;
 	private final Set<Method> defaultMethods;
 	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
@@ -50,7 +51,6 @@ public class WrapperInvocationHandler implements InvocationHandler {
 
 	public WrapperInvocationHandler(DataObject o, Class<?> role) {
 		this.o = o != null ? o : STRUCT.newObject();
-		//this.role = role;
 		roleMethods = new HashSet<Method>();
 		defaultMethods = new HashSet<Method>();
 		roleMethods.removeAll(nonRoleMethods);
@@ -84,13 +84,11 @@ public class WrapperInvocationHandler implements InvocationHandler {
 			} else if (roleMethods.contains(method)) {
 				Class<?> type = method.getReturnType();
 				int argsL = (args == null ? 0 : args.length);
-				if (argsL == 0) { // simple getter
-					return fromDataObjectValue(o.get(name), type);
-				} else if (argsL == 1) {
+				if (argsL == 0) { // any getter
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
 						DataArray arr = o.getArray(name);
 						if (arr != null) {
-							Class<?> itemType = (Class<?>) args[0];
+							Class<?> itemType = getReturnComponentType(method);
 							Collection<Object> coll = type.isInterface()
 								? new LinkedList<>()
 								: (Collection<Object>) type.newInstance();
@@ -98,8 +96,9 @@ public class WrapperInvocationHandler implements InvocationHandler {
 								coll.add(fromDataObjectValue(v, itemType));
 							}
 							return coll;
+						} else {
+							return null;
 						}
-						return null;
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
 						DataObject obj = o.getObject(name);
 						if (obj != null) {
@@ -109,12 +108,15 @@ public class WrapperInvocationHandler implements InvocationHandler {
 								map.put(key, fromDataObjectValue(obj.get(key), itemType));
 							}
 							return map;
+						} else {
+							return null;
 						}
-						return null;
-					} else { // setter
-						o.put(name, toDataObjectValue(args[0]));
-						return proxy;
+					} else { // simple getter
+						return fromDataObjectValue(o.get(name), type);
 					}
+				} else if (argsL == 1) {//setter
+					o.put(name, toDataObjectValue(args[0]));
+					return proxy;
 				} else { // bail out
 					throw new RuntimeException();
 				}
@@ -125,8 +127,40 @@ public class WrapperInvocationHandler implements InvocationHandler {
 			throw Check.ifNull((Exception)e.getCause(), e);
 		}
 	}
-	
-	
+
+	private Class<?> getReturnComponentType(Method method) throws ClassNotFoundException {
+		Cls cls = method.getAnnotation(Cls.class);
+		if(cls != null) {
+			return cls.value();
+		}
+		Type t1 = method.getGenericReturnType();
+		if(t1 instanceof ParameterizedType) {
+			ParameterizedType t2 = (ParameterizedType)t1;
+			Type[] actualTypeArgs = t2.getActualTypeArguments();
+			if(actualTypeArgs != null && actualTypeArgs.length == 1) {
+				try {
+					return Class.forName(actualTypeArgs[0].getTypeName());
+				} catch (ClassNotFoundException e) {
+					throw e;
+				}
+			}
+		}
+//TODO not needed
+//		AnnotatedType at  = method.getAnnotatedReturnType();
+//		Type t = at.getType();
+//		String s  = t.getTypeName();
+//		if(s.contains("<")) {
+//			String s1 = s.substring(s.indexOf('<')+1,s.length() -1);
+//			try {
+//				return Class.forName(s1);
+//			} catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+		throw new ClassNotFoundException(
+			"could not determine generic teturn type for method "+method.toString());
+	}
+
 	private Object fromDataObjectValue(Object v, Class<?> type) {
 		if (Boolean.TYPE.equals(type)) { // expected boolean
 			return Boolean.TRUE.equals(v); // force true/false (also when v == null)
@@ -134,6 +168,8 @@ public class WrapperInvocationHandler implements InvocationHandler {
 		if (v != null) {
 			if (DataObjectWrapper.class.isAssignableFrom(type)) { // sub object
 				return WF.wrap((DataObject)v, type);
+			} else {
+				//TODO throw exception
 			}
 		}
 		return v;
@@ -142,24 +178,20 @@ public class WrapperInvocationHandler implements InvocationHandler {
 	
 	@SuppressWarnings("unchecked")
 	private Object toDataObjectValue(Object v) {
-		if (v != null) {
-			if (v instanceof Collection) {
-				DataArray arr = STRUCT.newArray();
-				for (Object o : (Collection<Object>)v) {
-					arr.add(toDataObjectValue(o));
-				}
-				return arr;
+		if (v instanceof Collection) {
+			DataArray arr = STRUCT.newArray();
+			for (Object o : (Collection<Object>)v) {
+				arr.add(toDataObjectValue(o));
 			}
-			if (v instanceof Map) {
-				DataObject obj = STRUCT.newObject();
-				for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
-					obj.put(entry.getKey(), entry.getValue());
-				}
-				return obj;
+			return arr;
+		} else if (v instanceof Map) {
+			DataObject obj = STRUCT.newObject();
+			for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
+				obj.put(entry.getKey(), entry.getValue());
 			}
-			if (v instanceof DataObjectWrapper) { // sub object
-				return ((DataObjectWrapper)v).unwrap();
-			}
+			return obj;
+		} else if (v instanceof DataObjectWrapper) { // sub object
+			return ((DataObjectWrapper)v).unwrap();
 		}
 		return v;
 	}
