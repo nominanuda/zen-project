@@ -28,12 +28,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.nominanuda.lang.Check;
+import com.nominanuda.lang.Tuple2;
 
 public class WrapperInvocationHandler implements InvocationHandler {
 	private final DataObject o;
@@ -88,7 +90,7 @@ public class WrapperInvocationHandler implements InvocationHandler {
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
 						DataArray arr = o.getArray(name);
 						if (arr != null) {
-							Class<?> itemType = getReturnComponentType(method);
+							Class<?> itemType = getCollectionReturnComponentType(method);
 							Collection<Object> coll = type.isInterface()
 								? new LinkedList<>()
 								: (Collection<Object>) type.newInstance();
@@ -102,7 +104,11 @@ public class WrapperInvocationHandler implements InvocationHandler {
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
 						DataObject obj = o.getObject(name);
 						if (obj != null) {
-							Class<?> itemType = (Class<?>) args[0];
+							Tuple2<Class<?>, Class<?>> keyValTypes = getMapReturnComponentTypes(method);
+							Class<?> itemType = keyValTypes.get1();
+							if(type.isInterface()) {
+								type = LinkedHashMap.class;
+							}
 							Map<String, Object> map = (Map<String, Object>) type.newInstance();
 							for (String key : obj.getKeys()) {
 								map.put(key, fromDataObjectValue(obj.get(key), itemType));
@@ -128,7 +134,7 @@ public class WrapperInvocationHandler implements InvocationHandler {
 		}
 	}
 
-	private Class<?> getReturnComponentType(Method method) throws ClassNotFoundException {
+	private Class<?> getCollectionReturnComponentType(Method method) throws ClassNotFoundException {
 		Cls cls = method.getAnnotation(Cls.class);
 		if(cls != null) {
 			return cls.value();
@@ -145,34 +151,45 @@ public class WrapperInvocationHandler implements InvocationHandler {
 				}
 			}
 		}
-//TODO not needed
-//		AnnotatedType at  = method.getAnnotatedReturnType();
-//		Type t = at.getType();
-//		String s  = t.getTypeName();
-//		if(s.contains("<")) {
-//			String s1 = s.substring(s.indexOf('<')+1,s.length() -1);
-//			try {
-//				return Class.forName(s1);
-//			} catch(Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
 		throw new ClassNotFoundException(
-			"could not determine generic teturn type for method "+method.toString());
+			"could not determine generic return type for method "+method.toString());
+	}
+
+	private Tuple2<Class<?>, Class<?>> getMapReturnComponentTypes(Method method) throws ClassNotFoundException {
+		Cls cls = method.getAnnotation(Cls.class);
+		if(cls != null) {
+			return new Tuple2<>(String.class, cls.value());
+		}
+		Type t1 = method.getGenericReturnType();
+		if(t1 instanceof ParameterizedType) {
+			ParameterizedType t2 = (ParameterizedType)t1;
+			Type[] actualTypeArgs = t2.getActualTypeArguments();
+			if(actualTypeArgs != null && actualTypeArgs.length == 2) {
+				try {
+					return new Tuple2<>(
+						Class.forName(actualTypeArgs[0].getTypeName()),
+						Class.forName(actualTypeArgs[1].getTypeName()));
+				} catch (ClassNotFoundException e) {
+					throw e;
+				}
+			}
+		}
+		throw new ClassNotFoundException(
+			"could not determine generic return type for method "+method.toString());
 	}
 
 	private Object fromDataObjectValue(Object v, Class<?> type) {
 		if (Boolean.TYPE.equals(type)) { // expected boolean
-			return Boolean.TRUE.equals(v); // force true/false (also when v == null)
-		}
-		if (v != null) {
-			if (DataObjectWrapper.class.isAssignableFrom(type)) { // sub object
+			return Boolean.TRUE.equals((Boolean)v); // force true/false (also when v == null)
+		} else if(STRUCT.isPrimitiveOrNull(v)) {
+			return v;
+		} else {
+			if (DataObjectWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
 				return WF.wrap((DataObject)v, type);
 			} else {
-				//TODO throw exception
+				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 			}
 		}
-		return v;
 	}
 	
 	
@@ -187,7 +204,7 @@ public class WrapperInvocationHandler implements InvocationHandler {
 		} else if (v instanceof Map) {
 			DataObject obj = STRUCT.newObject();
 			for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
-				obj.put(entry.getKey(), entry.getValue());
+				obj.put(entry.getKey(), toDataObjectValue(entry.getValue()));
 			}
 			return obj;
 		} else if (v instanceof DataObjectWrapper) { // sub object

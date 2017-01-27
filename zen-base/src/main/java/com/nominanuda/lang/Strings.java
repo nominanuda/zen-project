@@ -16,6 +16,7 @@
 package com.nominanuda.lang;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -27,7 +28,8 @@ import com.nominanuda.code.ThreadSafe;
 
 @ThreadSafe
 public abstract class Strings {
-	public static final Charset UTF8 = Charset.forName("UTF-8");
+	public static final Charset UTF8 = StandardCharsets.UTF_8;
+	public static final Charset ASCII = StandardCharsets.US_ASCII;
 	public static boolean nullOrEmpty(String s) {
 		return s == null || 0 == s.length();
 	}

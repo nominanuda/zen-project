@@ -18,8 +18,10 @@ package com.nominanuda.lang;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,6 +120,16 @@ public class Collections {
 			s.add(t);
 		}
 		return (Set<T>)s;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K,V,T extends Map<K,V>> Map<K,V> linkedHashMap(Object... members) throws RuntimeException {
+		return buildMap(LinkedHashMap.class, members);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K,V,T extends Map<K,V>> Map<K,V> hashMap(Object... members) throws RuntimeException {
+		return buildMap(HashMap.class, members);
 	}
 
 	@SuppressWarnings("unchecked")
