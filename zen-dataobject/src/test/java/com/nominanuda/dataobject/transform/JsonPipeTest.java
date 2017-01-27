@@ -65,7 +65,7 @@ public class JsonPipeTest {
 			.add(new InstanceFactory<JsonTransformer>(new StringValuesJsonTransformer()))
 			.withLooseParser();
 
-		DataStruct res = p.build(new StringReader("{a:{b:false,c:1.1,d:1.0,e:38}}")).apply();
+		DataStruct res = p.build(new StringReader("{a:{b:false,c:1.1,d:1.0,e:38}}")).get();
 
 		System.err.println(res.toString());
 		Object v = ((DataStruct)(res.asObject().get("a"))).asObject().get("e");

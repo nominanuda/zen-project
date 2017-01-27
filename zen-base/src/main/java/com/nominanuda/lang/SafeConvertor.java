@@ -1,4 +1,6 @@
 package com.nominanuda.lang;
 
-public interface SafeConvertor<X, Y> extends ObjectConvertor<X, Y, NoException>, Fun1<X, Y> {
+import java.util.function.Function;
+
+public interface SafeConvertor<X, Y> extends ObjectConvertor<X, Y, NoException>, Function<X, Y> {
 }

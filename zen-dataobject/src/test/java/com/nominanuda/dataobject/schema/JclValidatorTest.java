@@ -77,7 +77,7 @@ public class JclValidatorTest {
 		JsonPipeline p = new JsonPipeline()
 			.add(f.buildValidatorFactory(type))
 			.withLooseParser();
-		DataStruct res2 = p.build(res).apply();
+		DataStruct res2 = p.build(res).get();
 		assertEquals(res, res2);
 	}
 

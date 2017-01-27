@@ -40,14 +40,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.io.DevNull;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.Fun1;
-import com.nominanuda.lang.Fun2;
 import com.nominanuda.lang.Maths;
 import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
@@ -685,7 +685,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataObject newObject() {
 		return new DataObjectImpl();
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, Fun1<T, Tuple2<String, Object>> fnc) {
+	public <T> DataObject newObject(Iterable<T> iterable, Function<T, Tuple2<String, Object>> fnc) {
 		final DataObject obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = Check.notNull(fnc.apply(item));
@@ -693,7 +693,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return obj;
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, Fun2<T, DataObject, Tuple2<String, Object>> fnc) {
+	public <T> DataObject newObject(Iterable<T> iterable, BiFunction<T, DataObject, Tuple2<String, Object>> fnc) {
 		final DataObject obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = fnc.apply(item, obj);
@@ -707,7 +707,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray newArray() {
 		return new DataArrayImpl();
 	}
-	public <T> DataArray newArray(Iterable<T> iterable, Fun1<T, Object> fnc) {
+	public <T> DataArray newArray(Iterable<T> iterable, Function<T, Object> fnc) {
 		final DataArray arr = newArray();
 		for (T item : iterable) {
 			arr.add(fnc.apply(item));

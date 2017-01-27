@@ -15,7 +15,6 @@
  */
 package com.nominanuda.lang;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Collections {
 	public final static String[] EMPTY_STR_ARR = new String[0];
@@ -191,30 +192,6 @@ public class Collections {
 		}
 	}
 
-	public static <T1, T2> List<T2> map(Iterable<T1> coll, Fun1<T1, T2> mapFun) {
-		List<T2> result = new LinkedList<T2>();
-		for (T1 o1 : coll) {
-			result.add(mapFun.apply(o1));
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T1> Collection<T1> filter(Collection<T1> coll, Fun1<T1, Boolean> filterFun) {
-		Collection<T1> result;
-		try {
-			result = coll.getClass().newInstance();
-		} catch (Exception e) {
-			result = new ArrayList<>();
-		}
-		for (T1 o1 : coll) {
-			if (filterFun.apply(o1)) {
-				result.add(o1);
-			}
-		}
-		return result;
-	}
-
 	public static <T> boolean find(T needle, Iterable<? extends T> haystack) {
 		for (T x : haystack) {
 			if (needle.equals(x)) {
@@ -231,5 +208,9 @@ public class Collections {
 			}
 		}
 		return false;
+	}
+
+	public static <X,Y> List<Y> mapToList(Collection<X> l, Function<X, Y> mapper) {
+		return l.stream().map(mapper).collect(Collectors.toList());
 	}
 }

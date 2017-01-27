@@ -15,6 +15,16 @@
  */
 package com.nominanuda.dataobject.schema;
 
+import static com.nominanuda.dataobject.schema.JclLexer.ARRAY;
+import static com.nominanuda.dataobject.schema.JclLexer.ARRAYVAL;
+import static com.nominanuda.dataobject.schema.JclLexer.ENTRY;
+import static com.nominanuda.dataobject.schema.JclLexer.ENTRYSEQ;
+import static com.nominanuda.dataobject.schema.JclLexer.OBJECT;
+import static com.nominanuda.dataobject.schema.JclLexer.PRIMITIVE;
+import static com.nominanuda.dataobject.schema.JclLexer.TYPEDEF;
+import static com.nominanuda.dataobject.schema.JclLexer.TYPEREF;
+import static com.nominanuda.dataobject.schema.JclLexer.VALUESEQ;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
@@ -23,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.function.Function;
 
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CharStream;
@@ -35,10 +46,7 @@ import com.nominanuda.dataobject.WrappingRecognitionException;
 import com.nominanuda.dataobject.transform.BaseJsonTransformer;
 import com.nominanuda.dataobject.transform.JsonTransformer;
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Fun1;
 import com.nominanuda.lang.ObjectFactory;
-
-import static com.nominanuda.dataobject.schema.JclLexer.*;
 
 
 public class JclValidatorFactory {
@@ -193,7 +201,7 @@ public class JclValidatorFactory {
 		return new ExistentialPredicate(p);
 	}
 
-	private Fun1<Object, String> makePrimitiveValidator(Tree node) {
+	private Function<Object, String> makePrimitiveValidator(Tree node) {
 		Tree t = node.getChild(0);
 		String valDef = t == null 
 			? DefaultPrimitiveValidatorFactory.ANYPRIMITIVE
@@ -421,14 +429,14 @@ public class JclValidatorFactory {
 	}
 
 	public class PrimitiveConsumer extends EventConsumer {
-		private final Fun1<Object, String> validator;
+		private final Function<Object, String> validator;
 
-		public PrimitiveConsumer(Stack<EventConsumer> stack, Fun1<Object, String> validator) {
+		public PrimitiveConsumer(Stack<EventConsumer> stack, Function<Object, String> validator) {
 			super(stack);
 			this.validator = validator;
 		}
 
-		public PrimitiveConsumer(Stack<EventConsumer> stack, Fun1<Object, String> validator, ExistentialPredicate pred) {
+		public PrimitiveConsumer(Stack<EventConsumer> stack, Function<Object, String> validator, ExistentialPredicate pred) {
 			super(stack, pred);
 			this.validator = validator;
 		}

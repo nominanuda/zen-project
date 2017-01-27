@@ -15,10 +15,10 @@
  */
 package com.nominanuda.dataobject.schema;
 
-import com.nominanuda.lang.Fun1;
+import java.util.function.Function;
 
 public interface PrimitiveValidatorFactory {
 	String ANYPRIMITIVE = "anyprimitive";
 	
-	Fun1<Object, String> create(String primitiveTypeDef);
+	Function<Object, String> create(String primitiveTypeDef);
 }

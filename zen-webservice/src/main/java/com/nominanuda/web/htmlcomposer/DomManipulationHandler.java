@@ -16,6 +16,7 @@
 package com.nominanuda.web.htmlcomposer;
 
 import java.util.Stack;
+import java.util.function.Supplier;
 
 import javax.xml.transform.sax.SAXResult;
 
@@ -23,7 +24,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.lang.Fun0;
 import com.nominanuda.lang.Tuple2;
 import com.nominanuda.xml.ForwardingTransformerHandlerBase;
 import com.nominanuda.xml.SaxBuffer.SaxBit;
@@ -33,7 +33,7 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 	private int nestingLevel = 0;
 	private final DomManipulationStmt stmt;
 	private final JquerySelectorExpr jqSelector;
-	private final Stack<Tuple2<Integer, Fun0<Void>>> triggerStack = new Stack<Tuple2<Integer,Fun0<Void>>>();
+	private final Stack<Tuple2<Integer, Supplier<Void>>> triggerStack = new Stack<Tuple2<Integer,Supplier<Void>>>();
 	protected final Stack<HtmlTag> parentElementStack = new Stack<HtmlTag>();
 	private ContentHandler liveContentHandler;
 	private final static ContentHandler devNull = new SwallowingTransformerHandlerBase();
@@ -82,12 +82,12 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 			Attributes atts) throws SAXException;
 
 	private void onTriggerEndElement() {
-		Fun0<Void> f = triggerStack.pop().get1();
-		f.apply();
+		Supplier<Void> f = triggerStack.pop().get1();
+		f.get();
 	}
 
-	protected void pushTriggerEndElement(Fun0<Void> trigger) {
-		triggerStack.push(new Tuple2<Integer, Fun0<Void>>(nestingLevel, trigger));
+	protected void pushTriggerEndElement(Supplier<Void> trigger) {
+		triggerStack.push(new Tuple2<Integer, Supplier<Void>>(nestingLevel, trigger));
 	};
 
 	@Override
@@ -133,8 +133,8 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 		protected void onMatchedStartElement(final String uri, final String localName,
 				final String qName, final Attributes atts) throws SAXException {
 			turnOffOutput();
-			pushTriggerEndElement(new Fun0<Void>() {
-				public Void apply() {
+			pushTriggerEndElement(new Supplier<Void>() {
+				public Void get() {
 					try {
 						turnOnOutput();
 						getTarget().startElement(uri, localName, qName, atts);
@@ -156,8 +156,8 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 		protected void onMatchedStartElement(final String uri, final String localName,
 				final String qName, final Attributes atts) throws SAXException {
 			turnOffOutput();
-			pushTriggerEndElement(new Fun0<Void>() {
-				public Void apply() {
+			pushTriggerEndElement(new Supplier<Void>() {
+				public Void get() {
 					try {
 						turnOnOutput();
 						streamFragment();
@@ -199,8 +199,8 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 		protected void onMatchedStartElement(final String uri, final String localName,
 				final String qName, final Attributes atts) throws SAXException {
 			getTarget().startElement(uri, localName, qName, atts);
-			pushTriggerEndElement(new Fun0<Void>() {
-				public Void apply() {
+			pushTriggerEndElement(new Supplier<Void>() {
+				public Void get() {
 					try {
 						streamFragment();
 						getTarget().endElement(uri, localName, qName);
@@ -220,8 +220,8 @@ public abstract class DomManipulationHandler extends ForwardingTransformerHandle
 		protected void onMatchedStartElement(final String uri, final String localName,
 				final String qName, final Attributes atts) throws SAXException {
 			getTarget().startElement(uri, localName, qName, atts);
-			pushTriggerEndElement(new Fun0<Void>() {
-				public Void apply() {
+			pushTriggerEndElement(new Supplier<Void>() {
+				public Void get() {
 					try {
 						getTarget().endElement(uri, localName, qName);
 						streamFragment();
