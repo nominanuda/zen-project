@@ -179,10 +179,24 @@ public class WrapperInvocationHandler implements InvocationHandler {
 	}
 
 	private Object fromDataObjectValue(Object v, Class<?> type) {
-		if (Boolean.TYPE.equals(type)) { // expected boolean
+		if (null == v) {
+			return null;
+		} else if (Boolean.TYPE.equals(type)) { // expected boolean
 			return Boolean.TRUE.equals((Boolean)v); // force true/false (also when v == null)
 		} else if(STRUCT.isPrimitiveOrNull(v)) {
-			return v;
+			if(Double.class.equals(type)) {
+				return ((Number)v).doubleValue();
+			} else if(Float.class.equals(type)) {
+				return ((Number)v).floatValue();
+			} else if(Integer.class.equals(type)) {
+				return ((Number)v).intValue();
+			} else if(Long.class.equals(type)) {
+				return ((Number)v).longValue();
+			} else if(Double.class.equals(type)) {
+				return ((Number)v).doubleValue();
+			} else {
+				return v;
+			}
 		} else {
 			if (DataObjectWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
 				return WF.wrap((DataObject)v, type);
