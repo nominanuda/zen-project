@@ -28,7 +28,7 @@ public class DynaMapTuplizer extends DynamicMapEntityTuplizer {
 	}
 
 	@Override
-	protected Instantiator buildInstantiator(PersistentClass mappingInfo) {
+	protected Instantiator buildInstantiator(EntityMetamodel entityMetamodel, PersistentClass mappingInfo) {
 		return new DynaMapDynamicMapInstantiator( mappingInfo );
 		//return super.buildInstantiator(mappingInfo);
 	}

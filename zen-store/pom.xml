@@ -85,6 +85,13 @@
       <artifactId>cglib</artifactId>
       <optional>true</optional>
     </dependency>
+    <!-- POSTGRESQL -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>9.4.1212</version>
+        <optional>true</optional>
+    </dependency>
     <!-- TEST -->
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.nominanuda.hibernate">
+  <class entity-name="MyEntity" table="testjson">
+    <tuplizer entity-mode="dynamic-map" class="org.hibernate.tuple.entity.DynaMapTuplizer"/>
+    <id name="id" type="long">
+    </id>
+    <property name="jsonproperty" type="json" >
+    <column name="jsonproperty" sql-type="json"></column>
+    </property>
+  </class>
+</hibernate-mapping>

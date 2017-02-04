@@ -25,8 +25,10 @@ import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.postgresql.util.PGtokenizer;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.nominanuda.postgresql.PgJsonType;
 
 public class HibernateConfiguration {
 	private String username;
@@ -46,7 +48,7 @@ public class HibernateConfiguration {
 		this.c3p0 = c3p0;
 	}
 	public enum DBType {
-		MYSQL, HSQLDB
+		MYSQL, HSQLDB, POSTGRESQL, UNKNOWN
 	}
 	public HibernateConfiguration() {
 //		serviceRegistry = new ServiceRegistryBuilder().addService(EventListenerRegistry.class, new EventListenerRegistryImpl()).buildServiceRegistry();
@@ -109,6 +111,10 @@ public class HibernateConfiguration {
 				//.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver")
 				;
 				break;
+			case POSTGRESQL:
+				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect");
+				cfg.registerTypeOverride( new PgJsonType(), new String[]{"json"});
+				break;
 			default:
 				throw new IllegalStateException();
 		}
@@ -121,7 +127,10 @@ public class HibernateConfiguration {
 	}
 
 	private DBType inferDbType() {
-		return connectionUrl.contains("mysql") ? DBType.MYSQL : DBType.HSQLDB;
+		return connectionUrl.contains("mysql") ? DBType.MYSQL
+			: connectionUrl.contains("hsql") ? DBType.HSQLDB
+			: connectionUrl.contains("postgresql") ? DBType.POSTGRESQL
+			: DBType.UNKNOWN;
 	}
 
 	public void setConnectionUrl(String url) {
@@ -146,6 +155,8 @@ public class HibernateConfiguration {
 			return "org.hsqldb.jdbcDriver";
 		case MYSQL:
 			return "com.mysql.jdbc.Driver";
+		case POSTGRESQL:
+			return "org.postgresql.Driver";
 		default:
 			throw new IllegalStateException();
 		}

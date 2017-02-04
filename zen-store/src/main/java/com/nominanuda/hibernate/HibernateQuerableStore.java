@@ -50,7 +50,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			}
 			throw e;
 		} finally {
-			if(tx != null && ! tx.wasRolledBack()) {
+			if(tx != null && tx.isActive()) {
 				tx.rollback();
 			}
 			if(session != null) {
@@ -90,7 +90,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			}
 			throw e;
 		} finally {
-			if(tx != null && ! tx.wasRolledBack()) {
+			if(tx != null && tx.isActive()) {
 				tx.rollback();
 			}
 			if(session != null) {
@@ -119,7 +119,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			}
 			throw e;
 		} finally {
-			if(tx != null && ! tx.wasRolledBack()) {
+			if(tx != null && tx.isActive()) {
 				tx.rollback();
 				//tx.commit();
 			}
