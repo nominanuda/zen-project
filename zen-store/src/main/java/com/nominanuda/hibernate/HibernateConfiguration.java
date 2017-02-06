@@ -25,10 +25,10 @@ import javax.sql.DataSource;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.postgresql.util.PGtokenizer;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.nominanuda.postgresql.PgJsonType;
+import com.nominanuda.postgresql.PgDataObjectJsonType;
+import com.nominanuda.postgresql.PgMapListJsonType;
 
 public class HibernateConfiguration {
 	private String username;
@@ -113,7 +113,8 @@ public class HibernateConfiguration {
 				break;
 			case POSTGRESQL:
 				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect");
-				cfg.registerTypeOverride( new PgJsonType(), new String[]{"json"});
+				cfg.registerTypeOverride( new PgDataObjectJsonType(), new String[]{"jsonDataObject"});
+				cfg.registerTypeOverride( new PgMapListJsonType(), new String[]{"jsonMapList"});
 				break;
 			default:
 				throw new IllegalStateException();

@@ -7,28 +7,31 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
-import com.nominanuda.dataobject.DataObject;
-
-public class PgJsonType implements UserType {
+public class PgMapListJsonType implements UserType {
 
 	@Override
 	public int[] sqlTypes() {
 		return new int[] { Types.JAVA_OBJECT };
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public Class<DataObject> returnedClass() {
-		return DataObject.class;
+	public Class<Map> returnedClass() {
+		return Map.class;
 	}
 
 	@Override
 	public boolean equals(Object x, Object y) throws HibernateException {
-		return Z.equals(x, y);
+		if(x == null || y == null) {
+			return false;
+		}
+		return x.equals(y);//TODO id equality
 	}
 
 	@Override
@@ -44,12 +47,13 @@ public class PgJsonType implements UserType {
 			return null;
 		}
 		try {
-			return Z.parseObject(cellContent);
+			return Z.toMapsAndLists(Z.parseObject(cellContent));
 		} catch (final Exception ex) {
 			throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
 			throws HibernateException, SQLException {
@@ -58,7 +62,7 @@ public class PgJsonType implements UserType {
 			return;
 		}
 		try {
-			st.setObject(index, value.toString(), Types.OTHER);
+			st.setObject(index, Z.fromMapsAndCollections((Map<String,Object>)value).toString(), Types.OTHER);
 		} catch (final Exception ex) {
 			throw new RuntimeException("Failed to convert Invoice to String: " + ex.getMessage(), ex);
 		}
@@ -66,7 +70,10 @@ public class PgJsonType implements UserType {
 
 	@Override
 	public Object deepCopy(Object value) throws HibernateException {
-		return Z.clone((DataObject)value);
+		return
+		Z.toMapsAndLists(
+			Z.clone(
+				Z.fromMapsAndCollections((Map<String,Object>)value)));
 	}
 
 	@Override
