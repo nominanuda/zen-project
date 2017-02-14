@@ -15,7 +15,9 @@
  */
 package com.nominanuda.springmvc;
 
-import java.io.IOException;
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.web.http.ServletHelper.SERVLET;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,52 +27,44 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
 import com.nominanuda.lang.Check;
-import com.nominanuda.web.http.ServletHelper;
 import com.nominanuda.web.mvc.HandlerAdapter;
 import com.nominanuda.web.mvc.PathAndJsonViewSpec;
 
 public class HandlerAdapterWrapper implements org.springframework.web.servlet.HandlerAdapter {
-	private static final ServletHelper servletHelper = new ServletHelper();
 	private HandlerAdapter handlerAdapter;
 
+	@Override
 	public boolean supports(Object handler) {
 		return handlerAdapter.supports(handler);
 	}
 
-	public ModelAndView handle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
-		HttpRequest httpReq = servletHelper.getOrCreateRequest(request, true);
-		DataStruct command = Check.ifNull(servletHelper.getCommand(request), new DataObjectImpl());
-		Object result = handlerAdapter.invoke(handler, httpReq, command);
-		servletHelper.storeHandlerOutput(request, result);
-		//TODO delegate to DispatcherServletHelper ??
-		if(result instanceof HttpResponse) {
-			servletHelper.copyResponse((HttpResponse)result, response);
-			return null;
-		} else {
-			return makeModelAndView(response, result);
-		}
-	}
-
-	private ModelAndView makeModelAndView(HttpServletResponse response,
-			Object result) throws IOException {
-//		if(result instanceof HttpResponse) {
-//			servletHelper.copyResponse((HttpResponse)result, response);
-//			return null;
-//		} else 
-		if(result instanceof HttpEntity) {
+	@Override
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		HttpRequest httpReq = SERVLET.getOrCreateRequest(request, true);
+		DataStruct command = Check.ifNull(SERVLET.getCommand(request), STRUCT.newObject());
+		final Object result = handlerAdapter.invoke(handler, httpReq, command);
+		SERVLET.storeHandlerOutput(request, result);
+		if (result instanceof HttpResponse) {
+			return new ModelAndView(new View() {
+				@Override public String getContentType() {
+					return null;
+				}
+				@Override public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+					SERVLET.copyResponse((HttpResponse)result, response);
+				}
+			});
+		} else if (result instanceof HttpEntity) {
 			return new ModelAndView(new HttpEntityView((HttpEntity)result));
-		} else if(result instanceof PathAndJsonViewSpec) {
+		} else if (result instanceof PathAndJsonViewSpec) {
 			PathAndJsonViewSpec viewSpec = (PathAndJsonViewSpec)result;
-			Map<String, ?> model = new MapsAndListsObjectDecorator(
-					(DataObject)viewSpec.getModel());
-			return new ModelAndView(viewSpec.getPath(), model);
+			return new ModelAndView(viewSpec.getPath(), new MapsAndListsObjectDecorator(viewSpec.getModel().asObject()));
+		} else if (result instanceof ModelAndView) {
+			return (ModelAndView)result;
 		} else {
 			throw new IllegalStateException();
 		}

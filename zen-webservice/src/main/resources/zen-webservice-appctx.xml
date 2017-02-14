@@ -1,0 +1,33 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+	
+	<!-- to support classpath: protocol -->
+	<bean class="com.nominanuda.uri.PluggableURLStreamHandlerFactory" init-method="installToJvm" />
+	
+	
+	<!-- spring mvc handlers -->
+
+	<bean class="com.nominanuda.springmvc.HandlerAdapterWrapper">
+		<property name="handlerAdapter">
+			<bean class="com.nominanuda.web.mvc.WebServiceAdapter" />
+		</property>
+	</bean>
+
+	<bean class="com.nominanuda.springmvc.HandlerAdapterWrapper">
+		<property name="handlerAdapter">
+			<bean class="com.nominanuda.web.mvc.CommandRequestHandlerAdapter" />
+		</property>
+	</bean>
+
+	<bean class="com.nominanuda.springmvc.HandlerAdapterWrapper">
+		<property name="handlerAdapter">
+			<bean class="com.nominanuda.web.mvc.CommandHandlerAdapter" />
+		</property>
+	</bean>
+
+	<!-- id="httpRequestHandlerAdapter" is required by some components -->
+	<bean id="httpRequestHandlerAdapter" class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
+</beans>

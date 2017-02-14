@@ -22,8 +22,14 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlugin {
-	public static final String RUNTIMEPROFILE_DEV = "dev";
-	public static final String RUNTIMEPROFILE = "runtimeprofile";
+	private static final String RUNTIMEPROFILE_DEV = "dev";
+	private static final String RUNTIMEPROFILE = "runtimeprofile";
+	
+	// TODO configurable
+	private boolean mergeEntityDataObject = true;
+	private boolean mergeGetAndPostFormParams = true;
+	private String scopeFactoryId = IRequiredBeansIds.RHINO_SCOPE_FACTORY;
+	private String function = "handle";
 
 	public boolean supports(Element el) {
 		return null != el.getElementsByTagNameNS(SITEMAP_NS, "js").item(0);
@@ -32,16 +38,17 @@ public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlu
 	public String generateHandler(Element element, ParserContext parserContext, String uriSpec) {
 		Element handler = (Element) element.getElementsByTagNameNS(SITEMAP_NS, "js").item(0);
 		String url = handler.getElementsByTagNameNS(SITEMAP_NS, "url").item(0).getTextContent();
-		
-		String runtimeprofile = System.getProperty(RUNTIMEPROFILE);
-		BeanDefinitionBuilder sourceBuilder = RUNTIMEPROFILE_DEV.equals(runtimeprofile)
-			? BeanDefinitionBuilder.genericBeanDefinition(RhinoHandler.class)
-			: BeanDefinitionBuilder.genericBeanDefinition(CompilingRhinoHandler.class);
-		sourceBuilder.addPropertyValue("spec", url);
-		sourceBuilder.addPropertyReference("rhinoEmbedding", "rhinoEmbedding");
-		sourceBuilder.addPropertyReference("scopeFactory", "scopeFactory");
-		String id = MvcFrontControllerBeanDefinitionParser.uuid();
-		parserContext.getRegistry().registerBeanDefinition(id, sourceBuilder.getBeanDefinition());
-		return id;
+		String uuid = MvcFrontControllerBeanDefinitionParser.uuid();
+		parserContext.getRegistry().registerBeanDefinition(uuid, BeanDefinitionBuilder.genericBeanDefinition(CompilingRhinoHandler.class)
+			.addPropertyReference("sitemap", Sitemap.BEAN_ID)
+			.addPropertyReference("springScopeFactory", scopeFactoryId)
+			.addPropertyValue("develMode", RUNTIMEPROFILE_DEV.equals(System.getProperty(RUNTIMEPROFILE)))
+			.addPropertyValue("mergeGetAndPostFormParams", mergeGetAndPostFormParams)
+			.addPropertyValue("mergeEntityDataObject", mergeEntityDataObject)
+			.addPropertyValue("function", function)
+			.addPropertyValue("spec", url)
+			.setInitMethodName("init")
+			.getBeanDefinition());
+		return uuid;
 	}
 }

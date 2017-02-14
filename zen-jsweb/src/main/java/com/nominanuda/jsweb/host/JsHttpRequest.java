@@ -15,34 +15,40 @@
  */
 package com.nominanuda.jsweb.host;
 
+import static com.nominanuda.rhino.DataStructScriptableConvertor.DSS_CONVERTOR;
+import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import java.io.IOException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.Wrapper;
 
 import com.nominanuda.code.Nullable;
+import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wrapper {
 	private static final long serialVersionUID = -7386543758365478363L;
-	private static final RhinoHelper rhinoHelper = new RhinoHelper();
+	protected DataObject extra;
 	protected HttpRequest req;
 
-	public JsHttpRequest() {
-	}
-	
 	@Override
 	public Object unwrap() {
 		return req;
 	}
 
-	public void jsConstructor(Object _req) {
+	public void jsConstructor(Object _req, Object _extra) {
 		req = (HttpRequest) _req;
+		extra = _extra instanceof DataObject ? (DataObject) _extra : null;
 	}
 
 	@Override
@@ -60,39 +66,47 @@ public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wra
 
 	//null or {name:..., value:...}
 	public @Nullable Scriptable jsFunction_firstHeader(String name) {
-		Context cx = Context.getCurrentContext();
 		Header h = req.getFirstHeader(name);
-		return h == null ? null : makeJsHeader(cx, h);
+		return h == null ? null : makeJsHeader(Context.getCurrentContext(), h);
+	}
+	
+	public @Nullable String jsFunction_firstHeaderValue(String name, Object defValue) {
+		Header h = req.getFirstHeader(name);
+		return h == null ? defValue == null || defValue instanceof Undefined ? "" : defValue.toString() : h.getValue();
 	}
 
 	//[] or [{name:..., value:...},{name:..., value:...}]
 	public @Nullable Scriptable jsFunction_headers(String name) {
 		Context cx = Context.getCurrentContext();
 		Header[] hs = req.getHeaders(name);
-		Scriptable result = rhinoHelper.newArray(cx, getParentScope());
+		Scriptable result = RHINO.newArray(cx, getParentScope());
 		int i = 0;
-		for(Header h : hs) {
+		for (Header h : hs) {
 			Scriptable jsh = makeJsHeader(cx, h);
-			rhinoHelper.putProperty(result, i++, jsh);
+			RHINO.putProperty(result, i++, jsh);
 		}
 		return result;
 	}
 
 	private Scriptable makeJsHeader(Context cx, Header h) {
-		Scriptable jsh = rhinoHelper.newObject(cx, getParentScope());
-		rhinoHelper.putProperty(jsh, "name", h.getName());
-		rhinoHelper.putProperty(jsh, "value", h.getValue());
+		Scriptable jsh = RHINO.newObject(cx, getParentScope());
+		RHINO.putProperty(jsh, "name", h.getName());
+		RHINO.putProperty(jsh, "value", h.getValue());
 		return jsh;
 	}
 
 	//TODO don't use it
 	public @Nullable String jsFunction_stringEntity() throws IOException {
 		HttpCoreHelper httpHelper = new HttpCoreHelper();
-		if(httpHelper.hasEntity(req)) {
+		if (httpHelper.hasEntity(req)) {
 			HttpEntity entity = ((HttpEntityEnclosingRequest)req).getEntity();
 			return new IOHelper().readAndCloseUtf8(entity.getContent());
 		} else {
 			return null;
 		}
+	}
+	
+	public @Nullable Scriptable jsGet_extra() {
+		return extra != null ? DSS_CONVERTOR.toScriptable(Context.getCurrentContext(), extra, getParentScope()) : null;
 	}
 }

@@ -4,10 +4,27 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 		
 		
-	<bean id="zen-rhino-embedding" class="org.mozilla.javascript.DebuggableRhinoEmbedding" init-method="init">
+	<import resource="classpath:zen-webservice-appctx.xml" />
+		
+		
+	<!-- default (to be overridden) -->
+	<bean id="RHINO_SCOPE_FACTORY" parent="izScopeFactory" />
+	
+	<bean id="izScopeFactory" class="org.mozilla.javascript.SpringScopeFactory" abstract="true" init-method="init">
+		<property name="embedding" ref="zen-jsweb-rhino-embedding" />
+		<property name="allowJavaPackageAccess" value="true" />
+		<property name="definedClasses">
+			<list>
+			    <value>com.nominanuda.jsweb.host.JsHttpRequest</value>
+			</list>
+		</property>
+	</bean>
+	
+		
+	<bean id="zen-jsweb-rhino-embedding" class="org.mozilla.javascript.DebuggableRhinoEmbedding" init-method="init">
 		<property name="wrapFactory">
 			<bean class="org.mozilla.javascript.PluggableWrapFactory">
-				<constructor-arg ref="zen-rhino-embedding" />
+				<constructor-arg ref="zen-jsweb-rhino-embedding" />
 				<property name="convertors">
 					<list>
 						<bean class="com.nominanuda.rhino.DataStructConvertor" />

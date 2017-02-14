@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springmvc;
 
+import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
@@ -23,37 +25,54 @@ import java.util.Map;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.SpringScopeFactory;
 
 import com.nominanuda.lang.Tuple2;
 
 public class CompilingRhinoHandler extends RhinoHandler {
-	private boolean develMode = false;
 	private Map<String, Script> scriptCache = new HashMap<String, Script>();
-
+	private boolean cache = true;
+	
+	
 	@Override
-	protected void evaluateScript(Context cx, Scriptable controllerScope,
-			String uri) throws IOException {
-		if(develMode) {
-			super.evaluateScript(cx, controllerScope, uri);
-		} else {
+	protected void evaluateScript(Context cx, Scriptable controllerScope, String uri) throws IOException {
+		if (cache) {
 			Script s1 = getOrCompile(cx, uri);
-			rhino.evaluateScript(s1, cx, controllerScope);
+			RHINO.evaluateScript(s1, cx, controllerScope);
+		} else {
+			super.evaluateScript(cx, controllerScope, uri);
 		}
-
 	}
+	
 	private Script getOrCompile(Context cx, String uri) throws IOException {
-		if(scriptCache.containsKey(uri)) {
+		if (scriptCache.containsKey(uri)) {
 			return scriptCache.get(uri);
 		} else {
 			Tuple2<String,Reader> script = getSource(uri);
-			String jsLocation = script.get0();
-			Reader src = script.get1();
-			Script s = rhino.compileScript(src, jsLocation, null, cx);
+			Script s = RHINO.compileScript(script.get1(), script.get0(), null, cx);
 			scriptCache.put(uri, s);
 			return s;
 		}
 	}
+	
+	protected void setCache(boolean cache) {
+		this.cache = cache;
+	}
+	
+	
+	
+	/* setters */
+	
+	@Override
+	public void setSpringScopeFactory(SpringScopeFactory scopeFactory) {
+		super.setSpringScopeFactory(scopeFactory);
+		setCache(scopeFactory.getCache());
+	}
+	
 	public void setDevelMode(boolean develMode) {
-		this.develMode = develMode;
+		// just used to force cache off, not to put it back on (or it will race with setCache)
+		if (develMode) {
+			cache = false;
+		}
 	}
 }

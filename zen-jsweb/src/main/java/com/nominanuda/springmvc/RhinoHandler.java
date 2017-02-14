@@ -13,141 +13,186 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * AZ: this version merges with the model the request's body, if it is a json,
+ * and initializes every object of type Location among the scope's java objects.
+ */
+
 package com.nominanuda.springmvc;
+
+import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.rhino.DataStructScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoEmbedding;
-import org.mozilla.javascript.RhinoHelper;
 import org.mozilla.javascript.ScopeFactory;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.SpringScopeFactory;
 
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
+import com.nominanuda.hyperapi.AnnotatedType;
+import com.nominanuda.hyperapi.DataStructJsonDecoder;
+import com.nominanuda.hyperapi.EntityDecoder;
 import com.nominanuda.jsweb.host.JsHttpRequest;
+import com.nominanuda.jsweb.host.Location;
 import com.nominanuda.lang.Tuple2;
-import com.nominanuda.rhino.DataStructScriptableConvertor;
 import com.nominanuda.urispec.URISpec;
-import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.mvc.CommandRequestHandler;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 
 public class RhinoHandler implements CommandRequestHandler {
-	private static final HttpCoreHelper httpCore = new HttpCoreHelper();
-	private static final DataStructHelper structHelper = new DataStructHelper();
-	private String function = "handle";
-	protected static final RhinoHelper rhino = new RhinoHelper();
-	private URISpec<DataObject> uriSpec;
-	private RhinoEmbedding rhinoEmbedding;
-	//private ScriptableObject rootScope;
-	private DataStructScriptableConvertor dataStructScriptableConvertor = new DataStructScriptableConvertor();
-	private boolean allowJavaPackageAccess = true;//TODO security turn to false default policy
-	private boolean mergeGetAndPostFormParams = true;//TODO 
-	private ScriptableObject cachedScope;
-	private ScopeFactory scopeFactory;
-
-	@Override
-	public DataStruct handle(DataStruct cmd, HttpRequest request)
-			throws Exception {
+	public final static String ENTITY_ARRAY_CMD_KEY = "_entity";
+	protected final EntityDecoder jsonDecoder = new DataStructJsonDecoder();
+	
+	protected URISpec<DataObject> uriSpec;
+	protected RhinoEmbedding rhinoEmbedding;
+	protected ScriptableObject cachedScope;
+	protected ScopeFactory scopeFactory;
+	protected boolean allowJavaPackageAccess = true; // TODO security turn to false default policy
+	protected boolean mergeGetAndPostFormParams = true;
+	protected boolean mergeEntityDataObject = true;
+	protected String function = "handle";
+	protected Sitemap sitemap;
+	
+	
+	public void init() {
+		// configure locations
+		for (Object o : scopeFactory.getJavaObjects().values()) {
+			if (o instanceof Location) {
+				((Location)o).setSitemap(sitemap);
+			}
+		}
+		// if the resource location doesn't depend from request's data, execute the script once (for errors spotting, caching,...)
 		Context cx = rhinoEmbedding.enterContext();
 		try {
-			if(httpCore.hasEntity(request)) {
-				HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest)request;
-				r.setEntity(new BufferedHttpEntity(r.getEntity()));
+			if (uriSpec.toString().equals(calcScriptUri(STRUCT.newObject(), null))) {
+				evaluateScript(cx, buildScope(cx), uriSpec.toString());
 			}
-			Scriptable controllerScope = buildScope(cx);
-			if(mergeGetAndPostFormParams ) {
-				DataObject cmdFromReq = (DataObject)httpCore.getQueryParams(request);
-				if(request instanceof HttpEntityEnclosingRequest) {
-					DataObject cmdFromFormPost = (DataObject)parseEntityWithDefaultUtf8(
-							((HttpEntityEnclosingRequest)request).getEntity());
-					structHelper.copyPush(cmdFromFormPost, cmdFromReq);
-				}
-				//TODO 
-				//here request params hide uriparams  
-				structHelper.copyOverwite((DataObject)cmd, cmdFromReq);
-				cmd = cmdFromReq;
-			}
-
-			Scriptable jsCmd = dataStructScriptableConvertor.toScriptable(cx, cmd, controllerScope);
-			JsHttpRequest jsReq = (JsHttpRequest)cx.newObject(
-					controllerScope, "HttpRequest", new Object[] {request});
-
-			String scriptUri = calcScriptUri(cmd, request);
-			evaluateScript(cx, controllerScope, scriptUri);
-			Object res = rhino.callFunctionInScope(cx, controllerScope, function,
-					new Object[] {jsCmd, jsReq});
-			DataStruct ds = dataStructScriptableConvertor.fromScriptable((Scriptable)res);
-			return ds;
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			Context.exit();
 		}
 	}
-	protected void evaluateScript(Context cx, Scriptable controllerScope,
-			String scriptUri) throws IOException {
-		Tuple2<String,Reader> script = getSource(scriptUri);
-		String jsLocation = script.get0();
-		Reader src = script.get1();
-		rhino.evaluateReader(cx, src, jsLocation, controllerScope);
+	
+	
+	@Override
+	public DataStruct handle(DataStruct cmd, HttpRequest request) throws Exception {
+		Context cx = rhinoEmbedding.enterContext();
+		try {
+			HttpEntity entity = HTTP.getEntity(request);
+			List<NameValuePair> pairs = Collections.emptyList();
+			if (mergeGetAndPostFormParams) {
+				DataObject cmdFromReq = HTTP.getQueryParams(request).asObject();
+				if (entity != null) {
+					pairs = HTTP.parseEntityWithDefaultUtf8(entity);
+					STRUCT.copyPush(HTTP.toDataStruct(pairs).asObject(), cmdFromReq);
+				}
+				// TODO 
+				// here request params hide uriparams  
+				STRUCT.copyOverwite(cmd.asObject(), cmdFromReq);
+				cmd = cmdFromReq;
+			}
+			
+			if (mergeEntityDataObject && entity != null && pairs.isEmpty()) { // if pairs isn't empty -> entity was already consumed
+				try {
+					// DataStruct because it could be an array
+					DataStruct structFromEntity = (DataStruct) jsonDecoder.decode(new AnnotatedType(DataStruct.class, new Annotation[] {}), entity);
+					DataObject cmdFromEntity = (structFromEntity.isArray() // nees to be a DataObject before merging with cmd
+							? STRUCT.newObject().with(ENTITY_ARRAY_CMD_KEY, structFromEntity)
+							: structFromEntity.asObject());
+					STRUCT.copyOverwite(cmd.asObject(), cmdFromEntity);
+					cmd = cmdFromEntity;
+				} catch (Exception e) {
+					// better way than try/catch?
+				}
+			}
+			
+			Scriptable controllerScope = buildScope(cx);
+			evaluateScript(cx, controllerScope, calcScriptUri(cmd, request));
+			Object res = executeFunction(cx, controllerScope, function, cmd, request);
+			return DSS_CONVERTOR.fromScriptable((Scriptable)res);
+		} finally {
+			Context.exit();
+		}
 	}
-	private DataStruct parseEntityWithDefaultUtf8(final HttpEntity entity) throws IOException {
-		List<NameValuePair> pairs = httpCore.parseEntityWithDefaultUtf8(entity);
-		return httpCore.toDataStruct(pairs);
-	}
-
+	
+	
 	protected String calcScriptUri(DataStruct cmd, HttpRequest request) throws IOException {
-		String uri = uriSpec.template((DataObject)cmd);
-		return uri;
+		return uriSpec.template(cmd.asObject());
+	}
+	
+	protected void evaluateScript(Context cx, Scriptable controllerScope, String scriptUri) throws IOException {
+		Tuple2<String,Reader> script = getSource(scriptUri);
+		RHINO.evaluateReader(cx, script.get1(), script.get0(), controllerScope);
 	}
 
 	protected Tuple2<String, Reader> getSource(String uri) throws IOException {
-		return new Tuple2<String, Reader>(
-				uri,
-				new InputStreamReader(new URL(uri).openStream(), "UTF-8"));
+		String jsLocation = uri.replace("classpath:", ""); // allows JSDT remote rhino debugging
+		return new Tuple2<String, Reader>(jsLocation, new InputStreamReader(new URL(uri).openStream(), "UTF-8"));
 	}
-
-	public void setSpec(String uriSpec) {
-		this.uriSpec = new DataObjectURISpec(uriSpec);
+	
+	protected Object executeFunction(Context cx, Scriptable controllerScope, String function, DataStruct cmd, HttpRequest request) {
+		Scriptable jsCmd = DSS_CONVERTOR.toScriptable(cx, cmd, controllerScope);
+		JsHttpRequest jsReq = (JsHttpRequest) cx.newObject(controllerScope, "HttpRequest", new Object[] { request });
+		return RHINO.callFunctionInScope(cx, controllerScope, function, new Object[] { jsCmd, jsReq });
 	}
+	
 
 	private Scriptable buildScope(Context cx) throws Exception {
-		if(scopeFactory == null) {
-			if(cachedScope == null) {
-				cachedScope = rhino.createTopScope(cx, allowJavaPackageAccess );
+		if (scopeFactory == null) {
+			if (cachedScope == null) {
+				cachedScope = RHINO.createTopScope(cx, allowJavaPackageAccess);
 			}
-			return rhino.protocloneScriptable(cx, cachedScope);
+			return RHINO.protocloneScriptable(cx, cachedScope);
 		} else {
 			return scopeFactory.createInContext(cx);
 		}
 	}
+	
+	
+	
+	/* setters */
 
-	public void setRhinoEmbedding(RhinoEmbedding rhinoEmbedding) {
-		this.rhinoEmbedding = rhinoEmbedding;
-	}
-
-	public void setFunction(String function) {
-		this.function = function;
-	}
-
-	public void setAllowJavaPackageAccess(boolean allowJavaPackageAccess) {
-		this.allowJavaPackageAccess = allowJavaPackageAccess;
-	}
 	public void setMergeGetAndPostFormParams(boolean mergeGetAndPostFormParams) {
 		this.mergeGetAndPostFormParams = mergeGetAndPostFormParams;
 	}
-	public void setScopeFactory(ScopeFactory scopeFactory) {
+	
+	public void setMergeEntityDataObject(boolean mergeEntityDataObject) {
+		this.mergeEntityDataObject = mergeEntityDataObject;
+	}
+	
+	public void setSpringScopeFactory(SpringScopeFactory scopeFactory) {
+		allowJavaPackageAccess = scopeFactory.isAllowJavaPackageAccess();
+		rhinoEmbedding = scopeFactory.getEmbedding();
 		this.scopeFactory = scopeFactory;
+	}
+	
+	public void setFunction(String function) {
+		this.function = function;
+	}
+	
+	public void setSitemap(Sitemap sitemap) {
+		this.sitemap = sitemap;
+	}
+
+	public void setSpec(String uriSpecTemplate) {
+		this.uriSpec = new DataObjectURISpec(uriSpecTemplate);
 	}
 }
