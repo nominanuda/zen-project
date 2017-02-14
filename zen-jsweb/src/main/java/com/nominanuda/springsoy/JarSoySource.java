@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.google.template.soy.SoyFileSet.Builder;
-import com.nominanuda.lang.Fun1;
 import com.nominanuda.lang.Strings;
 import com.nominanuda.lang.Tuple2;
 
@@ -32,7 +32,7 @@ public class JarSoySource extends SoySource {
 	protected void cumulate(Builder builder, List<String> jsTplNames) throws IOException {
 		List<Tuple2<String, String>> templateFileUrls = new LinkedList<Tuple2<String,String>>();
 		for (String templatesLocation : templatesLocations) {
-			List<Tuple2<String, String>> entries = getEntries(templatesLocation, new Fun1<String, Boolean>() {
+			List<Tuple2<String, String>> entries = getEntries(templatesLocation, new Function<String, Boolean>() {
 				public Boolean apply(String param) {
 					return param.endsWith(".soy");
 				}
@@ -47,7 +47,7 @@ public class JarSoySource extends SoySource {
 		}
 	}
 
-	private List<Tuple2<String, String>> getEntries(String jarOrFileSrcDir, Fun1<String,Boolean> namePredicate) throws IOException {
+	private List<Tuple2<String, String>> getEntries(String jarOrFileSrcDir, Function<String,Boolean> namePredicate) throws IOException {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		URL r = cl.getResource(jarOrFileSrcDir);
 		if (null != r) {
@@ -65,7 +65,7 @@ public class JarSoySource extends SoySource {
 		}
 	}
 
-	private List<Tuple2<String, String>> getDirEntries(int prefixLength, String srcDir, final Fun1<String,Boolean> namePredicate) throws IOException {
+	private List<Tuple2<String, String>> getDirEntries(int prefixLength, String srcDir, final Function<String,Boolean> namePredicate) throws IOException {
 		File dir = new File(srcDir);
 		String[] files = dir.list(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
@@ -88,7 +88,7 @@ public class JarSoySource extends SoySource {
 		return l;
 	}
 	
-	private List<Tuple2<String, String>> getJarEntries(String jarSrcDir, Fun1<String,Boolean> namePredicate) throws IOException {
+	private List<Tuple2<String, String>> getJarEntries(String jarSrcDir, Function<String,Boolean> namePredicate) throws IOException {
 		List<Tuple2<String, String>> result = new LinkedList<Tuple2<String, String>>();
 		String[] arr = jarSrcDir.substring("file:".length()).split("!");
 		String jarPath = arr[0];

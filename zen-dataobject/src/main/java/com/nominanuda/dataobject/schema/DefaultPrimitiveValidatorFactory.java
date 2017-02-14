@@ -15,9 +15,10 @@
  */
 package com.nominanuda.dataobject.schema;
 
-import com.nominanuda.lang.Fun1;
-
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+
+import java.util.function.Function;
+
 
 //TODO existential qualifiers
 public class DefaultPrimitiveValidatorFactory implements
@@ -25,33 +26,33 @@ public class DefaultPrimitiveValidatorFactory implements
 
 	
 	@Override
-	public Fun1<Object, String> create(String primitiveTypeDef) {
+	public Function<Object, String> create(String primitiveTypeDef) {
 		if("n".equals(primitiveTypeDef)) {
-			return new Fun1<Object, String>() {
+			return new Function<Object, String>() {
 				public String apply(Object param) {
 					return param instanceof Number ? null : "not a number";
 				}
 			};
 		} else if(ANYPRIMITIVE.equals(primitiveTypeDef)) {
-			return new Fun1<Object, String>() {
+			return new Function<Object, String>() {
 				public String apply(Object param) {
 					return null;
 				}
 			};
 		} else if("s".equals(primitiveTypeDef)) {
-			return new Fun1<Object, String>() {
+			return new Function<Object, String>() {
 				public String apply(Object param) {
 					return param instanceof String ? null : "not a string";
 				}
 			};
 		} else if("b".equals(primitiveTypeDef)) {
-			return new Fun1<Object, String>() {
+			return new Function<Object, String>() {
 				public String apply(Object param) {
 					return param instanceof Boolean ? null : "not a boolean";
 				}
 			};
 		} else if(DefaultPrimitiveValidatorFactory.ANYPRIMITIVE.equals(primitiveTypeDef)) {
-			return new Fun1<Object, String>() {
+			return new Function<Object, String>() {
 				public String apply(Object param) {
 					return STRUCT.isPrimitiveOrNull(param) ? null : "not a boolean";
 				}

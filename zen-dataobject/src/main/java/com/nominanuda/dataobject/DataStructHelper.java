@@ -40,14 +40,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.code.ThreadSafe;
 import com.nominanuda.io.DevNull;
 import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.Fun1;
-import com.nominanuda.lang.Fun2;
 import com.nominanuda.lang.Maths;
 import com.nominanuda.lang.SafeConvertor;
 import com.nominanuda.lang.SetList;
@@ -57,6 +57,7 @@ import com.nominanuda.lang.Tuple2;
 @ThreadSafe
 public class DataStructHelper implements Serializable, DataStructFactory {
 	public static final DataStructHelper STRUCT = new DataStructHelper();
+	public static final DataStructHelper Z = new DataStructHelper();
 
 	private static final long serialVersionUID = -4825883006001134937L;
 	public static final int MERGE_POLICY_OVERRIDE = 0;
@@ -684,7 +685,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataObject newObject() {
 		return new DataObjectImpl();
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, Fun1<T, Tuple2<String, Object>> fnc) {
+	public <T> DataObject newObject(Iterable<T> iterable, Function<T, Tuple2<String, Object>> fnc) {
 		final DataObject obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = Check.notNull(fnc.apply(item));
@@ -692,7 +693,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return obj;
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, Fun2<T, DataObject, Tuple2<String, Object>> fnc) {
+	public <T> DataObject newObject(Iterable<T> iterable, BiFunction<T, DataObject, Tuple2<String, Object>> fnc) {
 		final DataObject obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = fnc.apply(item, obj);
@@ -706,7 +707,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray newArray() {
 		return new DataArrayImpl();
 	}
-	public <T> DataArray newArray(Iterable<T> iterable, Fun1<T, Object> fnc) {
+	public <T> DataArray newArray(Iterable<T> iterable, Function<T, Object> fnc) {
 		final DataArray arr = newArray();
 		for (T item : iterable) {
 			arr.add(fnc.apply(item));
@@ -789,9 +790,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	public DataArray parseArray(String json) {
 		return parseArray(json, false);
 	}
-	
-	
-	
+
 	// can lead to classcastexception in case it is not a dataobject array
 	@SuppressWarnings("unchecked")
 	public Iterable<DataObject> asObjSeq(@Nullable DataArray arr) {
@@ -800,7 +799,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return Collections.emptyIterable();
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public Iterable<DataArray> asArrSeq(@Nullable DataArray arr) {
+		if (arr != null) {
+			return (Iterable<DataArray>)(Iterable<?>)arr;
+		}
+		return Collections.emptyIterable();
+	}
+
 	// can lead to classcastexception in case it is not a map of dataobjects
 	public Iterable<DataObject> asObjSeq(final @Nullable DataObject obj) {
 		return new Iterable<DataObject>() {
@@ -869,5 +876,17 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			res.put(i, arr.get(i + from));
 		}
 		return res;
+	}
+
+	public DataArray arr(Object... attributes) {
+		return STRUCT.buildArray(attributes);
+	}
+
+	public DataObject obj(Object... attributes) {
+		return STRUCT.buildObject(attributes);
+	}
+
+	public DataObject obj(Map map) {
+		return STRUCT.fromMapsAndCollections(map);
 	}
 }

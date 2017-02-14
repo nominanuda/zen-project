@@ -25,7 +25,7 @@ public interface PropertyBag<K> extends DataStruct {
 	@Nullable Object get(K key);
 	Object getStrict(K key) throws NullPointerException;
 	Object put(K key, @Nullable Object o);
-	@Nullable Object remove(K key);
+//	@Nullable Object remove(K key);
 	boolean exists(K k);
 	DataArray putNewArray(K key);
 	DataObject putNewObject(K key);

@@ -15,10 +15,16 @@
  */
 package com.nominanuda.hibernate;
 
+import static com.nominanuda.lang.Check.illegalargument;
+import static java.util.Arrays.asList;
+
 import java.beans.PropertyVetoException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -27,6 +33,9 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.nominanuda.lang.Check;
+import com.nominanuda.postgresql.PgDataObjectJsonType;
+import com.nominanuda.postgresql.PgMapListJsonType;
 
 public class HibernateConfiguration {
 	private String username;
@@ -37,6 +46,7 @@ public class HibernateConfiguration {
 	private Boolean showSql = Boolean.TRUE;
 	private ComboPooledDataSource ds = null;
 	private List<String> resources = new LinkedList<String>();
+	private String currentSessionContext = "managed";//thread jta
 	//val an be of type X OR Iterable<X>
 	//where X is of type SaveOrUpdateEventListener or Class<SaveOrUpdateEventListener>
 	private boolean dynamic = true;
@@ -46,7 +56,7 @@ public class HibernateConfiguration {
 		this.c3p0 = c3p0;
 	}
 	public enum DBType {
-		MYSQL, HSQLDB
+		MYSQL, HSQLDB, POSTGRESQL, UNKNOWN
 	}
 	public HibernateConfiguration() {
 //		serviceRegistry = new ServiceRegistryBuilder().addService(EventListenerRegistry.class, new EventListenerRegistryImpl()).buildServiceRegistry();
@@ -76,6 +86,7 @@ public class HibernateConfiguration {
 		if(dynamic ) {
 			cfg.setProperty("hibernate.default_entity_mode", "dynamic-map");
 		};
+		cfg.setProperty("hibernate.current_session_context_class", currentSessionContext);
 		cfg.setProperty("hibernate.show_sql", showSql .toString())
 		.setProperty("hibernate.connection.url", connectionUrl)
 		.setProperty("hibernate.connection.username", username)
@@ -109,6 +120,11 @@ public class HibernateConfiguration {
 				//.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver")
 				;
 				break;
+			case POSTGRESQL:
+				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL95Dialect");
+				cfg.registerTypeOverride( new PgDataObjectJsonType(), new String[]{"jsonDataObject"});
+				cfg.registerTypeOverride( new PgMapListJsonType(), new String[]{"jsonMapList"});
+				break;
 			default:
 				throw new IllegalStateException();
 		}
@@ -121,7 +137,10 @@ public class HibernateConfiguration {
 	}
 
 	private DBType inferDbType() {
-		return connectionUrl.contains("mysql") ? DBType.MYSQL : DBType.HSQLDB;
+		return connectionUrl.contains("mysql") ? DBType.MYSQL
+			: connectionUrl.contains("hsql") ? DBType.HSQLDB
+			: connectionUrl.contains("postgresql") ? DBType.POSTGRESQL
+			: DBType.UNKNOWN;
 	}
 
 	public void setConnectionUrl(String url) {
@@ -146,6 +165,8 @@ public class HibernateConfiguration {
 			return "org.hsqldb.jdbcDriver";
 		case MYSQL:
 			return "com.mysql.jdbc.Driver";
+		case POSTGRESQL:
+			return "org.postgresql.Driver";
 		default:
 			throw new IllegalStateException();
 		}
@@ -176,5 +197,11 @@ public class HibernateConfiguration {
 	public void setResources(List<String> resources) {
 		this.resources.clear();
 		this.resources.addAll(resources);
+	}
+
+	private static final Set<String> ALLOWED_CURRENT_SESSION_CONTEXTS = new HashSet<>(asList("thread","managed","jta"));
+	public void setCurrentSessionContext(String currentSessionContext) {
+		illegalargument.assertTrue(ALLOWED_CURRENT_SESSION_CONTEXTS.contains(currentSessionContext), "unsupported currentSessionContext:"+currentSessionContext);
+		this.currentSessionContext = currentSessionContext;
 	}
 }

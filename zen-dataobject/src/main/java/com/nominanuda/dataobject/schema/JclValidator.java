@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.function.Function;
 
 import com.nominanuda.code.Nullable;
 import com.nominanuda.dataobject.DataStruct;
@@ -12,16 +13,15 @@ import com.nominanuda.dataobject.transform.DevNullJsonContentHandler;
 import com.nominanuda.dataobject.transform.JsonPipeline;
 import com.nominanuda.dataobject.transform.JsonTransformer;
 import com.nominanuda.io.IOHelper;
-import com.nominanuda.lang.Fun1;
 import com.nominanuda.lang.ObjectFactory;
 
 public class JclValidator {
 	private JclValidatorFactory jvf;
 
-	public Fun1<DataStruct, Boolean> buildValidatorFor(DataStruct ds, @Nullable String type) {
+	public Function<DataStruct, Boolean> buildValidatorFor(DataStruct ds, @Nullable String type) {
 		final JsonPipeline p = new JsonPipeline()
 			.add(buildValidatorTransformerFactory(type));
-		return new Fun1<DataStruct, Boolean>() {
+		return new Function<DataStruct, Boolean>() {
 			public Boolean apply(final DataStruct param) {
 				try {
 					p.build(param, new DevNullJsonContentHandler()).run();

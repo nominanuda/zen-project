@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.Supplier;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -30,7 +31,6 @@ import com.nominanuda.dataobject.JsonContentHandler;
 import com.nominanuda.dataobject.JsonStreamer;
 import com.nominanuda.dataobject.JsonStreamingParser;
 import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Fun0;
 import com.nominanuda.lang.ObjectFactory;
 import com.nominanuda.lang.Tuple2;
 
@@ -98,7 +98,7 @@ public class JsonPipeline {
 		};
 	}
 
-	public Fun0<DataStruct> build(final JsonStreamer starter) {
+	public Supplier<DataStruct> build(final JsonStreamer starter) {
 		final DataStructContentHandler dsch = new DataStructContentHandler();
 		final Runnable r = build(starter, dsch);
 		return runnableToFun(r, dsch);
@@ -108,7 +108,7 @@ public class JsonPipeline {
 		return build(new JsonStreamingParser(looseParser, json), ender);
 	}
 
-	public Fun0<DataStruct> build(final Reader json) {
+	public Supplier<DataStruct> build(final Reader json) {
 		final DataStructContentHandler dsch = new DataStructContentHandler();
 		final Runnable r = build(json, dsch);
 		return runnableToFun(r, dsch);
@@ -118,7 +118,7 @@ public class JsonPipeline {
 		return build(new DataStructStreamer(struct), ender);
 	}
 
-	public Fun0<DataStruct> build(final DataStruct ds) {
+	public Supplier<DataStruct> build(final DataStruct ds) {
 		final DataStructContentHandler dsch = new DataStructContentHandler();
 		final Runnable r = build(ds, dsch);
 		return runnableToFun(r, dsch);
@@ -173,9 +173,9 @@ public class JsonPipeline {
 		return new Tuple2<JsonTransformer, JsonTransformer>(nextTarget, lastTarget);
 	}
 
-	private Fun0<DataStruct> runnableToFun(final Runnable r, final DataStructContentHandler dsch) {
-		return new Fun0<DataStruct>() {
-			public DataStruct apply() {
+	private Supplier<DataStruct> runnableToFun(final Runnable r, final DataStructContentHandler dsch) {
+		return new Supplier<DataStruct>() {
+			public DataStruct get() {
 				r.run();
 				return dsch.getResult();
 			}

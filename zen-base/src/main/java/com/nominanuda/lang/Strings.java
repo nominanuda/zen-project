@@ -15,9 +15,12 @@
  */
 package com.nominanuda.lang;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +30,8 @@ import com.nominanuda.code.ThreadSafe;
 
 @ThreadSafe
 public abstract class Strings {
-	public static final Charset UTF8 = Charset.forName("UTF-8");
+	public static final Charset UTF8 = StandardCharsets.UTF_8;
+	public static final Charset ASCII = StandardCharsets.US_ASCII;
 	public static boolean nullOrEmpty(String s) {
 		return s == null || 0 == s.length();
 	}
@@ -67,25 +71,13 @@ public abstract class Strings {
 	}
 	
 	public static String joinNotNull(String separator, Object... strings) {
-		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
-			@Override public Boolean apply(Object param) {
-				return param != null;
-			}
-		}));
+		return join(separator, asList(strings).stream().filter(x -> x != null).collect(toList()));
 	}
 	public static String joinNotNullOrEmpty(String separator, Object... strings) {
-		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
-			@Override public Boolean apply(Object param) {
-				return param != null && notNullOrEmpty(param.toString());
-			}
-		}));
+		return join(separator, asList(strings).stream().filter(x -> x != null && notNullOrEmpty(x.toString())).collect(toList()));
 	}
 	public static String joinNotNullOrBlank(String separator, Object... strings) {
-		return join(separator, Collections.filter(Arrays.asList(strings), new Fun1<Object, Boolean>() {
-			@Override public Boolean apply(Object param) {
-				return param != null && notNullOrBlank(param.toString());
-			}
-		}));
+		return join(separator, asList(strings).stream().filter(x -> x != null && notNullOrBlank(x.toString())).collect(toList()));
 	}
 	
 	public static List<String> splitAndTrim(String str, String regex) {

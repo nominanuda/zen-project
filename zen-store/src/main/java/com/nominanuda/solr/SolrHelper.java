@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
+//import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -41,19 +41,19 @@ public class SolrHelper {
 	public static final SolrHelper SOLR = new SolrHelper();
 	private static final DataStructHelper struct = new DataStructHelper();
 
-	public DataArray listResultsDotAware(SolrServer solr, SolrQuery sq, int start, int count) throws SolrServerException {
-		DataArray res = new DataArrayImpl();
-		sq.setStart(start);
-		sq.setRows(count);
-		QueryResponse qr = solr.query(sq);
-		qr.getResults();
-		SolrDocumentList sdl = qr.getResults();
-		for(Map<String,Object> d : sdl) {
-			DataObject o = solrDoc2DataObject(d);
-			res.add(o);
-		}
-		return res;
-	}
+//	public DataArray listResultsDotAware(SolrServer solr, SolrQuery sq, int start, int count) throws SolrServerException {
+//		DataArray res = new DataArrayImpl();
+//		sq.setStart(start);
+//		sq.setRows(count);
+//		QueryResponse qr = solr.query(sq);
+//		qr.getResults();
+//		SolrDocumentList sdl = qr.getResults();
+//		for(Map<String,Object> d : sdl) {
+//			DataObject o = solrDoc2DataObject(d);
+//			res.add(o);
+//		}
+//		return res;
+//	}
 
 	public DataObject solrDoc2DataObject(Map<String, Object> d) {
 		return (DataObject)struct.fromFlatMap(normalizeDynFields(d));

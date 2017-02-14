@@ -44,7 +44,7 @@ public class BSONListAsDataArray implements DataArray {
 		return Check.unsupportedoperation.fail();
 	}
 
-	public Object remove(Integer key) {
+	public Object remove(int key) {
 		return Check.unsupportedoperation.fail();
 	}
 
@@ -254,7 +254,7 @@ public class BSONListAsDataArray implements DataArray {
 		throw new ClassCastException();
 	}
 
-	public Object add(Object val) {
+	public boolean add(Object val) {
 		return Check.unsupportedoperation.fail();
 	}
 
