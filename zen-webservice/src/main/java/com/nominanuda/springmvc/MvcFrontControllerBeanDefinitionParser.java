@@ -15,18 +15,14 @@
  */
 package com.nominanuda.springmvc;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.BeanMetadataElement;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -55,7 +51,7 @@ public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefiniti
 		
 		BeanDefinitionBuilder bdBuilder = BeanDefinitionBuilder.rootBeanDefinition(HandlerMatcherMapping.class);
 		String pattern = ((Element) element.getElementsByTagNameNS(ns, "pattern").item(0)).getTextContent();
-		registerPattern(parserContext, element.getAttribute("id"), pattern);
+		Sitemap.registerPattern(element.getAttribute("id"), pattern, parserContext);
 		String uriSpec = Utils.uriSpec(pattern);
 		
 		BeanDefinitionBuilder matchBuilder = BeanDefinitionBuilder
@@ -125,21 +121,6 @@ public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefiniti
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void registerPattern(ParserContext parserContext, String id, String pattern) {
-		BeanDefinitionRegistry registry = parserContext.getRegistry();
-		BeanDefinition sitemapBean;
-		try {
-			sitemapBean = registry.getBeanDefinition(Sitemap.BEAN_ID);
-		} catch (NoSuchBeanDefinitionException e) {
-			sitemapBean = BeanDefinitionBuilder.genericBeanDefinition(Sitemap.class)
-				.addPropertyValue(Sitemap.BEAN_PROP_ENTRIES, new HashMap<String, String>())
-				.getBeanDefinition();
-			registry.registerBeanDefinition(Sitemap.BEAN_ID, sitemapBean);
-		}
-		((Map<String, String>) sitemapBean.getPropertyValues().getPropertyValue(Sitemap.BEAN_PROP_ENTRIES).getValue()).put(id, pattern);
-	}
-
 	private String generateHandler(Element element, ParserContext parserContext, String uriSpec) {
 		for (MvcFrontControllerBeanDefinitionParserPlugin p : plugins) {
 			if (p.supports(element)) {

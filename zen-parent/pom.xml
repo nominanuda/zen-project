@@ -70,7 +70,7 @@ limitations under the License.
     <junit.version>4.12</junit.version>
     <mockito-all.version>1.10.19</mockito-all.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
-    <soy.version>2016-08-25</soy.version>
+    <soy.version>2017-02-01</soy.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <antlr3-runtime.version>3.5.2</antlr3-runtime.version>
     <mongo-java-driver.version>2.8.0</mongo-java-driver.version>

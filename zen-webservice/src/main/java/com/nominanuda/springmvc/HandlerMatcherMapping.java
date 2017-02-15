@@ -43,9 +43,6 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 	private transient DispatcherServletHelper dispatcherServletHelper;
 	private ApplicationContext applicationContext;
 
-	public void setHandlerMatcher(HandlerMatcher handlerMatcher) {
-		this.handlerMatcher = handlerMatcher;
-	}
 
 	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		HttpRequest httpRequest = SERVLET.getOrCreateRequest(request, true);
@@ -114,8 +111,16 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 			}
 		};
 	}
+	
+	
+	
+	/* setters */
 
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
+	}
+	
+	public void setHandlerMatcher(HandlerMatcher handlerMatcher) {
+		this.handlerMatcher = handlerMatcher;
 	}
 }

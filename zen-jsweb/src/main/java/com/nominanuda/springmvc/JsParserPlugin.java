@@ -22,8 +22,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlugin {
-	private static final String RUNTIMEPROFILE_DEV = "dev";
-	private static final String RUNTIMEPROFILE = "runtimeprofile";
+//	private static final String RUNTIMEPROFILE_DEV = "dev";
+//	private static final String RUNTIMEPROFILE = "runtimeprofile";
 	
 	// TODO configurable
 	private boolean mergeEntityDataObject = true;
@@ -41,12 +41,13 @@ public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlu
 		String uuid = MvcFrontControllerBeanDefinitionParser.uuid();
 		parserContext.getRegistry().registerBeanDefinition(uuid, BeanDefinitionBuilder.genericBeanDefinition(CompilingRhinoHandler.class)
 			.addPropertyReference("sitemap", Sitemap.BEAN_ID)
+			.addPropertyValue("patternId", element.getAttribute("id"))
+			.addPropertyValue("uriSpec", url)
 			.addPropertyReference("springScopeFactory", scopeFactoryId)
-			.addPropertyValue("develMode", RUNTIMEPROFILE_DEV.equals(System.getProperty(RUNTIMEPROFILE)))
+//			.addPropertyValue("develMode", RUNTIMEPROFILE_DEV.equals(System.getProperty(RUNTIMEPROFILE)))
 			.addPropertyValue("mergeGetAndPostFormParams", mergeGetAndPostFormParams)
 			.addPropertyValue("mergeEntityDataObject", mergeEntityDataObject)
 			.addPropertyValue("function", function)
-			.addPropertyValue("spec", url)
 			.setInitMethodName("init")
 			.getBeanDefinition());
 		return uuid;

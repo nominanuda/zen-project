@@ -5,15 +5,21 @@ import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.xml.ParserContext;
+
 import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.urispec.Utils;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 
 public class Sitemap {
-	public static final String BEAN_ID = "zenWebserviceSitemap";
-	public static final String BEAN_PROP_ENTRIES = "entries";
+	public static final String BEAN_ID = "__zen-webservice-sitemap__"; // use uuid instead?
+	private static final String BEAN_PROP_ENTRIES = "entries";
 	
-	private Map<String, DataObjectURISpec> specs = new HashMap<String, DataObjectURISpec>();
+	private final Map<String, DataObjectURISpec> specs = new HashMap<>();
 	
 	
 	public String getUrl(String id, DataObject o) {
@@ -30,6 +36,26 @@ public class Sitemap {
 	public void setEntries(Map<String, String> entries) {
 		for (String id : entries.keySet()) {
 			specs.put(id, new DataObjectURISpec(Utils.uriSpec(entries.get(id))));
+		}
+	}
+	
+	
+	/* static helper */
+	
+	@SuppressWarnings("unchecked")
+	public static void registerPattern(String id, String pattern, ParserContext parserContext) {
+		if (!"".equals(id)) { // add to sitemap only if it has an id
+			BeanDefinitionRegistry registry = parserContext.getRegistry();
+			BeanDefinition sitemapBean;
+			try {
+				sitemapBean = registry.getBeanDefinition(BEAN_ID);
+			} catch (NoSuchBeanDefinitionException e) {
+				sitemapBean = BeanDefinitionBuilder.genericBeanDefinition(Sitemap.class)
+					.addPropertyValue(BEAN_PROP_ENTRIES, new HashMap<String, String>())
+					.getBeanDefinition();
+				registry.registerBeanDefinition(BEAN_ID, sitemapBean);
+			}
+			((Map<String, String>) sitemapBean.getPropertyValues().getPropertyValue(BEAN_PROP_ENTRIES).getValue()).put(id, pattern);
 		}
 	}
 }

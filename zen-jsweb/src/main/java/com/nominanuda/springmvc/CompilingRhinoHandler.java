@@ -34,6 +34,14 @@ public class CompilingRhinoHandler extends RhinoHandler {
 	private boolean cache = true;
 	
 	
+	public CompilingRhinoHandler(Map<String, Object> hardParams, Map<String, Object> hostObjects) {
+		super(hardParams, hostObjects);
+	}
+	public CompilingRhinoHandler() {
+		super();
+	}
+	
+	
 	@Override
 	protected void evaluateScript(Context cx, Scriptable controllerScope, String uri) throws IOException {
 		if (cache) {

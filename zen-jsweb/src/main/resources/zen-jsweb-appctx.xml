@@ -5,12 +5,12 @@
 		
 		
 	<import resource="classpath:zen-webservice-appctx.xml" />
-		
+	
 		
 	<!-- default (to be overridden) -->
-	<bean id="RHINO_SCOPE_FACTORY" parent="izScopeFactory" />
+	<bean id="RHINO_SCOPE_FACTORY" parent="ABS_RHINO_SCOPE_FACTORY" />
 	
-	<bean id="izScopeFactory" class="org.mozilla.javascript.SpringScopeFactory" abstract="true" init-method="init">
+	<bean id="ABS_RHINO_SCOPE_FACTORY" class="org.mozilla.javascript.SpringScopeFactory" abstract="true" init-method="init">
 		<property name="embedding" ref="zen-jsweb-rhino-embedding" />
 		<property name="allowJavaPackageAccess" value="true" />
 		<property name="definedClasses">
@@ -91,5 +91,15 @@
 			</bean>
 		</property>
 		<property name="debug" value="false" /><!-- TODO -->
+	</bean>
+	
+	
+	<!-- default (to be overridden) -->
+	<bean id="SOY_SOURCE" parent="ABS_SOY_SOURCE" />
+	
+	<bean id="ABS_SOY_SOURCE" class="com.nominanuda.springsoy.JarSoySource" abstract="true" />
+	
+	<bean class="com.nominanuda.springsoy.SoyViewResolver">
+		<property name="soySource" ref="SOY_SOURCE" />
 	</bean>
 </beans>

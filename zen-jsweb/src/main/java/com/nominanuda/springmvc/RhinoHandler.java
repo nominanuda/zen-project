@@ -32,7 +32,9 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -57,9 +59,14 @@ import com.nominanuda.web.mvc.CommandRequestHandler;
 import com.nominanuda.web.mvc.DataObjectURISpec;
 
 public class RhinoHandler implements CommandRequestHandler {
-	public final static String ENTITY_ARRAY_CMD_KEY = "_entity";
+	private final static String ENTITY_ARRAY_CMD_KEY = "_entity";
+	private final static String REQUEST_EXTRA_PATTERNID = "patternId";
+	
+	protected final Map<String, Object> hardParams, hostObjects;
 	protected final EntityDecoder jsonDecoder = new DataStructJsonDecoder();
 	
+	protected Sitemap sitemap;
+	protected String patternId;
 	protected URISpec<DataObject> uriSpec;
 	protected RhinoEmbedding rhinoEmbedding;
 	protected ScriptableObject cachedScope;
@@ -68,7 +75,15 @@ public class RhinoHandler implements CommandRequestHandler {
 	protected boolean mergeGetAndPostFormParams = true;
 	protected boolean mergeEntityDataObject = true;
 	protected String function = "handle";
-	protected Sitemap sitemap;
+	
+	
+	public RhinoHandler(Map<String, Object> hardParams, Map<String, Object> hostObjects) {
+		this.hardParams = hardParams != null ? hardParams : new HashMap<String, Object>();
+		this.hostObjects = hostObjects != null ? hostObjects : new HashMap<String, Object>();
+	}
+	public RhinoHandler() {
+		this(null, null);
+	}
 	
 	
 	public void init() {
@@ -150,7 +165,12 @@ public class RhinoHandler implements CommandRequestHandler {
 	
 	protected Object executeFunction(Context cx, Scriptable controllerScope, String function, DataStruct cmd, HttpRequest request) {
 		Scriptable jsCmd = DSS_CONVERTOR.toScriptable(cx, cmd, controllerScope);
-		JsHttpRequest jsReq = (JsHttpRequest) cx.newObject(controllerScope, "HttpRequest", new Object[] { request });
+		JsHttpRequest jsReq = (JsHttpRequest) cx.newObject(controllerScope, "HttpRequest", new Object[] {
+			request,
+			STRUCT.buildObject(
+				REQUEST_EXTRA_PATTERNID, patternId
+			)
+		});
 		return RHINO.callFunctionInScope(cx, controllerScope, function, new Object[] { jsCmd, jsReq });
 	}
 	
@@ -183,16 +203,20 @@ public class RhinoHandler implements CommandRequestHandler {
 		rhinoEmbedding = scopeFactory.getEmbedding();
 		this.scopeFactory = scopeFactory;
 	}
+
+	public void setSitemap(Sitemap sitemap) {
+		this.sitemap = sitemap;
+	}
 	
 	public void setFunction(String function) {
 		this.function = function;
 	}
 	
-	public void setSitemap(Sitemap sitemap) {
-		this.sitemap = sitemap;
+	public void setPatternId(String patternId) {
+		this.patternId = patternId;
 	}
 
-	public void setSpec(String uriSpecTemplate) {
+	public void setUriSpec(String uriSpecTemplate) {
 		this.uriSpec = new DataObjectURISpec(uriSpecTemplate);
 	}
 }

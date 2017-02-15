@@ -8,7 +8,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +21,13 @@ import com.nominanuda.lang.Tuple2;
 
 
 public class JarSoySource extends SoySource {
-	private List<String> templatesLocations = initTemplatesLocations();
+	private final List<String> templatesLocations;
 	
-	protected List<String> initTemplatesLocations() {
-		return Collections.emptyList();
+	
+	public JarSoySource(String... baseTemplatesLocations) {
+		this.templatesLocations = Arrays.asList(baseTemplatesLocations);
 	}
+	
 	
 	@Override
 	protected void cumulate(Builder builder, List<String> jsTplNames) throws IOException {
@@ -115,6 +116,6 @@ public class JarSoySource extends SoySource {
 	/* setters */
 	
 	public void setTemplatesLocations(String... templatesLocation) {
-		templatesLocations = Arrays.asList(templatesLocation);
+		this.templatesLocations.addAll(Arrays.asList(templatesLocation));
 	}
 }
