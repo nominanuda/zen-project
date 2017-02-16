@@ -38,6 +38,7 @@ import org.apache.http.cookie.CookieSpec;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,7 @@ public class HttpContext {
 	private final ThreadLocal<Long> contextMsNetwork = new ThreadLocal<Long>();
 
 	private final Logger log = LoggerFactory.getLogger(HttpContext.class);
-	private final CookieSpec cookieSpec = new BrowserCompatSpec();
+	private final CookieSpec cookieSpec = new DefaultCookieSpec();
 	private Set<String> forwardedCookies = new HashSet<>();
 	private boolean verbose = false;
 
