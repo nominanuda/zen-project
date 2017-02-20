@@ -223,7 +223,14 @@ public class WrapperInvocationHandler implements InvocationHandler {
 				return v;
 			}
 		} else {
-			if (DataObjectWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
+			if(WrapperItemFactory.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) {
+				try {
+					Method factoryMethod = type.getMethod("wrap", DataObject.class);
+					return factoryMethod.invoke(null, v);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+					throw new RuntimeException(e);
+				}
+			} else if (DataObjectWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
 				return WF.wrap((DataObject)v, type);
 			} else {
 				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
