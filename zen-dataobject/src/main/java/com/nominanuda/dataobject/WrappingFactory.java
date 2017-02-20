@@ -18,7 +18,7 @@ public class WrappingFactory {
 	public <T> T wrap(Class<T> cl) {
 		return wrap(null, cl);
 	}
-	
+
 	public <T extends DataObjectWrapper> T clone(T obj, Class<T> cl) {
 		return wrap(STRUCT.clone(obj.unwrap()), cl);
 	}

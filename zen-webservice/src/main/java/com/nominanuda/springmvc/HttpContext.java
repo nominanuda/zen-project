@@ -37,7 +37,6 @@ import org.apache.http.cookie.CookieOrigin;
 import org.apache.http.cookie.CookieSpec;
 import org.apache.http.cookie.MalformedCookieException;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -90,12 +90,24 @@ public class WrapperInvocationHandler implements InvocationHandler {
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
 						DataArray arr = o.getArray(name);
 						if (arr != null) {
-							Class<?> itemType = getCollectionReturnComponentType(method);
 							Collection<Object> coll = type.isInterface()
 								? new LinkedList<>()
 								: (Collection<Object>) type.newInstance();
+								Class<?> itemType = null;
+								try {
+									itemType = getCollectionReturnComponentType(method);
+								} catch(Exception e) {
+									//dynamic mode on
+								}
 							for (Object v : STRUCT.castAsIterable(arr)) {
-								coll.add(fromDataObjectValue(v, itemType));
+								if(itemType == null && v == null) {
+									coll.add(null);
+								} else {
+									if(itemType == null) {
+										itemType = v.getClass();
+									}
+									coll.add(fromDataObjectValue(v, itemType));
+								}
 							}
 							return coll;
 						} else {
@@ -104,14 +116,27 @@ public class WrapperInvocationHandler implements InvocationHandler {
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
 						DataObject obj = o.getObject(name);
 						if (obj != null) {
-							Tuple2<Class<?>, Class<?>> keyValTypes = getMapReturnComponentTypes(method);
-							Class<?> itemType = keyValTypes.get1();
 							if(type.isInterface()) {
 								type = LinkedHashMap.class;
 							}
 							Map<String, Object> map = (Map<String, Object>) type.newInstance();
+							Class<?> itemType = null;
+							try {
+								Tuple2<Class<?>, Class<?>> keyValTypes = getMapReturnComponentTypes(method);
+								itemType = keyValTypes.get1();
+							} catch(Exception e) {
+								//dynamic mode on
+							}
 							for (String key : obj.getKeys()) {
-								map.put(key, fromDataObjectValue(obj.get(key), itemType));
+								Object val = obj.get(key);
+								if(itemType == null && val == null) {
+									map.put(key, null);
+								} else {
+									if(itemType == null) {
+										itemType = val.getClass();
+									}
+									map.put(key, fromDataObjectValue(val, itemType));
+								}
 							}
 							return map;
 						} else {
