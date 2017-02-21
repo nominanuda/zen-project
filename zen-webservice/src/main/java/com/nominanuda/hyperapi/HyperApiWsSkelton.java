@@ -228,17 +228,23 @@ public class HyperApiWsSkelton implements WebService {
 	
 
 	protected HttpResponse response(Object result, AnnotatedType ap) {
-		HttpCoreHelper d = new HttpCoreHelper();
-		BasicHttpResponse resp = new BasicHttpResponse(d.statusLine(200));
-		HttpEntity entity = entityCodec.encode(result, ap);
-		if (entity != null) {
-			resp.setEntity(entity);
+		if(result instanceof HttpResponse) {
+			return (HttpResponse)result;
+		} else {
+			BasicHttpResponse resp = new BasicHttpResponse(HTTP.statusLine(200));
+			HttpEntity entity = null;
+			if(result instanceof HttpEntity) {
+				entity = (HttpEntity)result;
+			} else if(result != null) {
+				entity = entityCodec.encode(result, ap);
+			}
+			if (entity != null) {
+				resp.setEntity(entity);
+			}
+			return resp;
 		}
-		return resp;
 	}
-	
-	
-	
+
 	/* proxy magic */
 	
 	private void evCreateProxy() {
