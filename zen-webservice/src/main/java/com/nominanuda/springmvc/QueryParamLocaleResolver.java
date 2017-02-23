@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 public class QueryParamLocaleResolver extends AbstractLocaleResolver {
 	private String paramName = "lang";

@@ -35,8 +35,8 @@ public class DataStructHelperTest {
 	public void testToString() {
 		assertEquals("{}", new DataObjectImpl().toString());
 		assertEquals("[]", new DataArrayImpl().toString());
-		DataObject obj = new DataObjectImpl();
-		DataArray arr = new DataArrayImpl();
+		Obj obj = new DataObjectImpl();
+		Arr arr = new DataArrayImpl();
 		arr.put(1, "\"");
 		arr.add(true);
 		arr.add("\\");
@@ -51,7 +51,7 @@ public class DataStructHelperTest {
 	}
 	@Test
 	public void testGetPathSafe() {
-		DataObject obj = new DataObjectImpl();
+		Obj obj = new DataObjectImpl();
 		obj.putNewObject("foo")
 			.putNewArray("bar")
 			.putNewObject(2)
@@ -64,9 +64,9 @@ public class DataStructHelperTest {
 
 	@Test
 	public void testEqualsAndClone() throws IOException, ParseException, SAXException {
-		DataObject obj = (DataObject)new JSONParser().parse(
+		Obj obj = (Obj)new JSONParser().parse(
 			"{\"a\":null,\"b\":{\"c\":1},\"d\":\"X\"}");
-		DataObject obj2 = new DataStructHelper().clone(obj);
+		Obj obj2 = new DataStructHelper().clone(obj);
 		assertTrue(new DataStructHelper().equals(obj, obj2));
 	}
 	
@@ -85,9 +85,9 @@ public class DataStructHelperTest {
 	
 	@Test
 	public void shouldTranslateDataArrayWith2EqualsObjectIntoAListWith2EqualsMap() {
-		DataObject val1 = new DataObjectImpl();
-		DataObject val2 = new DataObjectImpl();
-		DataArray arr = new DataArrayImpl();
+		Obj val1 = new DataObjectImpl();
+		Obj val2 = new DataObjectImpl();
+		Arr arr = new DataArrayImpl();
 		arr.add(val1);
 		arr.add(val2);
 		List<?> list = new DataStructHelper().toMapsAndLists(arr);
@@ -97,18 +97,18 @@ public class DataStructHelperTest {
 
 	@Test
 	public void testSaObjSeq() {
-		DataArray a0 = STRUCT.newArray();
-		DataArray a1 = STRUCT.newArray().with(STRUCT.newObject());
-		DataArray a2 = STRUCT.newArray().with("");
+		Arr a0 = STRUCT.newArray();
+		Arr a1 = STRUCT.newArray().with(STRUCT.newObject());
+		Arr a2 = STRUCT.newArray().with("");
 
-		for(DataObject o : STRUCT.asObjSeq(a0)) {
+		for(Obj o : STRUCT.asObjSeq(a0)) {
 			assertFalse(o.exists("foo"));
 		}
-		for(DataObject o : STRUCT.asObjSeq(a1)) {
+		for(Obj o : STRUCT.asObjSeq(a1)) {
 			assertFalse(o.exists("foo"));
 		}
 		try {
-			for(DataObject o : STRUCT.asObjSeq(a2)) {
+			for(Obj o : STRUCT.asObjSeq(a2)) {
 				assertFalse(o.exists("foo"));
 			}
 			fail();
@@ -117,21 +117,21 @@ public class DataStructHelperTest {
 	
 	@Test
 	public void testSort() {
-		DataArray a = STRUCT.buildArray(
+		Arr a = STRUCT.buildArray(
 			STRUCT.buildObject("pos", 3),
 			STRUCT.buildObject("pos", 1),
 			STRUCT.buildObject("pos", 0),
 			STRUCT.buildObject("pos", 2)
 		);
-		STRUCT.sort(a, new Comparator<DataObject>() {
+		STRUCT.sort(a, new Comparator<Obj>() {
 			@Override
-			public int compare(DataObject o1, DataObject o2) {
+			public int compare(Obj o1, Obj o2) {
 				return (int)(o1.getLong("pos") - o2.getLong("pos"));
 			}
 		});
 		assertTrue(a.getObject(0).getLong("pos") == 0);
 		
-		DataArray b = STRUCT.buildArray(3, 2, 5, 6, 0, 1);
+		Arr b = STRUCT.buildArray(3, 2, 5, 6, 0, 1);
 		STRUCT.sort(b, new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
@@ -140,7 +140,7 @@ public class DataStructHelperTest {
 		});
 		assertTrue(b.getLong(0) == 0);
 		
-		DataArray c = STRUCT.buildArray("abcd", "abc", "a", "ab");
+		Arr c = STRUCT.buildArray("abcd", "abc", "a", "ab");
 		STRUCT.sort(c, new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {

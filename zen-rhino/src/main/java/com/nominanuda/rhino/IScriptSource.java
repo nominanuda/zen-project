@@ -2,17 +2,17 @@ package com.nominanuda.rhino;
 
 import java.io.IOException;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public interface IScriptSource {
 	public interface IScript extends AutoCloseable {
 		public void close();
 		Object call(String function, Object... args);
-		DataArray callForDataArray(String function, Object... args);
-		DataObject callForDataObject(String function, Object... args);
-		DataStruct callForDataStruct(String function, Object... args);
+		Arr callForDataArray(String function, Object... args);
+		Obj callForDataObject(String function, Object... args);
+		Stru callForDataStruct(String function, Object... args);
 		String source();
 	}
 	

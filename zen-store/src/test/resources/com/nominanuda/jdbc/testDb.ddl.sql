@@ -1,0 +1,9 @@
+
+CREATE TABLE test(
+  obj VARCHAR(255) NOT NULL,
+  usr INT NOT NULL,
+  desc CLOB NOT NULL,
+  tstamp BIGINT NOT NULL,
+  flag BOOLEAN,
+  PRIMARY KEY(usr)
+);

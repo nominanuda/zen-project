@@ -15,18 +15,14 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.obj.JsonDeserializer.JSON_DESERIALIZER;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Maths;
 
 public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -42,25 +38,34 @@ public class JsonAnyValueDecoder extends AbstractEntityDecoder<Object> {
 	protected Object decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
 		String s = IO.readAndCloseUtf8(entity.getContent());
 		try {
-			if ("null".equals(s)) {
-				return null;
-			} else if ("true".equals(s) || "false".equals(s)) {
-				return Boolean.valueOf(s);
-			} else if (Maths.isNumber(s)) {
-				if (Maths.isInteger(s)) { // don't use ?: operator or it will always return Double!!!
-					return Long.valueOf(s);
-				} else {
-					return Double.valueOf(s);
-				}
-			} else if (s.startsWith("\"") && s.length() > 1) {
-				return STRUCT.jsonStringUnescape(s.substring(1, s.length() - 1));
+			Object res = JSON_DESERIALIZER.deserialize(s);
+			Class<?> type = p.getType();
+			if(Number.class.isAssignableFrom(type)) {
+				Number n = (Number)res;
+				return castNumber(n, type);
 			} else {
-				DataStruct ds = STRUCT.parse(new StringReader(s));
-				return ds;
+				return res;
 			}
 		} catch (Exception e) {
 			log.error("error trying to parse: " + s);
 			throw e;
+		}
+	}
+	private Number castNumber(Number n, Class<?> type) {
+		if(Integer.class.equals(type)) {
+			return new Integer(n.intValue());
+		} else if(Long.class.equals(type)) {
+			return new Long(n.longValue());
+		} else if(Float.class.equals(type)) {
+			return new Float(n.floatValue());
+		} else if(Double.class.equals(type)) {
+			return new Double(n.doubleValue());
+		} else if(Short.class.equals(type)) {
+			return new Short(n.shortValue());
+		} else if(Byte.class.equals(type)) {
+			return new Byte(n.byteValue());
+		} else {
+			return n;
 		}
 	}
 }

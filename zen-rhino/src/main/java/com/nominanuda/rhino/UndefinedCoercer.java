@@ -2,8 +2,7 @@ package com.nominanuda.rhino;
 
 import org.mozilla.javascript.Undefined;
 
-import com.nominanuda.lang.NoException;
-import com.nominanuda.lang.ObjectConvertor;
+import com.nominanuda.zen.common.Ex.NoException;
 
 public class UndefinedCoercer implements ObjectConvertor<Undefined, Void, NoException> {
 

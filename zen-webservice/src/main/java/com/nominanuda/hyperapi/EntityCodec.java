@@ -15,24 +15,24 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.zen.seq.Seq.SEQ;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
 
-import com.nominanuda.lang.Collections;
-
 public class EntityCodec {
-	private List<EntityEncoder> encoders = Collections.linkedList(
+	private List<EntityEncoder> encoders = SEQ.linkedList(
 		(EntityEncoder)new InputStreamEntityEncoder(), 
 		(EntityEncoder)new ByteArrayEntityEncoder(),
-		(EntityEncoder)new DataObjectWrapperEntityEncoder(),
+		(EntityEncoder)new ObjWrapperEntityEncoder(),
 		(EntityEncoder)new JsonAnyValueEntityEncoder()
 	);
 
-	private List<EntityDecoder> decoders = Collections.linkedList(
-		(EntityDecoder)new DataObjectWrapperDecoder(),
+	private List<EntityDecoder> decoders = SEQ.linkedList(
+		(EntityDecoder)new ObjWrapperDecoder(),
 		(EntityDecoder)new JsonAnyValueDecoder(),
 		(EntityDecoder)new ByteArrayEntityDecoder(),
 		(EntityDecoder)new InputStreamEntityDecoder(),

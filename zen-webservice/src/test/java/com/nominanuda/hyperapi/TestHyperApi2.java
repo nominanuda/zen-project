@@ -20,15 +20,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.zen.obj.Obj;
 
 @HyperApi
 public interface TestHyperApi2 {
 	@PUT @Path("/foo/{bar}?{baz}")
-	DataObject putFoo(
+	Obj putFoo(
 		@PathParam("bar") String bar,
 		@QueryParam("baz") String baz,
-		DataObject foo
+		Obj foo
 	);
 
 }

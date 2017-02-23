@@ -23,33 +23,33 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProtocol {
-	protected abstract Object handleInternal(Object handler, HttpRequest request, DataStruct command) throws Exception;
+	protected abstract Object handleInternal(Object handler, HttpRequest request, Stru command) throws Exception;
 
-	public Object invoke(Object handler, HttpRequest request, DataStruct command) throws Exception {
+	public Object invoke(Object handler, HttpRequest request, Stru command) throws Exception {
 		Object handlerResponse = handleInternal(handler, request, command);
 		return adaptHandlerResponse(handlerResponse);
 	}
 
 	protected final Object adaptHandlerResponse(Object response) throws Exception {
 		Check.notNull(response);
-		if (response instanceof DataStruct) {
-			DataStruct ds = (DataStruct)response;
-			if (ds.isObject()) {
-				DataObject obj = ds.asObject();
-				String view = obj.getString("view_");
+		if (response instanceof Stru) {
+			Stru ds = (Stru)response;
+			if (ds.isObj()) {
+				Obj obj = ds.asObj();
+				String view = obj.getStr("view_");
 				if (view != null) {
 					return (view.startsWith("redirect:"))
 						? HTTP.redirectTo(view.substring("redirect:".length()))
-						: new PathAndJsonViewSpec(view, obj.getObject("data_"));
+						: new PathAndJsonViewSpec(view, obj.getObj("data_"));
 				}
 			}
-			return new JsonEntity(ds, "text/plain"); // text/plain for old shitty m$ browsers
+			return new JsonEntity(ds);
 		} else if (response instanceof ViewSpec
 				|| response instanceof HttpEntity
 				|| response instanceof HttpResponse

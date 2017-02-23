@@ -21,9 +21,9 @@
 
 package com.nominanuda.springmvc;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.rhino.DataStructScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
 import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+import static com.nominanuda.zen.obj.JsonPath.JPATH;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import java.io.IOException;
@@ -46,17 +46,17 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.SpringScopeFactory;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
 import com.nominanuda.hyperapi.AnnotatedType;
 import com.nominanuda.hyperapi.DataStructJsonDecoder;
 import com.nominanuda.hyperapi.EntityDecoder;
 import com.nominanuda.jsweb.host.JsHttpRequest;
 import com.nominanuda.jsweb.host.Location;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.urispec.URISpec;
 import com.nominanuda.web.mvc.CommandRequestHandler;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class RhinoHandler implements CommandRequestHandler {
 	private final static String ENTITY_ARRAY_CMD_KEY = "_entity";
@@ -67,7 +67,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	
 	protected Sitemap sitemap;
 	protected String patternId;
-	protected URISpec<DataObject> uriSpec;
+	protected URISpec<Obj> uriSpec;
 	protected RhinoEmbedding rhinoEmbedding;
 	protected ScriptableObject cachedScope;
 	protected ScopeFactory scopeFactory;
@@ -96,7 +96,7 @@ public class RhinoHandler implements CommandRequestHandler {
 		// if the resource location doesn't depend from request's data, execute the script once (for errors spotting, caching,...)
 		Context cx = rhinoEmbedding.enterContext();
 		try {
-			if (uriSpec.toString().equals(calcScriptUri(STRUCT.newObject(), null))) {
+			if (uriSpec.toString().equals(calcScriptUri(Obj.make(), null))) {
 				evaluateScript(cx, buildScope(cx), uriSpec.toString());
 			}
 		} catch (Exception e) {
@@ -108,31 +108,31 @@ public class RhinoHandler implements CommandRequestHandler {
 	
 	
 	@Override
-	public DataStruct handle(DataStruct cmd, HttpRequest request) throws Exception {
+	public Stru handle(Stru cmd, HttpRequest request) throws Exception {
 		Context cx = rhinoEmbedding.enterContext();
 		try {
 			HttpEntity entity = HTTP.getEntity(request);
 			List<NameValuePair> pairs = Collections.emptyList();
 			if (mergeGetAndPostFormParams) {
-				DataObject cmdFromReq = HTTP.getQueryParams(request).asObject();
+				Obj cmdFromReq = HTTP.getQueryParams(request).asObj();
 				if (entity != null) {
 					pairs = HTTP.parseEntityWithDefaultUtf8(entity);
-					STRUCT.copyPush(HTTP.toDataStruct(pairs).asObject(), cmdFromReq);
+					JPATH.copyPush(HTTP.toDataStruct(pairs).asObj(), cmdFromReq);
 				}
 				// TODO 
 				// here request params hide uriparams  
-				STRUCT.copyOverwite(cmd.asObject(), cmdFromReq);
+				JPATH.copyOverwite(cmd.asObj(), cmdFromReq);
 				cmd = cmdFromReq;
 			}
 			
 			if (mergeEntityDataObject && entity != null && pairs.isEmpty()) { // if pairs isn't empty -> entity was already consumed
 				try {
 					// DataStruct because it could be an array
-					DataStruct structFromEntity = (DataStruct) jsonDecoder.decode(new AnnotatedType(DataStruct.class, new Annotation[] {}), entity);
-					DataObject cmdFromEntity = (structFromEntity.isArray() // nees to be a DataObject before merging with cmd
-							? STRUCT.newObject().with(ENTITY_ARRAY_CMD_KEY, structFromEntity)
-							: structFromEntity.asObject());
-					STRUCT.copyOverwite(cmd.asObject(), cmdFromEntity);
+					Stru structFromEntity = (Stru) jsonDecoder.decode(new AnnotatedType(Stru.class, new Annotation[] {}), entity);
+					Obj cmdFromEntity = (structFromEntity.isArr() // nees to be a Obj before merging with cmd
+							? Obj.make(ENTITY_ARRAY_CMD_KEY, structFromEntity)
+							: structFromEntity.asObj());
+					JPATH.copyOverwite(cmd.asObj(), cmdFromEntity);
 					cmd = cmdFromEntity;
 				} catch (Exception e) {
 					// better way than try/catch?
@@ -149,8 +149,8 @@ public class RhinoHandler implements CommandRequestHandler {
 	}
 	
 	
-	protected String calcScriptUri(DataStruct cmd, HttpRequest request) throws IOException {
-		return uriSpec.template(cmd.asObject());
+	protected String calcScriptUri(Stru cmd, HttpRequest request) throws IOException {
+		return uriSpec.template(cmd.asObj());
 	}
 	
 	protected void evaluateScript(Context cx, Scriptable controllerScope, String scriptUri) throws IOException {
@@ -163,11 +163,11 @@ public class RhinoHandler implements CommandRequestHandler {
 		return new Tuple2<String, Reader>(jsLocation, new InputStreamReader(new URL(uri).openStream(), "UTF-8"));
 	}
 	
-	protected Object executeFunction(Context cx, Scriptable controllerScope, String function, DataStruct cmd, HttpRequest request) {
+	protected Object executeFunction(Context cx, Scriptable controllerScope, String function, Stru cmd, HttpRequest request) {
 		Scriptable jsCmd = DSS_CONVERTOR.toScriptable(cx, cmd, controllerScope);
 		JsHttpRequest jsReq = (JsHttpRequest) cx.newObject(controllerScope, "HttpRequest", new Object[] {
 			request,
-			STRUCT.buildObject(
+			Obj.make(
 				REQUEST_EXTRA_PATTERNID, patternId
 			)
 		});
@@ -217,6 +217,6 @@ public class RhinoHandler implements CommandRequestHandler {
 	}
 
 	public void setUriSpec(String uriSpecTemplate) {
-		this.uriSpec = new DataObjectURISpec(uriSpecTemplate);
+		this.uriSpec = new ObjURISpec(uriSpecTemplate);
 	}
 }

@@ -36,7 +36,7 @@ public class DataStructContentHandlerTest {
 		dsch.endObjectEntry();
 		dsch.endObject();
 		dsch.endJSON();
-		DataObject o = dsch.getResult().asObject();
+		Obj o = dsch.getResult().asObject();
 		assertEquals(1, o.get("a"));
 		assertEquals(DataStructHelper.STRUCT.newArray().with(2) , o.get("b"));
 	}

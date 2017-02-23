@@ -25,10 +25,10 @@
       <artifactId>jta</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>com.nominanuda</groupId>
       <artifactId>zen-dataobject</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>com.nominanuda</groupId>
       <artifactId>zen-webservice</artifactId>
@@ -121,7 +121,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-          <excludedGroups>com.nominanuda.code.IntegrationTest</excludedGroups>
+          <excludedGroups>com.nominanuda.zen.maven.FailSafeTest</excludedGroups>
         </configuration>
       </plugin>
       <plugin>
@@ -133,7 +133,7 @@
           <includes>
             <include>**/*.java</include>
           </includes>
-          <groups>com.nominanuda.code.IntegrationTest</groups>
+          <groups>com.nominanuda.zen.maven.FailSafeTest</groups>
         </configuration>
         <executions>
           <execution>

@@ -15,13 +15,13 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.lang.Check.ifNull;
+import static com.nominanuda.zen.common.Check.ifNull;
 
 import java.lang.reflect.Proxy;
 
 import org.apache.http.client.HttpClient;
 
-import com.nominanuda.lang.Strings;
+import static com.nominanuda.zen.common.Str.STR;
 
 public class HttpClientHyperApiFactory extends ExceptionCatcherFactory implements HyperApiFactory {
 	private boolean allowExceptions = true;
@@ -44,7 +44,7 @@ public class HttpClientHyperApiFactory extends ExceptionCatcherFactory implement
 	 * @return
 	 */
 	public <T> T getInstance(String instanceHint, Class<? extends T> apiInterface, T apiImpl) {
-		return Strings.notNullOrBlank(instanceHint) ? getInstance(instanceHint, apiInterface) : allowExceptions ? apiImpl : getInstance(apiImpl, apiInterface);
+		return STR.notNullOrBlank(instanceHint) ? getInstance(instanceHint, apiInterface) : allowExceptions ? apiImpl : getInstance(apiImpl, apiInterface);
 	}
 	public <T> T getInstance(Class<? extends T> apiInterface, T apiImpl) { // useful when commenting out instanceHint line in Spring xml
 		return getInstance(null, apiInterface, apiImpl);

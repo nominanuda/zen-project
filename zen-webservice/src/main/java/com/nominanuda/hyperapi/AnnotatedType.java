@@ -17,13 +17,13 @@ package com.nominanuda.hyperapi;
 
 import java.lang.annotation.Annotation;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 public class AnnotatedType {
 	private final Class<?> type;

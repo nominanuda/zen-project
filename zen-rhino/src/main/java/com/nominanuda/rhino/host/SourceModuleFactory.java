@@ -15,7 +15,7 @@
  */
 package com.nominanuda.rhino.host;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import java.io.IOException;
@@ -25,10 +25,10 @@ import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.Charset;
 
+import javax.annotation.Nullable;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-
-import com.nominanuda.code.Nullable;
 
 public class SourceModuleFactory implements ModuleFactory {
 	private URI baseUri = null;

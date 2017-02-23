@@ -25,11 +25,11 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.xml.SAXEmitter;
-import com.nominanuda.xml.SAXPipeline;
-import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.zen.common.InstanceFactory;
+import com.nominanuda.zen.xml.SAXEmitter;
+import com.nominanuda.zen.xml.SAXPipeline;
+import com.nominanuda.zen.xml.SaxBuffer;
 
 public class HtmlSaxPage implements SAXEmitter, HttpProtocol {
 	private static final String BODY = "body";

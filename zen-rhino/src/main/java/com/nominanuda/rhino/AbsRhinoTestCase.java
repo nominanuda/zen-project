@@ -1,11 +1,16 @@
 package com.nominanuda.rhino;
 
+import static com.nominanuda.zen.seq.Seq.SEQ;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import org.junit.Before;
 import org.mozilla.javascript.DebuggableRhinoEmbedding;
@@ -15,20 +20,18 @@ import org.mozilla.javascript.PluggableWrapFactory;
 import org.mozilla.javascript.RhinoEmbedding;
 import org.mozilla.javascript.WrapFactory;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.ObjectConvertor;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.rhino.host.HostObjectFactory;
 import com.nominanuda.rhino.host.JavaObjectFactory;
 import com.nominanuda.rhino.host.ModuleFactory;
 import com.nominanuda.rhino.host.ModuleRegistry;
 import com.nominanuda.rhino.host.Require;
 import com.nominanuda.rhino.host.SourceModuleFactory;
-import com.nominanuda.uri.PluggableURLStreamHandlerFactory;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.jvmurl.PluggableURLStreamHandlerFactory;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.seq.Seq;
 
 public abstract class AbsRhinoTestCase {
 	
@@ -52,17 +55,17 @@ public abstract class AbsRhinoTestCase {
 	
 	protected WrapFactory getWrapFactory(RhinoEmbedding rhinoEmbedding) {
 		PluggableWrapFactory wf = new PluggableWrapFactory(rhinoEmbedding);
-		wf.setConvertors(Arrays.asList(new DataStructConvertor()));
+		wf.setConvertors(Arrays.asList(new StruConvertor()));
 		return wf;
 	}
 	
 	protected MethodArgCoercer getMethodArgCoercer() {
-		return new PluggableMethodArgCoercer(Collections.buildMap(LinkedHashMap.class,
+		return new PluggableMethodArgCoercer(SEQ.buildMap(LinkedHashMap.class,
 			String.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new UndefinedCoercer(), 1),
-			DataArray.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToDataArrayCoercer(), 1),
-			DataObject.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToDataObjectCoercer(), 1),
-			DataStruct.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToDataStructCoercer(), 1),
-			Object.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToDataStructCoercer(), 2)));
+			Arr.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToArrCoercer(), 1),
+			Obj.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToObjCoercer(), 1),
+			Stru.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToStruCoercer(), 1),
+			Object.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToStruCoercer(), 2)));
 	}
 	
 	

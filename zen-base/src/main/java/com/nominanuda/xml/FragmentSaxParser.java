@@ -36,7 +36,7 @@ import org.xml.sax.XMLReader;
 import com.nominanuda.xml.RootStripTransformer;
 
 import static com.nominanuda.xml.XmlHelper.XML;
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 public class FragmentSaxParser implements XMLReader {
 	private static final String startTag = "<XXXXXX>";

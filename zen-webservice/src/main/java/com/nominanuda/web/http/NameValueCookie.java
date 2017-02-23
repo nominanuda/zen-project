@@ -17,9 +17,9 @@ package com.nominanuda.web.http;
 
 import java.util.Date;
 
-import org.apache.http.cookie.Cookie;
+import javax.annotation.concurrent.Immutable;
 
-import com.nominanuda.code.Immutable;
+import org.apache.http.cookie.Cookie;
 
 @Immutable
 public class NameValueCookie implements Cookie {

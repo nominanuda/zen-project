@@ -15,6 +15,9 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.zen.common.Str.STR;
+import static com.nominanuda.zen.seq.Seq.SEQ;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedList;
@@ -45,9 +48,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.Strings;
+import com.nominanuda.zen.common.Check;
 
 public class JQueryAptProcessor implements Processor {
 	private ProcessingEnvironment env;
@@ -179,7 +180,7 @@ public class JQueryAptProcessor implements Processor {
 			}
 		}
 		uriTplParams.append("}");
-		String sig = Strings.join(", ", pNames);
+		String sig = STR.join(", ", pNames);
 		if(pNames.size() > 0) {
 			sig = sig + ", ";
 		}
@@ -202,12 +203,12 @@ public class JQueryAptProcessor implements Processor {
 
 	public Set<String> getSupportedOptions() {
 		log("getSupportedOtions");
-		return Collections.hashSet();
+		return SEQ.hashSet();
 	}
 
 	public Set<String> getSupportedAnnotationTypes() {
 		log("getSupportedAnnotationTypes");
-		return Collections.hashSet(HyperApi.class.getName());
+		return SEQ.hashSet(HyperApi.class.getName());
 	}
 
 	public SourceVersion getSupportedSourceVersion() {
@@ -219,7 +220,7 @@ public class JQueryAptProcessor implements Processor {
 			AnnotationMirror annotation, ExecutableElement member,
 			String userText) {
 		log("getCompletions");
-		return Collections.hashSet();
+		return SEQ.hashSet();
 	}
 
 	private void log(String msg) {

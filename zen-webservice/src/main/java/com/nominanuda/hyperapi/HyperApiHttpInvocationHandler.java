@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import static com.nominanuda.zen.obj.JsonPath.JPATH;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
@@ -58,15 +58,15 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
 import com.nominanuda.springmvc.HttpContext;
 import com.nominanuda.urispec.URISpec;
 import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	private final static String USER_AGENT = "curl/7.22.0 (x86_64-pc-linux-gnu) libcurl/7.22.0 OpenSSL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3";
@@ -103,7 +103,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 
 	private HttpRequestBase encode(String uriPrefix, Method method, Object[] args) {
 		HttpEntity entity = null;
-		DataObject uriParams = STRUCT.newObject();
+		Obj uriParams = Obj.make();
 		List<Header> requestHeaders = new ArrayList<>();
 		List<NameValuePair> formParams = new ArrayList<>();
 		
@@ -144,9 +144,9 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 					annotationFound = true;
 					if (arg != null) {
 						String name = ((FormParam) annotation).value();
-						if (arg instanceof DataObject) {
+						if (arg instanceof Obj) {
 							Map<String, Object> map = new HashMap<String, Object>();
-							STRUCT.toFlatMap(STRUCT.buildObject(name, arg), map);
+							JPATH.toFlatMap(Obj.make(name, arg), map);
 							for (Entry<String, Object> entry : map.entrySet()) {
 								if (entry.getValue() != null) {
 									formParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
@@ -172,7 +172,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		}
 		
 		String httpMethod = null;
-		URISpec<DataObject> spec = null;
+		URISpec<Obj> spec = null;
 		for (Annotation a : method.getAnnotations()) {
 			if (a instanceof POST) {
 				httpMethod = "POST";
@@ -183,7 +183,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			} else if (a instanceof DELETE) {
 				httpMethod = "DELETE";
 			} else if (a instanceof Path) {
-				spec = new DataObjectURISpec(uriPrefix + ((Path) a).value());
+				spec = new ObjURISpec(uriPrefix + ((Path) a).value());
 //			} else if (a instanceof Consumes) {
 //				consumedMediaTypes = ((Consumes) a).value();
 			}
@@ -206,8 +206,8 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	}
 	
 	
-	private DataArray toDataArray(Collection<?> arg) {
-		DataArray arr = STRUCT.newArray();
+	private Arr toDataArray(Collection<?> arg) {
+		Arr arr = Arr.make();
 		for (Object obj : arg) {
 			if (obj != null) {
 				arr.add(obj.toString());
@@ -221,7 +221,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		HttpRequestBase request = createRequest(uri, httpMethod);
 		request.setConfig(requestConfig);
 		request.setHeaders(headers.toArray(new Header[headers.size()]));
-		if (DataStruct.class.isAssignableFrom(returnType)) {
+		if (Stru.class.isAssignableFrom(returnType)) {
 			request.setHeader("Accept", HttpProtocol.CT_APPLICATION_JSON);
 		} else {
 			request.setHeader("Accept", "*/*");

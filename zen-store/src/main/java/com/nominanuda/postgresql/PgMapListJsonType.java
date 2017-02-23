@@ -1,7 +1,5 @@
 package com.nominanuda.postgresql;
 
-import static com.nominanuda.dataobject.DataStructHelper.Z;
-
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +10,8 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
+
+import com.nominanuda.zen.obj.Obj;
 
 public class PgMapListJsonType implements UserType {
 
@@ -47,7 +47,7 @@ public class PgMapListJsonType implements UserType {
 			return null;
 		}
 		try {
-			return Z.toMapsAndLists(Z.parseObject(cellContent));
+			return Obj.parse(cellContent);
 		} catch (final Exception ex) {
 			throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
 		}
@@ -62,18 +62,16 @@ public class PgMapListJsonType implements UserType {
 			return;
 		}
 		try {
-			st.setObject(index, Z.fromMapsAndCollections((Map<String,Object>)value).toString(), Types.OTHER);
+			st.setObject(index, Obj.fromMap((Map<String,Object>)value).toString(), Types.OTHER);
 		} catch (final Exception ex) {
 			throw new RuntimeException("Failed to convert Invoice to String: " + ex.getMessage(), ex);
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object deepCopy(Object value) throws HibernateException {
-		return
-		Z.toMapsAndLists(
-			Z.clone(
-				Z.fromMapsAndCollections((Map<String,Object>)value)));
+		return Obj.fromMap((Map<String,Object>)value).copy();
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.nominanuda.solr;
 
-import static com.nominanuda.lang.Check.illegalargument;
+import static com.nominanuda.zen.common.Check.illegalargument;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrResourceLoader;
-
-import com.nominanuda.code.Nullable;
 
 public class CoreContainerLifeCycle {
 	private Map<String, SolrCore> coresByDataDir = new HashMap<String, SolrCore>();

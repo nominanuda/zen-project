@@ -15,12 +15,12 @@
  */
 package com.nominanuda.web.htmlcomposer;
 
+import static com.nominanuda.zen.common.Check.illegalstate;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import org.xml.sax.Attributes;
-
-import com.nominanuda.lang.Check;
 
 public class CompoundClause extends Clause {
 	private static final int NOVAL = -1;
@@ -63,7 +63,7 @@ public class CompoundClause extends Clause {
 			}
 			return -1;
 		default:
-			Check.illegalstate.fail();
+			illegalstate.fail();
 			break;
 		}
 		return 0;

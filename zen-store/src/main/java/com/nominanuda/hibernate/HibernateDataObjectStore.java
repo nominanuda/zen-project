@@ -17,38 +17,38 @@ package com.nominanuda.hibernate;
 
 import java.util.Map;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.obj.Obj;
 
 public class HibernateDataObjectStore extends AbstractHibernateStructStore implements HttpProtocol {
 //	protected Logger log = LoggerFactory.getLogger(HibernateDataObjectStore.class);
 
-	public DataObject get(String type, String id) throws Exception {
+	public Obj get(String type, String id) throws Exception {
 		return get(type, id, type);
 	}
 
-	public DataObject get(String type, String id, String viewName) throws Exception {
+	public Obj get(String type, String id, String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
 			session = openSession();
 			tx = session.beginTransaction();
-			Query q = session.createQuery("from "+type+" where id=:id");
+			Query<?> q = session.createQuery("from "+type+" where id=:id");
 //							.setReadOnly(true);
-			DataObject params = new DataObjectImpl();
+			Obj params = Obj.make();
 			params.put("id", id);
-			for(String k : params.getKeys()) {
+			for(String k : params.keySet()) {
 				bind(q, k, params.get(k));
 			}
-			Object o = q.uniqueResult();
+			Object o = q.getSingleResult();
 			if(o == null) {
 				return null;
 			} else if(o instanceof Map<?,?>) {
+				@SuppressWarnings("unchecked")
 				Map<String,Object> m = (Map<String,Object>)o;
 				return render(m, viewName);
 			} else {
@@ -65,7 +65,7 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 		}
 	}
 
-	public void put(String type, DataObject o) throws Exception {
+	public void put(String type, Obj o) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
@@ -85,9 +85,9 @@ public class HibernateDataObjectStore extends AbstractHibernateStructStore imple
 		}
 	}
 
-	public void put(String type, DataObject o, Session session, Transaction tx) throws Exception {
+	public void put(String type, Obj o, Session session, Transaction tx) throws Exception {
 		//TODO
-		Map<String, ? super Object> entity = struct.toMapsAndSetLists((DataObject)o);
+		Map<String, ? super Object> entity = o;
 		session.saveOrUpdate(type, entity);
 	}
 

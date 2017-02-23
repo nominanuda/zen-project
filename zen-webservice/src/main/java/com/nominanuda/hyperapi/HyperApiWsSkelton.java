@@ -15,9 +15,9 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.dataobject.WrappingFactory.WF;
 import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+import static com.nominanuda.zen.obj.JsonPath.JPATH;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -46,15 +46,15 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectWrapper;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpCoreHelper;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
 import com.nominanuda.web.mvc.WebService;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
 public class HyperApiWsSkelton implements WebService {
 	private final EntityCodec entityCodec = EntityCodec.createBasic();
@@ -71,8 +71,8 @@ public class HyperApiWsSkelton implements WebService {
 		try {
 			Tuple2<Object, AnnotatedType> result = handleCall(request);
 			Object handlerResult = result.get0();
-			if (jsonDurationProperty != null && handlerResult instanceof DataObject) {
-				((DataObject)handlerResult).put(jsonDurationProperty, System.currentTimeMillis() - start);
+			if (jsonDurationProperty != null && handlerResult instanceof Obj) {
+				((Obj)handlerResult).put(jsonDurationProperty, System.currentTimeMillis() - start);
 			}
 			return response(handlerResult, result.get1());
 		} catch (InvocationTargetException e) {
@@ -92,8 +92,8 @@ public class HyperApiWsSkelton implements WebService {
 		for (Method m : api.getMethods()) { // better than getDeclaredMethods(), as we use interfaces and they could extend one another
 			Path pathAnno = apiIntrospector.findPathAnno(m);
 			if (pathAnno != null) {
-				DataObjectURISpec spec = new DataObjectURISpec(pathAnno.value());
-				DataObject uriParams = spec.match(apiRequestUri);
+				ObjURISpec spec = new ObjURISpec(pathAnno.value());
+				Obj uriParams = spec.match(apiRequestUri);
 				if (uriParams != null) {
 					if (supportsHttpMethod(m, request.getRequestLine().getMethod())) {
 						Object[] args = createArgs(uriParams, new HttpCoreHelper().getEntity(request), api, m);
@@ -120,7 +120,7 @@ public class HyperApiWsSkelton implements WebService {
 		return false;
 	}
 
-	private Object[] createArgs(DataObject uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
+	private Object[] createArgs(Obj uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
 		List<NameValuePair> formParams = Collections.emptyList();
 		if (entity != null) {
 			formParams = HTTP.parseEntityWithDefaultUtf8(entity);
@@ -138,20 +138,20 @@ public class HyperApiWsSkelton implements WebService {
 					// TODO
 				} else if (annotation instanceof PathParam) {
 					annotationFound = true;
-					Object o = uriParams.getPathSafe(((PathParam) annotation).value());
+					Object o = JPATH.getPathSafe(uriParams, ((PathParam) annotation).value());
 					args[i] = decast(o, parameterType);
 					break;
 				} else if (annotation instanceof QueryParam) {
 					annotationFound = true;
-					Object o = uriParams.getPathSafe(((QueryParam) annotation).value());
+					Object o = JPATH.getPathSafe(uriParams, ((QueryParam) annotation).value());
 					args[i] = decast(o, parameterType);
 					break;
 				} else if (annotation instanceof FormParam) {
 					annotationFound = true;
-					if (DataObject.class.equals(parameterType)) {
-						args[i] = HTTP.toDataStruct(formParams).asObject();
-					} else if (parameterType.isInterface() && DataObjectWrapper.class.isAssignableFrom(parameterType)) {
-						args[i] = WF.wrap(HTTP.toDataStruct(formParams).asObject(), parameterType);
+					if (Obj.class.equals(parameterType)) {
+						args[i] = HTTP.toDataStruct(formParams).asObj();
+					} else if (parameterType.isInterface() && ObjWrapper.class.isAssignableFrom(parameterType)) {
+						args[i] = WF.wrap(HTTP.toDataStruct(formParams).asObj(), parameterType);
 					} else {
 						Object o = getFormParams(formParams, ((FormParam) annotation).value());
 						args[i] = decast(o, parameterType);
@@ -162,8 +162,8 @@ public class HyperApiWsSkelton implements WebService {
 			if(! annotationFound) {
 				if(entity == null) {
 					args[i] = null;
-				}/* else if(parameterType.isInterface() && DataObjectWrapper.class.isAssignableFrom(parameterType)) {
-					args[i] = WF.wrap((DataObjectWrapper)entityCodec.decode(entity, p), parameterType);
+				}/* else if(parameterType.isInterface() && ObjWrapper.class.isAssignableFrom(parameterType)) {
+					args[i] = WF.wrap((ObjWrapper)entityCodec.decode(entity, p), parameterType);
 				}*/ else {
 					args[i] = entityCodec.decode(entity, p);
 				}
@@ -194,21 +194,21 @@ public class HyperApiWsSkelton implements WebService {
 				if (val instanceof Collection) {
 					return val;
 				}
-				if (val instanceof DataArray) {
-					return STRUCT.toMapsAndLists((DataArray) val);
+				if (val instanceof Arr) {
+					return val;//
 				}
 				Collection<String> result = new ArrayList<String>();
 				result.add((String) decast(val, String.class));
 				return result;
 			}
-			if (DataArray.class.equals(targetType)) {
-				if (val instanceof DataArray) {
+			if (Arr.class.equals(targetType)) {
+				if (val instanceof Arr) {
 					return val;
 				}
-				if (val instanceof Collection) {
-					STRUCT.fromMapsAndCollections((Collection<?>) val);
-				}
-				return STRUCT.newArray().with(decast(val, String.class));
+//Andreas				if (val instanceof Collection) {
+//					STRUCT.fromMapsAndCollections((Collection<?>) val);
+//				}
+				return Arr.make(decast(val, String.class));
 			}
 			String sval = (String) val;
 			if (String.class.equals(targetType)) {

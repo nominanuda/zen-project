@@ -18,16 +18,16 @@ package com.nominanuda.web.mvc;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public class NoOpHandlerFilter implements HandlerFilter {
 
-	public Object before(HttpRequest request, DataStruct cmd, Object handler)
+	public Object before(HttpRequest request, Stru cmd, Object handler)
 			throws Exception {
 		return null;
 	}
 
-	public void after(HttpRequest request, DataStruct cmd, Object handler,
+	public void after(HttpRequest request, Stru cmd, Object handler,
 			Object handlerReturnValue) throws Exception {
 	}
 

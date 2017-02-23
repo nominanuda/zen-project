@@ -32,21 +32,21 @@ import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
-import nu.validator.htmlparser.sax.HtmlParser;
-
 import org.junit.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.io.ReaderInputStream;
-import com.nominanuda.lang.InstanceFactory;
-import com.nominanuda.lang.ObjectFactory;
 import com.nominanuda.web.html.HtmlFragmentParser;
 import com.nominanuda.web.html.XHtml5Serializer;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.xml.SAXPipeline;
-import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.zen.common.InstanceFactory;
+import com.nominanuda.zen.oio.ReaderInputStream;
+import com.nominanuda.zen.stereotype.Factory;
+import com.nominanuda.zen.xml.SAXPipeline;
+import com.nominanuda.zen.xml.SaxBuffer;
+
+import nu.validator.htmlparser.sax.HtmlParser;
 
 public class HtmlSaxPageTest implements HttpProtocol {
 	
@@ -79,7 +79,7 @@ public class HtmlSaxPageTest implements HttpProtocol {
 		assertEquals("<html><head></head><body>0BEFOREP<p>PREPENDP1APPENDP</p>AFTERP1.5BEFOREP<p>PREPENDP2APPENDP</p>AFTERP3</body></html>", out.toString());
 	}
 
-	private ObjectFactory<SaxBuffer> f(String s) {
+	private Factory<SaxBuffer> f(String s) {
 		InputStream is = new ReaderInputStream(new StringReader(s), UTF_8);
 		SaxBuffer sbuf = new SaxBuffer();
 		new SAXPipeline()

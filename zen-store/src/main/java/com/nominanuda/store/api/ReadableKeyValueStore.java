@@ -15,7 +15,7 @@
  */
 package com.nominanuda.store.api;
 
-import com.nominanuda.code.Nullable;
+import javax.annotation.Nullable;
 
 public interface ReadableKeyValueStore<K,V,E extends Exception> {
 	@Nullable V get(K k) throws E;

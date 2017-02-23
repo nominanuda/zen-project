@@ -19,8 +19,8 @@ import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public class MimeHelper implements HttpProtocol {

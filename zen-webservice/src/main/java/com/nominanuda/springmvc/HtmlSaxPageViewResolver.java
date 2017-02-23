@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.concurrent.Immutable;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +39,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import nu.validator.htmlparser.sax.HtmlParser;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -49,20 +48,21 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.AttributesImpl;
 
-import com.nominanuda.code.CodeConstants;
-import com.nominanuda.code.Immutable;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Initializable;
-import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.web.html.HtmlFragmentParser;
 import com.nominanuda.web.html.XHtml5Serializer;
 import com.nominanuda.web.htmlcomposer.DomManipulationStmt;
 import com.nominanuda.web.htmlcomposer.DomOp;
 import com.nominanuda.web.htmlcomposer.HtmlSaxPage;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.xml.ForwardingTransformerHandlerBase;
-import com.nominanuda.xml.SAXPipeline;
-import com.nominanuda.xml.SaxBuffer;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.InstanceFactory;
+import com.nominanuda.zen.stereotype.CodeConstants;
+import com.nominanuda.zen.stereotype.Initializable;
+import com.nominanuda.zen.xml.ForwardingTransformerHandlerBase;
+import com.nominanuda.zen.xml.SAXPipeline;
+import com.nominanuda.zen.xml.SaxBuffer;
+
+import nu.validator.htmlparser.sax.HtmlParser;
 
 public class HtmlSaxPageViewResolver implements CodeConstants, ViewResolver, ApplicationContextAware, Initializable, HttpProtocol {
 	private List<ViewResolver> resolvers = null;

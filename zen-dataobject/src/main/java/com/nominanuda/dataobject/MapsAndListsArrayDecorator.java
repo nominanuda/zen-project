@@ -19,9 +19,9 @@ import java.util.AbstractList;
 
 
 public class MapsAndListsArrayDecorator extends AbstractList<Object> {
-	private final DataArray a;
+	private final Arr a;
 
-	public MapsAndListsArrayDecorator(DataArray arr) {
+	public MapsAndListsArrayDecorator(Arr arr) {
 		a = arr;
 	}
 
@@ -33,7 +33,7 @@ public class MapsAndListsArrayDecorator extends AbstractList<Object> {
 		return MapsAndListsObjectDecorator.wrapIfNecessary(a.get(index));
 	}
 
-	public DataArray unwrap() {
+	public Arr unwrap() {
 		return a;
 	}
 }

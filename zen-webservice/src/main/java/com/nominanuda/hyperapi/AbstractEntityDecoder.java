@@ -17,12 +17,13 @@ package com.nominanuda.hyperapi;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.Check;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.common.Check;
 
 public abstract class AbstractEntityDecoder<T> implements EntityDecoder, HttpProtocol {
 	public static final String ANY_CONTENT_TYPE = "*";

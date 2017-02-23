@@ -1,6 +1,7 @@
 package com.nominanuda.springsoy;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.io.Uris.URIS;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,8 +17,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.google.template.soy.SoyFileSet.Builder;
-import com.nominanuda.lang.Strings;
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Tuple2;
 
 
 public class JarSoySource extends SoySource {
@@ -80,11 +80,11 @@ public class JarSoySource extends SoySource {
 		});
 		LinkedList<Tuple2<String, String>> l = new LinkedList<Tuple2<String,String>>();
 		for (String f : files) {
-			String filename = Strings.pathConcat(dir.getAbsolutePath(), f).replace("\\", "/"); // for win systems
+			String filename = URIS.pathJoin(dir.getAbsolutePath(), f).replace("\\", "/"); // for win systems
 			l.add(new Tuple2<String, String>(filename.substring(prefixLength), IO.readAndCloseUtf8(new FileInputStream(new File(filename)))));
 		}
 		for (String d : dirs) {
-			l.addAll(getDirEntries(prefixLength, Strings.pathConcat(srcDir, d), namePredicate));
+			l.addAll(getDirEntries(prefixLength, URIS.pathJoin(srcDir, d), namePredicate));
 		}
 		return l;
 	}

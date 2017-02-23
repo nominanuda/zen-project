@@ -41,7 +41,7 @@ import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 
 public class HttpContext {

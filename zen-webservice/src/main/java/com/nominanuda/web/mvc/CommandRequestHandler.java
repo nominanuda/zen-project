@@ -17,8 +17,8 @@ package com.nominanuda.web.mvc;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public interface CommandRequestHandler {
-	Object handle(DataStruct cmd, HttpRequest request) throws Exception;
+	Object handle(Stru cmd, HttpRequest request) throws Exception;
 }

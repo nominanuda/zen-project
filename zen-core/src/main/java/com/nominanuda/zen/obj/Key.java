@@ -1,0 +1,44 @@
+/*
+ * Copyright 2008-2016 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.nominanuda.zen.obj;
+
+import javax.annotation.concurrent.Immutable;
+
+import com.nominanuda.zen.stereotype.Decorator;
+import com.nominanuda.zen.stereotype.Value;
+
+@Immutable
+interface Key extends JixEvent, Value, Decorator<String> {
+
+	static Key of(String key) {
+		return new KeyImpl(key);
+	}
+
+	@Override
+	default Key copy() {
+		return this;
+	}
+
+	@Override
+	default JixEventType eventType() {
+		return JixEventType.key;
+	}
+
+	@Override
+	default void sendTo(JixHandler sink) {
+		sink.key(this);
+	}
+}

@@ -1,7 +1,5 @@
 package com.nominanuda.springmvc;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,21 +9,21 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.ParserContext;
 
-import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.urispec.Utils;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
+import com.nominanuda.zen.obj.Obj;
 
 public class Sitemap {
 	public static final String BEAN_ID = "__zen-webservice-sitemap__"; // use uuid instead?
 	private static final String BEAN_PROP_ENTRIES = "entries";
 	
-	private final Map<String, DataObjectURISpec> specs = new HashMap<>();
+	private final Map<String, ObjURISpec> specs = new HashMap<>();
 	
 	
-	public String getUrl(String id, DataObject o) {
-		DataObjectURISpec s = specs.get(id);
+	public String getUrl(String id, Obj o) {
+		ObjURISpec s = specs.get(id);
 		if (null != s) {
-			return s.template(o != null ? o : STRUCT.newObject());
+			return s.template(o != null ? o : Obj.make());
 		}
 		return null;
 	}
@@ -35,7 +33,7 @@ public class Sitemap {
 	
 	public void setEntries(Map<String, String> entries) {
 		for (String id : entries.keySet()) {
-			specs.put(id, new DataObjectURISpec(Utils.uriSpec(entries.get(id))));
+			specs.put(id, new ObjURISpec(Utils.extracturiSpecFromSitemapMatch(entries.get(id))));
 		}
 	}
 	

@@ -16,7 +16,7 @@
 package com.nominanuda.dataobject;
 
 import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.dataobject.WrappingFactory.WF;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static java.util.Arrays.asList;
 
 import java.lang.invoke.MethodHandles.Lookup;
@@ -38,20 +38,20 @@ import com.nominanuda.lang.Check;
 import com.nominanuda.lang.Tuple2;
 
 public class WrapperInvocationHandler implements InvocationHandler {
-	private final DataObject o;
+	private final Obj o;
 	private final Set<Method> roleMethods;
 	private final Set<Method> defaultMethods;
 	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
 	static {
 		nonRoleMethods.addAll(asList(Object.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(DataObjectWrapper.class.getDeclaredMethods()));
+		nonRoleMethods.addAll(asList(ObjWrapper.class.getDeclaredMethods()));
 		nonRoleMethods.addAll(asList(DataStruct.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(DataObject.class.getDeclaredMethods()));
+		nonRoleMethods.addAll(asList(Obj.class.getDeclaredMethods()));
 		nonRoleMethods.addAll(asList(Iterable.class.getDeclaredMethods()));
 		nonRoleMethods.addAll(asList(PropertyBag.class.getDeclaredMethods()));
 	}
 
-	public WrapperInvocationHandler(DataObject o, Class<?> role) {
+	public WrapperInvocationHandler(Obj o, Class<?> role) {
 		this.o = o != null ? o : STRUCT.newObject();
 		roleMethods = new HashSet<Method>();
 		defaultMethods = new HashSet<Method>();
@@ -88,7 +88,7 @@ public class WrapperInvocationHandler implements InvocationHandler {
 				int argsL = (args == null ? 0 : args.length);
 				if (argsL == 0) { // any getter
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
-						DataArray arr = o.getArray(name);
+						Arr arr = o.getArray(name);
 						if (arr != null) {
 							Collection<Object> coll = type.isInterface()
 								? new LinkedList<>()
@@ -114,7 +114,7 @@ public class WrapperInvocationHandler implements InvocationHandler {
 							return null;
 						}
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
-						DataObject obj = o.getObject(name);
+						Obj obj = o.getObject(name);
 						if (obj != null) {
 							if(type.isInterface()) {
 								type = LinkedHashMap.class;
@@ -225,13 +225,13 @@ public class WrapperInvocationHandler implements InvocationHandler {
 		} else {
 			if(WrapperItemFactory.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) {
 				try {
-					Method factoryMethod = type.getMethod("wrap", DataObject.class);
+					Method factoryMethod = type.getMethod("wrap", Obj.class);
 					return factoryMethod.invoke(null, v);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new RuntimeException(e);
 				}
-			} else if (DataObjectWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
-				return WF.wrap((DataObject)v, type);
+			} else if (ObjWrapper.class.isAssignableFrom(type) && STRUCT.isDataObject(v)) { // sub object
+				return WF.wrap((Obj)v, type);
 			} else {
 				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 			}
@@ -242,19 +242,19 @@ public class WrapperInvocationHandler implements InvocationHandler {
 	@SuppressWarnings("unchecked")
 	private Object toDataObjectValue(Object v) {
 		if (v instanceof Collection) {
-			DataArray arr = STRUCT.newArray();
+			Arr arr = STRUCT.newArray();
 			for (Object o : (Collection<Object>)v) {
 				arr.add(toDataObjectValue(o));
 			}
 			return arr;
 		} else if (v instanceof Map) {
-			DataObject obj = STRUCT.newObject();
+			Obj obj = STRUCT.newObject();
 			for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
 				obj.put(entry.getKey(), toDataObjectValue(entry.getValue()));
 			}
 			return obj;
-		} else if (v instanceof DataObjectWrapper) { // sub object
-			return ((DataObjectWrapper)v).unwrap();
+		} else if (v instanceof ObjWrapper) { // sub object
+			return ((ObjWrapper)v).unwrap();
 		}
 		return v;
 	}

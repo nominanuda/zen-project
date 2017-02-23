@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,13 +16,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
 import com.nominanuda.springmvc.HttpEntityView;
 import com.nominanuda.web.http.ServletHelper;
 import com.nominanuda.web.mvc.PathAndJsonViewSpec;
@@ -89,8 +84,7 @@ public class DispatcherServletHelper implements ApplicationContextAware {
 			return new ModelAndView(new HttpEntityView((HttpEntity) result));
 		} else if (result instanceof PathAndJsonViewSpec) {
 			PathAndJsonViewSpec viewSpec = (PathAndJsonViewSpec) result;
-			Map<String, ?> model = new MapsAndListsObjectDecorator(
-					(DataObject) viewSpec.getModel());
+			Map<String, ?> model = viewSpec.getModel().asObj();
 			return new ModelAndView(viewSpec.getPath(), model);
 		} else {
 			throw new IllegalStateException();

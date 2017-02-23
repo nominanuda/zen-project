@@ -15,7 +15,7 @@
  */
 package com.nominanuda.web.mvc;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public interface CommandHandler {
 
@@ -27,5 +27,5 @@ public interface CommandHandler {
 	 * and <code>view_</code> are the instructions to build the view
 	 * or another supported object such as HttpResponse or HttpEntity
 	 */
-	Object handle(DataStruct cmd) throws Exception;
+	Object handle(Stru cmd) throws Exception;
 }

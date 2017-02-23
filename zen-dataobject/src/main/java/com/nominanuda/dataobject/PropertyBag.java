@@ -27,8 +27,8 @@ public interface PropertyBag<K> extends DataStruct {
 	Object put(K key, @Nullable Object o);
 //	@Nullable Object remove(K key);
 	boolean exists(K k);
-	DataArray putNewArray(K key);
-	DataObject putNewObject(K key);
+	Arr putNewArray(K key);
+	Obj putNewObject(K key);
 	List<K> getKeys();
 	@Deprecated
 	boolean isPrimitiveOrNull(@Nullable Object o);
@@ -41,18 +41,18 @@ public interface PropertyBag<K> extends DataStruct {
 	@Nullable String getString(K key) throws ClassCastException;
 	@Nullable Number getNumber(K key) throws ClassCastException;
 	@Nullable Boolean getBoolean(K key) throws ClassCastException;
-	@Nullable DataObject getObject(K key) throws ClassCastException;
-	@Nullable DataArray getArray(K key) throws ClassCastException;
+	@Nullable Obj getObject(K key) throws ClassCastException;
+	@Nullable Arr getArray(K key) throws ClassCastException;
 	@Nullable String getPathSafeString(String path) throws ClassCastException;
 	@Nullable String getPathSafeString(String... pathBits) throws ClassCastException;
 	@Nullable Number getPathSafeNumber(String path) throws ClassCastException;
 	@Nullable Number getPathSafeNumber(String... pathBits) throws ClassCastException;
 	@Nullable Boolean getPathSafeBoolean(String path) throws ClassCastException;
 	@Nullable Boolean getPathSafeBoolean(String... pathBits) throws ClassCastException;
-	@Nullable DataObject getPathSafeObject(String path) throws ClassCastException;
-	@Nullable DataObject getPathSafeObject(String... pathBits) throws ClassCastException;
-	@Nullable DataArray getPathSafeArray(String path) throws ClassCastException;
-	@Nullable DataArray getPathSafeArray(String... pathBits) throws ClassCastException;
+	@Nullable Obj getPathSafeObject(String path) throws ClassCastException;
+	@Nullable Obj getPathSafeObject(String... pathBits) throws ClassCastException;
+	@Nullable Arr getPathSafeArray(String path) throws ClassCastException;
+	@Nullable Arr getPathSafeArray(String... pathBits) throws ClassCastException;
 	@Nullable Long getLong(K key) throws ClassCastException;
 	@Nullable Double getDouble(K key) throws ClassCastException;
 
@@ -60,15 +60,15 @@ public interface PropertyBag<K> extends DataStruct {
 	Long getStrictLong(K key) throws ClassCastException, NullPointerException;
 	Double getStrictDouble(K key) throws ClassCastException, NullPointerException;
 	Boolean getStrictBoolean(K key) throws ClassCastException, NullPointerException;
-	DataObject getStrictObject(K key) throws ClassCastException, NullPointerException;
-	DataArray getStrictArray(K key) throws ClassCastException, NullPointerException;
+	Obj getStrictObject(K key) throws ClassCastException, NullPointerException;
+	Arr getStrictArray(K key) throws ClassCastException, NullPointerException;
 
 	Long putLong(K key, @Nullable Long o);
 	Double putDouble(K key, @Nullable Double o);
 	String putString(K key, @Nullable String o);
 	Boolean putBoolean(K key, @Nullable Boolean o);
-	DataObject putObject(K key, @Nullable DataObject o);
-	DataArray putArray(K key, @Nullable DataArray o);
+	Obj putObject(K key, @Nullable Obj o);
+	Arr putArray(K key, @Nullable Arr o);
 
 
 	

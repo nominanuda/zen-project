@@ -1,7 +1,7 @@
 package com.nominanuda.dataobject;
 
 import static com.nominanuda.dataobject.DataStructHelper.Z;
-import static com.nominanuda.dataobject.WrappingFactory.WF;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static com.nominanuda.lang.Collections.hashMap;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ public class WrappingFactoryCollectionTest {
 
 	@Test
 	public void testColl() {
-		DataObject o11 = Z.obj();
+		Obj o11 = Z.obj();
 		o11.putArray("obj2s", Z.arr(Z.obj("foo", "bar")));
 		assertEquals("bar", WF.wrap(o11, Obj1.class).obj2s().get(0).foo());
 		Obj1 o12 = Obj1.make()
@@ -25,12 +25,12 @@ public class WrappingFactoryCollectionTest {
 					.foo("bar")));
 		assertEquals(o11, o12.unwrap());
 		Obj1 o13 = WF.wrap(o11, Obj1.class);
-		assertTrue( DataObjectWrapper.deepEquals(o13, o12));
+		assertTrue( ObjWrapper.deepEquals(o13, o12));
 	}
 
 	@Test
 	public void testMap() {
-		DataObject o11 = Z.obj();
+		Obj o11 = Z.obj();
 		o11.putObject("obj2Map1", Z.obj("k", Z.obj("foo", "bar")));
 		assertEquals("bar", WF.wrap(o11, Obj1.class).obj2Map1().get("k").foo());
 		Obj1 o12 = Obj1.make()
@@ -39,10 +39,10 @@ public class WrappingFactoryCollectionTest {
 					.foo("bar")));
 		assertEquals(o11, o12.unwrap());
 		Obj1 o13 = WF.wrap(o11, Obj1.class);
-		assertTrue( DataObjectWrapper.deepEquals(o13, o12));
+		assertTrue( ObjWrapper.deepEquals(o13, o12));
 	}
 
-	public interface Obj1 extends DataObjectWrapper {
+	public interface Obj1 extends ObjWrapper {
 		static Obj1 make() {
 			return WF.wrap(Obj1.class);
 		}
@@ -57,7 +57,7 @@ public class WrappingFactoryCollectionTest {
 	}
 
 
-	public interface Obj2 extends DataObjectWrapper {
+	public interface Obj2 extends ObjWrapper {
 		static Obj2 make() {
 			return WF.wrap(Obj2.class);
 		}

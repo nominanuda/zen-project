@@ -2,6 +2,7 @@ package org.mozilla.javascript;
 
 
 import static org.mozilla.javascript.RhinoHelper.RHINO;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -10,11 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.ObjectFactory;
+import com.nominanuda.rhino.ObjectFactory;
+import com.nominanuda.zen.common.Check;
 
 /**
  * this class is supposed to be immutable by other parts of the framework !! beware
@@ -93,6 +91,7 @@ public class ScopeFactory implements ObjectFactory<Scriptable> {
 		return javaObjects;
 	}
 
+	@Override
 	public Scriptable getObject() throws RuntimeException {
 		return create();
 	}

@@ -15,6 +15,7 @@
  */
 package com.nominanuda.web.mvc;
 
+import static com.nominanuda.zen.oio.OioUtils.IO;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import java.io.ByteArrayInputStream;
@@ -29,14 +30,12 @@ import org.apache.http.StatusLine;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.http.MimeHelper;
 
 public abstract class URLStreamer implements WebService, HttpProtocol {
 	private static final HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
-	private static final IOHelper ioHelper = new IOHelper();
 	private static final MimeHelper mimeHelper = new MimeHelper();
 	private String defaultContentType = CT_APPLICATION_OCTET_STREAM;
 
@@ -49,7 +48,7 @@ public abstract class URLStreamer implements WebService, HttpProtocol {
 		String ce = conn.getContentEncoding();
 		String ct = determineContentType(url, conn);
 		if(len < 0) {
-			byte[] content = ioHelper.readAndClose(is);
+			byte[] content = IO.readAndClose(is);
 			is = new ByteArrayInputStream(content);
 			len = content.length;	
 		}

@@ -15,14 +15,15 @@
  */
 package com.nominanuda.web.http;
 
-import static com.nominanuda.io.IOHelper.IO;
-
+import static com.nominanuda.zen.oio.OioUtils.IO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpCookie;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
@@ -45,12 +46,11 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
+import org.eclipse.jetty.util.IO;
 
-import com.nominanuda.code.CodeConstants;
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.stereotype.CodeConstants;
 
 @ThreadSafe
 public class ServletHelper implements CodeConstants {
@@ -232,11 +232,11 @@ public class ServletHelper implements CodeConstants {
 		}
 		return req;
 	}
-	public void storeCommand(HttpServletRequest servletRequest, DataStruct command) throws IOException {
+	public void storeCommand(HttpServletRequest servletRequest, Stru command) throws IOException {
 		servletRequest.setAttribute("__command__", command);
 	}
-	public @Nullable DataStruct getCommand(HttpServletRequest servletRequest) throws IOException {
-		return (DataStruct)servletRequest.getAttribute("__command__");
+	public @Nullable Stru getCommand(HttpServletRequest servletRequest) throws IOException {
+		return (Stru)servletRequest.getAttribute("__command__");
 	}
 
 	public void storeHandlerOutput(HttpServletRequest servletRequest, Object handlerOutput) {

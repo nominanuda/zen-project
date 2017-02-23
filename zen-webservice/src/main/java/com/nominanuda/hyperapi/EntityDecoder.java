@@ -17,9 +17,9 @@ package com.nominanuda.hyperapi;
 
 import java.io.IOException;
 
-import org.apache.http.HttpEntity;
+import javax.annotation.Nullable;
 
-import com.nominanuda.code.Nullable;
+import org.apache.http.HttpEntity;
 
 public interface EntityDecoder {
 

@@ -56,23 +56,23 @@ public class JsonLooseParser {
 		return parse(new InputStreamReader(json, Strings.UTF8));
 	}
 
-	public DataArray parseArray(String json) throws IllegalArgumentException {
-		return (DataArray)parse(json);
+	public Arr parseArray(String json) throws IllegalArgumentException {
+		return (Arr)parse(json);
 	}
-	public DataArray parseArray(Reader json) throws IllegalArgumentException {
-		return (DataArray)parse(json);
+	public Arr parseArray(Reader json) throws IllegalArgumentException {
+		return (Arr)parse(json);
 	}
-	public DataArray parseUtf8Array(InputStream json) throws IllegalArgumentException {
-		return (DataArray)parseUtf8(json);
+	public Arr parseUtf8Array(InputStream json) throws IllegalArgumentException {
+		return (Arr)parseUtf8(json);
 	}
-	public DataObject parseObject(String json) throws IllegalArgumentException {
-		return (DataObject)parse(json);
+	public Obj parseObject(String json) throws IllegalArgumentException {
+		return (Obj)parse(json);
 	}
-	public DataObject parseObject(Reader json) throws IllegalArgumentException {
-		return (DataObject)parse(json);
+	public Obj parseObject(Reader json) throws IllegalArgumentException {
+		return (Obj)parse(json);
 	}
-	public DataObject parseUtf8Object(InputStream json) throws IllegalArgumentException {
-		return (DataObject)parseUtf8(json);
+	public Obj parseUtf8Object(InputStream json) throws IllegalArgumentException {
+		return (Obj)parseUtf8(json);
 	}
 
 }

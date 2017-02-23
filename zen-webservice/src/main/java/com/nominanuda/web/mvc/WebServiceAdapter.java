@@ -18,13 +18,13 @@ package com.nominanuda.web.mvc;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public class WebServiceAdapter implements HandlerAdapter {
 
 	@Override
 	public HttpResponse invoke(Object handler, HttpRequest request,
-			DataStruct command) throws Exception {
+			Stru command) throws Exception {
 		return ((WebService)handler).handle(request);
 	}
 

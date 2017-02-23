@@ -15,10 +15,10 @@
  */
 package com.nominanuda.web.http;
 
-import java.util.List;
+import static com.nominanuda.zen.common.Check.ifNull;
+import static com.nominanuda.zen.common.Str.STR;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Strings;
+import java.util.List;
 
 public abstract class HttpAppException extends RuntimeException {
 	private static final long serialVersionUID = 7813677042673120866L;
@@ -72,11 +72,11 @@ public abstract class HttpAppException extends RuntimeException {
 	/* IApiError <-> String */
 	
 	protected static String serialize(IApiError err) {
-		return Strings.join("|", err.name(), Check.ifNull(err.param(), ""));
+		return STR.joinArgs("|", err.name(), ifNull(err.param(), ""));
 	}
 	
 	public static <E extends Enum<E> & IApiError> IApiError deserialize(String msg, Class<E> apiErrorEnum) {
-		List<String> parts = Strings.splitAndTrim(msg, "\\|");
+		List<String> parts = STR.splitAndTrim(msg, "\\|");
 		IApiError err = Enum.valueOf(apiErrorEnum, parts.get(0));
 		return err.param(parts.size() > 1 ? parts.get(1) : null);
 	}

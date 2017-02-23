@@ -15,6 +15,8 @@
  */
 package com.nominanuda.rhino.host;
 
+import static com.nominanuda.zen.common.Ex.EX;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +25,6 @@ import java.util.Map;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Scriptable;
-
-import com.nominanuda.lang.Exceptions;
 
 public class ModuleRegistry {
 	private Map<String,Object> resolvedModules = new HashMap<String, Object>();
@@ -45,7 +45,7 @@ public class ModuleRegistry {
 			resolvedModules.put(key, o);
 			return o;
 		} catch (Exception e) {
-			throw new EvaluatorException(Exceptions.toStackTrace(e));
+			throw new EvaluatorException(EX.toStackTrace(e));
 		}
 	}
 	
@@ -60,7 +60,7 @@ public class ModuleRegistry {
 			}
 			throw new IllegalArgumentException("require could not find a module named " + key);
 		} catch (Exception e) {
-			throw new EvaluatorException(Exceptions.toStackTrace(e));
+			throw new EvaluatorException(EX.toStackTrace(e));
 		}
 	}
 	

@@ -18,31 +18,32 @@ package com.nominanuda.hibernate;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Query;
+import javax.annotation.Nullable;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
 
 public class HibernateQuerableStore extends AbstractHibernateStructStore {
-	public DataArray query(String hql, DataObject params, int start, int count, String viewName) throws Exception {
+	public Arr query(String hql, Obj params, int start, int count, String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
 			session = sessionFactory.openSession();
 			session.setDefaultReadOnly(true);
 			tx = session.beginTransaction();
-			Query q = session.createQuery(hql)
+			Query<?> q = session.createQuery(hql)
 				.setReadOnly(true)
 				.setFirstResult(start)
 				.setMaxResults(count);
-			for(String k : params.getKeys()) {
+			for(String k : params.keySet()) {
 				bind(q, k, params.get(k));
 			}
-			List<?> l = q.list();
+			List<?> l = q.getResultList();
 			return render(l, viewName);
 		} catch(Exception e) {
 			if(tx != null && tx.isActive()) {
@@ -64,15 +65,15 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 		return sessionFactory.openSession();
 	}
 
-	public Object queryForOne(String hql, DataObject params, @Nullable/*in case of scalar result*/ String viewName) throws Exception {
+	public Object queryForOne(String hql, Obj params, @Nullable/*in case of scalar result*/ String viewName) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {
 			session = sessionFactory.openSession();
 			tx = session.beginTransaction();
-			Query q = session.createQuery(hql)
+			Query<?> q = session.createQuery(hql)
 						.setReadOnly(true);
-			for(String k : params.getKeys()) {
+			for(String k : params.keySet()) {
 				bind(q, k, params.get(k));
 			}
 			Object o = q.uniqueResult();
@@ -100,7 +101,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 
 	}
 
-	public DataObject byId(String type, String id) throws Exception {
+	public Obj byId(String type, String id) throws Exception {
 		Session session = null;
 		Transaction tx = null;
 		try {

@@ -15,14 +15,27 @@
  */
 package com.nominanuda.web.http;
 
+import static com.nominanuda.zen.seq.Seq.SEQ;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED;
+import static org.apache.http.HttpStatus.SC_MOVED_PERMANENTLY;
+import static org.apache.http.HttpStatus.SC_MOVED_TEMPORARILY;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_NOT_IMPLEMENTED;
+import static org.apache.http.HttpStatus.SC_NOT_MODIFIED;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_REQUEST_TIMEOUT;
+import static org.apache.http.HttpStatus.SC_SERVICE_UNAVAILABLE;
+import static org.apache.http.HttpStatus.SC_TEMPORARY_REDIRECT;
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.nominanuda.lang.Collections;
-
-import static org.apache.http.HttpStatus.*;
 
 
 public interface HttpProtocol {
@@ -84,12 +97,11 @@ public interface HttpProtocol {
 	String CT_APPLICATION_SOAP = "application/soap+xml";
 	String CT_APPLICATION_SOAP_UTF8 = "application/soap+xml; charset=utf-8";
 
-	Set<String> ONE_HOP_HEADERS = Collections.hashSet(
+	Set<String> ONE_HOP_HEADERS = SEQ.hashSet(
 "proxy-connection","connection","keep-alive","transfer-encoding","te","trailer","proxy-authorization","proxy-authenticate","upgrade","content-length"
 	);
 
-	@SuppressWarnings("unchecked")
-	Map<Integer, String> statusToReason = Collections.buildMap(HashMap.class,
+	Map<Integer, String> statusToReason = SEQ.buildMap(HashMap.class,
 			SC_OK, "200 OK",
 			SC_CREATED, "201 Created",
 			SC_MOVED_PERMANENTLY, "301 Moved Permanently",

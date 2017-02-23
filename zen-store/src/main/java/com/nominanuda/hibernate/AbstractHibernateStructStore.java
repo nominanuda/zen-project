@@ -15,28 +15,27 @@
  */
 package com.nominanuda.hibernate;
 
+import static com.nominanuda.zen.common.Maths.MATHS;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataArrayImpl;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.DataType;
 import com.nominanuda.dataview.DataView;
-import com.nominanuda.lang.Maths;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.JsonType;
+import com.nominanuda.zen.obj.Obj;
 
 public abstract class AbstractHibernateStructStore {
-	protected static final DataStructHelper struct = new DataStructHelper();
 	protected SessionFactory sessionFactory;
 	protected Map<String, DataView<Map<String, ? extends Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String, ? extends Object>>>();
 
-	public DataArray render(List<?> l, String type) {
-		DataArrayImpl a = new DataArrayImpl();
+	@SuppressWarnings("unchecked")
+	public Arr render(List<?> l, String type) {
+		Arr a = Arr.make();
 		for(Object o : l) {
 			a.add(o instanceof Map<?,?>
 				? render((Map<String, Object>)o, type)
@@ -46,28 +45,28 @@ public abstract class AbstractHibernateStructStore {
 		return a;
 	}
 
-	protected DataObject render(Map<String, Object> obj, String type /*TODO boolean expand*/) {
+	protected Obj render(Map<String, Object> obj, String type /*TODO boolean expand*/) {
 		return obj == null ? null : dataViewRegistry.get(type).render(obj);
 	}
 
-	protected void bind(Query q, String k, Object v) {
-		DataType t = struct.getDataType(v);
+	protected void bind(Query<?> q, String k, Object v) {
+		JsonType t = JsonType.of(v);
 		switch (t) {
-		case array:
-			q.setParameterList(k, struct.toMapsAndSetLists((DataArray)v));
+		case arr:
+			q.setParameterList(k, (List<?>)v);
 			break;
-		case object:
-			q.setEntity(k, struct.toMapsAndSetLists((DataObject)v));
+		case obj:
+			q.setEntity(k, (Map)v);
 			break;
-		case string:
+		case str:
 			q.setString(k, (String)v);
 			break;
 		case bool:
 			q.setBoolean(k, (Boolean)v);
 			break;
-		case number:
+		case num:
 			Double d = ((Number)v).doubleValue();
-			if(Maths.isInteger(d)) {
+			if(MATHS.isInteger(d)) {
 				q.setLong(k, d.longValue());
 			} else {
 				q.setDouble(k, d);

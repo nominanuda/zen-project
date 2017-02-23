@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springsoy;
 
+import static com.nominanuda.zen.common.Str.STR;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -44,10 +48,8 @@ import com.google.template.soy.msgs.SoyMsgBundleHandler;
 import com.google.template.soy.msgs.SoyMsgException;
 import com.google.template.soy.tofu.SoyTofu;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Strings;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Obj;
 
 public class SoySource {
 	private final static Pattern FUNC_DECL = Pattern.compile("^\\s*([\\.\\w]+)\\s*=\\s*function\\s*\\(");
@@ -107,7 +109,7 @@ public class SoySource {
 	public String render(Map<String, ?> model, String view) throws IOException {
 		return getSoyTofu(null).newRenderer(view).setData(model).render();
 	}
-	public String render(DataObject model, String view) throws IOException {
+	public String render(Obj model, String view) throws IOException {
 		return render(SoyHelper.model2soy(model), view);
 	}
 	
@@ -153,7 +155,7 @@ public class SoySource {
 			return null;
 		} else {
 			SoyMsgBundleHandler msgBundleHandler = new SoyMsgBundleHandler(new XliffMsgPlugin());
-			return msgBundleHandler.createFromResource(new URL(Strings.join(".", Check.ifNull(bundleUrlPrefix, i18nXlfUrl), lang, "xlf")));
+			return msgBundleHandler.createFromResource(new URL(STR.joinArgs(".", Check.ifNull(bundleUrlPrefix, i18nXlfUrl), lang, "xlf")));
 		}
 	}
 	
@@ -185,7 +187,7 @@ public class SoySource {
 	 * @param skipLangs list of locales to skip (i.e. not to translate) comma separated
 	 */
 	public void setSkipLangs(String skipLangs) {
-		this.skipLangs = new HashSet<String>(Strings.splitAndTrim(skipLangs, ","));
+		this.skipLangs = new HashSet<String>(STR.splitAndTrim(skipLangs, ","));
 	}
 	/**
 	 * @param i18n enable translation, default is false

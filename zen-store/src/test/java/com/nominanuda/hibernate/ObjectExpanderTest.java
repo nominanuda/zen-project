@@ -23,13 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.ParseException;
-import com.nominanuda.hibernate.ObjectExpander;
-import com.nominanuda.hibernate.PathMap;
-
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.SimpleJixParser;
 
 public class ObjectExpanderTest {
 
@@ -41,7 +36,7 @@ public class ObjectExpanderTest {
 		oe.setExpandedMaps(typeMap);
 		String src = "{mmType:'t1',a:1,b:{oid:'OID',a:1},c:{a:2,d:{a:3}},e:{a:22,d:{a:4}}}";
 		Map<String, Object> m = parse(src);
-		DataObject res = oe.expand(m, "t1", false);
+		Obj res = oe.expand(m, "t1", false);
 		System.err.println(res.toString());
 //TODO ????
 //		Assert.assertEquals(STRUCT.parse("{mmType: 't1',a:1,b:{oid:'OID'}}", true).toString(),
@@ -71,9 +66,8 @@ public class ObjectExpanderTest {
 	}
 
 	protected Map<String,Object> parse(String src) throws IOException,
-			ParseException, SAXException {
-		DataObject o = STRUCT.parseObject(src, true);
-		DataStructHelper h = new DataStructHelper();
-		return h.toMapsAndSetLists(o);
+			SAXException {
+		Obj o = SimpleJixParser.obj(src);
+		return o;
 	}
 }

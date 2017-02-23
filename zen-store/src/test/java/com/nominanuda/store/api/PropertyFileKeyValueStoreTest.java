@@ -15,19 +15,19 @@
  */
 package com.nominanuda.store.api;
 
-import static org.junit.Assert.*;
+import static com.nominanuda.zen.oio.OioUtils.IO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import org.junit.Test;
 
-import com.nominanuda.io.IOHelper;
-
 public class PropertyFileKeyValueStoreTest {
 
 	@Test
 	public void test() throws Exception {
-		File f = IOHelper.IO.newTmpFile(getClass().getSimpleName());
+		File f = IO.newTmpFile(getClass().getSimpleName());
 		PropertyFileKeyValueStore pkvs = new PropertyFileKeyValueStore(f.getAbsolutePath());
 		pkvs.init();
 		pkvs.put("foo", "bar");

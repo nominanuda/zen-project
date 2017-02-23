@@ -1,6 +1,6 @@
 package com.nominanuda.dataobject;
 
-public interface BizObj extends DataObject, DataObjectWrapper {
+public interface BizObj extends Obj, ObjWrapper {
 	void prop1(String s);
 	String prop1();
 

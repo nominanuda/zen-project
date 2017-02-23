@@ -21,10 +21,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Disposable;
-import com.nominanuda.lang.Initializable;
-import com.nominanuda.lang.NoException;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Ex.NoException;
+import com.nominanuda.zen.stereotype.Disposable;
+import com.nominanuda.zen.stereotype.Initializable;
 
 public class PropertyFileKeyValueStore implements KeyValueStore<String, String, NoException>, Disposable, Initializable {
 	private Properties p;

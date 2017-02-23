@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springmvc;
 
+import static com.nominanuda.zen.oio.OioUtils.IO;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -28,11 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class StaticViewResolver implements ViewResolver {
-	protected static final IOHelper io = new IOHelper();
 	protected String contentType = HttpProtocol.CT_APPLICATION_OCTET_STREAM;
 	protected boolean cache = false;
 
@@ -48,7 +48,7 @@ public class StaticViewResolver implements ViewResolver {
 					return cv;
 				}
 			}
-			final byte[] barr = io.readAndClose(url.openStream());
+			final byte[] barr = IO.readAndClose(url.openStream());
 			View v = new View() {
 				public void render(Map<String, ?> model, HttpServletRequest request,
 						HttpServletResponse response) throws Exception {

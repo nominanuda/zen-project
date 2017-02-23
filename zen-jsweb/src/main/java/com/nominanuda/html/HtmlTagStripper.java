@@ -2,11 +2,12 @@ package com.nominanuda.html;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.xml.ForwardingTransformerHandlerBase;
+import com.nominanuda.zen.xml.ForwardingTransformerHandlerBase;
 
 @ThreadSafe
 public class HtmlTagStripper extends ForwardingTransformerHandlerBase {

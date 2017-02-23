@@ -15,13 +15,13 @@
  */
 package com.nominanuda.solr;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.lang.Check.illegalargument;
 import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
+import static com.nominanuda.zen.common.Check.illegalargument;
 
 import java.io.CharArrayWriter;
 import java.io.StringReader;
 
+import javax.annotation.Nullable;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
@@ -33,18 +33,17 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.xml.sax.InputSource;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.JsonXmlReader;
-import com.nominanuda.dataobject.SimpleJsonXmlTransformer;
-import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.urispec.URISpec;
 import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
 import com.nominanuda.web.mvc.WebService;
-import com.nominanuda.xml.SAXPipeline;
+import com.nominanuda.zen.common.InstanceFactory;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.xml.SAXPipeline;
+import com.nominanuda.zen.xml.obj.JsonXmlReader;
+import com.nominanuda.zen.xml.obj.SimpleJsonXmlTransformer;
 
 
 public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
@@ -54,7 +53,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 	private static final DateTimeFormatter LOCAL_SOLR_FMT = DateTimeFormat
 			.forPattern("yyyy-MM-dd' 'HH:mm:ss");
 	//compulsory conf
-	private URISpec<DataObject> uriSpec;
+	private URISpec<Obj> uriSpec;
 	private String nextUrlPrefix;
 	//defaulted conf
 	private int rows = 100;
@@ -71,16 +70,16 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 				new SimpleJsonXmlTransformer("root")))
 		.complete();
 
-	protected String computeNextUrl(DataObject cmd, Integer nextStart) {
-		DataObject params = STRUCT.clone(cmd);
+	protected String computeNextUrl(Obj cmd, Integer nextStart) {
+		Obj params = cmd.copy();
 		params.put(startUrlParam, nextStart.toString());
 		return nextUrlPrefix + uriSpec.template(params);
 	}
 
-	protected abstract DataArray computeDeleted(DataObject cmd, String type_,
+	protected abstract Arr computeDeleted(Obj cmd, String type_,
 			long since, int start, int rows);
 
-	protected abstract DataArray computeAddedOrModified(DataObject cmd, String type_,
+	protected abstract Arr computeAddedOrModified(Obj cmd, String type_,
 			long since, int start, int rows);
 
 	private long decodeSinceDate(@Nullable String sinceStr) {
@@ -96,41 +95,41 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 
 	public HttpResponse handle(HttpRequest request) throws Exception {
 		try {
-			DataObject cmd = illegalargument.assertNotNull(uriSpec
+			Obj cmd = illegalargument.assertNotNull(uriSpec
 					.match(request.getRequestLine().getUri()));
 			String type_ = (String) cmd.getStrict(typeUrlParam);
-			long since = decodeSinceDate(cmd.getString(sinceUrlParam));
-			boolean fullImport = Boolean.valueOf(cmd.getString(fullImportUrlParam));
-			String startParam = cmd.getString(startUrlParam);
+			long since = decodeSinceDate(cmd.getStr(sinceUrlParam));
+			boolean fullImport = Boolean.valueOf(cmd.getStr(fullImportUrlParam));
+			String startParam = cmd.getStr(startUrlParam);
 			int start = startParam == null ? 0 : Integer.valueOf(startParam);
 			if (fullImport) {
 				since = 0;
 			}
-			DataArray resultsArray = computeAddedOrModified(cmd, type_, since, start, rows);
+			Arr resultsArray = computeAddedOrModified(cmd, type_, since, start, rows);
 			if(jsonField != null) {
 				for (Object record : resultsArray) {
-					DataObject o = (DataObject) record;
+					Obj o = (Obj) record;
 					if(!o.exists(jsonField)) {
 						o.put(jsonField, o.toString());
 					}
 				}
 			}
-			int resLen = resultsArray.getLength();
-			DataArray deletedEntities = computeDeleted(cmd, type_, since, start, rows);
+			int resLen = resultsArray.len();
+			Arr deletedEntities = computeDeleted(cmd, type_, since, start, rows);
 			for (Object o : deletedEntities) {
-				DataObject obj = STRUCT.newObject();
+				Obj obj = Obj.make();
 				obj.put(idField, FAKE_ID);
 				obj.put("deleteDocById", o.toString());
 				resultsArray.add(obj);
 			}
-			if (resLen >= rows || deletedEntities.getLength() >= rows) {
+			if (resLen >= rows || deletedEntities.len() >= rows) {
 				Integer nextStart = start + rows;
-				DataObject hasMore = resultsArray.addNewObject();
+				Obj hasMore = resultsArray.addObj();
 				hasMore.put(idField, "1");
 				hasMore.put("hasMore", true);
 				hasMore.put("nextUrl", computeNextUrl(cmd, nextStart));
 			}
-			String message = toXml(STRUCT.newObject().with(resultsTag, resultsArray));
+			String message = toXml(Obj.make(resultsTag, resultsArray));
 			HttpResponse resp = HTTP.createBasicResponse(200, message,
 					CT_APPLICATION_XML_CS_UTF8);
 			return resp;
@@ -139,7 +138,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 		}
 	}
 
-	private String toXml(DataObject o) {
+	private String toXml(Obj o) {
 		CharArrayWriter w = new CharArrayWriter();
 		pipe.build(new SAXSource(new JsonXmlReader(), new InputSource(
 						new StringReader(o.toString()))), new StreamResult(w))
@@ -148,7 +147,7 @@ public abstract class DataImportHandlerWs implements WebService, HttpProtocol {
 	}
 
 	public void setUriSpec(String uriSpec) {
-		this.uriSpec = new DataObjectURISpec(uriSpec);
+		this.uriSpec = new ObjURISpec(uriSpec);
 	}
 
 	public void setNextUrlPrefix(String nextUrlPrefix) {

@@ -15,7 +15,6 @@
  */
 package com.nominanuda.springmvc;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 import static com.nominanuda.web.http.ServletHelper.SERVLET;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,12 +30,13 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.mvc.HandlerAndFilters;
 import com.nominanuda.web.mvc.HandlerFilter;
 import com.nominanuda.web.mvc.HandlerMatcher;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class HandlerMatcherMapping implements HandlerMapping, ApplicationContextAware {
 	private HandlerMatcher handlerMatcher;
@@ -46,7 +46,7 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 
 	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		HttpRequest httpRequest = SERVLET.getOrCreateRequest(request, true);
-		Tuple2<Object, DataStruct> res = handlerMatcher.match(httpRequest);
+		Tuple2<Object, Stru> res = handlerMatcher.match(httpRequest);
 		if (res == null) {
 			return null;
 		} else {
@@ -73,7 +73,7 @@ public class HandlerMatcherMapping implements HandlerMapping, ApplicationContext
 					HttpServletResponse response, Object handler)
 					throws Exception {
 				HttpRequest req = SERVLET.getOrCreateRequest(request, true);
-				DataStruct cmd = Check.ifNull(SERVLET.getCommand(request), STRUCT.newObject());
+				Stru cmd = Check.ifNull(SERVLET.getCommand(request), Obj.make());
 				Object handlerOutput = f.before(req, cmd, handler);
 				if (handlerOutput == null) {
 					return true;

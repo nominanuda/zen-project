@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.IOException;
 

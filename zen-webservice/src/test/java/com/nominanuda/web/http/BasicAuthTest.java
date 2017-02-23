@@ -5,7 +5,7 @@ import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Tuple2;
 
 public class BasicAuthTest {
 	

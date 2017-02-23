@@ -26,7 +26,7 @@ public interface DataStruct extends Cloneable {
 	boolean isArray();
 	boolean isObject();
 	String getType();//object or array
-	DataArray asArray() throws ClassCastException;
-	DataObject asObject() throws ClassCastException;
+	Arr asArray() throws ClassCastException;
+	Obj asObject() throws ClassCastException;
 	
 }

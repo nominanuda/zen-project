@@ -15,7 +15,12 @@
  */
 package com.nominanuda.web.http;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.classwork.Reflect.REFL;
+import static com.nominanuda.zen.common.Ex.EX;
+import static com.nominanuda.zen.common.Str.STR;
+import static com.nominanuda.zen.obj.JsonPath.JPATH;
+import static com.nominanuda.zen.oio.OioUtils.IO;
+import static com.nominanuda.zen.seq.Seq.SEQ;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,12 +33,16 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.sql.Struct;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
@@ -97,24 +106,24 @@ import org.apache.http.message.LineParser;
 import org.apache.http.message.ParserCursor;
 import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jetty.util.IO;
+import org.springframework.expression.spel.support.ReflectionHelper;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.codec.Base64Codec;
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
-import com.nominanuda.lang.Exceptions;
-import com.nominanuda.lang.ReflectionHelper;
-import com.nominanuda.lang.Strings;
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.classwork.Reflect;
+import com.nominanuda.zen.codec.Base64Codec;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Ex;
+import com.nominanuda.zen.common.Str;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.JsonPath;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.seq.Seq;
 
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
 	public static final HttpCoreHelper HTTP = new HttpCoreHelper();
 
-	private static final ReflectionHelper reflect = new ReflectionHelper();
 	private static final byte CR = 13;/*US-ASCII CR carriage return*/
 	private static final byte LF = 10;/*US-ASCII LF linefeed*/
 	private static final byte[] CRLF = new byte[] {CR, LF};
@@ -200,7 +209,7 @@ public class HttpCoreHelper implements HttpProtocol {
 			return new HttpPost(url);
 		} else if (PUT.equals(method)) {
 			return new HttpPut(url);
-		} else if (Collections.find(method, RFC2616_SPECIAL_METHODS)) {
+		} else if (SEQ.find(method, RFC2616_SPECIAL_METHODS)) {
 			return new BasicHttpRequest(method, url);
 		} else {
 			throw new IllegalArgumentException(method + " method not supported");
@@ -499,14 +508,14 @@ public class HttpCoreHelper implements HttpProtocol {
 		}
 		return null;
 	}
-	public DataStruct getQueryParams(HttpRequest request) {
+	public Stru getQueryParams(HttpRequest request) {
 		List<NameValuePair> l = URLEncodedUtils.parse(URI.create(request.getRequestLine().getUri()), UTF_8);
 		return toDataStruct(l);
 	}
-	public DataStruct toDataStruct(List<NameValuePair> l) {
-		DataObjectImpl res = new DataObjectImpl();
+	public Stru toDataStruct(List<NameValuePair> l) {
+		Obj res = Obj.make();
 		for(NameValuePair nvp : l) {
-			res.setOrPushPathProperty(nvp.getName(), nvp.getValue());
+			JPATH.setOrPushPathProperty(res, nvp.getName(), nvp.getValue());
 		}
 		return res;
 
@@ -549,7 +558,7 @@ public class HttpCoreHelper implements HttpProtocol {
 
 	public HttpResponse resp500TextPlainUtf8(Exception e) {
 		BasicHttpResponse resp = new BasicHttpResponse(statusLine(500));
-		resp.setEntity(new StringEntity(Exceptions.toStackTrace(e), ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
+		resp.setEntity(new StringEntity(EX.toStackTrace(e), ContentType.create(CT_TEXT_PLAIN, CS_UTF_8)));
 		return resp;
 	}
 
@@ -583,7 +592,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 
 	public HttpMultipart extractHttpMultipart(MultipartEntity entity) {
-		HttpMultipart mp = (HttpMultipart)reflect.getFieldValue("multipart", entity, true);
+		HttpMultipart mp = (HttpMultipart)REFL.getFieldValue("multipart", entity, true);
 		return Check.notNull(mp);
 	}
 
@@ -674,7 +683,7 @@ public class HttpCoreHelper implements HttpProtocol {
 			Header header = iterator.nextHeader();
 			if ("Cookie".equals(header.getName())) {
 				String remaining = header.getValue();
-				List<String> pairs = Strings.splitAndTrim(remaining, ";");
+				List<String> pairs = STR.splitAndTrim(remaining, ";");
 				for (String nav : pairs) {
 					int w = nav.indexOf('=');
 					if (w > 0) {
@@ -724,7 +733,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	}
 	
 	public String basicAuthString(String name, String value) {
-		return Strings.join(" ", "Basic", base64.encodeClassic(Strings.join(":", name, value).getBytes()));
+		return STR.joinArgs(" ", "Basic", base64.encodeClassic(STR.joinArgs(":", name, value).getBytes()));
 	}
 	public Header basicAuthHeader(String name, String value) {
 		return new BasicHeader("Authorization", basicAuthString(name, value));

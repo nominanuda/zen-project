@@ -1,6 +1,8 @@
 package com.nominanuda.rhino;
 
-import static com.nominanuda.io.IOHelper.IO;
+
+import static com.nominanuda.zen.common.Str.STR;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.IOException;
 import java.net.URL;
@@ -8,7 +10,6 @@ import java.net.URL;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Script;
 
-import com.nominanuda.lang.Strings;
 
 public class SimpleScriptSource extends AbsScriptSource {
 	private final String file;
@@ -31,7 +32,7 @@ public class SimpleScriptSource extends AbsScriptSource {
 	
 	@Override
 	protected Script script(Context cx, String source, boolean doSave) {
-		if (Strings.nullOrBlank(source)) {
+		if (STR.nullOrBlank(source)) {
 			if (script != null) {
 				return script;
 			}

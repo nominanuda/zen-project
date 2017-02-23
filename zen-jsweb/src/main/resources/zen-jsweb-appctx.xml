@@ -27,7 +27,7 @@
 				<constructor-arg ref="zen-jsweb-rhino-embedding" />
 				<property name="convertors">
 					<list>
-						<bean class="com.nominanuda.rhino.DataStructConvertor" />
+						<bean class="com.nominanuda.rhino.StruConvertor" />
 					</list>
 				</property>
 			</bean>
@@ -37,7 +37,7 @@
 				<property name="convertors">
 					<map>
 						<entry key="java.lang.String">
-							<bean class="com.nominanuda.lang.Tuple2">
+							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>
 									<bean class="com.nominanuda.rhino.UndefinedCoercer" />
 								</constructor-arg>
@@ -46,30 +46,30 @@
 								</constructor-arg>
 							</bean>
 						</entry>
-						<entry key="com.nominanuda.dataobject.DataArray">
-							<bean class="com.nominanuda.lang.Tuple2">
+						<entry key="com.nominanuda.zen.obj.Arr">
+							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>
-									<bean class="com.nominanuda.rhino.ToDataArrayCoercer" />
+									<bean class="com.nominanuda.rhino.ToArrCoercer" />
 								</constructor-arg>
 								<constructor-arg>
 									<value type="int">1</value>
 								</constructor-arg>
 							</bean>
 						</entry>
-						<entry key="com.nominanuda.dataobject.DataObject">
-							<bean class="com.nominanuda.lang.Tuple2">
+						<entry key="com.nominanuda.zen.obj.Obj">
+							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>
-									<bean class="com.nominanuda.rhino.ToDataObjectCoercer" />
+									<bean class="com.nominanuda.rhino.ToObjCoercer" />
 								</constructor-arg>
 								<constructor-arg>
 									<value type="int">1</value>
 								</constructor-arg>
 							</bean>
 						</entry>
-						<entry key="com.nominanuda.dataobject.DataStruct">
-							<bean class="com.nominanuda.lang.Tuple2">
+						<entry key="com.nominanuda.zen.obj.Stru">
+							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>
-									<bean class="com.nominanuda.rhino.ToDataStructCoercer" />
+									<bean class="com.nominanuda.rhino.ToStruCoercer" />
 								</constructor-arg>
 								<constructor-arg>
 									<value type="int">1</value>
@@ -77,9 +77,9 @@
 							</bean>
 						</entry>
 						<entry key="java.lang.Object">
-							<bean class="com.nominanuda.lang.Tuple2">
+							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>
-									<bean class="com.nominanuda.rhino.ToDataStructCoercer" />
+									<bean class="com.nominanuda.rhino.ToStruCoercer" />
 								</constructor-arg>
 								<constructor-arg>
 									<value type="int">2</value>

@@ -27,7 +27,7 @@ import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.SpringScopeFactory;
 
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Tuple2;
 
 public class CompilingRhinoHandler extends RhinoHandler {
 	private Map<String, Script> scriptCache = new HashMap<String, Script>();

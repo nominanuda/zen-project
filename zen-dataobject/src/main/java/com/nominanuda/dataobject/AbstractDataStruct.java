@@ -99,35 +99,35 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	}
 	
 	@Override
-	public DataArray asArray() throws ClassCastException {
-		return (DataArray)this;
+	public Arr asArray() throws ClassCastException {
+		return (Arr)this;
 	}
 
 	@Override
-	public DataObject asObject() throws ClassCastException {
-		return (DataObject)this;
+	public Obj asObject() throws ClassCastException {
+		return (Obj)this;
 	}
 
 	@Override
 	public boolean isArray() {
-		return this instanceof DataArray;
+		return this instanceof Arr;
 	}
 
 	@Override
 	public boolean isObject() {
-		return this instanceof DataObject;
+		return this instanceof Obj;
 	}
 
 	@Override
-	public DataObject putNewObject(K key) {
-		DataObject o = new DataObjectImpl(this);
-		return (DataObject)put(key, o);
+	public Obj putNewObject(K key) {
+		Obj o = new DataObjectImpl(this);
+		return (Obj)put(key, o);
 	}
 
 	@Override
-	public DataArray putNewArray(K key) {
-		DataArray a = new DataArrayImpl(this);
-		return (DataArray)put(key, a);
+	public Arr putNewArray(K key) {
+		Arr a = new DataArrayImpl(this);
+		return (Arr)put(key, a);
 	}
 	
 	@Override
@@ -136,13 +136,13 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	}
 
 	@Override
-	public DataArray getArray(K k) throws IllegalArgumentException{
-		return (DataArray)get(k);
+	public Arr getArray(K k) throws IllegalArgumentException{
+		return (Arr)get(k);
 	}
 
 	@Override
-	public DataObject getObject(K k) throws IllegalArgumentException {
-		return (DataObject)get(k);
+	public Obj getObject(K k) throws IllegalArgumentException {
+		return (Obj)get(k);
 	}
 
 	@Override
@@ -190,9 +190,9 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 		if(_this.exists(key)) {
 			Object cur = _this.get(key);
 			if(STRUCT.isDataArray(cur)) {
-				((DataArray)cur).add(value);
+				((Arr)cur).add(value);
 			} else {
-				DataArray darr = new DataArrayImpl();
+				Arr darr = new DataArrayImpl();
 				darr.add(cur);
 				darr.add(value);
 				_this.put(key, darr);
@@ -284,23 +284,23 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	}
 
 	@Override
-	public DataObject getPathSafeObject(String path) throws ClassCastException {
-		return (DataObject)getPathSafe(path);
+	public Obj getPathSafeObject(String path) throws ClassCastException {
+		return (Obj)getPathSafe(path);
 	}
 	
 	@Override
-	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
-		return (DataObject)getPathSafe(pathBits);
+	public Obj getPathSafeObject(String... pathBits) throws ClassCastException {
+		return (Obj)getPathSafe(pathBits);
 	}
 
 	@Override
-	public DataArray getPathSafeArray(String path) throws ClassCastException {
-		return (DataArray)getPathSafe(path);
+	public Arr getPathSafeArray(String path) throws ClassCastException {
+		return (Arr)getPathSafe(path);
 	}
 	
 	@Override
-	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
-		return (DataArray)getPathSafe(pathBits);
+	public Arr getPathSafeArray(String... pathBits) throws ClassCastException {
+		return (Arr)getPathSafe(pathBits);
 	}
 
 	@Override
@@ -336,12 +336,12 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	}
 
 	@Override
-	public DataObject getStrictObject(K key) throws ClassCastException, NullPointerException {
+	public Obj getStrictObject(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getObject(key));
 	}
 
 	@Override
-	public DataArray getStrictArray(K key) throws ClassCastException, NullPointerException {
+	public Arr getStrictArray(K key) throws ClassCastException, NullPointerException {
 		return Check.notNull(getArray(key));
 	}
 
@@ -366,13 +366,13 @@ abstract class AbstractDataStruct<K> implements DataStruct, PropertyBag<K> {
 	}
 
 	@Override
-	public DataObject putObject(K key, DataObject o) {
-		return (DataObject)put(key, o);
+	public Obj putObject(K key, Obj o) {
+		return (Obj)put(key, o);
 	}
 
 	@Override
-	public DataArray putArray(K key, DataArray o) {
-		return (DataArray)put(key, o);
+	public Arr putArray(K key, Arr o) {
+		return (Arr)put(key, o);
 	}
 
 	protected void onMutate() {

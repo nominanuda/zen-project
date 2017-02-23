@@ -17,9 +17,9 @@ package com.nominanuda.dataobject;
 
 import java.util.Map.Entry;
 
-public interface DataObject extends PropertyBag<String>, Iterable<Entry<String, Object>> {
+public interface Obj extends PropertyBag<String>, Iterable<Entry<String, Object>> {
 
-	DataObject with(String k, Object v);
+	Obj with(String k, Object v);
 	Object remove(String key);
 
 }

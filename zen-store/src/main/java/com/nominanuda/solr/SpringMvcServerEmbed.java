@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.solr.servlet.SolrDispatchFilter;
 import org.springframework.web.HttpRequestHandler;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 
 public class SpringMvcServerEmbed implements FilterChain, HttpRequestHandler {

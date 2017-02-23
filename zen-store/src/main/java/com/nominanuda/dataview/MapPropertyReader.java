@@ -18,7 +18,7 @@ package com.nominanuda.dataview;
 import java.util.Collection;
 import java.util.Map;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 public class MapPropertyReader implements PropertyReader<Map<String, ? extends Object>> {
 	public Collection<String> readableProps(Map<String, ? extends Object> m) {

@@ -1,0 +1,42 @@
+/*
+ * Copyright 2008-2011 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.nominanuda.urispec;
+
+import java.util.Map;
+
+
+public class URITransformer {
+	private URISpec<Map<String,Object>> match;
+	private URISpec<Map<String,Object>> template;
+	private final StringListModelAdapter adapter = new StringListModelAdapter();
+
+	/*@Nullable*/ public String transform(String source) {
+		Map<String,Object> o = match.match(source);
+		return o == null ? null : 
+			template.template(o);
+	}
+
+	public void setMatch(String match) {
+		this.match = new URISpec<Map<String,Object>>(
+			match, adapter);
+	}
+
+	public void setTemplate(String template) {
+		this.template = new URISpec<Map<String,Object>>(
+			template, adapter);
+	}
+
+}

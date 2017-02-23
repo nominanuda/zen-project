@@ -2,9 +2,9 @@ package com.nominanuda.rhino;
 
 import java.util.Map;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class RhinoOverloadingTest extends RhinoTestCase {
 	@Override
@@ -18,7 +18,7 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 			public String method(String s) {
 				return "string";
 			}
-			public String method(DataStruct j) {
+			public String method(Stru j) {
 				return "json";
 			}
 		});
@@ -42,7 +42,7 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		});
 		
 		m.put("arrayOverload", new Object() {
-			public String method(DataArray a) {
+			public String method(Arr a) {
 				return "array";
 			}
 			public String method(Object o) {
@@ -51,7 +51,7 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		});
 		
 		m.put("mapOverload", new Object() {
-			public String method(DataObject a) {
+			public String method(Obj a) {
 				return "map";
 			}
 			public String method(Object o) {
@@ -60,7 +60,7 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		});
 		
 		m.put("jsonOverload", new Object() {
-			public String method(DataStruct j) {
+			public String method(Stru j) {
 				return "json";
 			}
 			public String method(Object o) {
@@ -76,10 +76,10 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		
 		m.put("instanceOf", new Object() {
 			public String method(Object o) {
-				if(o instanceof DataArray) {
+				if(o instanceof Arr) {
 					return "array";
 				}
-				if(o instanceof DataObject) {
+				if(o instanceof Obj) {
 					return "map";
 				}
 				return "object";

@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class LazyDataArray implements DataArray {
-	private DataArray delegee;
+public class LazyDataArray implements Arr {
+	private Arr delegee;
 	private final String serialized;
 	
 	public LazyDataArray(String serialized) {
@@ -19,7 +19,7 @@ public class LazyDataArray implements DataArray {
 	public void explode() {
 		if(delegee == null) {
 			try {
-				delegee = (DataArray)new JSONParser().parse(serialized);
+				delegee = (Arr)new JSONParser().parse(serialized);
 			} catch (Exception e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -38,13 +38,13 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject addNewObject() {
+	public Obj addNewObject() {
 		explode();
 		return delegee.addNewObject();
 	}
 
 	@Override
-	public DataArray addNewArray() {
+	public Arr addNewArray() {
 		explode();
 		return delegee.addNewArray();
 	}
@@ -97,7 +97,7 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataArray asArray() throws ClassCastException {
+	public Arr asArray() throws ClassCastException {
 		explode();
 		return delegee.asArray();
 	}
@@ -109,7 +109,7 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject asObject() throws ClassCastException {
+	public Obj asObject() throws ClassCastException {
 		explode();
 		return delegee.asObject();
 	}
@@ -151,13 +151,13 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject getObject(Integer key) throws ClassCastException {
+	public Obj getObject(Integer key) throws ClassCastException {
 		explode();
 		return delegee.getObject(key);
 	}
 
 	@Override
-	public DataArray getArray(Integer key) throws ClassCastException {
+	public Arr getArray(Integer key) throws ClassCastException {
 		explode();
 		return delegee.getArray(key);
 	}
@@ -199,25 +199,25 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject getPathSafeObject(String path) throws ClassCastException {
+	public Obj getPathSafeObject(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeObject(path);
 	}
 
 	@Override
-	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
+	public Obj getPathSafeObject(String... pathBits) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeObject(pathBits);
 	}
 
 	@Override
-	public DataArray getPathSafeArray(String path) throws ClassCastException {
+	public Arr getPathSafeArray(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeArray(path);
 	}
 	
 	@Override
-	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
+	public Arr getPathSafeArray(String... pathBits) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeArray(pathBits);
 	}
@@ -263,14 +263,14 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject getStrictObject(Integer key) throws ClassCastException,
+	public Obj getStrictObject(Integer key) throws ClassCastException,
 			NullPointerException {
 		explode();
 		return delegee.getStrictObject(key);
 	}
 
 	@Override
-	public DataArray getStrictArray(Integer key) throws ClassCastException,
+	public Arr getStrictArray(Integer key) throws ClassCastException,
 			NullPointerException {
 		explode();
 		return delegee.getStrictArray(key);
@@ -301,13 +301,13 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataArray putNewArray(Integer key) {
+	public Arr putNewArray(Integer key) {
 		explode();
 		return delegee.putNewArray(key);
 	}
 
 	@Override
-	public DataObject putNewObject(Integer key) {
+	public Obj putNewObject(Integer key) {
 		explode();
 		return delegee.putNewObject(key);
 	}
@@ -355,19 +355,19 @@ public class LazyDataArray implements DataArray {
 	}
 
 	@Override
-	public DataObject putObject(Integer key, DataObject o) {
+	public Obj putObject(Integer key, Obj o) {
 		explode();
 		return delegee.putObject(key, o);
 	}
 
 	@Override
-	public DataArray putArray(Integer key, DataArray o) {
+	public Arr putArray(Integer key, Arr o) {
 		explode();
 		return delegee.putArray(key, o);
 	}
 
 	@Override
-	public DataArray with(Object val) {
+	public Arr with(Object val) {
 		add(val);
 		return this;
 	}

@@ -23,7 +23,7 @@ import com.nominanuda.code.Nullable;
 import com.nominanuda.lang.Check;
 
 
-public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataArray {
+public class DataArrayImpl extends AbstractDataStruct<Integer> implements Arr {
 	private List<Object> l;
 
 	public DataArrayImpl() {
@@ -87,11 +87,11 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 		return true;
 	}
 
-	public DataObject addNewObject() {
+	public Obj addNewObject() {
 		return putNewObject(getLength());
 	}
 
-	public DataArray addNewArray() {
+	public Arr addNewArray() {
 		return putNewArray(getLength());
 	}
 
@@ -138,7 +138,7 @@ public class DataArrayImpl extends AbstractDataStruct<Integer> implements DataAr
 	}
 
 	@Override
-	public DataArray with(Object val) {
+	public Arr with(Object val) {
 		add(val);
 		return this;
 	}

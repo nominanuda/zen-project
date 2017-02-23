@@ -3,19 +3,19 @@ package org.mozilla.javascript;
 import java.io.Reader;
 import java.io.StringReader;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.rhino.DataStructScriptableConvertor;
+import com.nominanuda.rhino.StruScriptableConvertor;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 /**
  * a permissive parser
  *
  */
 public class JsJsonDataParser {
-	private static final DataStructScriptableConvertor convertor = new DataStructScriptableConvertor();
+	private static final StruScriptableConvertor convertor = new StruScriptableConvertor();
 	private static final RhinoHelper r = new RhinoHelper();
 
-	public DataStruct parse(Reader json) {
+	public Stru parse(Reader json) {
 		Context cx = Context.enter();
 		try {
 			return convertor.fromScriptable(
@@ -24,15 +24,15 @@ public class JsJsonDataParser {
 			Context.exit();
 		}
 	}
-	public DataStruct parse(String json) {
+	public Stru parse(String json) {
 		return parse(new StringReader(json));
 	}
 
-	public DataObject parseObj(String json) {
+	public Obj parseObj(String json) {
 		return parseObj(new StringReader(json));
 	}
-	public DataObject parseObj(Reader json) {
-		return (DataObject)parse(json);
+	public Obj parseObj(Reader json) {
+		return (Obj)parse(json);
 	}
 
 }

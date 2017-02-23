@@ -15,8 +15,8 @@
  */
 package com.nominanuda.hyperapi;
 
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.http.HttpAppException;
+import com.nominanuda.zen.common.Tuple2;
 
 public interface IHttpAppExceptionRenderer {
 	/**

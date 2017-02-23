@@ -30,19 +30,19 @@ import com.nominanuda.lang.Check;
  */
 public class MapsAndListsObjectDecorator extends AbstractMap<String, Object> {
 	private final static DataStructHelper dataStructHelper = new DataStructHelper();
-	private DataObject o;
+	private Obj o;
 
 	public static @Nullable Object wrapIfNecessary(@Nullable Object v) {
 		if(dataStructHelper.isDataArray(v)) {
-			return new MapsAndListsArrayDecorator((DataArray)v);
+			return new MapsAndListsArrayDecorator((Arr)v);
 		} else if(dataStructHelper.isDataObject(v)) {
-			return new MapsAndListsObjectDecorator((DataObject)v);
+			return new MapsAndListsObjectDecorator((Obj)v);
 		} else {
 			return v;
 		}
 	}
 
-	public MapsAndListsObjectDecorator(DataObject obj) {
+	public MapsAndListsObjectDecorator(Obj obj) {
 		o = obj;
 	}
 
@@ -72,7 +72,7 @@ public class MapsAndListsObjectDecorator extends AbstractMap<String, Object> {
 		}
 	}
 
-	public DataObject unwrap() {
+	public Obj unwrap() {
 		return o;
 	}
 }

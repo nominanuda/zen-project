@@ -74,8 +74,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			: o instanceof Boolean ? bool
 				: o instanceof Number ? number
 					: o instanceof String ? string
-						: o instanceof DataArray ? array
-								: o instanceof DataObject ? object
+						: o instanceof Arr ? array
+								: o instanceof Obj ? object
 									: (DataType) Check.illegalargument.fail();
 	}
 
@@ -84,11 +84,11 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	public boolean isDataObject(Object o) {
-		return o != null && o instanceof DataObject;
+		return o != null && o instanceof Obj;
 	}
 
 	public boolean isDataArray(Object o) {
-		return o != null && o instanceof DataArray;
+		return o != null && o instanceof Arr;
 	}
 
 	public @Nullable
@@ -96,7 +96,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		if (o == null) {
 			return null;
 		} else if (isDataObject(o)) {
-			DataObject obj = (DataObject) o;
+			Obj obj = (Obj) o;
 			StringBuilder sb = new StringBuilder();
 			sb.append("{");
 			Iterator<String> itr = obj.getKeys().iterator();
@@ -113,7 +113,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			sb.append("}");
 			return sb.toString();
 		} else if (isDataArray(o)) {
-			DataArray arr = (DataArray) o;
+			Arr arr = (Arr) o;
 			StringBuilder sb = new StringBuilder();
 			sb.append("[");
 			int len = arr.getLength();
@@ -155,12 +155,12 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		} else if (isDataObject(o)) {
 			StringWriter sw = new StringWriter();
 			JsonPrinter p = new JsonPrinter(sw, pretty);
-			DataStructStreamer.stream((DataObject) o, p);
+			DataStructStreamer.stream((Obj) o, p);
 			return sw.toString();
 		} else if (isDataArray(o)) {
 			StringWriter sw = new StringWriter();
 			JsonPrinter p = new JsonPrinter(sw, pretty);
-			DataStructStreamer.stream((DataArray) o, p);
+			DataStructStreamer.stream((Arr) o, p);
 			return sw.toString();
 		} else if (o instanceof Number) {
 			return nullJsonPrinter.numberEncode((Number)o);
@@ -186,7 +186,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return parserUtils.parseStringContent(s);
 	}
 
-	public void copy(DataObject src, DataObject dst, int policy) throws UnsupportedOperationException {
+	public void copy(Obj src, Obj dst, int policy) throws UnsupportedOperationException {
 		switch (policy) {
 		case MERGE_POLICY_OVERRIDE:
 			copyOverwite(src, dst);
@@ -207,9 +207,9 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			if (isPrimitiveOrNull(o)) {
 				target.put(key, o);
 			} else if (isDataArray(o)) {
-				copyOverwite((DataArray) o, target.putNewArray(key));
+				copyOverwite((Arr) o, target.putNewArray(key));
 			} else if (isDataObject(o)) {
-				copyOverwite((DataObject) o, target.putNewObject(key));
+				copyOverwite((Obj) o, target.putNewObject(key));
 			} else {
 				throw new IllegalStateException(o.getClass().getName() + " is neither a DataStruct nor a primitive type or null");
 			}
@@ -223,7 +223,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	 * {a:[1]} {a:[2]} => {a:[1,2]} {a:{b:1}} {a:[2]} => {a:[{b:1},2]} {a:{b:1}}
 	 * {a:{b:[2]}} => {a:{b:[1,2]}} {a:1} {} => {a:1}}
 	 */
-	public void copyPush(DataObject source, DataObject target) {
+	public void copyPush(Obj source, Obj target) {
 		Iterator<String> itr = source.keyIterator();
 		while (itr.hasNext()) {
 			String key = itr.next();
@@ -232,15 +232,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 
-	public void putPush(DataObject target, String key, Object val) {
+	public void putPush(Obj target, String key, Object val) {
 		if (target.exists(key)) {
 			Object tval = target.get(key);
 			if (isDataObject(val) && isDataObject(tval)) {
-				copyPush((DataObject) val, (DataObject) tval);
+				copyPush((Obj) val, (Obj) tval);
 			} else if (isDataArray(tval)) {
-				((DataArray) tval).add(val);
+				((Arr) tval).add(val);
 			} else {
-				DataArray a = target.putNewArray(key);
+				Arr a = target.putNewArray(key);
 				a.add(tval);
 				a.add(val);
 			}
@@ -255,24 +255,24 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public DataArray fromMapsAndCollections(@SuppressWarnings("rawtypes") Collection c) {
+	public Arr fromMapsAndCollections(@SuppressWarnings("rawtypes") Collection c) {
 		DataArrayImpl a = new DataArrayImpl();
 		deepCopy(c, a);
 		return a;
 	}
 
-	public DataObject fromMapsAndCollections(Map<String, Object> m) {
+	public Obj fromMapsAndCollections(Map<String, Object> m) {
 		DataObjectImpl o = new DataObjectImpl();
 		deepCopy(m, o);
 		return o;
 	}
 
-	public DataArray fromStringsCollection(Collection<String> list) {
+	public Arr fromStringsCollection(Collection<String> list) {
 		return fromMapsAndCollections(list);
 	}
 	
-	public DataObject fromStringsMap(Map<String, ?> map) {
-		DataObject obj = newObject();
+	public Obj fromStringsMap(Map<String, ?> map) {
+		Obj obj = newObject();
 		for (String key : map.keySet()) {
 			obj.put(key, map.get(key));
 		}
@@ -280,16 +280,16 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void deepCopy(Map<String, Object> m, DataObject o) {
+	private void deepCopy(Map<String, Object> m, Obj o) {
 		for (Entry<String, Object> e : m.entrySet()) {
 			Object v = e.getValue();
 			if (v == null) {
 				o.put(e.getKey(), null);
 			} else if (v instanceof Map<?, ?>) {
-				DataObject tobj = o.putNewObject(e.getKey());
+				Obj tobj = o.putNewObject(e.getKey());
 				deepCopy((Map<String, Object>) v, tobj);
 			} else if (v instanceof Collection<?>) {
-				DataArray tarr = o.putNewArray(e.getKey());
+				Arr tarr = o.putNewArray(e.getKey());
 				deepCopy((Collection<Object>) v, tarr);
 			} else {
 				o.put(e.getKey(), v);
@@ -298,15 +298,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void deepCopy(Collection<Object> c, DataArray tarr) {
+	private void deepCopy(Collection<Object> c, Arr tarr) {
 		for (Object v : c) {
 			if (v == null) {
 				tarr.add(null);
 			} else if (v instanceof Map<?, ?>) {
-				DataObject tobj = tarr.addNewObject();
+				Obj tobj = tarr.addNewObject();
 				deepCopy((Map<String, Object>) v, tobj);
 			} else if (v instanceof Collection<?>) {
-				DataArray a = tarr.addNewArray();
+				Arr a = tarr.addNewArray();
 				deepCopy((Collection<Object>) v, a);
 			} else {
 				tarr.add(v);
@@ -361,16 +361,16 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
-		T target = (T) (struct instanceof DataArray ? new DataArrayImpl() : new DataObjectImpl());
+		T target = (T) (struct instanceof Arr ? new DataArrayImpl() : new DataObjectImpl());
 		while (keyItr.hasNext()) {
 			K key = keyItr.next();
 			Object val = struct.get(key);
 			if (isPrimitiveOrNull(val)) {
 				target.put(key, val);
-			} else if (val instanceof DataArray) {
-				target.put(key, clone((DataArray) val));
+			} else if (val instanceof Arr) {
+				target.put(key, clone((Arr) val));
 			} else {
-				target.put(key, clone((DataObject) val));
+				target.put(key, clone((Obj) val));
 			}
 		}
 		return target;
@@ -379,23 +379,23 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		Check.notNull(struct);
 		Iterator<K> keyItr = struct.keyIterator();
 		@SuppressWarnings("unchecked")
-		T target = (T) (struct instanceof DataArray ? new DataArrayImpl(parent) : new DataObjectImpl(parent));
+		T target = (T) (struct instanceof Arr ? new DataArrayImpl(parent) : new DataObjectImpl(parent));
 		while (keyItr.hasNext()) {
 			K key = keyItr.next();
 			Object val = struct.get(key);
 			if (isPrimitiveOrNull(val)) {
 				target.put(key, val);
-			} else if (val instanceof DataArray) {
-				target.put(key, clone((DataArray) val));
+			} else if (val instanceof Arr) {
+				target.put(key, clone((Arr) val));
 			} else {
-				target.put(key, clone((DataObject) val));
+				target.put(key, clone((Obj) val));
 			}
 		}
 		return target;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Iterable<T> castAsIterable(DataArray arr) {
+	public <T> Iterable<T> castAsIterable(Arr arr) {
 		return (Iterable<T>) arr;
 	}
 
@@ -406,14 +406,14 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	private void toFlatMap(Map<String, Object> map, String key, @Nullable Object value) {
 		switch (getDataType(value)) {
 		case object:
-			DataObject obj = (DataObject) value;
+			Obj obj = (Obj) value;
 			for (String k : obj.getKeys()) {
 				Object val = obj.getStrict(k);
 				toFlatMap(map, keyJoin(key, k), val);
 			}
 			break;
 		case array:
-			DataArray arr = ((DataArray) value);
+			Arr arr = ((Arr) value);
 			int len = arr.getLength();
 			for (int i = 0; i < len; i++) {
 				toFlatMap(map, keyJoin(key, i), arr.get(i));
@@ -435,19 +435,19 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return (prefix.length() > 0) ? prefix + "." + suffix.toString() : suffix.toString();
 	}
 
-	private void writeFlatMapTo(Map<String, Object> pMap, DataObject dest) {
+	private void writeFlatMapTo(Map<String, Object> pMap, Obj dest) {
 		for (Entry<String, ?> e : pMap.entrySet()) {
 			writeScalarOrMultivaluedProperty(dest, e.getKey(), e.getValue());
 		}
 	}
 
 	public DataStruct fromFlatMap(Map<String, Object> map) {
-		DataObject dest = new DataObjectImpl();
+		Obj dest = new DataObjectImpl();
 		writeFlatMapTo(map, dest);
 		return dest;
 	}
 
-	private void writeScalarOrMultivaluedProperty(DataObject target, String path, Object val) {
+	private void writeScalarOrMultivaluedProperty(Obj target, String path, Object val) {
 		if (val != null && val.getClass().isArray()) {
 			val = Arrays.asList((Object[]) val);
 		}
@@ -481,7 +481,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 
 	}
 
-	private void writeScalarProperty(DataObject target, String path, Object val) {
+	private void writeScalarProperty(Obj target, String path, Object val) {
 		if (val != null && (val.getClass().isArray() || val instanceof Collection<?>)) {
 			throw new IllegalArgumentException(val.getClass() + " is not a scalar type");
 		}
@@ -491,7 +491,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		writeScalarProperty(target, bits, val);
 	}
 
-	private void writeScalarProperty(DataObject target, String[] path, Object val) {
+	private void writeScalarProperty(Obj target, String[] path, Object val) {
 		String k = path[0];
 		if (path.length == 1) {
 			target.put(k, val);
@@ -501,16 +501,16 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			System.arraycopy(path, 1, subPath, 0, subPath.length);
 			String nextKey = subPath[0];
 			if (Maths.isInteger(nextKey)) {
-				DataArray newTarget = isDataArray(o) ? (DataArray) o : target.putNewArray(k);
+				Arr newTarget = isDataArray(o) ? (Arr) o : target.putNewArray(k);
 				writeScalarProperty(newTarget, subPath, val);
 			} else {
-				DataObject newTarget = isDataObject(o) ? (DataObject) o : target.putNewObject(k);
+				Obj newTarget = isDataObject(o) ? (Obj) o : target.putNewObject(k);
 				writeScalarProperty(newTarget, subPath, val);
 			}
 		}
 	}
 
-	private void writeScalarProperty(DataArray target, String[] path, Object val) {
+	private void writeScalarProperty(Arr target, String[] path, Object val) {
 		Integer k = Integer.parseInt(path[0]);
 		if (path.length == 1) {
 			target.put(k, val);
@@ -521,38 +521,38 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 			System.arraycopy(path, 1, subPath, 0, subPath.length);
 			String nextKey = subPath[0];
 			if (Maths.isInteger(nextKey)) {
-				DataArray newTarget = isDataArray(o) ? (DataArray) o : target.putNewArray(k);
+				Arr newTarget = isDataArray(o) ? (Arr) o : target.putNewArray(k);
 				writeScalarProperty(newTarget, subPath, val);
 			} else {
-				DataObject newTarget = isDataObject(o) ? (DataObject) o : target.putNewObject(k);
+				Obj newTarget = isDataObject(o) ? (Obj) o : target.putNewObject(k);
 				writeScalarProperty(newTarget, subPath, val);
 			}
 		}
 	}
 
-	public Map<String, ? super Object> toMapsAndLists(DataObject obj) {
+	public Map<String, ? super Object> toMapsAndLists(Obj obj) {
 		Map<String,Object> res = new LinkedHashMap<>();
 		if (obj != null) {
 			for (String k : obj.getKeys()) {
 				Object v = obj.get(k);
 				Object vToPut = 
 					v == null ? null
-					: v instanceof DataObject ? toMapsAndLists((DataObject)v)
-					: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+					: v instanceof Obj ? toMapsAndLists((Obj)v)
+					: v instanceof Arr ? toMapsAndLists((Arr)v)
 					: v;
 				res.put(k, vToPut);
 			}
 		}
 		return res;
 	}
-	public List<? super Object> toMapsAndLists(DataArray arr) {
+	public List<? super Object> toMapsAndLists(Arr arr) {
 		List<? super Object> res = new LinkedList<>();
 		if (arr != null) {
 			for (Object v : arr) {
 				Object vToPut = 
 					v == null ? null
-					: v instanceof DataObject ? toMapsAndLists((DataObject)v)
-					: v instanceof DataArray ? toMapsAndLists((DataArray)v)
+					: v instanceof Obj ? toMapsAndLists((Obj)v)
+					: v instanceof Arr ? toMapsAndLists((Arr)v)
 					: v;
 				res.add(vToPut);
 			}
@@ -560,29 +560,29 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 	
-	public Map<String, ? super Object> toMapsAndSetLists(DataObject obj) {
+	public Map<String, ? super Object> toMapsAndSetLists(Obj obj) {
 		Map<String,Object> res = new LinkedHashMap<>();
 		if (obj != null) {
 			for (String k : obj.getKeys()) {
 				Object v = obj.get(k);
 				Object vToPut = 
 					v == null ? null
-					: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
-					: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
+					: v instanceof Obj ? toMapsAndSetLists((Obj)v)
+					: v instanceof Arr ? toMapsAndSetLists((Arr)v)
 					: v;
 				res.put(k, vToPut);
 			}
 		}
 		return res;
 	}
-	public SetList<? super Object> toMapsAndSetLists(DataArray arr) {
+	public SetList<? super Object> toMapsAndSetLists(Arr arr) {
 		SetList<? super Object> res = new SetList<>();
 		if (arr != null) {
 			for (Object v : arr) {
 				Object vToPut = 
 					v == null ? null
-					: v instanceof DataObject ? toMapsAndSetLists((DataObject)v)
-					: v instanceof DataArray ? toMapsAndSetLists((DataArray)v)
+					: v instanceof Obj ? toMapsAndSetLists((Obj)v)
+					: v instanceof Arr ? toMapsAndSetLists((Arr)v)
 					: v;
 				res.add(vToPut);
 			}
@@ -590,7 +590,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 	
-	public List<String> toStringsList(DataArray arr, boolean allowNulls) {
+	public List<String> toStringsList(Arr arr, boolean allowNulls) {
 		List<String> list = new ArrayList<>();
 		if (arr != null) {
 			for (Object obj : arr) {
@@ -601,11 +601,11 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return list;
 	}
-	public List<String> toStringsList(DataArray arr) {
+	public List<String> toStringsList(Arr arr) {
 		return toStringsList(arr, true);
 	}
 	
-	public Map<String, String> toStringsMap(DataObject obj, boolean allowNulls) {
+	public Map<String, String> toStringsMap(Obj obj, boolean allowNulls) {
 		Map<String, String> map = new LinkedHashMap<String, String>();
 		if (obj != null) {
 			for (String key : obj.getKeys()) {
@@ -619,7 +619,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 		return map;
 	}
-	public Map<String, String> toStringsMap(DataObject obj) {
+	public Map<String, String> toStringsMap(Obj obj) {
 		return toStringsMap(obj, true);
 	}
 	
@@ -627,37 +627,37 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	//if convertor#canConvert returns false value is not added to result
 	@SuppressWarnings("unchecked")
 	public <X extends DataStruct> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
-		return Check.notNull(source) instanceof DataObject
-			? (X)convertLeavesInternal((DataObject)source, convertor)
-			: (X)convertLeavesInternal((DataArray)source, convertor);
+		return Check.notNull(source) instanceof Obj
+			? (X)convertLeavesInternal((Obj)source, convertor)
+			: (X)convertLeavesInternal((Arr)source, convertor);
 	}
 
-	private DataObject convertLeavesInternal(DataObject source, SafeConvertor<Object, Object> convertor) {
-		DataObject res = new DataObjectImpl();
+	private Obj convertLeavesInternal(Obj source, SafeConvertor<Object, Object> convertor) {
+		Obj res = new DataObjectImpl();
 		for (String k : source.getKeys()) {
 			Object v = source.get(k);
 			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
 				res.put(k, convertor.apply(v));
-			} else if(v instanceof DataObject) {
-				res.put(k, convertLeavesInternal((DataObject)v, convertor));
+			} else if(v instanceof Obj) {
+				res.put(k, convertLeavesInternal((Obj)v, convertor));
 			} else {
-				res.put(k, convertLeavesInternal((DataArray)v, convertor));
+				res.put(k, convertLeavesInternal((Arr)v, convertor));
 			}
 		}
 		return res;
 	}
 
-	private DataArray convertLeavesInternal(DataArray source, SafeConvertor<Object, Object> convertor) {
-		DataArray res = new DataArrayImpl();
+	private Arr convertLeavesInternal(Arr source, SafeConvertor<Object, Object> convertor) {
+		Arr res = new DataArrayImpl();
 		int len = source.getLength();
 		for (int i = 0; i < len; i++) {
 			Object v = source.get(i);
 			if(isPrimitiveOrNull(v) && convertor.canConvert(v)) {
 				res.add(convertor.apply(v));
-			} else if(v instanceof DataObject) {
-				res.add(convertLeavesInternal((DataObject)v, convertor));
+			} else if(v instanceof Obj) {
+				res.add(convertLeavesInternal((Obj)v, convertor));
 			} else {
-				res.add(convertLeavesInternal((DataArray)v, convertor));
+				res.add(convertLeavesInternal((Arr)v, convertor));
 			}
 		}
 		return res;
@@ -666,35 +666,35 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	/**
 	 * members in the form key, val, key, val etc.
 	 */
-	public DataObject buildObject(Object... members) {
-		DataObject o = newObject();
+	public Obj buildObject(Object... members) {
+		Obj o = newObject();
 		for (int i = 0; i < members.length; i+=2) {
 			o.put((String)members[i], members[i+1]);
 		}
 		return o;
 	}
 	
-	public DataArray buildArray(Object... members) {
-		DataArray a = newArray();
+	public Arr buildArray(Object... members) {
+		Arr a = newArray();
 		for (Object member : members) {
 			a.add(member);
 		}
 		return a;
 	}
 
-	public DataObject newObject() {
+	public Obj newObject() {
 		return new DataObjectImpl();
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, Function<T, Tuple2<String, Object>> fnc) {
-		final DataObject obj = newObject();
+	public <T> Obj newObject(Iterable<T> iterable, Function<T, Tuple2<String, Object>> fnc) {
+		final Obj obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = Check.notNull(fnc.apply(item));
 			obj.put(v.get0(), v.get1());
 		}
 		return obj;
 	}
-	public <T> DataObject newObject(Iterable<T> iterable, BiFunction<T, DataObject, Tuple2<String, Object>> fnc) {
-		final DataObject obj = newObject();
+	public <T> Obj newObject(Iterable<T> iterable, BiFunction<T, Obj, Tuple2<String, Object>> fnc) {
+		final Obj obj = newObject();
 		for (T item : iterable) {
 			Tuple2<String, Object> v = fnc.apply(item, obj);
 			if (v != null) { // it's allowed to return null and directly manipulate obj from fnc
@@ -704,11 +704,11 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return obj;
 	}
 
-	public DataArray newArray() {
+	public Arr newArray() {
 		return new DataArrayImpl();
 	}
-	public <T> DataArray newArray(Iterable<T> iterable, Function<T, Object> fnc) {
-		final DataArray arr = newArray();
+	public <T> Arr newArray(Iterable<T> iterable, Function<T, Object> fnc) {
+		final Arr arr = newArray();
 		for (T item : iterable) {
 			arr.add(fnc.apply(item));
 		}
@@ -731,28 +731,28 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return parse(new StringReader(json), loose);
 	}
 
-	public DataObject parseObject(Reader json, boolean loose) {
-		return (DataObject)parse(json, loose);
+	public Obj parseObject(Reader json, boolean loose) {
+		return (Obj)parse(json, loose);
 	}
 
-	public DataObject parseObjectUtf8(InputStream json, boolean loose) {
-		return (DataObject)parseUtf8(json, loose);
+	public Obj parseObjectUtf8(InputStream json, boolean loose) {
+		return (Obj)parseUtf8(json, loose);
 	}
 
-	public DataObject parseObject(String json, boolean loose) {
-		return (DataObject)parse(new StringReader(json), loose);
+	public Obj parseObject(String json, boolean loose) {
+		return (Obj)parse(new StringReader(json), loose);
 	}
 
-	public DataArray parseArray(Reader json, boolean loose) {
-		return (DataArray)parse(json, loose);
+	public Arr parseArray(Reader json, boolean loose) {
+		return (Arr)parse(json, loose);
 	}
 
-	public DataArray parseArrayUtf8(InputStream json, boolean loose) {
-		return (DataArray)parseUtf8(json, loose);
+	public Arr parseArrayUtf8(InputStream json, boolean loose) {
+		return (Arr)parseUtf8(json, loose);
 	}
 
-	public DataArray parseArray(String json, boolean loose) {
-		return (DataArray)parse(new StringReader(json), loose);
+	public Arr parseArray(String json, boolean loose) {
+		return (Arr)parse(new StringReader(json), loose);
 	}
 
 	public DataStruct parse(Reader json) {
@@ -767,59 +767,59 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return parse(json, false);
 	}
 
-	public DataObject parseObject(Reader json) {
+	public Obj parseObject(Reader json) {
 		return parseObject(json, false);
 	}
 
-	public DataObject parseObjectUtf8(InputStream json) {
+	public Obj parseObjectUtf8(InputStream json) {
 		return parseObjectUtf8(json, false);
 	}
 
-	public DataObject parseObject(String json) {
-		return (DataObject)parse(new StringReader(json));
+	public Obj parseObject(String json) {
+		return (Obj)parse(new StringReader(json));
 	}
 
-	public DataArray parseArray(Reader json) {
+	public Arr parseArray(Reader json) {
 		return parseArray(json, false);
 	}
 
-	public DataArray parseArrayUtf8(InputStream json) {
+	public Arr parseArrayUtf8(InputStream json) {
 		return parseArrayUtf8(json, false);
 	}
 
-	public DataArray parseArray(String json) {
+	public Arr parseArray(String json) {
 		return parseArray(json, false);
 	}
 
 	// can lead to classcastexception in case it is not a dataobject array
 	@SuppressWarnings("unchecked")
-	public Iterable<DataObject> asObjSeq(@Nullable DataArray arr) {
+	public Iterable<Obj> asObjSeq(@Nullable Arr arr) {
 		if (arr != null) {
-			return (Iterable<DataObject>)(Iterable<?>)arr;
+			return (Iterable<Obj>)(Iterable<?>)arr;
 		}
 		return Collections.emptyIterable();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Iterable<DataArray> asArrSeq(@Nullable DataArray arr) {
+	public Iterable<Arr> asArrSeq(@Nullable Arr arr) {
 		if (arr != null) {
-			return (Iterable<DataArray>)(Iterable<?>)arr;
+			return (Iterable<Arr>)(Iterable<?>)arr;
 		}
 		return Collections.emptyIterable();
 	}
 
 	// can lead to classcastexception in case it is not a map of dataobjects
-	public Iterable<DataObject> asObjSeq(final @Nullable DataObject obj) {
-		return new Iterable<DataObject>() {
-			@Override public Iterator<DataObject> iterator() {
+	public Iterable<Obj> asObjSeq(final @Nullable Obj obj) {
+		return new Iterable<Obj>() {
+			@Override public Iterator<Obj> iterator() {
 				if (obj != null) {
 					final Iterator<Entry<String, Object>> i = obj.iterator();
-					return new Iterator<DataObject>() {
+					return new Iterator<Obj>() {
 						@Override public boolean hasNext() {
 							return i.hasNext();
 						}
-						@Override public DataObject next() {
-							return (DataObject) i.next().getValue();
+						@Override public Obj next() {
+							return (Obj) i.next().getValue();
 						}
 						@Override public void remove() {
 							Check.unsupportedoperation.fail();
@@ -832,18 +832,18 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	}
 	
 	// can lead to classcastexception in case it is not a map of dataobjects
-	public Iterable<Tuple2<String, DataObject>> asKeyObjSeq(final @Nullable DataObject obj) {
-		return new Iterable<Tuple2<String, DataObject>>() {
-			@Override public Iterator<Tuple2<String, DataObject>> iterator() {
+	public Iterable<Tuple2<String, Obj>> asKeyObjSeq(final @Nullable Obj obj) {
+		return new Iterable<Tuple2<String, Obj>>() {
+			@Override public Iterator<Tuple2<String, Obj>> iterator() {
 				if (obj != null) {
 					final Iterator<Entry<String, Object>> i = obj.iterator();
-					return new Iterator<Tuple2<String, DataObject>>() {
+					return new Iterator<Tuple2<String, Obj>>() {
 						@Override public boolean hasNext() {
 							return i.hasNext();
 						}
-						@Override public Tuple2<String, DataObject> next() {
+						@Override public Tuple2<String, Obj> next() {
 							Entry<String, Object> entry = i.next();
-							return new Tuple2<String, DataObject>(entry.getKey(), (DataObject) entry.getValue());
+							return new Tuple2<String, Obj>(entry.getKey(), (Obj) entry.getValue());
 						}
 						@Override public void remove() {
 							Check.unsupportedoperation.fail();
@@ -857,7 +857,7 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 	
 	// can lead to classcastexception if comparator is not of the right type
 	@SuppressWarnings("unchecked")
-	public <T> void sort(DataArray arr, Comparator<T> c) {
+	public <T> void sort(Arr arr, Comparator<T> c) {
 		int l = arr.getLength();
 		Object[] objs = new Object[l];
 		for (int i=0; i<l; i++) {
@@ -869,8 +869,8 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		}
 	}
 	
-	public DataArray subArray(DataArray arr, int from, int to) {
-		DataArray res = newArray();
+	public Arr subArray(Arr arr, int from, int to) {
+		Arr res = newArray();
 		int limit = Math.min(arr.getLength(), to) - from;
 		for (int i = 0; i < limit; i++) {
 			res.put(i, arr.get(i + from));
@@ -878,15 +878,15 @@ public class DataStructHelper implements Serializable, DataStructFactory {
 		return res;
 	}
 
-	public DataArray arr(Object... attributes) {
+	public Arr arr(Object... attributes) {
 		return STRUCT.buildArray(attributes);
 	}
 
-	public DataObject obj(Object... attributes) {
+	public Obj obj(Object... attributes) {
 		return STRUCT.buildObject(attributes);
 	}
 
-	public DataObject obj(Map map) {
+	public Obj obj(Map map) {
 		return STRUCT.fromMapsAndCollections(map);
 	}
 }

@@ -1,6 +1,6 @@
 package com.nominanuda.dataobject;
 
 public interface DataStructFactory {
-	DataObject newObject();
-	DataArray newArray();
+	Obj newObject();
+	Arr newArray();
 }
