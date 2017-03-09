@@ -18,6 +18,7 @@ package com.nominanuda.zen.obj;
 import static com.nominanuda.zen.common.Check.illegalargument;
 import static com.nominanuda.zen.obj.JsonDeserializer.JSON_DESERIALIZER;
 
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -301,6 +302,10 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 
 	default Arr getArr(String k) {
 		return (Arr)fetch(k);
+	}
+
+	public static Obj parse(InputStream is) {
+		return (Obj)JSON_DESERIALIZER.deserialize(is);
 	}
 
 	public static Obj parse(Reader r) {

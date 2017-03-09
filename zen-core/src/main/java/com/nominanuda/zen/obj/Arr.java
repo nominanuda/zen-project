@@ -17,6 +17,8 @@ package com.nominanuda.zen.obj;
 
 import static com.nominanuda.zen.obj.JsonDeserializer.JSON_DESERIALIZER;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.Collection;
 
 public interface Arr extends TArr<Object> {
@@ -79,10 +81,6 @@ public interface Arr extends TArr<Object> {
 		return arr;
 	}
 
-	public static Arr parse(String r) {
-		return (Arr)JSON_DESERIALIZER.deserialize(r);
-	}
-
 	static Arr fromList(Collection<?> c) {
 		Arr a = make();
 		StruUtils.deepCopy(c, a);
@@ -91,6 +89,18 @@ public interface Arr extends TArr<Object> {
 
 	default Obj getObj(int i) {
 		return (Obj)fetch(i);
+	}
+
+	public static Arr parse(String r) {
+		return (Arr)JSON_DESERIALIZER.deserialize(r);
+	}
+
+	public static Arr parse(InputStream is) {
+		return (Arr)JSON_DESERIALIZER.deserialize(is);
+	}
+
+	public static Arr parse(Reader r) {
+		return (Arr)JSON_DESERIALIZER.deserialize(r);
 	}
 
 }
