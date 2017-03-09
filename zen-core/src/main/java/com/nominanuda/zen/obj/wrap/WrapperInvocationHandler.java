@@ -234,7 +234,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 		} else {
 			if(WrapperItemFactory.class.isAssignableFrom(type) && JsonType.isObj(v)) {
 				try {
-					Method factoryMethod = type.getMethod("wrap", Obj.class);
+					Method factoryMethod = findWrapMethod(type);
 					return factoryMethod.invoke(null, v);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new RuntimeException(e);
@@ -244,6 +244,21 @@ class WrapperInvocationHandler implements InvocationHandler {
 			} else {
 				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 			}
+		}
+	}
+
+	private Method findWrapMethod(Class<?> type) throws NoSuchMethodException {
+		try {
+			return type.getMethod("wrap", Obj.class);
+		} catch(NoSuchMethodException e) {
+			for(Class<?> ancestor : type.getInterfaces()) {
+				if(WrapperItemFactory.class.isAssignableFrom(ancestor)) {
+					try {
+						return findWrapMethod(ancestor);
+					} catch(NoSuchMethodException e1) {}
+				}
+			}
+			throw new NoSuchMethodException();
 		}
 	}
 	
