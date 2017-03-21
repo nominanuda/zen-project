@@ -29,9 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -256,6 +256,18 @@ public class Seq {
 
 	public <X,Y> List<Y> mapToList(Collection<X> l, Function<X, Y> mapper) {
 		return l.stream().map(mapper).collect(Collectors.toList());
+	}
+	
+	public <T> List<T> reversedClone(List<T> list) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<T> l2 = list.getClass().newInstance();
+			l2.addAll(list);
+			java.util.Collections.reverse(l2);
+			return l2;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

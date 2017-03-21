@@ -43,7 +43,7 @@ import com.nominanuda.zen.stereotype.ScopedSingletonFactory;
 
 public class OioUtils {
 	public static final OioUtils IO = ScopedSingletonFactory.getInstance().buildJvmSingleton(OioUtils.class);
-	private static File TMP = new File(System.getProperty("java.io.tmpdir"));
+	private static final File TMP = new File(System.getProperty("java.io.tmpdir"));
 	public static final Pattern NAMED_PLACEHOLDER = Pattern.compile(
 			"(\\{[^\\}]+\\})", Pattern.MULTILINE);
 	public static final Pattern UNNAMED_PLACEHOLDER = Pattern.compile("\\{\\}",
@@ -227,26 +227,34 @@ public class OioUtils {
 		}
 	}
 
-	public File newTmpDir(String prefix) {
+	public File newTmpDir(File tmpPath, String prefix) {
+		if (tmpPath == null) tmpPath = TMP;
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = MATHS.getBytes(d.longValue());
-			res = new File(TMP, prefix + B62.encode(b));
+			res = new File(tmpPath, prefix + B62.encode(b));
 		} while (res.exists());
 		res.mkdir();
 		return res;
 	}
+	public File newTmpDir(String prefix) {
+		return newTmpDir(null, prefix);
+	}
 
-	public File newTmpFile(String prefix) throws IOException {
+	public File newTmpFile(File tmpPath, String prefix) throws IOException {
+		if (tmpPath == null) tmpPath = TMP;
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
 			byte[] b = MATHS.getBytes(d.longValue());
-			res = new File(TMP, prefix + B62.encode(b));
+			res = new File(tmpPath, prefix + B62.encode(b));
 		} while (res.exists());
 		res.createNewFile();
 		return res;
+	}
+	public File newTmpFile(String prefix) throws IOException {
+		return newTmpFile(null, prefix);
 	}
 
 	public void writeToFile(File dest, InputStream src) throws IOException {

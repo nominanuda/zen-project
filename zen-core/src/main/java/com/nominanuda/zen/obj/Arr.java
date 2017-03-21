@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 public interface Arr extends TArr<Object> {
 
 	public static Arr make(Object...vals) {
@@ -56,13 +58,22 @@ public interface Arr extends TArr<Object> {
 	default TArr<Obj> ofObj() {
 		return of(Obj.class);
 	}
-
-	default TArr<String> ofStr() {
-		return of(String.class);
+	public static TArr<Obj> ofObj(@Nullable Arr a) {
+		return (a != null ? a : make()).ofObj();
 	}
 
 	default TArr<Arr> ofArr() {
 		return of(Arr.class);
+	}
+	public static TArr<Arr> ofArr(@Nullable Arr a) {
+		return (a != null ? a : make()).ofArr();
+	}
+
+	default TArr<String> ofStr() {
+		return of(String.class);
+	}
+	public static TArr<String> ofStr(@Nullable Arr a) {
+		return (a != null ? a : make()).ofStr();
 	}
 
 	default Obj obj(int idx) throws ClassCastException {
