@@ -1,5 +1,7 @@
-const LIB_CAST = require('classpath:relax/core/ctrl/lib/cast.js');
-
+function CAST_toArray(o, fnc) { // redefined here just to avoid require
+	var arr = ((o !== undefined && o !== null) ? o.splice ? o : [o] : []);
+	return fnc ? arr.map(fnc) : arr;
+}
 
 function keys(obj) {
 	return Object.keys(obj);
@@ -51,7 +53,7 @@ function filter(obj, fnc) {
 
 function slice(src1, props, src2) { // shrink object to selected properties
 	var dst = {};
-	src1 && LIB_CAST.toArray(props).forEach(function(p) {
+	src1 && CAST_toArray(props).forEach(function(p) {
 		dst[p] = src1[p];
 	});
 	return merge(src2, dst);

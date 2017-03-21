@@ -1,8 +1,10 @@
-const LIB_CAST = require('classpath:relax/core/ctrl/lib/cast.js');
-
+function CAST_toArray(o, fnc) { // redefined here just to avoid require
+	var arr = ((o !== undefined && o !== null) ? o.splice ? o : [o] : []);
+	return fnc ? arr.map(fnc) : arr;
+}
 
 function filterEmpties(arr, fnc) {
-	return LIB_CAST.toArray(arr).map(function(item) {
+	return CAST_toArray(arr).map(function(item) {
 		if (item) {
 			if (item.splice) { // array
 				return filterEmpties(item, fnc);
@@ -37,8 +39,8 @@ function filterEmpties(arr, fnc) {
 
 exports = {
 	equals: function(a1, a2) {
-		a1 = LIB_CAST.toArray(a1);
-		a2 = LIB_CAST.toArray(a2);
+		a1 = CAST_toArray(a1);
+		a2 = CAST_toArray(a2);
 		for (var i=0; i<a1.length; i++) {
 			if (a1[i] !== a2[i]) {
 				return false;
@@ -48,7 +50,7 @@ exports = {
 	},
 	
 	contains: function(arr, val) {
-		return (LIB_CAST.toArray(arr).indexOf(val) > -1);
+		return (CAST_toArray(arr).indexOf(val) > -1);
 	},
 	
 	filterEmpties: filterEmpties,
@@ -58,12 +60,12 @@ exports = {
 	},
 	
 	evUnshift: function(v, arr) {
-		arr = LIB_CAST.toArray(arr);
+		arr = CAST_toArray(arr);
 		(arr.indexOf(v) == -1) && arr.unshift(v);
 		return arr;
 	},
 	evPush: function(v, arr) {
-		arr = LIB_CAST.toArray(arr);
+		arr = CAST_toArray(arr);
 		(arr.indexOf(v) == -1) && arr.push(v);
 		return arr;
 	},
@@ -73,7 +75,7 @@ exports = {
 		!transFnc && (transFnc = function(item) {
 			return item;
 		});
-		arr = LIB_CAST.toArray(arr);
+		arr = CAST_toArray(arr);
 		if (LIB_CAST.isFunction(propOrFnc)) {
 			arr.forEach(function(item) {
 				map[propOrFnc(item)] = transFnc(item);

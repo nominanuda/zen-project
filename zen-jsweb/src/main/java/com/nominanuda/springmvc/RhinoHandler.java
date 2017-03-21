@@ -32,9 +32,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -62,7 +60,6 @@ public class RhinoHandler implements CommandRequestHandler {
 	private final static String ENTITY_ARRAY_CMD_KEY = "_entity";
 	private final static String REQUEST_EXTRA_PATTERNID = "patternId";
 	
-	protected final Map<String, Object> hardParams, hostObjects;
 	protected final EntityDecoder jsonDecoder = new DataStructJsonDecoder();
 	
 	protected Sitemap sitemap;
@@ -75,15 +72,6 @@ public class RhinoHandler implements CommandRequestHandler {
 	protected boolean mergeGetAndPostFormParams = true;
 	protected boolean mergeEntityDataObject = true;
 	protected String function = "handle";
-	
-	
-	public RhinoHandler(Map<String, Object> hardParams, Map<String, Object> hostObjects) {
-		this.hardParams = hardParams != null ? hardParams : new HashMap<String, Object>();
-		this.hostObjects = hostObjects != null ? hostObjects : new HashMap<String, Object>();
-	}
-	public RhinoHandler() {
-		this(null, null);
-	}
 	
 	
 	public void init() {

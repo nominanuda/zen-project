@@ -27,6 +27,9 @@ public class JarSoySource extends SoySource {
 	public JarSoySource(String... baseTemplatesLocations) {
 		this.templatesLocations = Arrays.asList(baseTemplatesLocations);
 	}
+	public JarSoySource() {
+		this(new String[] {});
+	}
 	
 	
 	@Override

@@ -1,4 +1,3 @@
-
 function toFloat(o, v) {
 	if (o) {
 		if (o.splice) { // array

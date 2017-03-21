@@ -1,5 +1,3 @@
-const LIB_CAST = require('classpath:relax/core/ctrl/lib/cast.js');
-
 const RE_DATE = /(\d+)\D+(\d+)\D+(\d{4})/;
 const RE_DATETIME = /(\d+)\D+(\d+)\D+(\d{4})\D+(\d+)\D+(\d+)/;
 
@@ -39,7 +37,7 @@ exports = {
 	},
 	
 	secs2time: function(secs) {
-		if (LIB_CAST.isNumber(secs)) {
+		if (typeof secs == 'number') {
 			var s = secs % 60;
 			var m = Math.floor(secs / 60) % 60;
 			var h = Math.floor(secs / 3600);

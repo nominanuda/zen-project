@@ -76,10 +76,10 @@ public class RhinoOverloadingTest extends RhinoTestCase {
 		
 		m.put("instanceOf", new Object() {
 			public String method(Object o) {
-				if(o instanceof DataArray) {
+				if (o instanceof DataArray) {
 					return "array";
 				}
-				if(o instanceof DataObject) {
+				if (o instanceof DataObject) {
 					return "map";
 				}
 				return "object";
