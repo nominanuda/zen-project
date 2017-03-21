@@ -6,14 +6,14 @@ import java.util.function.Function;
 
 import org.mozilla.javascript.RhinoEmbedding;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Disposable;
-import com.nominanuda.lang.ObjectFactory;
 import com.nominanuda.rhino.IScriptSource;
 import com.nominanuda.rhino.IScriptSource.IScript;
+import com.nominanuda.rhino.ObjectFactory;
 import com.nominanuda.rhino.SimpleScriptSource;
+import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.stereotype.Disposable;
 
-public class Json2Script2Json implements Function<DataStruct, DataStruct>, Disposable {
+public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 	
 	public static class Factory implements ObjectFactory<Json2Script2Json> {
 		private final IScriptSource scriptSource;
@@ -61,7 +61,7 @@ public class Json2Script2Json implements Function<DataStruct, DataStruct>, Dispo
 	}
 
 	@Override
-	public DataStruct apply(DataStruct json) {
+	public Stru apply(Stru json) {
 		return script.callForDataStruct(function, json);
 	}
 	
