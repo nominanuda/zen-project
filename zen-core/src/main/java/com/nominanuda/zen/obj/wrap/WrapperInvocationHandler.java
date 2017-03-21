@@ -26,12 +26,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.common.Tuple2;
@@ -234,8 +236,14 @@ class WrapperInvocationHandler implements InvocationHandler {
 		} else {
 			if(WrapperItemFactory.class.isAssignableFrom(type) && JsonType.isObj(v)) {
 				try {
-					Method factoryMethod = findWrapMethod(type);
-					return factoryMethod.invoke(null, v);
+					WrapType wrapType = type.getAnnotation(WrapType.class);
+					if(wrapType != null) {
+						Function<Obj, Object> builder = createBuilder(wrapType, type);
+						return builder.apply((Obj)v);
+					} else {
+						Method factoryMethod = findWrapMethod(type);
+						return factoryMethod.invoke(null, v);
+					}
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new RuntimeException(e);
 				}
@@ -245,6 +253,23 @@ class WrapperInvocationHandler implements InvocationHandler {
 				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 			}
 		}
+	}
+
+	private static final Map<Class<?>, Function<Obj, Object>> BUILDER_CACHE = new HashMap<>();
+	private Function<Obj, Object> createBuilder(WrapType wrapType, Class<?> type) {
+		Function<Obj, Object> builder = BUILDER_CACHE.get(type);
+		if(builder == null) {
+			String field = wrapType.field();
+			Map<String, Class<?>> typeMap = new HashMap<>();
+			String[] values = wrapType.values();
+			Class<?>[] types = wrapType.types();
+			for(int i = 0; i < values.length; i++) {
+				typeMap.put(values[i], types[i]);
+				builder = (o) -> WF.wrap(o, typeMap.get(o.fetch(field)));
+				BUILDER_CACHE.put(type, builder);
+			}
+		}
+		return builder;
 	}
 
 	private Method findWrapMethod(Class<?> type) throws NoSuchMethodException {

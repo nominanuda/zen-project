@@ -25,8 +25,24 @@ import java.util.List;
 import org.junit.Test;
 
 import com.nominanuda.zen.obj.wrap.ObjWrapper;
+import com.nominanuda.zen.obj.wrap.WrapType;
+import com.nominanuda.zen.obj.wrap.WrapperItemFactory;
 
 public class ObjWrapperTest {
+
+	@Test
+	public void testItemFactoryAnno() {
+		Obj anApiJson = SimpleJixParser.obj("{aList[{type:t1},{type:t2}]}");
+		AnApi anApi = WF.wrap(anApiJson, AnApi.class);
+		List<TypeChooser> aList = anApi.aList();
+		assertTrue(aList.get(0) instanceof BizObject);
+		assertTrue(aList.get(1) instanceof BizObject2);
+	}
+	@WrapType(values={"t1","t2"},types={BizObject.class, BizObject2.class})
+	interface TypeChooser extends WrapperItemFactory {}
+	interface AnApi {
+		List<TypeChooser> aList();
+	}
 
 	@Test
 	public void testObjWrapper() {
@@ -48,26 +64,8 @@ public class ObjWrapperTest {
 		BizObject2 bo2 = bo.subObjects().get(0);
 		assertTrue(bo2 instanceof BizObject2);
 	}
-//TODO remove
-//	@Test
-//	public void testBeanWrapperInterface() {
-//		BizBean bo = BeanWrapper.wrap(BizBean.class);
-//		bo.setFoo("foo");
-//		assertEquals("foo", bo.getFoo());
-//		assertEquals("foo", bo.get().fetch("foo"));
-//		assertEquals("GOT IT !!", bo.overridden());
-//	}
 
-	public interface BizBean extends ObjWrapper {
-		void setFoo(String s);
-		String getFoo();
-		BizObject setCHAin1(String s);
-		default String overridden() {
-			return "GOT IT !!";
-		}
-	}
-
-	public interface BizObject extends ObjWrapper {
+	public interface BizObject extends ObjWrapper, TypeChooser {
 		void foo(String s);
 		String foo();
 		String chain1();
@@ -80,7 +78,7 @@ public class ObjWrapperTest {
 		List<BizObject2> subObjects();
 	}
 
-	public interface BizObject2 extends ObjWrapper, Obj {
+	public interface BizObject2 extends ObjWrapper, Obj, TypeChooser {
 		
 	}
 
