@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import com.nominanuda.zen.obj.wrap.ObjWrapper;
 import com.nominanuda.zen.obj.wrap.WrapType;
-import com.nominanuda.zen.obj.wrap.WrapperItemFactory;
 
 public class ObjWrapperTest {
 
@@ -39,7 +38,7 @@ public class ObjWrapperTest {
 		assertTrue(aList.get(1) instanceof BizObject2);
 	}
 	@WrapType(values={"t1","t2"},types={BizObject.class, BizObject2.class})
-	interface TypeChooser extends WrapperItemFactory {}
+	interface TypeChooser {}
 	interface AnApi {
 		List<TypeChooser> aList();
 	}

@@ -233,25 +233,26 @@ class WrapperInvocationHandler implements InvocationHandler {
 			} else {
 				return v;
 			}
-		} else {
-			if(WrapperItemFactory.class.isAssignableFrom(type) && JsonType.isObj(v)) {
+		} else if(JsonType.isObj(v)) {
+			Obj o = (Obj)v;
+			WrapType wrapType = type.getAnnotation(WrapType.class);
+			if(wrapType != null) {
+				Function<Obj, Object> builder = createBuilder(wrapType, type);
+				return builder.apply(o);
+			} else if(WrapperItemFactory.class.isAssignableFrom(type)) {
 				try {
-					WrapType wrapType = type.getAnnotation(WrapType.class);
-					if(wrapType != null) {
-						Function<Obj, Object> builder = createBuilder(wrapType, type);
-						return builder.apply((Obj)v);
-					} else {
-						Method factoryMethod = findWrapMethod(type);
-						return factoryMethod.invoke(null, v);
-					}
+					Method factoryMethod = findWrapMethod(type);
+					return factoryMethod.invoke(null, v);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new RuntimeException(e);
 				}
-			} else if (ObjWrapper.class.isAssignableFrom(type) && JsonType.isObj(v)) { // sub object
-				return WF.wrap((Obj)v, type);
+			} else if (ObjWrapper.class.isAssignableFrom(type)) { // sub object
+				return WF.wrap(o, type);
 			} else {
 				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 			}
+		} else {
+			throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
 		}
 	}
 
