@@ -15,7 +15,7 @@
  */
 package org.mozilla.javascript;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,11 +27,12 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.mozilla.javascript.tools.ToolErrorReporter;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 @ThreadSafe
 public class RhinoHelper {

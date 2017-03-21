@@ -15,24 +15,22 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Strings;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.obj.JsonSerializer;
+import com.nominanuda.zen.obj.Stru;
 
-public class DataStructJsonEntityEncoder extends AbstractEntityEncoder<DataStruct> {
+public class DataStructJsonEntityEncoder extends AbstractEntityEncoder<Stru> {
 
 	public DataStructJsonEntityEncoder() {
-		super(DataStruct.class);
+		super(Stru.class);
 	}
 
 	@Override
-	protected HttpEntity encodeInternal(AnnotatedType p, DataStruct value) {
-		byte[] payload = STRUCT.toJsonString(value).getBytes(Strings.UTF8);
+	protected HttpEntity encodeInternal(AnnotatedType p, Stru value) {
+		byte[] payload = JsonSerializer.JSON_SERIALIZER.serialize(value);;
 		ByteArrayEntity e = new ByteArrayEntity(payload);
 		e.setContentType(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
 		return e;

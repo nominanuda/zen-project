@@ -17,16 +17,16 @@ package com.nominanuda.web.mvc;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class YesMatcher implements HandlerMatcher {
 	private Object handler;
 
 	@Override
-	public Tuple2<Object, DataStruct> match(HttpRequest request) {
-		return new Tuple2<Object, DataStruct>(handler, new DataObjectImpl());
+	public Tuple2<Object, Stru> match(HttpRequest request) {
+		return new Tuple2<Object, Stru>(handler, Obj.make());
 	}
 
 	public void setHandler(Object handler) {

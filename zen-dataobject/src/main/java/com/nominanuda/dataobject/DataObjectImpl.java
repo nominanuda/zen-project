@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 
 import com.nominanuda.lang.Check;
 
-public class DataObjectImpl extends AbstractDataStruct<String> implements DataObject{
+public class DataObjectImpl extends AbstractDataStruct<String> implements Obj{
 	private final Map<String, ? super Object> m;
 
 	public DataObjectImpl() {
@@ -91,7 +91,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		return res;
 	}
 
-	public DataObject with(String k, Object v) {
+	public Obj with(String k, Object v) {
 		put(k, v);
 		return this;
 	}
@@ -101,7 +101,7 @@ public class DataObjectImpl extends AbstractDataStruct<String> implements DataOb
 		return iteratorOf(this);
 	}
 
-	public static Iterator<Entry<String, Object>> iteratorOf(DataObject o) {
+	public static Iterator<Entry<String, Object>> iteratorOf(Obj o) {
 		List<Entry<String, Object>> l = new LinkedList<Map.Entry<String,Object>>();
 		for(final String k : o.getKeys()) {
 			final Object v = o.get(k);

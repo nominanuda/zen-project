@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springmvc;
 
+import static com.nominanuda.zen.classwork.Reflect.REFL;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,10 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.nominanuda.lang.ReflectionHelper;
-
 public class JettyChainableDispatcherServlet extends DispatcherServlet {
-	private static final ReflectionHelper reflect = new ReflectionHelper();
 	private static final long serialVersionUID = -3687969916503048020L;
 	private static final String UNHANDLED_REQUEST = "UNHANDLED_REQUEST";
 	private static final String SETHANDLED_FALSE_CALLED = "SETHANDLED_FALSE_CALLED";
@@ -33,9 +32,9 @@ public class JettyChainableDispatcherServlet extends DispatcherServlet {
 	@Override
 	protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getAttribute(SETHANDLED_FALSE_CALLED) == null) {
-			if (reflect.safeInstanceOf(request, "org.eclipse.jetty.server.Request")
-			|| reflect.safeInstanceOf(request, "org.mortbay.jetty.Request")) {
-				reflect.invokeMethod(request, "setHandled", new Object[] { false });
+			if (REFL.safeInstanceOf(request, "org.eclipse.jetty.server.Request")
+			|| REFL.safeInstanceOf(request, "org.mortbay.jetty.Request")) {
+				REFL.invokeMethod(request, "setHandled", new Object[] { false });
 			}
 			request.setAttribute(SETHANDLED_FALSE_CALLED, true);
 		}

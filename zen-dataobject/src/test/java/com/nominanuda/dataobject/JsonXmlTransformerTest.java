@@ -19,7 +19,7 @@ public class JsonXmlTransformerTest {
 	@Test
 	public void test() {
 		String json = "{a:[1,2],b:{c:{},d:true}}";
-		DataObject o = new JsonLooseParser().parseObject(json);
+		Obj o = new JsonLooseParser().parseObject(json);
 
 		SAXPipeline pipe = new SAXPipeline().add(
 				new InstanceFactory<TransformerHandler>(
@@ -36,7 +36,7 @@ public class JsonXmlTransformerTest {
 				toXml(o, nspipe));
 	}
 
-	private String toXml(DataObject o, SAXPipeline pipe) {
+	private String toXml(Obj o, SAXPipeline pipe) {
 		CharArrayWriter w = new CharArrayWriter();
 		pipe.build(
 				new SAXSource(new JsonXmlReader(), new InputSource(

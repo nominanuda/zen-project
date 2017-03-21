@@ -15,13 +15,14 @@
  */
 package com.nominanuda.web.htmlcomposer;
 
+import static com.nominanuda.zen.common.Str.STR;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Strings;
+import com.nominanuda.zen.common.Check;
 
 
 public abstract class Clause {
@@ -86,10 +87,10 @@ public abstract class Clause {
 		@Override
 		public boolean match(String tag, Attributes atts) {
 			String val = atts.getValue(name);
-			if(Strings.nullOrBlank(val)) {
+			if(STR.nullOrBlank(val)) {
 				return false;
 			}
-			return Strings.splitAndTrim(val, "\\s+").contains(this.value);
+			return STR.splitAndTrim(val, "\\s+").contains(this.value);
 		}
 		
 	}
@@ -103,7 +104,7 @@ public abstract class Clause {
 		@Override
 		public boolean match(String tag, Attributes atts) {
 			String val = atts.getValue("id");
-			if(Strings.nullOrBlank(val)) {
+			if(STR.nullOrBlank(val)) {
 				return false;
 			}
 			return val.trim().equals(this.value);
@@ -120,10 +121,10 @@ public abstract class Clause {
 		@Override
 		public boolean match(String tag, Attributes atts) {
 			String val = atts.getValue("class");
-			if(Strings.nullOrBlank(val)) {
+			if(STR.nullOrBlank(val)) {
 				return false;
 			}
-			return Strings.splitAndTrim(val, "\\s+").contains(this.clazz);
+			return STR.splitAndTrim(val, "\\s+").contains(this.clazz);
 		}
 		
 	}

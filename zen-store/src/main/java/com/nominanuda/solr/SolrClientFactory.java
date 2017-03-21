@@ -1,6 +1,6 @@
 package com.nominanuda.solr;
 
-import static com.nominanuda.lang.Check.illegalstate;
+import static com.nominanuda.zen.common.Check.illegalstate;
 import static java.net.URLDecoder.decode;
 
 import java.io.UnsupportedEncodingException;

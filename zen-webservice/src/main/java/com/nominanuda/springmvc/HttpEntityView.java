@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springmvc;
 
+import static com.nominanuda.zen.oio.OioUtils.IO;
+
 import java.io.InputStream;
 import java.util.Map;
 
@@ -25,11 +27,9 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.springframework.web.servlet.View;
 
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpProtocol;
 
 public class HttpEntityView implements View, HttpProtocol {
-	private static final IOHelper io = new IOHelper();
 	private final HttpEntity entity;
 	public HttpEntityView(HttpEntity entity) {
 		this.entity = entity;
@@ -44,7 +44,7 @@ public class HttpEntityView implements View, HttpProtocol {
 			HttpServletResponse response) throws Exception {
 		response.setContentType(getContentType());
 		InputStream is = entity.getContent();
-		byte[] b = io.readAndClose(is);
+		byte[] b = IO.readAndClose(is);
 		response.setContentLength(b.length);
 		response.getOutputStream().write(b);
 	}

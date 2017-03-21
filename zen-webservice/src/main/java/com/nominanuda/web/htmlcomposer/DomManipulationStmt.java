@@ -15,19 +15,20 @@
  */
 package com.nominanuda.web.htmlcomposer;
 
-import com.nominanuda.code.Immutable;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.ObjectFactory;
-import com.nominanuda.xml.SaxBuffer;
+import javax.annotation.concurrent.Immutable;
+
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.stereotype.Factory;
+import com.nominanuda.zen.xml.SaxBuffer;
 
 @Immutable
 public class DomManipulationStmt {
 	private final String selector;
-	private final ObjectFactory<SaxBuffer> saxBufferFactory;
+	private final Factory<SaxBuffer> saxBufferFactory;
 	private final DomOp operation;
 	private SaxBuffer saxBuffer;
 
-	public DomManipulationStmt(String selector, ObjectFactory<SaxBuffer> saxBufferFactory,
+	public DomManipulationStmt(String selector, Factory<SaxBuffer> saxBufferFactory,
 			DomOp operation) {
 		this.selector = Check.notNull(selector);
 		this.saxBufferFactory = Check.notNull(saxBufferFactory);
@@ -40,7 +41,7 @@ public class DomManipulationStmt {
 
 	public synchronized SaxBuffer getSaxBuffer() {
 		if(saxBuffer == null) {
-			saxBuffer = Check.notNull(saxBufferFactory.getObject());
+			saxBuffer = Check.notNull(saxBufferFactory.get());
 		}
 		return saxBuffer;
 	}

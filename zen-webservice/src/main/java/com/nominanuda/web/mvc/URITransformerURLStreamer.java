@@ -19,19 +19,20 @@ import java.net.URL;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.lang.Check;
 import com.nominanuda.urispec.URISpec;
+import com.nominanuda.web.mvc.ObjURISpec.ObjStringModelAdapter;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Obj;
 
 public class URITransformerURLStreamer extends URLStreamer {
-	private URISpec<DataObject> match;
-	private URISpec<DataObject> template;
+	private URISpec<Obj> match;
+	private URISpec<Obj> template;
 
 	@Override
 	protected URL getURL(HttpRequest request) throws IllegalArgumentException {
 		String reqURI = request.getRequestLine().getUri();
 		try {
-			DataObject o = match.match(reqURI);
+			com.nominanuda.zen.obj.Obj o = match.match(reqURI);
 			Check.illegalargument.assertNotNull(o);
 			return new URL(template.template(o));
 		} catch(Exception e) {
@@ -39,12 +40,12 @@ public class URITransformerURLStreamer extends URLStreamer {
 		}
 	}
 	public void setMatch(String match) {
-		this.match = new URISpec<DataObject>(
-				match, new DataObjectStringModelAdapter());
+		this.match = new URISpec<Obj>(
+				match, new ObjStringModelAdapter());
 	}
 	public void setTemplate(String template) {
-		this.template = new URISpec<DataObject>(
-				template, new DataObjectStringModelAdapter());
+		this.template = new URISpec<Obj>(
+				template, new ObjStringModelAdapter());
 	}
 
 }

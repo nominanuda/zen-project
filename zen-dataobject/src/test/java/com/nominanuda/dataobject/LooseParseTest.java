@@ -26,7 +26,7 @@ public class LooseParseTest {
 	@Test
 	public void testLexerStream() throws Exception {
 		JsonLooseParser p = new JsonLooseParser();
-		DataArray result = p.parseArray(jsonString);
+		Arr result = p.parseArray(jsonString);
 		assertEquals(false, result.get(1));
 		assertEquals("B", result.getObject(0).get("b"));
 	}

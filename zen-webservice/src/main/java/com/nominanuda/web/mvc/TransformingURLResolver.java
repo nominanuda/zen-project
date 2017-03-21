@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.uri.URLStreamHandlerFactoryResolver;
 import com.nominanuda.urispec.URITransformer;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.jvmurl.URLStreamHandlerFactoryResolver;
 
 public class TransformingURLResolver extends URLStreamHandlerFactoryResolver {
 	private Map<String, URITransformer> transformers = new ConcurrentHashMap<String,URITransformer>();

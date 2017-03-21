@@ -21,8 +21,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.dataobject.Arr;
+import com.nominanuda.dataobject.Obj;
 import com.nominanuda.dataobject.DataStructContentHandler;
 import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.dataobject.ParseException;
@@ -36,9 +36,9 @@ public class JsonParseTest {
 		JSONParser p = new JSONParser();
 		DataStructContentHandler ch = new DataStructContentHandler();
 		p.parse(json, ch);
-		DataObject o = (DataObject)ch.getResult();
+		Obj o = (Obj)ch.getResult();
 		Assert.assertEquals(1L, o.get("a"));
-		Assert.assertEquals(false, ((DataObject)((DataArray)o.get("b")).get(0)).get("c"));
+		Assert.assertEquals(false, ((Obj)((Arr)o.get("b")).get(0)).get("c"));
 	}
 	
 	@Test
@@ -47,7 +47,7 @@ public class JsonParseTest {
 		JSONParser p = new JSONParser();
 		DataStructContentHandler ch = new DataStructContentHandler();
 		p.parse(json, ch);
-		DataArray a = (DataArray)ch.getResult();
+		Arr a = (Arr)ch.getResult();
 		Assert.assertEquals(2L, a.get(2));
 		Assert.assertNull(a.get(1));
 	}

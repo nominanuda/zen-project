@@ -15,10 +15,13 @@
  */
 package com.nominanuda.jsweb.host;
 
-import static com.nominanuda.rhino.DataStructScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import java.io.IOException;
+
+import javax.annotation.Nullable;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -30,15 +33,13 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.obj.Obj;
 
 public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wrapper {
 	private static final long serialVersionUID = -7386543758365478363L;
-	protected DataObject extra;
+	protected Obj extra;
 	protected HttpRequest req;
 
 	@Override
@@ -48,7 +49,7 @@ public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wra
 
 	public void jsConstructor(Object _req, Object _extra) {
 		req = (HttpRequest) _req;
-		extra = _extra instanceof DataObject ? (DataObject) _extra : null;
+		extra = _extra instanceof Obj ? (Obj) _extra : null;
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wra
 		HttpCoreHelper httpHelper = new HttpCoreHelper();
 		if (httpHelper.hasEntity(req)) {
 			HttpEntity entity = ((HttpEntityEnclosingRequest)req).getEntity();
-			return new IOHelper().readAndCloseUtf8(entity.getContent());
+			return IO.readAndCloseUtf8(entity.getContent());
 		} else {
 			return null;
 		}

@@ -25,13 +25,13 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.InputSource;
 
-import com.nominanuda.lang.InstanceFactory;
 import com.nominanuda.web.html.HtmlFragmentParser;
 import com.nominanuda.web.html.XHtml5Serializer;
-import com.nominanuda.xml.HtmlPurifyTransformer;
-import com.nominanuda.xml.SAXPipeline;
-import com.nominanuda.xml.TextSelectTransformer;
-import com.nominanuda.xml.WhiteSpaceNormalizingTransformer;
+import com.nominanuda.zen.common.InstanceFactory;
+import com.nominanuda.zen.xml.HtmlPurifyTransformer;
+import com.nominanuda.zen.xml.SAXPipeline;
+import com.nominanuda.zen.xml.TextSelectTransformer;
+import com.nominanuda.zen.xml.WhiteSpaceNormalizingTransformer;
 
 import nu.validator.htmlparser.sax.HtmlParser;
 

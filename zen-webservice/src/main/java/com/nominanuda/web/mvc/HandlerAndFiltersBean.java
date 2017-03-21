@@ -18,8 +18,9 @@ package com.nominanuda.web.mvc;
 import java.util.Collections;
 import java.util.List;
 
-import com.nominanuda.code.Immutable;
-import com.nominanuda.lang.Check;
+import javax.annotation.concurrent.Immutable;
+
+import com.nominanuda.zen.common.Check;
 
 @Immutable
 public class HandlerAndFiltersBean implements HandlerAndFilters {

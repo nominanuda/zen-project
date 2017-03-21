@@ -17,7 +17,7 @@ package com.nominanuda.web.mvc;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public interface HandlerAdapter {
 	/**
@@ -27,6 +27,6 @@ public interface HandlerAdapter {
 	 * @return one of HttpResponse HttpEntity ViewSpec
 	 * @throws Exception
 	 */
-	Object invoke(Object handler, HttpRequest request, DataStruct command) throws Exception;
+	Object invoke(Object handler, HttpRequest request, Stru command) throws Exception;
 	boolean supports(Object handler);
 }

@@ -15,11 +15,12 @@
  */
 package com.nominanuda.web.mvc;
 
+import javax.annotation.Nullable;
+
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public interface HandlerFilter {
 	/**
@@ -31,10 +32,10 @@ public interface HandlerFilter {
 	 * execution of the chain should be suspended
 	 * @throws Exception
 	 */
-	@Nullable Object before(HttpRequest request, DataStruct cmd, Object handler)
+	@Nullable Object before(HttpRequest request, Stru cmd, Object handler)
 			throws Exception;
 
-	void after(HttpRequest request, DataStruct cmd, Object handler,
+	void after(HttpRequest request, Stru cmd, Object handler,
 			Object handlerReturnValue) throws Exception;
 
 	void afterCompletion(HttpRequest request, HttpResponse response,

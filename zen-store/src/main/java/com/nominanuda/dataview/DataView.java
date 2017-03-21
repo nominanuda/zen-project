@@ -16,27 +16,25 @@
 package com.nominanuda.dataview;
 
 import java.util.Collection;
+import java.util.Collections;
 
-import com.nominanuda.dataobject.DataArray;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Arr;
+import com.nominanuda.zen.obj.JsonType;
+import com.nominanuda.zen.obj.Obj;
 
 public final class DataView<T> {
 	private Collection<String> wildcardProps = Collections.emptySet();// = Arrays.asList("id", "title");
-	private static final DataStructHelper struct = new DataStructHelper();
 	private DataViewDef viewDef;
 	private PropertyReader<T> pReader;// = (PropertyReader<T>)new MapPropertyReader<T>();
 
-	public DataObject render(T obj) {
+	public Obj render(T obj) {
 		Check.illegalargument.assertTrue(pReader.accepts(obj));
 		return compileObject(obj, viewDef);
 	}
 	//TODO array of array not supported
-	private DataObject compileObject(T m, DataViewDef viewDef) {
-		DataObject res = new DataObjectImpl();
+	private Obj compileObject(T m, DataViewDef viewDef) {
+		Obj res = Obj.make();
 		for(String k : pReader.readableProps(m)) {
 			if(! (viewDef.isTraversable(k) || wildcardProps.contains(k))) {
 				continue;
@@ -46,7 +44,7 @@ public final class DataView<T> {
 				continue;
 			} else if(v instanceof Collection<?>) {
 				if(viewDef.isTraversable(k)) {
-					DataArray arr = res.putNewArray(k);
+					Arr arr = res.arr(k);
 					for(Object o : (Collection<?>)v) {
 						Object x = evalScalarOrObject(k, o, viewDef);
 						arr.add(x);
@@ -65,14 +63,14 @@ public final class DataView<T> {
 	private Object evalScalarOrObject(String k, Object v, DataViewDef viewDef) {
 		if(v == null) {
 			return null;
-		} else if(struct.isPrimitiveOrNull(v)) {
+		} else if(JsonType.isNullablePrimitive(v)) {
 			return v;
 		} else if(pReader.accepts(v)) {
 			T m = (T)v;
 			if(viewDef.isTraversable(k)) {
 				return compileObject(m, viewDef.traverse(k));
 			} else if(hasAny(m, wildcardProps)) {
-				DataObjectImpl o = new DataObjectImpl();
+				Obj o = Obj.make();
 				for(String p : wildcardProps) {
 					if(pReader.hasProp(m, p)) {
 						o.put(p, pReader.read(m, p));

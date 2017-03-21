@@ -15,28 +15,22 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import org.apache.http.HttpEntity;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.obj.Stru;
 
-public class DataStructJsonDecoder extends AbstractEntityDecoder<DataStruct> {
+public class DataStructJsonDecoder extends AbstractEntityDecoder<Stru> {
 
 	public DataStructJsonDecoder() {
-		super(DataStruct.class, CT_APPLICATION_JSON);
+		super(Stru.class, CT_APPLICATION_JSON);
 	}
 
 	@Override
-	protected DataStruct decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
-		String cs = Check.ifNull(HTTP.guessCharset(entity), UTF_8);
+	protected Stru decodeInternal(AnnotatedType p, HttpEntity entity) throws IOException {
 		try {
-			DataStruct dataEntity = STRUCT.parse(new InputStreamReader(entity.getContent(), cs));
+			Stru dataEntity = Stru.parse(entity.getContent());
 			return dataEntity;
 		} catch (IOException e) {
 			throw e;

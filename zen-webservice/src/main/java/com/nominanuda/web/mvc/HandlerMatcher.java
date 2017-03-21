@@ -15,11 +15,12 @@
  */
 package com.nominanuda.web.mvc;
 
+import javax.annotation.Nullable;
+
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Stru;
 
 public interface HandlerMatcher {
 	/**
@@ -27,5 +28,5 @@ public interface HandlerMatcher {
 	 * @param request
 	 * @return the handler object or {@link HandlerAndFilters} plus the bound data during request matching
 	 */
-	@Nullable Tuple2<Object, DataStruct> match(HttpRequest request);
+	@Nullable Tuple2<Object, Stru> match(HttpRequest request);
 }

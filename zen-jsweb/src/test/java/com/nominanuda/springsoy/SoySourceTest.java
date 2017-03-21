@@ -15,6 +15,8 @@
  */
 package com.nominanuda.springsoy;
 
+import static com.nominanuda.zen.oio.OioUtils.IO;
+
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -31,12 +33,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.springmvc.QueryParamLocaleResolver;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.CommandRequestHandlerAdapter;
-import com.nominanuda.web.mvc.DataObjectURISpec;
+import com.nominanuda.web.mvc.ObjURISpec;
+import com.nominanuda.zen.obj.Obj;
 
 public class SoySourceTest {
 	private SoySource soySource;
@@ -70,11 +71,15 @@ public class SoySourceTest {
 		SoyJsTemplateServer soyJsTemplateServer = new SoyJsTemplateServer();
 		soyJsTemplateServer.setSoySource(soySource);
 		HttpRequest req = new HttpGet("/somepath/foo.soy.js?lang=en");
-		DataObjectURISpec spec = new DataObjectURISpec("/somepath/{tpl **.soy.js}?{lang en|it}");
-		DataObject cmd =  spec.match(req.getRequestLine().getUri());
+		
+		//TODO
+		
+//		ObjURISpec spec = new ObjURISpec("/somepath/{tpl **.soy.js}?{lang en|it}");
+//		Obj cmd = spec.match(req.getRequestLine().getUri());
+		Obj cmd = Obj.make("tpl","foo","lang","en");
 		CommandRequestHandlerAdapter adapter = new CommandRequestHandlerAdapter();
 		StringEntity se = (StringEntity)adapter.invoke(soyJsTemplateServer, req, cmd);
-		String jsFile = new IOHelper().readAndClose(se.getContent(), HttpProtocol.CS_UTF_8);
+		String jsFile = IO.readAndClose(se.getContent(), HttpProtocol.CS_UTF_8);
 		Assert.assertTrue(jsFile.contains("examples.simple.helloWorld2 = function"));
 		Assert.assertEquals(HttpProtocol.CT_TEXT_JAVASCRIPT_CS_UTF8, se.getContentType().getValue());
 	}

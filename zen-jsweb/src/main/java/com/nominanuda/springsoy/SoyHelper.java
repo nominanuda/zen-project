@@ -1,18 +1,16 @@
 package com.nominanuda.springsoy;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 import java.util.List;
 import java.util.Map;
 
 import com.google.template.soy.data.SoyListData;
 import com.google.template.soy.data.SoyMapData;
-import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.zen.obj.Obj;
 
 public class SoyHelper {
 	
-	public static SoyMapData model2soy(DataObject json) {
-		return model2soy(STRUCT.toMapsAndLists(json));
+	public static SoyMapData model2soy(Obj json) {
+		return model2soy(json);
 	}
 	
 	@SuppressWarnings("unchecked")

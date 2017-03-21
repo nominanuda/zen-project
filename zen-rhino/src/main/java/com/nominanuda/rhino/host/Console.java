@@ -15,6 +15,8 @@
  */
 package com.nominanuda.rhino.host;
 
+import static com.nominanuda.zen.common.Str.STR;
+
 import java.util.Arrays;
 
 import org.mozilla.javascript.Context;
@@ -24,7 +26,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nominanuda.lang.Strings;
+import com.nominanuda.zen.common.Str;
 
 public class Console extends ScriptableObject {
 	private static final long serialVersionUID = 924498336863426363L;
@@ -38,22 +40,22 @@ public class Console extends ScriptableObject {
 	}
 	
 	public static void jsFunction_log(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.info(Strings.join(",", Arrays.asList(args)));
+		log.info(STR.join(",", Arrays.asList(args)));
 	}
 	
 	public static void jsFunction_info(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.info(Strings.join(",", Arrays.asList(args)));
+		log.info(STR.join(",", Arrays.asList(args)));
 	}
 	
 	public static void jsFunction_debug(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.debug(Strings.join(",", Arrays.asList(args)));
+		log.debug(STR.join(",", Arrays.asList(args)));
 	}
 	
 	public static void jsFunction_warn(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.warn(Strings.join(",", Arrays.asList(args)));
+		log.warn(STR.join(",", Arrays.asList(args)));
 	}
 	
 	public static void jsFunction_error(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.error(Strings.join(",", Arrays.asList(args)));
+		log.error(STR.join(",", Arrays.asList(args)));
 	}
 }

@@ -1,7 +1,5 @@
 package com.nominanuda.rhino;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.io.IOHelper.IO;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import java.io.IOException;
@@ -15,6 +13,8 @@ import org.mozilla.javascript.RhinoEmbedding;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+
+import com.nominanuda.zen.obj.JsonDeserializer;
 
 import com.nominanuda.rhino.host.SourceModuleFactory;
 
@@ -74,7 +74,7 @@ public abstract class AbsScriptSource implements IScriptSource {
 				return MODS.create(string, null, scope, cx);
 			}
 			if (string.endsWith(jsonSuffix)) {
-				return STRUCT.parse(IO.readAndCloseUtf8(new URL(string).openStream()), false);
+				return JsonDeserializer.JSON_DESERIALIZER.deserialize((new URL(string).openStream()));
 			}
 		}
 		return value;

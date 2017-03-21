@@ -26,22 +26,22 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
+		<!--dependency>
 			<groupId>com.nominanuda</groupId>
 			<artifactId>zen-base</artifactId>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.nominanuda</groupId>
 			<artifactId>zen-rhino</artifactId>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>com.nominanuda</groupId>
 			<artifactId>zen-urispec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.nominanuda</groupId>
 			<artifactId>zen-dataobject</artifactId>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.nominanuda</groupId>
 			<artifactId>zen-webservice</artifactId>

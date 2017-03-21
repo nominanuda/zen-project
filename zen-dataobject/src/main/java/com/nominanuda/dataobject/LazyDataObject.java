@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 
-public class LazyDataObject implements DataObject {
-	private DataObject delegee;
+public class LazyDataObject implements Obj {
+	private Obj delegee;
 	private final String serialized;
 	
 	public LazyDataObject(String serialized) {
@@ -20,7 +20,7 @@ public class LazyDataObject implements DataObject {
 	public void explode() {
 		if(delegee == null) {
 			try {
-				delegee = (DataObject)new JSONParser().parse(serialized);
+				delegee = (Obj)new JSONParser().parse(serialized);
 			} catch (Exception e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -31,7 +31,7 @@ public class LazyDataObject implements DataObject {
 		return serialized;
 	}
 
-	public DataObject with(String k, Object v) {
+	public Obj with(String k, Object v) {
 		explode();
 		return delegee.with(k, v);
 	}
@@ -93,17 +93,17 @@ public class LazyDataObject implements DataObject {
 		return delegee.getType();
 	}
 
-	public DataArray putNewArray(String key) {
+	public Arr putNewArray(String key) {
 		explode();
 		return delegee.putNewArray(key);
 	}
 
-	public DataArray asArray() throws ClassCastException {
+	public Arr asArray() throws ClassCastException {
 		explode();
 		return delegee.asArray();
 	}
 
-	public DataObject putNewObject(String key) {
+	public Obj putNewObject(String key) {
 		explode();
 		return delegee.putNewObject(key);
 	}
@@ -113,7 +113,7 @@ public class LazyDataObject implements DataObject {
 		return delegee.getKeys();
 	}
 
-	public DataObject asObject() throws ClassCastException {
+	public Obj asObject() throws ClassCastException {
 		explode();
 		return delegee.asObject();
 	}
@@ -163,12 +163,12 @@ public class LazyDataObject implements DataObject {
 		return delegee.getBoolean(key);
 	}
 
-	public DataObject getObject(String key) throws ClassCastException {
+	public Obj getObject(String key) throws ClassCastException {
 		explode();
 		return delegee.getObject(key);
 	}
 
-	public DataArray getArray(String key) throws ClassCastException {
+	public Arr getArray(String key) throws ClassCastException {
 		explode();
 		return delegee.getArray(key);
 	}
@@ -203,22 +203,22 @@ public class LazyDataObject implements DataObject {
 		return delegee.getPathSafeBoolean(pathBits);
 	}
 
-	public DataObject getPathSafeObject(String path) throws ClassCastException {
+	public Obj getPathSafeObject(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeObject(path);
 	}
 	
-	public DataObject getPathSafeObject(String... pathBits) throws ClassCastException {
+	public Obj getPathSafeObject(String... pathBits) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeObject(pathBits);
 	}
 
-	public DataArray getPathSafeArray(String path) throws ClassCastException {
+	public Arr getPathSafeArray(String path) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeArray(path);
 	}
 	
-	public DataArray getPathSafeArray(String... pathBits) throws ClassCastException {
+	public Arr getPathSafeArray(String... pathBits) throws ClassCastException {
 		explode();
 		return delegee.getPathSafeArray(pathBits);
 	}
@@ -257,13 +257,13 @@ public class LazyDataObject implements DataObject {
 		return delegee.getStrictBoolean(key);
 	}
 
-	public DataObject getStrictObject(String key) throws ClassCastException,
+	public Obj getStrictObject(String key) throws ClassCastException,
 			NullPointerException {
 		explode();
 		return delegee.getStrictObject(key);
 	}
 
-	public DataArray getStrictArray(String key) throws ClassCastException,
+	public Arr getStrictArray(String key) throws ClassCastException,
 			NullPointerException {
 		explode();
 		return delegee.getStrictArray(key);
@@ -289,12 +289,12 @@ public class LazyDataObject implements DataObject {
 		return delegee.putBoolean(key, o);
 	}
 
-	public DataObject putObject(String key, DataObject o) {
+	public Obj putObject(String key, Obj o) {
 		explode();
 		return delegee.putObject(key, o);
 	}
 
-	public DataArray putArray(String key, DataArray o) {
+	public Arr putArray(String key, Arr o) {
 		explode();
 		return delegee.putArray(key, o);
 	}

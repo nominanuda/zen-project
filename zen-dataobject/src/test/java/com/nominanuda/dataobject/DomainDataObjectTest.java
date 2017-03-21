@@ -1,6 +1,6 @@
 package com.nominanuda.dataobject;
 
-import static com.nominanuda.dataobject.WrappingFactory.WF;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -13,11 +13,11 @@ public class DomainDataObjectTest {
 		o.putString("prop1", "foo");
 		assertEquals("foo", o.prop1());
 		assertEquals("BizObj", accept(o));
-		assertEquals("DataObject", accept(o.unwrap()));
+		assertEquals("Obj", accept(o.unwrap()));
 	}
 
-	private String accept(DataObject o) {
-		return "DataObject";
+	private String accept(Obj o) {
+		return "Obj";
 	}
 
 	private String accept(BizObj o) {

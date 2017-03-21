@@ -18,8 +18,9 @@ package com.nominanuda.dataview;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.Check;
+import javax.annotation.Nullable;
+
+import com.nominanuda.zen.common.Check;
 
 public class DataViewDef {
 	private @Nullable/*in case of value object expansion*/ DataNode tree;

@@ -13,9 +13,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.mvc.HandlerMatcher;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Stru;
 
 public class MultiHandlerMatcherMapping implements HandlerMapping, ApplicationContextAware {
 	public final static String BEAN_PROP_MATCHERS = "handlerMatchers";
@@ -25,7 +25,7 @@ public class MultiHandlerMatcherMapping implements HandlerMapping, ApplicationCo
 
 	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		HttpRequest httpRequest = SERVLET.getOrCreateRequest(request, true);
-		Tuple2<Object, DataStruct> res = match(httpRequest);
+		Tuple2<Object, Stru> res = match(httpRequest);
 		if (res == null) {
 			return null;
 		} else {
@@ -34,9 +34,9 @@ public class MultiHandlerMatcherMapping implements HandlerMapping, ApplicationCo
 		}
 	}
 	
-	private Tuple2<Object, DataStruct> match(HttpRequest request) {
+	private Tuple2<Object, Stru> match(HttpRequest request) {
 		for (HandlerMatcher matcher : matchers) {
-			Tuple2<Object, DataStruct> res = matcher.match(request);
+			Tuple2<Object, Stru> res = matcher.match(request);
 			if (null != res) {
 				return res;
 			}

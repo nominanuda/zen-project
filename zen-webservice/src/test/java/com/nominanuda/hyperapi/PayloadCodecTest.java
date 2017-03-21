@@ -15,7 +15,9 @@
  */
 package com.nominanuda.hyperapi;
 
-import static org.junit.Assert.*;
+import static com.nominanuda.zen.oio.OioUtils.IO;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,10 +38,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.io.IOHelper;
 import com.nominanuda.web.mvc.WebService;
+import com.nominanuda.zen.obj.Obj;
 
 @SuppressWarnings("deprecation")
 public class PayloadCodecTest {
@@ -48,11 +48,11 @@ public class PayloadCodecTest {
 	@Test
 	public void testTestHyperApi() {
 		HyperApiWsSkelton skelton = makeSkelton(TestHyperApi2.class, new TestHyperApi2() {
-			public DataObject putFoo(String bar, String baz, DataObject foo) {
+			public Obj putFoo(String bar, String baz, Obj foo) {
 				return foo;
 			}});
 		TestHyperApi2 api = makeStub(skelton, TestHyperApi2.class);
-		DataObject o = api.putFoo("BAR", "BAZ", new DataObjectImpl().with("x", "y"));
+		Obj o = api.putFoo("BAR", "BAZ", Obj.make("x", "y"));
 		assertEquals("y", o.get("x"));
 	}
 
@@ -63,7 +63,7 @@ public class PayloadCodecTest {
 				return new ByteArrayInputStream(foo);
 			}});
 		Api1 api = makeStub(skelton, Api1.class);
-		byte[] o = IOHelper.IO.readAndClose(api.put("BAR".getBytes()));
+		byte[] o = IO.readAndClose(api.put("BAR".getBytes()));
 		assertArrayEquals("BAR".getBytes(), o);
 	}
 
@@ -78,7 +78,7 @@ public class PayloadCodecTest {
 		HyperApiWsSkelton skelton = makeSkelton(Api2.class, new Api2() {
 			public byte[] put(InputStream foo) {
 				try {
-					return IOHelper.IO.readAndClose(foo);
+					return IO.readAndClose(foo);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

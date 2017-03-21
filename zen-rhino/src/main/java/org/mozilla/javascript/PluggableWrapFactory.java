@@ -18,7 +18,7 @@ package org.mozilla.javascript;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.nominanuda.code.Nullable;
+import javax.annotation.Nullable;
 
 public class PluggableWrapFactory extends WrapFactory {
 	@SuppressWarnings("unused")

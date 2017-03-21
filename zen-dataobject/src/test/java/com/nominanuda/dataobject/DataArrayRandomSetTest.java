@@ -24,7 +24,7 @@ public class DataArrayRandomSetTest {
 
 	@Test
 	public void testArrayImp() {
-		DataArray aaa = new DataArrayImpl();
+		Arr aaa = new DataArrayImpl();
 		aaa.with("1").with("2").with("3").with("4").with("5");
 		aaa.remove(1);
 		assertEquals("3", aaa.get(1));
@@ -32,7 +32,7 @@ public class DataArrayRandomSetTest {
 
 	@Test
 	public void testLazyArray() {
-		DataArray aaa = new LazyDataArray("[\"1\",\"2\",\"3\",\"4\",\"5\"]");
+		Arr aaa = new LazyDataArray("[\"1\",\"2\",\"3\",\"4\",\"5\"]");
 		aaa.remove(1);
 		assertEquals("3", aaa.get(1));
 	}

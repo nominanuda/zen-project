@@ -1,15 +1,11 @@
 package com.nominanuda.hyperapi;
 
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.web.http.Http400Exception;
 import com.nominanuda.web.http.Http401Exception;
 import com.nominanuda.web.http.Http403Exception;
@@ -17,12 +13,14 @@ import com.nominanuda.web.http.Http404Exception;
 import com.nominanuda.web.http.Http4xxException;
 import com.nominanuda.web.http.Http5xxException;
 import com.nominanuda.web.http.HttpAppException;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Obj;
 
 public class ExceptionCatcherFactory {
 	protected IHttpAppExceptionRenderer exceptionRenderer = new IHttpAppExceptionRenderer() {
 		@Override
 		public Tuple2<Integer, Object> statusAndRender(HttpAppException e, Class<?> returnType) {
-			Object result = returnType.isAssignableFrom(DataObject.class) ? STRUCT.newObject() : new Object();
+			Object result = returnType.isAssignableFrom(Obj.class) ? Obj.make() : new Object();
 			return new Tuple2<Integer, Object>(e.getStatusCode(), result);
 		}
 		

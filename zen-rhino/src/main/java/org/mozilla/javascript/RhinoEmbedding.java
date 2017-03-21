@@ -17,12 +17,13 @@ package org.mozilla.javascript;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.mozilla.javascript.regexp.RegExpImpl;
 import org.mozilla.javascript.tools.debugger.Main;
 
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Initializable;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.stereotype.Initializable;
 
 @ThreadSafe
 public class RhinoEmbedding extends ContextFactory implements Initializable, MethodArgCoercer {

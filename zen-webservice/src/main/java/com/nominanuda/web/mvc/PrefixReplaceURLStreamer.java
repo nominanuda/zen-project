@@ -19,7 +19,7 @@ import java.net.URL;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 public class PrefixReplaceURLStreamer extends URLStreamer {
 	private String strip = "";

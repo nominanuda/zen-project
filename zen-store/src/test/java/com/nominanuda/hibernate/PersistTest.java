@@ -16,21 +16,18 @@
 package com.nominanuda.hibernate;
 
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-
-import com.nominanuda.dataobject.DataObject;
 import com.nominanuda.dataview.DataView;
 import com.nominanuda.dataview.MapPropertyReader;
-import com.nominanuda.hibernate.HibernateConfiguration;
-
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.SimpleJixParser;
 
 @Ignore
 public class PersistTest {
@@ -65,14 +62,14 @@ public class PersistTest {
 		Map<String, DataView<Map<String,? extends Object>>> dataViewRegistry = new HashMap<String, DataView<Map<String,? extends Object>>>();
 		dataViewRegistry.put("User", dataView);
 		hdos.setDataViewRegistry(dataViewRegistry);
-		hdos.put("User", STRUCT.parseObject("{id:'1',title:'Mr. Nothing'}", true));
+		hdos.put("User", SimpleJixParser.obj("{id:'1',title:'Mr. Nothing'}"));
 
 		HibernateQuerableStore qStore =new HibernateQuerableStore();
 
 		qStore.setDataViewRegistry(dataViewRegistry);
 		qStore.setSessionFactory(cfg.getSessionFactory());
-		DataObject user = qStore.byId("User", "1");
-		assertEquals("Mr. Nothing", user.getString("title"));
+		Obj user = qStore.byId("User", "1");
+		assertEquals("Mr. Nothing", user.getStr("title"));
 	}
 
 }

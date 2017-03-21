@@ -15,7 +15,6 @@
  */
 package com.nominanuda.springmvc;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
 import static com.nominanuda.web.http.ServletHelper.SERVLET;
 
 import java.util.Map;
@@ -29,11 +28,11 @@ import org.apache.http.HttpResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.MapsAndListsObjectDecorator;
-import com.nominanuda.lang.Check;
 import com.nominanuda.web.mvc.HandlerAdapter;
 import com.nominanuda.web.mvc.PathAndJsonViewSpec;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 public class HandlerAdapterWrapper implements org.springframework.web.servlet.HandlerAdapter {
 	private HandlerAdapter handlerAdapter;
@@ -46,7 +45,7 @@ public class HandlerAdapterWrapper implements org.springframework.web.servlet.Ha
 	@Override
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		HttpRequest httpReq = SERVLET.getOrCreateRequest(request, true);
-		DataStruct command = Check.ifNull(SERVLET.getCommand(request), STRUCT.newObject());
+		Stru command = Check.ifNull(SERVLET.getCommand(request), Obj.make());
 		final Object result = handlerAdapter.invoke(handler, httpReq, command);
 		SERVLET.storeHandlerOutput(request, result);
 		if (result instanceof HttpResponse) {
@@ -62,7 +61,7 @@ public class HandlerAdapterWrapper implements org.springframework.web.servlet.Ha
 			return new ModelAndView(new HttpEntityView((HttpEntity)result));
 		} else if (result instanceof PathAndJsonViewSpec) {
 			PathAndJsonViewSpec viewSpec = (PathAndJsonViewSpec)result;
-			return new ModelAndView(viewSpec.getPath(), new MapsAndListsObjectDecorator(viewSpec.getModel().asObject()));
+			return new ModelAndView(viewSpec.getPath(), viewSpec.getModel().asObj());
 		} else if (result instanceof ModelAndView) {
 			return (ModelAndView)result;
 		} else {

@@ -15,11 +15,10 @@
  */
 package com.nominanuda.hibernate;
 
-import static com.nominanuda.lang.Check.illegalargument;
+import static com.nominanuda.zen.common.Check.illegalargument;
 import static java.util.Arrays.asList;
 
 import java.beans.PropertyVetoException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.nominanuda.lang.Check;
 import com.nominanuda.postgresql.PgDataObjectJsonType;
 import com.nominanuda.postgresql.PgMapListJsonType;
 

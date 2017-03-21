@@ -5,7 +5,7 @@
 
 	
 	<!-- to support classpath: protocol -->
-	<bean class="com.nominanuda.uri.PluggableURLStreamHandlerFactory" init-method="installToJvm" />
+	<bean class="com.nominanuda.zen.jvmurl.PluggableURLStreamHandlerFactory" init-method="installToJvm" />
 	
 	
 	<!-- spring mvc handlers -->

@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.http;
 
+import static com.nominanuda.zen.oio.OioUtils.IO;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -46,11 +48,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import com.nominanuda.io.IOHelper;
-
 public abstract class BaseHttpTest implements HttpProtocol {
 	protected HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
-	protected IOHelper io = new IOHelper();
 	protected int maxConnPerRoute = 10;
 	private HttpClient client;
 	private final List<String> failures = Collections.synchronizedList(new LinkedList<String>());
@@ -150,7 +149,7 @@ public abstract class BaseHttpTest implements HttpProtocol {
 			if(HttpStatus.SC_OK != resp.getStatusLine().getStatusCode()) {
 				throw new RuntimeException();
 			}
-			return io.readAndClose(entity.getContent());
+			return IO.readAndClose(entity.getContent());
 		} finally {
 			EntityUtils.consume(entity);
 		}
@@ -163,7 +162,7 @@ public abstract class BaseHttpTest implements HttpProtocol {
 				throw new RuntimeException();
 			}
 			Charset cs = ContentType.get(entity).getCharset();
-			return new String(io.readAndClose(entity.getContent()), cs == null ? CS_UTF_8 : cs);
+			return new String(IO.readAndClose(entity.getContent()), cs == null ? CS_UTF_8 : cs);
 		} finally {
 			EntityUtils.consume(entity);
 		}

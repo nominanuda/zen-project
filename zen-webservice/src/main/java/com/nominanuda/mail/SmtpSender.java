@@ -12,8 +12,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Tuple2;
+import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Tuple2;
 
 public class SmtpSender {
 	private String host = "127.0.0.1";

@@ -18,7 +18,7 @@ package com.nominanuda.hyperapi;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
-import com.nominanuda.lang.Check;
+import com.nominanuda.zen.common.Check;
 
 public class ByteArrayEntityEncoder extends AbstractEntityEncoder<byte[]> {
 

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-import com.nominanuda.lang.ObjectFactory;
+import com.nominanuda.rhino.ObjectFactory;
 
 public class JavaObjectFactory implements ModuleFactory {
 	private Map<String, Object> registry = new HashMap<String, Object>();

@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi.async;
 
-import com.nominanuda.code.Nullable;
+import javax.annotation.Nullable;
 
 public interface ErrorCallback {
 

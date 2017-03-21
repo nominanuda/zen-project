@@ -28,10 +28,10 @@ public class HashCodeEqualsTest {
 	@Test
 	public void test1() {
 		HashSet<DataStruct> s = new HashSet<DataStruct>();
-		DataObject o1 = STRUCT.newObject();
+		Obj o1 = STRUCT.newObject();
 		s.add(o1);
 		assertEquals(1, s.size());
-		DataObject o2 = STRUCT.newObject();
+		Obj o2 = STRUCT.newObject();
 		s.add(o2);
 		assertEquals(1, s.size());
 		
@@ -40,10 +40,10 @@ public class HashCodeEqualsTest {
 	@Test
 	public void test2() {
 		HashSet<DataStruct> s = new HashSet<DataStruct>();
-		DataObject o1 = STRUCT.newObject().with("a", 1);
+		Obj o1 = STRUCT.newObject().with("a", 1);
 		s.add(o1);
 		assertEquals(1, s.size());
-		DataObject o2 = STRUCT.newObject();
+		Obj o2 = STRUCT.newObject();
 		s.add(o2);
 		assertEquals(2, s.size());
 		
@@ -52,7 +52,7 @@ public class HashCodeEqualsTest {
 	@Test
 	public void test3() {
 		HashSet<DataStruct> s = new HashSet<DataStruct>();
-		DataObject o1 = STRUCT.newObject();
+		Obj o1 = STRUCT.newObject();
 		s.add(o1);
 		assertEquals(1, s.size());
 		o1.with("a", 1);
@@ -63,9 +63,9 @@ public class HashCodeEqualsTest {
 	@Test
 	public void test4() {
 		HashSet<DataStruct> s = new HashSet<DataStruct>();
-		DataObject o1 = STRUCT.newObject().with("a", 1);
+		Obj o1 = STRUCT.newObject().with("a", 1);
 		s.add(o1);
-		DataObject o2 = STRUCT.newObject();
+		Obj o2 = STRUCT.newObject();
 		s.add(o2);
 		assertTrue(s.contains(o2));
 		assertEquals(2, s.size());

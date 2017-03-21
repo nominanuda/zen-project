@@ -15,13 +15,13 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
+import java.io.ByteArrayOutputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
-import com.nominanuda.lang.Strings;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.obj.JsonSerializer;
 
 public class JsonAnyValueEntityEncoder extends AbstractEntityEncoder<Object> {
 
@@ -31,7 +31,9 @@ public class JsonAnyValueEntityEncoder extends AbstractEntityEncoder<Object> {
 
 	@Override
 	protected HttpEntity encodeInternal(AnnotatedType p, Object value) {
-		byte[] payload = STRUCT.toJsonString(value).getBytes(Strings.UTF8);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		JsonSerializer.JSON_SERIALIZER.serialize(value, os);
+		byte[] payload = os.toByteArray();
 		ByteArrayEntity e = new ByteArrayEntity(payload);
 		e.setContentType(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
 		return e;

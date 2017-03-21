@@ -16,13 +16,13 @@
 package com.nominanuda.dataobject;
 
 
-public interface DataArray extends PropertyBag<Integer>, Iterable<Object> {
+public interface Arr extends PropertyBag<Integer>, Iterable<Object> {
 	boolean add(Object val);
-	DataObject addNewObject();
-	DataArray addNewArray();
+	Obj addNewObject();
+	Arr addNewArray();
 	int getLength();
 	boolean isEmpty();
-	DataArray with(Object val);
+	Arr with(Object val);
 	Object remove(int key);
 
 }

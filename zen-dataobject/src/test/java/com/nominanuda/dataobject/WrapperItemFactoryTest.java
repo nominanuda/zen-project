@@ -1,7 +1,7 @@
 package com.nominanuda.dataobject;
 
 import static com.nominanuda.dataobject.DataStructHelper.Z;
-import static com.nominanuda.dataobject.WrappingFactory.WF;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -15,13 +15,13 @@ public class WrapperItemFactoryTest {
 
 	@Test
 	public void test() {
-		DataObject o1 = Z.obj("type", "t1");
-		DataObject o2 = Z.obj("type", "t2");
-		DataArray arr = Z.newArray();
+		Obj o1 = Z.obj("type", "t1");
+		Obj o2 = Z.obj("type", "t2");
+		Arr arr = Z.newArray();
 		arr.add(o1);
 		arr.add(o2);
-		DataObject o3 = Z.obj("p1", o1, "p2", o2);
-		DataObject o4 = Z.obj("list", arr, "map", o3);
+		Obj o3 = Z.obj("p1", o1, "p2", o2);
+		Obj o4 = Z.obj("list", arr, "map", o3);
 		Holder<SomeObjDomain> h  = (Holder<SomeObjDomain>)WF.wrap(o4, Holder.class);
 		assertTrue(h.list().get(0) instanceof Type1);
 		assertTrue(h.map().get("p2") instanceof Type2);
@@ -35,7 +35,7 @@ public class WrapperItemFactoryTest {
 		Holder<SomeObjDomain> map(Map<String, SomeObjDomain> m);
 	}
 	interface SomeObjDomain extends WrapperItemFactory {
-		static SomeObjDomain wrap(DataObject ds) {
+		static SomeObjDomain wrap(Obj ds) {
 			String type = ds.asObject().getStrictString("type");
 			return 
 				"t1".equals(type)

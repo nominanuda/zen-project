@@ -15,28 +15,29 @@
  */
 package com.nominanuda.web.html;
 
+import static com.nominanuda.zen.classwork.Reflect.REFL;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-import nu.validator.htmlparser.sax.HtmlSerializer;
-
+import org.springframework.expression.spel.support.ReflectionHelper;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.lang.ReflectionHelper;
-import com.nominanuda.xml.HtmlConstants;
+import com.nominanuda.zen.classwork.Reflect;
+
+import nu.validator.htmlparser.sax.HtmlSerializer;
 
 public class XHtml5Serializer extends HtmlSerializer implements HtmlConstants {
 		private static final String[] VOID_ELEMENTS = { area, base,
 				basefont, bgsound, br, col, embed, frame, hr,
 				img, input, link, meta, param, spacer, wbr };
 		private final XHtml5Serializer.Wr wr;
-		private final static ReflectionHelper reflect = new ReflectionHelper();
 		private boolean outputDoctype = false;
 
 		public XHtml5Serializer(Writer out) {
 			super(new Wr(out));
-			wr = (XHtml5Serializer.Wr)reflect.getFieldValueIncludingAncestors("writer", this, true);
+			wr = (XHtml5Serializer.Wr)REFL.getFieldValueIncludingAncestors("writer", this, true);
 		}
 		
 		@Override

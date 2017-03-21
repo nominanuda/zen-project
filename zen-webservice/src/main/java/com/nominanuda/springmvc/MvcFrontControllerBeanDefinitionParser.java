@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -29,11 +31,10 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.Check;
 import com.nominanuda.urispec.Utils;
 import com.nominanuda.web.mvc.URISpecMatcher;
 import com.nominanuda.web.mvc.URITransformerURLStreamer;
+import com.nominanuda.zen.common.Check;
 
 public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefinitionParser {
 	private static final String ns = MvcFrontControllerNsHandler.SITEMAP_NS;
@@ -52,7 +53,7 @@ public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefiniti
 		BeanDefinitionBuilder bdBuilder = BeanDefinitionBuilder.rootBeanDefinition(HandlerMatcherMapping.class);
 		String pattern = ((Element) element.getElementsByTagNameNS(ns, "pattern").item(0)).getTextContent();
 		Sitemap.registerPattern(element.getAttribute("id"), pattern, parserContext);
-		String uriSpec = Utils.uriSpec(pattern);
+		String uriSpec = Utils.extracturiSpecFromSitemapMatch(pattern);
 		
 		BeanDefinitionBuilder matchBuilder = BeanDefinitionBuilder
 			.genericBeanDefinition(URISpecMatcher.class)

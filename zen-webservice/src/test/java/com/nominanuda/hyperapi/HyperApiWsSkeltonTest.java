@@ -15,9 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import static com.nominanuda.dataobject.DataStructHelper.STRUCT;
-import static com.nominanuda.dataobject.WrappingFactory.WF;
-import static org.junit.Assert.assertEquals;
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 
 import java.io.InputStreamReader;
 
@@ -28,12 +26,9 @@ import org.apache.http.entity.StringEntity;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataObjectImpl;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.dataobject.DataStructHelper;
-import com.nominanuda.dataobject.JSONParser;
 import com.nominanuda.web.http.HttpProtocol;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 
 public class HyperApiWsSkeltonTest {
@@ -43,18 +38,18 @@ public class HyperApiWsSkeltonTest {
 		HyperApiWsSkelton skelton = new HyperApiWsSkelton();
 		skelton.setApi(TestHyperApi2.class);
 		skelton.setService(new TestHyperApi2() {
-			public DataObject putFoo(String bar, String baz, DataObject foo) {
+			public Obj putFoo(String bar, String baz, Obj foo) {
 				return foo;
 			}});
 		skelton.setRequestUriPrefix("/mytest");
 		HttpPut request = new HttpPut("/mytest/foo/BAR?baz=BAZ");
-		DataObject foo = new DataObjectImpl();
+		Obj foo = Obj.make();
 		foo.put("foo", "FOO");
-		request.setEntity(new StringEntity(new DataStructHelper().toJsonString(foo),
+		request.setEntity(new StringEntity(foo.toString(),
 			ContentType.create(HttpProtocol.CT_APPLICATION_JSON, HttpProtocol.CS_UTF_8)));
 		HttpResponse response = skelton.handle(request);
-		DataStruct result = new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
-		Assert.assertEquals("FOO", ((DataObject)result).get("foo"));
+		Stru result = Stru.parse(new InputStreamReader(response.getEntity().getContent()));
+		Assert.assertEquals("FOO", ((Obj)result).get("foo"));
 	}
 
 	@Test
@@ -65,18 +60,18 @@ public class HyperApiWsSkeltonTest {
 			@Override
 			public Boo putFoo(String bar, String baz, Moo moo) {
 //TODO				assertEquals("miao", moo.miao());
-				return WF.wrap(STRUCT.newObject().with("AA", "BB"), Boo.class);
+				return WF.wrap(Obj.make("AA", "BB"), Boo.class);
 			}
 		});
 		skelton.setRequestUriPrefix("/mytest");
 		HttpPut request = new HttpPut("/mytest/foo/BAR?baz=BAZ");
-		DataObject foo = new DataObjectImpl();
+		Obj foo = Obj.make();
 		foo.put("foo", "FOO");
-		request.setEntity(new StringEntity(new DataStructHelper().toJsonString(foo),
+		request.setEntity(new StringEntity(foo.toString(),
 			ContentType.create(HttpProtocol.CT_APPLICATION_JSON, HttpProtocol.CS_UTF_8)));
 		HttpResponse response = skelton.handle(request);
-		DataStruct result = new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
-		Assert.assertEquals("BB", ((DataObject)result).get("AA"));
+		Stru result = Stru.parse(new InputStreamReader(response.getEntity().getContent()));
+		Assert.assertEquals("BB", ((Obj)result).get("AA"));
 	}
 
 }

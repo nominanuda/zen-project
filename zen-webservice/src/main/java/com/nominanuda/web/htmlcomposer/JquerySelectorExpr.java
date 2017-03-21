@@ -15,6 +15,8 @@
  */
 package com.nominanuda.web.htmlcomposer;
 
+import static com.nominanuda.zen.common.Str.STR;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +24,10 @@ import java.util.Stack;
 
 import org.xml.sax.Attributes;
 
-import com.nominanuda.lang.Strings;
-
 class JquerySelectorExpr {
 	private List<Expr> l = new LinkedList<Expr>();
 	public JquerySelectorExpr(String expr) {
-		List<String> commaSep = Strings.splitAndTrim(expr, ",");
+		List<String> commaSep = STR.splitAndTrim(expr, ",");
 		for(String cse : commaSep) {
 			l.add(new Expr(cse));
 		}
@@ -47,7 +47,7 @@ class JquerySelectorExpr {
 		private List<CompoundClause> clauses = new LinkedList<CompoundClause>();
 		public Expr(String cse) {
 			cse = cse.replace("[", " [");
-			List<String> bits = Strings.splitAndTrim(cse, "\\s+");
+			List<String> bits = STR.splitAndTrim(cse, "\\s+");
 			Collections.reverse(bits);
 			CompoundClause pendingClause = new CompoundClause();
 			for(int i = 0; i < bits.size(); i++) {

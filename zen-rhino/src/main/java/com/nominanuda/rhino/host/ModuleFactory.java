@@ -15,10 +15,10 @@
  */
 package com.nominanuda.rhino.host;
 
+import javax.annotation.Nullable;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-
-import com.nominanuda.code.Nullable;
 
 public interface ModuleFactory {
 	@Nullable Object create(String key, Scriptable thisObj, Scriptable scope, Context context) throws Exception;

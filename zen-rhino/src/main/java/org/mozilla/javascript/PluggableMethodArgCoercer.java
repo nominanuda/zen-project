@@ -19,9 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.ObjectConvertor;
-import com.nominanuda.lang.Tuple2;
+import javax.annotation.Nullable;
+
+import com.nominanuda.rhino.ObjectConvertor;
+import com.nominanuda.zen.common.Tuple2;
 
 public class PluggableMethodArgCoercer implements MethodArgCoercer {
 	private final Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> convertors = new HashMap<Class<?>, Tuple2<ObjectConvertor<Object,Object,Exception>,Integer>>();

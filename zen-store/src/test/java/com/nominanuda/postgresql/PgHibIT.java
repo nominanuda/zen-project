@@ -1,8 +1,5 @@
 package com.nominanuda.postgresql;
 
-import static com.nominanuda.dataobject.DataStructHelper.Z;
-import static java.lang.System.currentTimeMillis;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,12 +13,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStructHelper;
 import com.nominanuda.hibernate.HibernateConfiguration;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.SimpleJixParser;
 
 //@Ignore
 public class PgHibIT {
@@ -56,15 +52,15 @@ public class PgHibIT {
 		Transaction t = s.beginTransaction();
 		Map<String, Object> m = new HashMap<>();
 		m.put("id", 1L);
-		m.put("jsonproperty", Z.parse("{foo:'bar'}", true));
+		m.put("jsonproperty", SimpleJixParser.obj("{foo:'bar'}"));
 		s.saveOrUpdate("MyEntity", m);
 		Query<?> q = s.createQuery("from MyEntity");
 		List<?> rs = q.getResultList();
 		for(Object o : rs) {
 			System.err.println(o.getClass());
-			DataObject oo = (DataObject)((Map)o).get("jsonproperty");
+			Obj oo = (Obj)((Map<?,?>)o).get("jsonproperty");
 			System.err.println(oo.toString());
-			Assert.assertEquals("bar", oo.getString("foo"));
+			Assert.assertEquals("bar", oo.getStr("foo"));
 		}
 		t.commit();
 		s.close();

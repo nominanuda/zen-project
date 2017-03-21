@@ -17,7 +17,7 @@ package com.nominanuda.web.mvc;
 
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.dataobject.DataStruct;
+import com.nominanuda.zen.obj.Stru;
 
 public class CommandHandlerAdapter extends GenericHandlerAdapter {
 
@@ -27,7 +27,7 @@ public class CommandHandlerAdapter extends GenericHandlerAdapter {
 
 	@Override
 	protected Object handleInternal(Object handler, HttpRequest request,
-			DataStruct command) throws Exception {
+			Stru command) throws Exception {
 		return ((CommandHandler)handler).handle(command);
 	}
 }

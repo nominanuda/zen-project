@@ -1,6 +1,6 @@
 package com.nominanuda.jdbc;
 
-import static com.nominanuda.io.IOHelper.IO;
+import static com.nominanuda.zen.oio.OioUtils.IO;
 
 import java.io.IOException;
 import java.io.InputStream;

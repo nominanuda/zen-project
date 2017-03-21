@@ -1,7 +1,7 @@
 package com.nominanuda.solr;
 
-import static com.nominanuda.io.IOHelper.IO;
-import static com.nominanuda.lang.Check.notNull;
+import static com.nominanuda.zen.oio.OioUtils.IO;
+import static com.nominanuda.zen.common.Check.notNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nominanuda.lang.Initializable;
+import com.nominanuda.zen.stereotype.Initializable;
 
 public class SolrDeployer implements Initializable {
 	public static final String POLICY_OVERWRITE = "overwite-existing";

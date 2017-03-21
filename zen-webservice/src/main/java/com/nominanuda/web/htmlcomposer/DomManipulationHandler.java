@@ -24,10 +24,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.nominanuda.lang.Tuple2;
-import com.nominanuda.xml.ForwardingTransformerHandlerBase;
-import com.nominanuda.xml.SaxBuffer.SaxBit;
-import com.nominanuda.xml.SwallowingTransformerHandlerBase;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.xml.ForwardingTransformerHandlerBase;
+import com.nominanuda.zen.xml.SaxBuffer.SaxBit;
+import com.nominanuda.zen.xml.SwallowingTransformerHandlerBase;
 
 public abstract class DomManipulationHandler extends ForwardingTransformerHandlerBase {
 	private int nestingLevel = 0;

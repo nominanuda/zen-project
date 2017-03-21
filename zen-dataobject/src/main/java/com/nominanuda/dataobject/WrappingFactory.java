@@ -10,7 +10,7 @@ public class WrappingFactory {
 	public static final WrappingFactory WF = new WrappingFactory();
 
 	@SuppressWarnings("unchecked")
-	public <T> T wrap(DataObject o, Class<T> cl) {
+	public <T> T wrap(Obj o, Class<T> cl) {
 		InvocationHandler h = new WrapperInvocationHandler(o, cl);
 		return (T)Proxy.newProxyInstance(cl.getClassLoader(), new Class[] { cl }, h);
 	}
@@ -19,7 +19,7 @@ public class WrappingFactory {
 		return wrap(null, cl);
 	}
 
-	public <T extends DataObjectWrapper> T clone(T obj, Class<T> cl) {
+	public <T extends ObjWrapper> T clone(T obj, Class<T> cl) {
 		return wrap(STRUCT.clone(obj.unwrap()), cl);
 	}
 }

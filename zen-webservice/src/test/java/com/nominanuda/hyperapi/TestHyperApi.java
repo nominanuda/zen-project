@@ -20,7 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import com.nominanuda.dataobject.DataObjectWrapper;
+import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
 @HyperApi
 public interface TestHyperApi {
@@ -31,11 +31,11 @@ public interface TestHyperApi {
 		Moo moo
 	);
 
-	interface Moo extends DataObjectWrapper {
+	interface Moo extends ObjWrapper {
 		default String miao() {return "miao";}
 	}
 
-	interface Boo extends DataObjectWrapper {
+	interface Boo extends ObjWrapper {
 		default String bau() {return "bau";}
 	}
 

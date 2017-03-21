@@ -43,9 +43,9 @@ public class DataStructContentHandler implements JsonContentHandler {
 			cur = result;
 		} else {
 			if(STRUCT.isDataArray(cur)) {
-				cur = ((DataArray)cur).addNewObject();
+				cur = ((Arr)cur).addNewObject();
 			} else {
-				cur = ((DataObject)cur).putNewObject(pendingKey);
+				cur = ((Obj)cur).putNewObject(pendingKey);
 			}
 		}
 		parentHierarchy.push(cur);
@@ -73,9 +73,9 @@ public class DataStructContentHandler implements JsonContentHandler {
 			cur = result;
 		} else {
 			if(STRUCT.isDataArray(cur)) {
-				cur = ((DataArray)cur).addNewArray();
+				cur = ((Arr)cur).addNewArray();
 			} else {
-				cur = ((DataObject)cur).putNewArray(pendingKey);
+				cur = ((Obj)cur).putNewArray(pendingKey);
 			}
 		}
 		parentHierarchy.push(cur);
@@ -91,9 +91,9 @@ public class DataStructContentHandler implements JsonContentHandler {
 	public boolean primitive(Object value) throws RuntimeException {
 		Check.illegalargument.assertTrue(STRUCT.isPrimitiveOrNull(value));
 		if(STRUCT.isDataArray(cur)) {
-			((DataArray)cur).add(value);
+			((Arr)cur).add(value);
 		} else {
-			((DataObject)cur).put(pendingKey, value);
+			((Obj)cur).put(pendingKey, value);
 		}
 		return true;
 	}

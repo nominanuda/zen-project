@@ -15,6 +15,8 @@
  */
 package com.nominanuda.dataview;
 
+import static com.nominanuda.zen.seq.Seq.SEQ;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -24,12 +26,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.lang.Check;
-import com.nominanuda.lang.Collections;
+import javax.annotation.Nullable;
+
+import com.nominanuda.zen.common.Check;
 
 public class BeanPropertyReader implements PropertyReader<Object> {
-	private Set<String> skipProps = Collections.hashSet("class", "annotation");
+	private Set<String> skipProps = SEQ.hashSet("class", "annotation");
 	//TODO private WeakHashMap<Object, BeanInfo> cache = new WeakHashMap<Object, BeanInfo>();
 
 	public Collection<String> readableProps(Object m) {

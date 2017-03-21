@@ -5,20 +5,20 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.rhino.DataStructScriptableConvertor;
+import com.nominanuda.rhino.StruScriptableConvertor;
 import com.nominanuda.springmvc.Sitemap;
+import com.nominanuda.zen.obj.Obj;
 
 public class Location extends ScriptableObject implements Callable {
 	private static final long serialVersionUID = 3193397575047488553L;
-	private DataStructScriptableConvertor dataStructScriptableConvertor = new DataStructScriptableConvertor();
+	private StruScriptableConvertor dataStructScriptableConvertor = new StruScriptableConvertor();
 	private Sitemap sitemap;
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
 		String id = (String) args[0];
 		Scriptable params = (args.length > 1 ? (Scriptable) args[1] : null);
-		return sitemap.getUrl(id, params != null ? (DataObject) dataStructScriptableConvertor.fromScriptable(params) : null);
+		return sitemap.getUrl(id, params != null ? (Obj) dataStructScriptableConvertor.fromScriptable(params) : null);
 	}
 
 	@Override

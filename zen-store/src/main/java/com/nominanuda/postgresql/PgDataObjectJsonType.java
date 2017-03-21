@@ -1,7 +1,5 @@
 package com.nominanuda.postgresql;
 
-import static com.nominanuda.dataobject.DataStructHelper.Z;
-
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +10,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
-import com.nominanuda.dataobject.DataObject;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.stereotype.Value;
 
 public class PgDataObjectJsonType implements UserType {
 
@@ -22,13 +21,13 @@ public class PgDataObjectJsonType implements UserType {
 	}
 
 	@Override
-	public Class<DataObject> returnedClass() {
-		return DataObject.class;
+	public Class<Obj> returnedClass() {
+		return Obj.class;
 	}
 
 	@Override
 	public boolean equals(Object x, Object y) throws HibernateException {
-		return Z.equals(x, y);
+		return Value.nullSafeEquals(x, y);
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class PgDataObjectJsonType implements UserType {
 			return null;
 		}
 		try {
-			return Z.parseObject(cellContent);
+			return Obj.parse(cellContent);
 		} catch (final Exception ex) {
 			throw new RuntimeException("Failed to convert String to Invoice: " + ex.getMessage(), ex);
 		}
@@ -66,7 +65,7 @@ public class PgDataObjectJsonType implements UserType {
 
 	@Override
 	public Object deepCopy(Object value) throws HibernateException {
-		return Z.clone((DataObject)value);
+		return ((Obj)value).copy();
 	}
 
 	@Override

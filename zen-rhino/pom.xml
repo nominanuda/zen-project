@@ -31,14 +31,18 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    <dependency>
+<dependency>
+      <groupId>com.nominanuda</groupId>
+      <artifactId>zen-core</artifactId>
+    </dependency>
+    <!--dependency>
       <groupId>com.nominanuda</groupId>
       <artifactId>zen-base</artifactId>
     </dependency>
     <dependency>
       <groupId>com.nominanuda</groupId>
       <artifactId>zen-dataobject</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.mozilla</groupId>
       <artifactId>rhino</artifactId>

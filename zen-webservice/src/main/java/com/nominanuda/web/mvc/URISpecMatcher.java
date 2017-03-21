@@ -20,35 +20,36 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.http.HttpRequest;
 
-import com.nominanuda.code.Nullable;
-import com.nominanuda.code.ThreadSafe;
-import com.nominanuda.dataobject.DataObject;
-import com.nominanuda.dataobject.DataStruct;
-import com.nominanuda.lang.Tuple2;
 import com.nominanuda.urispec.URISpec;
+import com.nominanuda.zen.common.Tuple2;
+import com.nominanuda.zen.obj.Obj;
+import com.nominanuda.zen.obj.Stru;
 
 @ThreadSafe
 public class URISpecMatcher implements HandlerMatcher {
 	private static final String ALLHTTPMETHODS = "GET|POST|PUT|DELETE|HEAD|OPTIONS|TRACE";
 	private static final Pattern PIPEDMETHODS = Pattern.compile("\\s*\\p{Upper}+(?:\\s*\\|\\s*\\p{Upper}+)*\\s*");
 	private Object handler;
-	private URISpec<DataObject> spec;
+	private URISpec<Obj> spec;
 	private Pattern methodPattern;
 	private List<HandlerFilter> handlerFilters = null;
 	private transient HandlerAndFilters handlerAndFilters = null;
 
-	public @Nullable Tuple2<Object, DataStruct> match(HttpRequest request) {
+	public @Nullable Tuple2<Object, Stru> match(HttpRequest request) {
 		String method = request.getRequestLine().getMethod();
 		Matcher methodMatcher = methodPattern.matcher(method);
 		if(! methodMatcher.matches()) {
 			return null;
 		}
 
-		DataObject o = spec.match(request.getRequestLine().getUri());
+		Obj o = spec.match(request.getRequestLine().getUri());
 		return o == null ? null :
-			new Tuple2<Object, DataStruct>(getHandlerOrChain(), o);
+			new Tuple2<Object, Stru>(getHandlerOrChain(), o);
 	}
 
 	private Object getHandlerOrChain() {
@@ -83,7 +84,7 @@ public class URISpecMatcher implements HandlerMatcher {
 			urispec = spec;
 		}
 		methodPattern = Pattern.compile(method);
-		this.spec = new URISpec<DataObject>(urispec, new DataObjectStringModelAdapter());
+		this.spec = new ObjURISpec(urispec);
 	}
 
 	public void setHandlerFilters(List<HandlerFilter> hfs) {

@@ -37,7 +37,7 @@ public class DataStructStreamer implements JsonStreamer {
 		jch.endJSON();
 	}
 
-	private void stream(DataArray array, JsonContentHandler jch) throws RuntimeException {
+	private void stream(Arr array, JsonContentHandler jch) throws RuntimeException {
 		jch.startArray();
 		int len = array.getLength();
 		for(int i = 0; i < len; i++) {
@@ -51,17 +51,17 @@ public class DataStructStreamer implements JsonStreamer {
 		DataType dt = structHelper.getDataType(o);
 		switch (dt) {
 		case array:
-			stream((DataArray)o, jch);
+			stream((Arr)o, jch);
 			break;
 		case object:
-			stream((DataObject)o, jch);
+			stream((Obj)o, jch);
 			break;
 		default:
 			jch.primitive(o);
 			break;
 		}
 	}
-	private void stream(DataObject object, JsonContentHandler jch) throws RuntimeException {
+	private void stream(Obj object, JsonContentHandler jch) throws RuntimeException {
 		jch.startObject();
 		for(String k : object.getKeys()) {
 			Object o = object.get(k);
