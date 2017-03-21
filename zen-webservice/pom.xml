@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
-			<scope>provided</scope>
+			<!-- needed by HttpCoreHelper <scope>provided</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
