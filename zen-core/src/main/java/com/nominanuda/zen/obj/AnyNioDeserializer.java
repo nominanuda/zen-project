@@ -94,6 +94,7 @@ class AnyNioDeserializer implements Subscriber<ByteBuffer>, Factory<Any> {
 			return object();
 		case '[':
 			return array();
+		case '-':
 		case '0':
 		case '1':
 		case '2':
@@ -170,6 +171,9 @@ class AnyNioDeserializer implements Subscriber<ByteBuffer>, Factory<Any> {
 				}
 			} else {
 				switch (cur) {
+				case '\\':
+					backSlashSeen = true;
+					break;
 				case '"':
 					incr();
 					Val v = new ValImpl(range.range(start, pos - start), JsonType.str);
@@ -194,6 +198,10 @@ class AnyNioDeserializer implements Subscriber<ByteBuffer>, Factory<Any> {
 					dotSeen = true;
 				}
 				break;
+			case '-':
+				if(pos != start) {
+					throw new IllegalArgumentException("usespected not leading '-' in number at position"+pos);
+				}
 			case '0':
 			case '1':
 			case '2':

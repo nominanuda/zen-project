@@ -92,4 +92,11 @@ public class SpecTest {
 //		StringMapURISpec spec = new StringMapURISpec("/somepath/{tpl **.soy.js}?{lang en|it}");
 
 	}
+	@Test
+	public void testCatalog() {
+		StringMapURISpec spec = new StringMapURISpec("http://54.93.119.44:8080/musicloud-ingex/api/catalog?{apikey} {codes} ({locale}) ({channel}) ({tstamp})");
+		
+	}
+
+	//http://54.93.119.44:8080/musicloud-ingex/api/catalog?{apikey} {codes} ({locale}) ({channel}) ({tstamp})
 }
