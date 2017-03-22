@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class AnyUnmarshallerTest {
@@ -44,6 +45,25 @@ public class AnyUnmarshallerTest {
 		assertEquals(12, unmarshal("012").asVal().get());
 	}
 
+	@Test
+	public void testUnmarshalEscapedString() {
+		Any res = unmarshal("{\"title\":\"èèèèüüü \\\"Jauchzet,  Tage\\\"  \"}");
+		assertEquals("èèèèüüü \"Jauchzet,  Tage\"  ", res.asObj().getStr("title"));
+		
+		System.err.println(res.toString());
+	}
+
+	@Test
+	public void testUnmarshalNegativeNumber() {
+		Any res = unmarshal("{\"x\": -2}");
+		assertEquals(-2, res.asObj().getInt("x").intValue());
+		try {
+			unmarshal("{\"x\": 2-2}");
+			Assert.fail();
+		} catch(IllegalArgumentException e) {}
+		System.err.println(res.toString());
+	}
+
 	private Any unmarshal(String s) {
 		ByteBuffer bb = ByteBuffer.wrap(s.getBytes(UTF8));
 		AnyNioDeserializer parser = new AnyNioDeserializer();
@@ -52,6 +72,7 @@ public class AnyUnmarshallerTest {
 		Any res = parser.get();
 		return res;
 	}
+	
 
 	@Test
 	public void test1() {
