@@ -296,13 +296,57 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 	default String getStr(String k) {
 		return (String)fetch(k);
 	}
+	default String getStrictStr(String key) {
+		return (String)getStrict(key);
+	}
 
 	default Obj getObj(String k) {
 		return (Obj)fetch(k);
 	}
+	default Obj getStrictObj(String k) {
+		return (Obj)getStrict(k);
+	}
 
 	default Arr getArr(String k) {
 		return (Arr)fetch(k);
+	}
+	default Arr getStrictArr(String k) {
+		return (Arr)getStrict(k);
+	}
+	
+	default Number getNum(String k) {
+		return (Number)fetch(k);
+	}
+	default Number getStrictNum(String k) {
+		return (Number)getStrict(k);
+	}
+	default Double getDouble(String k) {
+		Number n = getNum(k);
+		return n != null ? n.doubleValue() : null;
+	}
+	default Double getStrictDouble(String k) {
+		Number n = getStrictNum(k);
+		return n != null ? n.doubleValue() : null;
+	}
+	default Integer getInt(String k) {
+		Number n = getNum(k);
+		return n != null ? n.intValue() : null;
+	}
+	default Integer getStrictInt(String k) {
+		Number n = getStrictNum(k);
+		return n != null ? n.intValue() : null;
+	}
+	default Long getLong(String k) {
+		Number n = getNum(k);
+		return n != null ? n.longValue() : null;
+	}
+	default Long getStrictLong(String k) {
+		Number n = getStrictNum(k);
+		return n != null ? n.longValue() : null;
+	}
+
+	default Boolean getBoolean(String k) {
+		return (Boolean)fetch(k);
 	}
 
 	public static Obj parse(InputStream is) {
@@ -339,30 +383,6 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 		return o;
 	}
 
-	default String getStrictStr(String key) {
-		return (String)getStrict(key);
-	}
-
-	default Number getNum(String k) {
-		return (Number)fetch(k);
-	}
-	default Double getDouble(String k) {
-		Number n = getNum(k);
-		return n != null ? n.doubleValue() : null;
-	}
-	default Integer getInt(String k) {
-		Number n = getNum(k);
-		return n != null ? n.intValue() : null;
-	}
-	default Long getLong(String k) {
-		Number n = getNum(k);
-		return n != null ? n.longValue() : null;
-	}
-
-	default Boolean getBoolean(String k) {
-		return (Boolean)fetch(k);
-	}
-	
 	@SuppressWarnings("unchecked")
 	default <K> Map<String,K> of(Class<K> klass) {
 		return (Map<String,K>)this;
