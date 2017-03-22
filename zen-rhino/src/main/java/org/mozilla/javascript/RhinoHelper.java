@@ -244,7 +244,9 @@ public class RhinoHelper {
 			json, new StringReader("})();"));
 		return (Scriptable)evaluateReader(cx, r, " - ", scopeFactory.createInContext(cx));
 	}
+	
 	private ScopeFactory scopeFactory = new ScopeFactory();
+	
 //	public Object[] nativeArrayToJavaArray(NativeArray arr) {
 //		List<Object> l = new LinkedList<Object>();
 //		for(int i = 0, len=(int)arr.getLength(); i < len; i++) {
@@ -269,29 +271,49 @@ public class RhinoHelper {
 //			obj.put(pName, obj, pVal);
 //		}
 //	}
+	
 	public Object getProperty(Scriptable obj, Object index) {
-		Check.notNull(index);
+		index = validateIndex(index);
 		return index instanceof String
 			? ScriptableObject.getProperty(obj, (String)index)
 			: ScriptableObject.getProperty(obj, ((Number)index).intValue());
 	}
 	public Object deleteProperty(Scriptable obj, Object index) {
-		Check.notNull(index);
+		index = validateIndex(index);
 		return index instanceof String
 			? ScriptableObject.deleteProperty(obj, (String)index)
 			: ScriptableObject.deleteProperty(obj, ((Number)index).intValue());
 	}
 	public void putProperty(Scriptable obj, Object index, Object value) {
-		Check.notNull(index);
+		index = validateIndex(index);
 		if (index instanceof String) {
 			ScriptableObject.putProperty(obj, (String)index, value);
 		} else {
 			ScriptableObject.putProperty(obj, ((Number)index).intValue(), value);
 		}
 	}
+	private Object validateIndex(Object index) {
+		Check.notNull(index);
+		if (index instanceof String) {
+			final String s = (String)index;
+			final int l = s.length();
+			if (l > 0) {
+				for (int i = 0; i < l; i++) {
+					char c = s.charAt(i);
+					if (c < '0' || c > '9') {
+						return s;
+					}
+				}
+				return Integer.parseInt(s);
+			}
+		}
+		return index;
+	}
+	
 	public <T extends Scriptable> BaseFunction buildClassCtor(Scriptable scope, Class<T> clazz,boolean sealed,boolean mapInheritance) throws IllegalAccessException, InstantiationException,InvocationTargetException{
 		return ScriptableObject.buildClassCtor(scope, clazz, sealed, mapInheritance);
 	}
+	
 	public boolean isUndefined(Object val) {
 		return Undefined.instance == val;
 	}

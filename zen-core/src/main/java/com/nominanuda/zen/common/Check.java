@@ -18,6 +18,7 @@ package com.nominanuda.zen.common;
 import static com.nominanuda.zen.common.Str.STR;
 import static com.nominanuda.zen.seq.Seq.SEQ;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
@@ -276,6 +277,10 @@ public enum Check {
 	}
 	public static String ifNullOrBlank(String s, String defaultVal) {
 		return STR.nullOrBlank(s) ? defaultVal : s;
+	}
+	
+	public static File ifNullOrNotExistent(File f, File defaultVal) {
+		return f != null && f.exists() ? f : defaultVal;
 	}
 
 	public static boolean isInstanceOf(@Nullable Object o, Class<?>... types) {

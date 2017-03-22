@@ -43,9 +43,7 @@ public class SourceModuleFactory implements ModuleFactory {
 			RHINO.putProperty(moduleScope, "exports", RHINO.newObject(context, moduleScope));
 			RHINO.putProperty(moduleScope, "require", RHINO.getProperty(scope, "require"));
 			RHINO.evaluateReader(context, src, uri.toString(), moduleScope);
-		} catch(IllegalArgumentException e) {
-			return null;
-		} catch(IOException e) {
+		} catch (IllegalArgumentException|IOException e) {
 			return null;
 		}
 		Object result = RHINO.getProperty(moduleScope, "exports");

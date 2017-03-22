@@ -16,11 +16,15 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.nominanuda.zen.obj.JsonDeserializer;
 
+import com.nominanuda.rhino.host.SourceModuleFactory;
+
 public abstract class AbsScriptSource implements IScriptSource {
-	private ScriptableObject cachedScope;
-	private RhinoEmbedding rhinoEmbedding;
-	private String jsSuffix = ".js", jsonSuffix = ".json";
+	private final static SourceModuleFactory MODS = new SourceModuleFactory();
+	
 	private final Map<String, Object> hostObjs = new HashMap<String, Object>();
+	private String jsSuffix = ".js", jsonSuffix = ".json";
+	private RhinoEmbedding rhinoEmbedding;
+	private ScriptableObject cachedScope;
 	
 	public abstract String source(boolean doReset) throws IOException;
 	protected abstract Script script(Context cx, String source, boolean doSave);
@@ -67,10 +71,7 @@ public abstract class AbsScriptSource implements IScriptSource {
 		if (value instanceof String) {
 			String string = (String) value;
 			if (string.endsWith(jsSuffix)) {
-				Scriptable moduleScope = RHINO.newObject(cx, scope);
-				RHINO.putProperty(moduleScope, "exports", RHINO.newObject(cx, moduleScope));
-				RHINO.evaluateURL(cx, new URL(string), moduleScope);
-				return RHINO.getProperty(moduleScope, "exports");
+				return MODS.create(string, null, scope, cx);
 			}
 			if (string.endsWith(jsonSuffix)) {
 				return JsonDeserializer.JSON_DESERIALIZER.deserialize((new URL(string).openStream()));

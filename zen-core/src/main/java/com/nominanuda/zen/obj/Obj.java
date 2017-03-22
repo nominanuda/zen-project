@@ -33,6 +33,7 @@ import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.stereotype.Value;
 
 public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,Object>/*ReadOnlyCollection<Entry<String, Object>>,*/ {
+	
 	public static Obj make(Object...keysAndVals) {
 		illegalargument.assertTrue(keysAndVals.length % 2 == 0, "odd number of arguments");
 		ObjImpl o = new ObjImpl();
@@ -345,9 +346,46 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 	default Number getNum(String k) {
 		return (Number)fetch(k);
 	}
-
-	default Integer getInt(String k) {
-		return ((Number)fetch(k)).intValue();
+	default Double getDouble(String k) {
+		Number n = getNum(k);
+		return n != null ? n.doubleValue() : null;
 	}
- 
+	default Integer getInt(String k) {
+		Number n = getNum(k);
+		return n != null ? n.intValue() : null;
+	}
+	default Long getLong(String k) {
+		Number n = getNum(k);
+		return n != null ? n.longValue() : null;
+	}
+
+	default Boolean getBoolean(String k) {
+		return (Boolean)fetch(k);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default <K> Map<String,K> of(Class<K> klass) {
+		return (Map<String,K>)this;
+	}
+	
+	default Map<String,Obj> ofObj() {
+		return of(Obj.class);
+	}
+	public static Map<String,Obj> ofObj(@Nullable Obj o) {
+		return (o != null ? o : make()).ofObj();
+	}
+	
+	default Map<String,Arr> ofArr() {
+		return of(Arr.class);
+	}
+	public static Map<String,Arr> ofArr(@Nullable Obj o) {
+		return (o != null ? o : make()).ofArr();
+	}
+	
+	default Map<String,String> ofStr() {
+		return of(String.class);
+	}
+	public static Map<String,String> ofStr(@Nullable Obj o) {
+		return (o != null ? o : make()).ofStr();
+	}
 }

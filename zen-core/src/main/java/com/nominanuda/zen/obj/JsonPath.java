@@ -119,9 +119,8 @@ public class JsonPath {
 		}
 	}
 
-	public Object getPathSafe(Stru ds, String path) {
+	public Object getPathSafe(Stru ds, String... pathBits) {
 		Stru _target = ds;
-		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
 		for(int i = 0; i < len; i++) {
 			String pathBit = pathBits[i];
@@ -135,6 +134,34 @@ public class JsonPath {
 		}
 		return _target;
 	}
+	public Object getPathSafe(Stru ds, String path) {
+		return getPathSafe(ds, path.split("\\."));
+	}
+	public String getPathSafeStr(Stru ds, String... pathBits) {
+		return (String)getPathSafe(ds, pathBits);
+	}
+	public String getPathSafeStr(Stru ds, String path) {
+		return (String)getPathSafe(ds, path);
+	}
+	public Number getPathSafeNum(Stru ds, String... pathBits) {
+		return (Number)getPathSafe(ds, pathBits);
+	}
+	public Number getPathSafeNum(Stru ds, String path) {
+		return (Number)getPathSafe(ds, path);
+	}
+	public Obj getPathSafeObj(Stru ds, String... pathBits) {
+		return (Obj)getPathSafe(ds, pathBits);
+	}
+	public Obj getPathSafeObj(Stru ds, String path) {
+		return (Obj)getPathSafe(ds, path);
+	}
+	public Arr getPathSafeArr(Stru ds, String... pathBits) {
+		return (Arr)getPathSafe(ds, pathBits);
+	}
+	public Arr getPathSafeArr(Stru ds, String path) {
+		return (Arr)getPathSafe(ds, path);
+	}
+	
 	private Object _get(Stru s, Object intOrStringKey) {
 		if(s.isArr()) {
 			return s.asArr().fetch((int)intOrStringKey);
