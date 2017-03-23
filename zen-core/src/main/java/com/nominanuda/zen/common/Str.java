@@ -18,6 +18,7 @@ package com.nominanuda.zen.common;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +144,7 @@ public class Str {
 		return sb.toString();
 	}
 
-	public String fmt(String pattern, Object... arguments) {
+	public String fmt(String pattern, Object... arguments) throws NullPointerException {
 		for(int i = 0; i < arguments.length; i++) {
 			if(null == arguments[i]) {
 				throw new NullPointerException("arguments " + i + " is null");
@@ -153,5 +154,56 @@ public class Str {
   		}
 		return MessageFormat.format(pattern, arguments);
 	}
+
+
+	public String diacriticsAndMoreReplace(String str) {
+		return nonDiacriticsReplace(diacriticsReplace(str));
+	}
+
+	public String diacriticsReplace(String str) {
+		str = Normalizer.normalize(str, Normalizer.Form.NFD);
+		str = DIACRITICS_REX.matcher(str).replaceAll("");
+		return str;
+	}
+
+	private String nonDiacriticsReplace(String cs) {
+		StringBuilder sb = new StringBuilder();
+		int len = cs.length();
+
+		for (int i = 0; i < len; i++) {
+			sb.append(nonDiacriticsOf(cs.charAt(i)));
+		}
+		return sb.toString();
+	}
+
+	private Object nonDiacriticsOf(char ch) {
+		switch (ch) {
+		case 'ß':
+			return "ss";
+		case 'æ':
+			return "ae";
+		case 'ø':
+			return 'o';
+//		case '©':
+//			return 'c';
+		case '\u00D0':// German Ð ð
+		case '\u0110':
+		case '\u0189':
+			return 'D';
+		case '\u00F0':
+		case '\u0256':
+		case '\u0111':
+			return 'd';
+		case '\u00DE':// Þ þ
+			return "TH"; // thorn þ
+		case '\u00FE':
+			return "th"; // thorn þ
+		default:
+			return ch;
+		}
+	}
+
+	public static final Pattern DIACRITICS_REX = Pattern
+			.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
 }
