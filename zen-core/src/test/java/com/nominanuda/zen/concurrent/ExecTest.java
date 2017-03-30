@@ -15,6 +15,7 @@
  */
 package com.nominanuda.zen.concurrent;
 
+import static com.nominanuda.zen.common.Maths.MATHS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,14 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import com.nominanuda.zen.concurrent.Exec;
-
 public class ExecTest {
-
+	String testFile = "/tmp/ExecTest"+MATHS.randInt(120000);
 	@Test
 	public void testThrowingSupplier() throws Exception {
 		assertEquals("foo", Exec.exe(() -> {
-			new FileOutputStream(new File("/tmp/miki")).write("sss".getBytes());
+			new FileOutputStream(new File(testFile)).write("sss".getBytes());
 			return "foo";
 		}).get());
 	}
@@ -40,7 +39,7 @@ public class ExecTest {
 	public void testThrowingRunnable() throws Exception {
 		AtomicBoolean passed = new AtomicBoolean(false);
 		Exec.exe(() -> {
-			new FileOutputStream(new File("/tmp/miki")).write("sss".getBytes());
+			new FileOutputStream(new File(testFile)).write("sss".getBytes());
 			passed.set(true);
 		}).get();
 		assertTrue(passed.get());
