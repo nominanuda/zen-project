@@ -8,10 +8,15 @@ import org.junit.Test;
 public class StrTest {
 
 	@Test
-	public void test() {
-		assertEquals("eeuoaa", STR.diacriticsAndMoreReplace("èéüöàä"));
-		assertEquals("eeuoaa'i", STR.diacriticsAndMoreReplace("èéüöàä'i"));
+	public void testDiacritics() {
+		assertEquals("n", STR.diacriticsReplace("ñ"));
+		assertEquals("eeuoaa", STR.diacriticsReplace("èéüöàä"));
+		assertEquals("eeuoaa'i", STR.diacriticsReplace("èéüöàä'i"));
 		assertEquals("TH th ss ae o DdDdDd", STR.diacriticsAndMoreReplace("Þ þ ß æ ø ÐðĐđƉɖ"));
 	}
 
+	@Test
+	public void testStripWs() {
+		assertEquals("aaa", STR.stripWs(" \na\r a\ta"));
+	}
 }
