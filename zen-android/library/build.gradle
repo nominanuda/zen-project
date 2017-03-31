@@ -32,8 +32,8 @@ buildscript {
 
 dependencies {
 	compile 'org.antlr:antlr-runtime:3.5.2'
-	compile 'javax.annotation:jsr250-api:1.0'
 	compile 'javax.ws.rs:javax.ws.rs-api:2.0'
+	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	compile 'com.squareup.okhttp3:okhttp:3.6.0'
 	compile fileTree(include: ['*.jar'], dir: 'libs')
 	androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
