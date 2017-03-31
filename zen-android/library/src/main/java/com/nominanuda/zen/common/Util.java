@@ -1,4 +1,4 @@
-package com.nominanuda.zen.lang;
+package com.nominanuda.zen.common;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -27,23 +27,16 @@ public class Util {
     }
 
     public static boolean equals(Object o1, Object o2) {
-        return Util.isNull(o1) ? Util.isNull(o2) : o1.equals(o2);
+        return o1 == null ? o2 == null : o1.equals(o2);
     }
 
     public static interface Cback<K,T> {
         T call(K obj);
     }
 
-    public static boolean isNull(Object o) {
-        return (o == null) ? true : false;
-    }
-
-    public static boolean notNull(Object o) {
-        return !isNull(o);
-    }
-    public static boolean notNull(Object... objs) {
+    public static boolean notNulls(Object... objs) {
         for (Object obj : objs) {
-            if (isNull(obj)) {
+            if (obj ==  null) {
                 return false;
             }
         }
@@ -53,7 +46,7 @@ public class Util {
     @SafeVarargs
     public static <T> T notNullElse(T... objs) {
         for (T obj : objs) {
-            if (notNull(obj)) {
+            if (obj != null) {
                 return obj;
             }
         }
@@ -75,10 +68,10 @@ public class Util {
 	/* strings */
 
     public static boolean isBlank(CharSequence s) {
-        return isNull(s) ? true : isBlank(s.toString());
+        return s == null ? true : isBlank(s.toString());
     }
     public static boolean isBlank(String s) {
-        return isNull(s) ? true : TextUtils.isEmpty(s.trim());
+        return s == null ? true : TextUtils.isEmpty(s.trim());
     }
     public static boolean notBlank(CharSequence s) {
         return !isBlank(s);
@@ -108,7 +101,7 @@ public class Util {
     }
 
     public static String trimOrNull(String s) {
-        if (notNull(s)) {
+        if (s != null) {
             s = s.trim();
             if (s.length() == 0) {
                 return null;
@@ -122,7 +115,7 @@ public class Util {
 	/* integers */
 
     public static boolean isEmpty(Integer i) {
-        return isNull(i) ? true : (i == 0);
+        return i == null ? true : (i == 0);
     }
     public static boolean notEmpty(Integer i) {
         return !isEmpty(i);
@@ -161,7 +154,7 @@ public class Util {
     /* collections */
 
     public static boolean notEmpty(Collection<?> c) {
-        return notNull(c) && !c.isEmpty();
+        return c != null && !c.isEmpty();
     }
 
 
@@ -203,7 +196,7 @@ public class Util {
     }
 
     public static boolean notEmpty(Map<?, ?> map) {
-        return notNull(map) && !map.isEmpty();
+        return map != null && !map.isEmpty();
     }
 
 
@@ -296,6 +289,6 @@ public class Util {
     }
 
     public static boolean notEmpty(Bundle b) {
-        return notNull(b) && !b.isEmpty();
+        return b != null && !b.isEmpty();
     }
 }

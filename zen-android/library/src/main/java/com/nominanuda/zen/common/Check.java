@@ -1,4 +1,4 @@
-package com.nominanuda.zen.lang;
+package com.nominanuda.zen.common;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;

@@ -1,0 +1,34 @@
+package com.nominanuda.hyperapi;
+
+import java.lang.reflect.Proxy;
+
+import okhttp3.OkHttpClient;
+
+import static com.nominanuda.zen.io.Uris.URIS;
+
+/**
+ * Created by azum on 27/03/17.
+ */
+
+public class HttpHyperApiFactory implements HyperApiFactory {
+
+	private final OkHttpClient okHttpClient;
+	private final String uriPrefix; // TODO configurable (how?)
+
+
+	public HttpHyperApiFactory(String prefix, OkHttpClient client) {
+		uriPrefix = prefix;
+		okHttpClient = client;
+	}
+	public HttpHyperApiFactory(OkHttpClient client) {
+		this(null, client);
+	}
+
+	@Override
+	public <T> T getInstance(String instanceHint, Class<? extends T> apiInterface) {
+		return apiInterface.cast(Proxy.newProxyInstance(
+			apiInterface.getClassLoader(), new Class[] { apiInterface },
+			new HyperApiHttpInvocationHandler(okHttpClient, URIS.pathJoin(uriPrefix, instanceHint))
+		));
+	}
+}
