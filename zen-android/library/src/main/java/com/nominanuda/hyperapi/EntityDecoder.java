@@ -17,13 +17,11 @@ package com.nominanuda.hyperapi;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-
 import okhttp3.ResponseBody;
 
 public interface EntityDecoder {
 
 	boolean supports(AnnotatedType p, ResponseBody entity);
-	@Nullable Object decode(AnnotatedType p, ResponseBody entity) throws IOException;
+	Object decode(AnnotatedType p, ResponseBody entity) throws IOException;
 
 }

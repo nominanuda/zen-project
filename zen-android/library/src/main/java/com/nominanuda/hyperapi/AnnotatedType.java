@@ -15,6 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
+
 import com.nominanuda.zen.common.Util;
 
 import java.lang.annotation.Annotation;
@@ -40,8 +41,7 @@ public class AnnotatedType {
 		return cl.isAssignableFrom(type);
 	}
 
-	public @Nullable
-	MediaType mediaType() {
+	public MediaType mediaType() {
 		for (Annotation a : annotations) {
 			Class<? extends Annotation> t = a.annotationType();
 			if (Consumes.class.equals(t)) {
@@ -58,7 +58,7 @@ public class AnnotatedType {
 	public boolean isNullable() {
 		for(Annotation a : annotations) {
 			Class<? extends Annotation> t = a.annotationType();
-			if(Nullable.class.equals(t)) {
+			if (Nullable.class.equals(t)) {
 				return true;
 			}
 		}
@@ -69,7 +69,7 @@ public class AnnotatedType {
 		return type;
 	}
 
-	public @Nullable String getNameInUri() {
+	public String getNameInUri() {
 		for(Annotation a : annotations) {
 			Class<? extends Annotation> t = a.annotationType();
 			if(PathParam.class.equals(t)) {

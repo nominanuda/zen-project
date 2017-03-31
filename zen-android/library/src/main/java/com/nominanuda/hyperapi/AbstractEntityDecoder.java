@@ -19,8 +19,6 @@ import com.nominanuda.zen.common.Util;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 
@@ -35,7 +33,7 @@ public abstract class AbstractEntityDecoder<T> implements EntityDecoder {
 
 	protected abstract T decodeInternal(AnnotatedType p, ResponseBody value) throws IOException;
 
-	public AbstractEntityDecoder(Class<T> cl, @Nullable String ct) {
+	public AbstractEntityDecoder(Class<T> cl, String ct) {
 		this.cl = cl;
 		this.mediaType = ct != null ? MediaType.parse(ct) : null;
 	}
@@ -58,7 +56,7 @@ public abstract class AbstractEntityDecoder<T> implements EntityDecoder {
 			&& mediaType.charset(UTF8).equals(mt.charset(UTF8));
 	}
 
-	protected @Nullable MediaType getMediaType(ResponseBody entity) {
+	protected MediaType getMediaType(ResponseBody entity) {
 		return entity.contentType();
 	}
 

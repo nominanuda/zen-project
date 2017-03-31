@@ -15,13 +15,11 @@
  */
 package com.nominanuda.hyperapi;
 
-import javax.annotation.Nullable;
-
 import okhttp3.RequestBody;
 
 public interface EntityEncoder {
 
-	boolean supports(AnnotatedType p, @Nullable Object value);
-	@Nullable RequestBody encode(AnnotatedType p, @Nullable Object value);
+	boolean supports(AnnotatedType p, Object value);
+	RequestBody encode(AnnotatedType p, Object value);
 
 }

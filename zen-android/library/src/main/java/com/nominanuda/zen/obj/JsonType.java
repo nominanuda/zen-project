@@ -17,12 +17,10 @@ package com.nominanuda.zen.obj;
 
 import com.nominanuda.zen.common.Check;
 
-import javax.annotation.Nullable;
-
 public enum JsonType {
 	obj, arr, str, bool, num, nil;
 
-	public static JsonType of(@Nullable Object javaValue) {
+	public static JsonType of(Object javaValue) {
 		return
 			javaValue == null ? nil :
 			javaValue instanceof String ? str :

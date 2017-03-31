@@ -1,4 +1,3 @@
-
 package javax.annotation.concurrent;
 
 @java.lang.annotation.Target(value={java.lang.annotation.ElementType.TYPE})

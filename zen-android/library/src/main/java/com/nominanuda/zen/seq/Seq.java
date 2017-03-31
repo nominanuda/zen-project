@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import static com.nominanuda.zen.common.Check.unsupportedoperation;
@@ -40,7 +39,7 @@ import static com.nominanuda.zen.common.Check.unsupportedoperation;
 public class Seq {
 	public static final Seq SEQ = ScopedSingletonFactory.getInstance().buildJvmSingleton(Seq.class);
 
-	public boolean nullOrEmpty(@Nullable Iterable<?> coll) {
+	public boolean nullOrEmpty(Iterable<?> coll) {
 		if(coll == null) {
 			return true;
 		} else if(coll instanceof Collection) {
