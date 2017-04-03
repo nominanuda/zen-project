@@ -125,7 +125,6 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			}
 			if (!annotationFound) {
 				Check.unsupportedoperation.assertNull(entity);
-				Check.unsupportedoperation.fail("TODO entity");
 				entity = ENC.encode(arg, new AnnotatedType(parameterType, annotations));
 			}
 		}
