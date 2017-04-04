@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import com.nominanuda.zen.common.Util;
+import com.nominanuda.zen.common.Check;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -28,7 +28,7 @@ public class ByteArrayEntityEncoder extends AbstractEntityEncoder<byte[]> {
 
 	@Override
 	protected RequestBody encodeInternal(AnnotatedType p, byte[] barr) {
-		MediaType mt = Util.ifNull(p.mediaType(), defaultContentType);
+		MediaType mt = Check.ifNull(p.mediaType(), defaultContentType);
 		return RequestBody.create(mt, barr);
 	}
 }

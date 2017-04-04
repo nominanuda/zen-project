@@ -8,6 +8,17 @@ import org.json.JSONException;
  */
 
 public class Arr extends JSONArray implements Stru {
+	public static Arr make(Object...vals) {
+		Arr arr = new Arr();
+		if (vals != null) {
+			for (int i = 0; i < vals.length; i++) {
+				arr.put(vals[i]);
+			}
+		}
+		return arr;
+	}
+
+
 	public Arr() {
 		super();
 	}

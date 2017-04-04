@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import com.nominanuda.zen.common.Util;
+import com.nominanuda.zen.common.Check;
 
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public abstract class AbstractEntityDecoder<T> implements EntityDecoder {
 
 	@Override
 	public boolean supports(AnnotatedType p, ResponseBody entity) {
-		MediaType mt = Util.ifNull(getMediaType(entity), FALLBACK_MT);
+		MediaType mt = Check.ifNull(getMediaType(entity), FALLBACK_MT);
 		return mediaTypeMatches(mt) && p.isAssignableTo(cl);
 	}
 

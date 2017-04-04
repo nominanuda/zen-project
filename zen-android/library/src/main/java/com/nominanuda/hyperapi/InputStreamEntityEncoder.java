@@ -15,7 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
-import com.nominanuda.zen.common.Util;
+import com.nominanuda.zen.common.Check;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ public class InputStreamEntityEncoder extends AbstractEntityEncoder<InputStream>
 	@Override
 	protected RequestBody encodeInternal(AnnotatedType p, InputStream value) {
 		try {
-			MediaType mt = Util.ifNull(p.mediaType(), defaultContentType);
+			MediaType mt = Check.ifNull(p.mediaType(), defaultContentType);
 			return RequestBody.create(mt, IO.read(value, true));
 		} catch (IOException e) {
 			throw new RuntimeException(e);

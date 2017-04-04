@@ -20,18 +20,21 @@ import java.util.Set;
 
 public class Util {
 
-	/* objects */
+    /* lang */
+
+    public interface Function<T, R> {
+        R apply(T t);
+    }
+    public static interface Consumer<T> {
+        void accept(T result);
+    }
+
+
+
+    /* objects */
 
     public static <K,T extends K> T cast(K o) {
         return (T) o;
-    }
-
-    public static boolean equals(Object o1, Object o2) {
-        return o1 == null ? o2 == null : o1.equals(o2);
-    }
-
-    public static interface Cback<K,T> {
-        T call(K obj);
     }
 
     public static boolean notNulls(Object... objs) {
@@ -41,26 +44,6 @@ public class Util {
             }
         }
         return true; // only if all objs are not null
-    }
-
-    @SafeVarargs
-    public static <T> T ifNull(T... objs) {
-        for (T obj : objs) {
-            if (obj != null) {
-                return obj;
-            }
-        }
-        return null;
-    }
-
-    @SafeVarargs
-    public static <T> T oneOfElse(T o, T defaultVal, T... allowedVals) {
-        for (T v : allowedVals) {
-            if (equals(o, v)) {
-                return o;
-            }
-        }
-        return defaultVal;
     }
 
 

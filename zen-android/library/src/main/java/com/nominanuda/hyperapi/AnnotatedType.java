@@ -16,7 +16,7 @@
 package com.nominanuda.hyperapi;
 
 
-import com.nominanuda.zen.common.Util;
+import com.nominanuda.zen.common.Check;
 
 import java.lang.annotation.Annotation;
 
@@ -34,7 +34,7 @@ public class AnnotatedType {
 
 	public AnnotatedType(Class<?> type, Annotation[] annotations) {
 		this.type = type;
-		this.annotations = Util.ifNull(annotations, new Annotation[0]);
+		this.annotations = Check.ifNull(annotations, new Annotation[0]);
 	}
 
 	public boolean isAssignableTo(Class<?> cl) {

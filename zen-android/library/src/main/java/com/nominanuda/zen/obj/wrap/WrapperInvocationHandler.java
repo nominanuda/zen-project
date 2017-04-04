@@ -17,7 +17,7 @@ package com.nominanuda.zen.obj.wrap;
 
 import android.util.Pair;
 
-import com.nominanuda.zen.common.Util;
+import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
@@ -148,7 +148,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 				return method.invoke(o, args);
 			}
 		} catch (InvocationTargetException e) {
-			throw Util.ifNull((Exception)e.getCause(), e);
+			throw Check.ifNull((Exception)e.getCause(), e);
 		}
 	}
 

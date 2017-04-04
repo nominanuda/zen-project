@@ -150,4 +150,16 @@ public class Str {
 		return MessageFormat.format(pattern, arguments);
 	}
 
+	public String stripWs(CharSequence s) {
+		int len = s.length();
+		char[] res = new char[len];
+		int written = 0;
+		for (int i = 0; i < len; i++) {
+			char c = s.charAt(i);
+			if(! Character.isWhitespace(c)) {
+				res[written++] = c;
+			}
+		}
+		return new String(res, 0, written);
+	}
 }

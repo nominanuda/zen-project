@@ -7,6 +7,8 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.util.Pair;
 
+import com.nominanuda.zen.common.Util;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -17,14 +19,7 @@ import java.lang.reflect.Proxy;
 
 public class AsyncCall<API, T> {
 
-	public static interface Function<API, T> {
-		T apply(API api);
-	}
-	public static interface Callback<T> {
-		void apply(T result);
-	}
-
-	public AsyncCall(final Activity activity, final API api, Function<API, T> callFnc, Callback<T> resultFnc, Callback<Exception> errorFnc) {
+	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
 		Class<?> apiClass = api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 			apiClass.getClassLoader(), apiClass.getInterfaces(),
@@ -69,9 +64,9 @@ public class AsyncCall<API, T> {
 						@Override
 						public void onLoadFinished(Loader<Pair<T, Exception>> loader, Pair<T, Exception> result) {
 							if (result.second != null) {
-								errorFnc.apply(result.second);
+								errorFnc.accept(result.second);
 							} else {
-								resultFnc.apply(result.first);
+								resultFnc.accept(result.first);
 							}
 						}
 
@@ -86,7 +81,7 @@ public class AsyncCall<API, T> {
 		)));
 	}
 
-	public AsyncCall(final Activity activity, final API api, Function<API, T> callFnc, Callback<T> resultFnc) {
+	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
 		this(activity, api, callFnc, resultFnc, e -> {
 			// TODO default logging
 		});
