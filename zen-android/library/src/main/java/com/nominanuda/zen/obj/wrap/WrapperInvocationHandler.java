@@ -148,7 +148,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 				return method.invoke(o, args);
 			}
 		} catch (InvocationTargetException e) {
-			throw Util.notNullElse((Exception)e.getCause(), e);
+			throw Util.ifNull((Exception)e.getCause(), e);
 		}
 	}
 

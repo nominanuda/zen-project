@@ -34,7 +34,7 @@ public class InputStreamEntityEncoder extends AbstractEntityEncoder<InputStream>
 	@Override
 	protected RequestBody encodeInternal(AnnotatedType p, InputStream value) {
 		try {
-			MediaType mt = Util.notNullElse(p.mediaType(), defaultContentType);
+			MediaType mt = Util.ifNull(p.mediaType(), defaultContentType);
 			return RequestBody.create(mt, IO.read(value, true));
 		} catch (IOException e) {
 			throw new RuntimeException(e);

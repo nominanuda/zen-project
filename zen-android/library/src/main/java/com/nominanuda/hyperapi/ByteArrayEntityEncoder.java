@@ -28,7 +28,7 @@ public class ByteArrayEntityEncoder extends AbstractEntityEncoder<byte[]> {
 
 	@Override
 	protected RequestBody encodeInternal(AnnotatedType p, byte[] barr) {
-		MediaType mt = Util.notNullElse(p.mediaType(), defaultContentType);
+		MediaType mt = Util.ifNull(p.mediaType(), defaultContentType);
 		return RequestBody.create(mt, barr);
 	}
 }

@@ -40,7 +40,7 @@ public abstract class AbstractEntityDecoder<T> implements EntityDecoder {
 
 	@Override
 	public boolean supports(AnnotatedType p, ResponseBody entity) {
-		MediaType mt = Util.notNullElse(getMediaType(entity), FALLBACK_MT);
+		MediaType mt = Util.ifNull(getMediaType(entity), FALLBACK_MT);
 		return mediaTypeMatches(mt) && p.isAssignableTo(cl);
 	}
 

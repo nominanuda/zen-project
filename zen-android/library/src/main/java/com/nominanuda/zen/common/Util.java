@@ -44,7 +44,7 @@ public class Util {
     }
 
     @SafeVarargs
-    public static <T> T notNullElse(T... objs) {
+    public static <T> T ifNull(T... objs) {
         for (T obj : objs) {
             if (obj != null) {
                 return obj;

@@ -5,11 +5,11 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Loader;
 import android.os.Bundle;
+import android.util.Pair;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.concurrent.Callable;
 
 /**
  * Created by azum on 27/03/17.
@@ -24,54 +24,60 @@ public class AsyncCall<API, T> {
 		void apply(T result);
 	}
 
-	public AsyncCall(final Activity activity, final API api, Function<API, T> callFnc, Callback<T> resultFnc, Callable<Exception> errorFnc) {
+	public AsyncCall(final Activity activity, final API api, Function<API, T> callFnc, Callback<T> resultFnc, Callback<Exception> errorFnc) {
 		Class<?> apiClass = api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 			apiClass.getClassLoader(), apiClass.getInterfaces(),
 			new InvocationHandler() {
 				@Override
 				public Object invoke(Object proxy, Method method, Object[] methodArgs) throws Throwable {
-					activity.getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<T>() {
+					activity.getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Pair<T, Exception>>() {
 						@Override
-						public Loader<T> onCreateLoader(int id, Bundle args) {
-							return new AsyncTaskLoader<T>(activity) {
+						public Loader<Pair<T, Exception>> onCreateLoader(int id, Bundle args) {
+							return new AsyncTaskLoader<Pair<T, Exception>>(activity) {
 								private T mData = null;
 
 								@Override
 								protected void onStartLoading() {
 									if (mData != null) {
-										deliverResult(mData);
+										deliverResult(new Pair<T, Exception>(mData, null));
 									} else {
 										forceLoad();
 									}
 								}
 
 								@Override
-								public T loadInBackground() {
+								public Pair<T, Exception> loadInBackground() {
 									try {
-										return (T) method.invoke(api, methodArgs);
+										mData = (T) method.invoke(api, methodArgs);
+										return new Pair<T, Exception>(mData, null);
 									} catch (Exception e) {
 										e.printStackTrace();
-										return null;
+										return new Pair<T, Exception>(null, e);
 									}
 								}
 
 								@Override
-								public void deliverResult(T data) {
+								public void deliverResult(Pair<T, Exception> result) {
 									if (isStarted()) {
-										super.deliverResult(data);
+										super.deliverResult(result);
 									}
 								}
 							};
 						}
 
 						@Override
-						public void onLoadFinished(Loader<T> loader, T data) {
-							resultFnc.apply(data);
+						public void onLoadFinished(Loader<Pair<T, Exception>> loader, Pair<T, Exception> result) {
+							if (result.second != null) {
+								errorFnc.apply(result.second);
+							} else {
+								resultFnc.apply(result.first);
+							}
 						}
 
 						@Override
-						public void onLoaderReset(Loader<T> loader) {
+						public void onLoaderReset(Loader<Pair<T, Exception>> loader) {
+
 						}
 					});
 					return null;
@@ -81,6 +87,8 @@ public class AsyncCall<API, T> {
 	}
 
 	public AsyncCall(final Activity activity, final API api, Function<API, T> callFnc, Callback<T> resultFnc) {
-		this(activity, api, callFnc, resultFnc, null);
+		this(activity, api, callFnc, resultFnc, e -> {
+			// TODO default logging
+		});
 	}
 }

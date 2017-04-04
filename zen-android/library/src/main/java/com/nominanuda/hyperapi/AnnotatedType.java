@@ -34,7 +34,7 @@ public class AnnotatedType {
 
 	public AnnotatedType(Class<?> type, Annotation[] annotations) {
 		this.type = type;
-		this.annotations = Util.notNullElse(annotations, new Annotation[0]);
+		this.annotations = Util.ifNull(annotations, new Annotation[0]);
 	}
 
 	public boolean isAssignableTo(Class<?> cl) {

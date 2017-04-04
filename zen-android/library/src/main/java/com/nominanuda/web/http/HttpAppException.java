@@ -73,7 +73,7 @@ public abstract class HttpAppException extends RuntimeException {
 	/* IApiError <-> String */
 	
 	protected static String serialize(IApiError err) {
-		return STR.joinArgs("|", err.name(), Util.notNullElse(err.param(), ""));
+		return STR.joinArgs("|", err.name(), Util.ifNull(err.param(), ""));
 	}
 	
 	public static <E extends Enum<E> & IApiError> IApiError deserialize(String msg, Class<E> apiErrorEnum) {
