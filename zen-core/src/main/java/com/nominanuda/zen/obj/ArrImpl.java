@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import com.nominanuda.zen.seq.ReadOnlyCollection;
 import com.nominanuda.zen.stereotype.Value;
@@ -194,6 +195,55 @@ public class ArrImpl implements Arr {
 	@Override
 	public <T> TArr<T> newArr(Class<T> cl) {
 		return (TArr<T>)new ArrImpl();
+	}
+
+	@Override
+	public ListIterator<Object> listIterator() {
+		final ListIterator<Any> i = members.listIterator();
+		return new ListIterator<Object>() {
+			@Override
+			public boolean hasNext() {
+				
+				return i.hasNext();
+			}
+			@Override
+			public Object next() {
+				final Any e = i.next();
+				return e.toJavaObjModel();
+			}
+			@Override
+			public boolean hasPrevious() {
+				return i.hasPrevious();
+			}
+			@Override
+			public Object previous() {
+				final Any e = i.previous();
+				return e.toJavaObjModel();
+			}
+			@Override
+			public int nextIndex() {
+				return i.nextIndex();
+			}
+			@Override
+			public int previousIndex() {
+				return i.previousIndex();
+			}
+			@Override
+			public void remove() {
+				i.remove();
+			}
+			@Override
+			public void set(Object e) {
+				Any a = Any.toStruObjModel(e);
+				i.set(a);
+			}
+			@Override
+			public void add(Object e) {
+				Any a = Any.toStruObjModel(e);
+				i.add(a);
+			}
+		};
+
 	}
 
 }

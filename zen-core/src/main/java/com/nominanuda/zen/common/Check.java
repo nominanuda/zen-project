@@ -229,13 +229,13 @@ public enum Check {
 //	}
 	@SafeVarargs
 	public static <T> T ifNull(T... objs) {
-        for (T obj : objs) {
-            if (obj != null) {
-                return obj;
-            }
-        }
-        return null;
-    }
+		for (T obj : objs) {
+			if (obj != null) {
+				return obj;
+			}
+		}
+		return null;
+	}
 
 	public static <T> T ifNull(T o, Supplier<T> defaultVal) {
 		return o == null ? defaultVal.get() : o;

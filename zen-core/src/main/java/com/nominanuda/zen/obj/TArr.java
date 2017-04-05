@@ -249,9 +249,8 @@ public interface TArr<T> extends Stru, List<T> {
 	}
 
 	@Override
-	default ListIterator<T> listIterator() {
-		return new LazyCopyIterator<T>(iterator());
-	}
+	ListIterator<T> listIterator();
+
 
 	@Override
 	default ListIterator<T> listIterator(int index) {
