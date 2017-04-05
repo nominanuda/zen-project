@@ -107,17 +107,23 @@ public class LazyCopyIterator<E> implements ListIterator<E> {
 	}
 	@Override
 	public void remove() {
-//		getOrExplodeListItr().remove();
-		throw new UnsupportedOperationException("read-only collection");
+//		if (i != null) {
+//			throw new UnsupportedOperationException("read-only iterator");
+//		}
+		getOrExplodeListItr().remove();
 	}
 	@Override
 	public void set(E e) {
-//		getOrExplodeListItr().set(e);
-		throw new UnsupportedOperationException("read-only collection");
+//		if (i != null) {
+//			throw new UnsupportedOperationException("read-only iterator");
+//		}
+		getOrExplodeListItr().set(e);
 	}
 	@Override
 	public void add(E e) {
-//		getOrExplodeListItr().add(e);
-		throw new UnsupportedOperationException("read-only collection");
+//		if (i != null) {
+//			throw new UnsupportedOperationException("read-only iterator");
+//		}
+		getOrExplodeListItr().add(e);
 	}
 }
