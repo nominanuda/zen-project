@@ -29,7 +29,7 @@ import com.nominanuda.zen.stereotype.Value;
 public interface TArr<T> extends Stru, List<T> {
 
 	public static <T> TArr<T> make(Class<T> cl, Object...vals) {
-		return Arr.makeTyped(cl);
+		return Arr.makeTyped(cl, vals);
 	}
 
 	/**
