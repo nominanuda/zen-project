@@ -71,6 +71,7 @@ public class ArrImpl implements Arr {
 		return ReadOnlyCollection.wrap(members);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object store(int idx, Object v) {
 		Any a = Any.toStruObjModel(v);

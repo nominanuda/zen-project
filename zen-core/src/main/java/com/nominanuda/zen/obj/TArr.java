@@ -24,7 +24,6 @@ import java.util.ListIterator;
 
 import javax.annotation.Nullable;
 
-import com.nominanuda.zen.seq.LazyCopyIterator;
 import com.nominanuda.zen.stereotype.Value;
 
 public interface TArr<T> extends Stru, List<T> {

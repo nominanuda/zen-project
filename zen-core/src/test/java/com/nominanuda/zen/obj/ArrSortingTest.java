@@ -11,14 +11,14 @@ public class ArrSortingTest {
 	
 	@Test
 	public void test() {
-		Arr arr = Arr.make(
+		TArr<Obj> arr = TArr.make(Obj.class,
 			Obj.make("p", 3),
 			Obj.make("p", 7),
 			Obj.make("p", 2),
 			Obj.make("p", 1)
 		);
 		
-		Collections.sort(arr.ofObj(), new Comparator<Obj>() {
+		Collections.sort(arr, new Comparator<Obj>() {
 			@Override
 			public int compare(Obj o1, Obj o2) {
 				return o1.getInt("p") - o2.getInt("p");
@@ -26,7 +26,7 @@ public class ArrSortingTest {
 		});
 		
 		int i = 0;
-		for (Obj o : arr.ofObj()) {
+		for (Obj o : arr) {
 			int p = o.getInt("p");
 			System.out.println(p);
 			assertTrue(i < p);
