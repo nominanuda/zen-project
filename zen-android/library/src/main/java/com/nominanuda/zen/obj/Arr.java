@@ -18,7 +18,6 @@ public class Arr extends JSONArray implements Stru {
 		return arr;
 	}
 
-
 	public Arr() {
 		super();
 	}
@@ -30,7 +29,6 @@ public class Arr extends JSONArray implements Stru {
 	public boolean isObj() {
 		return false;
 	}
-
 	@Override
 	public Obj asObj() throws ClassCastException {
 		throw new ClassCastException();
@@ -40,7 +38,6 @@ public class Arr extends JSONArray implements Stru {
 	public boolean isArr() {
 		return true;
 	}
-
 	@Override
 	public Arr asArr() throws ClassCastException {
 		return this;

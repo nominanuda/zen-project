@@ -17,6 +17,9 @@ package com.nominanuda.zen.obj;
 
 import com.nominanuda.zen.common.Check;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public enum JsonType {
 	obj, arr, str, bool, num, nil;
 
@@ -45,12 +48,11 @@ public enum JsonType {
 		return o != null && isNullablePrimitive(o);
 	}
 
-	public static boolean isArr(Object val) {
-		return val instanceof Arr;
+	public static boolean isJSONArray(Object val) {
+		return val instanceof JSONArray;
 	}
 
-	public static boolean isObj(Object val) {
-		return val instanceof Obj;
+	public static boolean isJSONObject(Object val) {
+		return val instanceof JSONObject;
 	}
-
 }

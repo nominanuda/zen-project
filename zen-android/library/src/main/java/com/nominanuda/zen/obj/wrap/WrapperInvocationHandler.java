@@ -23,7 +23,9 @@ import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -44,9 +46,10 @@ import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static java.util.Arrays.asList;
 
 class WrapperInvocationHandler implements InvocationHandler {
-	private final Obj o;
+	private final JSONObject o;
 	private final Set<Method> roleMethods;
 	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
+
 	static {
 		nonRoleMethods.addAll(asList(Object.class.getDeclaredMethods()));
 		nonRoleMethods.addAll(asList(ObjWrapper.class.getDeclaredMethods()));
@@ -56,7 +59,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 		nonRoleMethods.addAll(asList(Iterable.class.getDeclaredMethods()));
 	}
 
-	public WrapperInvocationHandler(Obj o, Class<?> role) {
+	public WrapperInvocationHandler(JSONObject o, Class<?> role) {
 		this.o = o != null ? o : new Obj();
 		roleMethods = new HashSet<Method>();
 		for (Method m : role.getMethods()) {
@@ -78,18 +81,18 @@ class WrapperInvocationHandler implements InvocationHandler {
 				int argsL = (args == null ? 0 : args.length);
 				if (argsL == 0) { // any getter
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
-						Arr arr = o.getArr(name);
+						JSONArray arr = o.optJSONArray(name);
 						if (arr != null) {
 							Collection<Object> coll = type.isInterface()
-								? new LinkedList<>()
-								: (Collection<Object>) type.newInstance();
+									? new LinkedList<>()
+									: (Collection<Object>) type.newInstance();
 							Class<?> itemType = null;
 							try {
 								itemType = getCollectionReturnComponentType(method);
 							} catch (Exception e) {
 								// dynamic mode on
 							}
-							for (int i=0, l=arr.length(); i < l; i++) {
+							for (int i = 0, l = arr.length(); i < l; i++) {
 								Object v = arr.opt(i);
 								if (itemType == null && v == null) {
 									coll.add(null);
@@ -105,7 +108,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 							return null;
 						}
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
-						Obj obj = o.getObj(name);
+						JSONObject obj = o.optJSONObject(name);
 						if (obj != null) {
 							if (type.isInterface()) {
 								type = LinkedHashMap.class;
@@ -125,7 +128,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 								if (itemType == null && val == null) {
 									map.put(key, null);
 								} else {
-									if(itemType == null) {
+									if (itemType == null) {
 										itemType = val.getClass();
 									}
 									map.put(key, fromObjValue(val, itemType));
@@ -136,7 +139,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 							return null;
 						}
 					} else { // simple getter
-						return fromObjValue(o.get(name), type);
+						return fromObjValue(o.opt(name), type);
 					}
 				} else if (argsL == 1) { // setter
 					o.put(name, toObjValue(args[0]));
@@ -148,7 +151,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 				return method.invoke(o, args);
 			}
 		} catch (InvocationTargetException e) {
-			throw Check.ifNull((Exception)e.getCause(), e);
+			throw Check.ifNull((Exception) e.getCause(), e);
 		}
 	}
 
@@ -160,12 +163,14 @@ class WrapperInvocationHandler implements InvocationHandler {
 		}
 		Type t = method.getGenericReturnType();
 		if (t instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType)t;
+			ParameterizedType pt = (ParameterizedType) t;
 			Type[] actualTypeArgs = pt.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 1) {
-				Type at = actualTypeArgs[0];
-				if (at instanceof Class<?>) {
-					return (Class<?>) at;
+				try {
+					String name = actualTypeArgs[0].toString();
+					return Class.forName(name.substring(name.indexOf(' ') + 1)); // remove "interface " in front of name
+				} catch (ClassNotFoundException e) {
+					throw e;
 				}
 			}
 		}
@@ -179,12 +184,18 @@ class WrapperInvocationHandler implements InvocationHandler {
 		}
 		Type t = method.getGenericReturnType();
 		if (t instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType)t;
+			ParameterizedType pt = (ParameterizedType) t;
 			Type[] actualTypeArgs = pt.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 2) {
-				Type at0 = actualTypeArgs[0], at1 = actualTypeArgs[1];
-				if (at0 instanceof Class<?> && at1 instanceof Class<?>) {
-					return new Pair<Class<?>, Class<?>>((Class<?>)at0, (Class<?>)at1);
+				try {
+					String name0 = actualTypeArgs[0].toString();
+					String name1 = actualTypeArgs[1].toString();
+					return new Pair<>(
+							Class.forName(name0.substring(name0.indexOf(' ') + 1)), // remove "interface " in front of name
+							Class.forName(name1.substring(name1.indexOf(' ') + 1)) // remove "interface " in front of name
+					);
+				} catch (ClassNotFoundException e) {
+					throw e;
 				}
 			}
 		}
@@ -196,46 +207,46 @@ class WrapperInvocationHandler implements InvocationHandler {
 		if (null == v) {
 			return null;
 		} else if (Boolean.TYPE.equals(type)) { // expected boolean
-			return Boolean.TRUE.equals((Boolean)v); // force true/false (also when v == null)
+			return Boolean.TRUE.equals((Boolean) v); // force true/false (also when v == null)
 		} else if (JsonType.isNullablePrimitive(v)) {
 			if (Double.class.equals(type) || double.class.equals(type)) {
-				return ((Number)v).doubleValue();
+				return ((Number) v).doubleValue();
 			} else if (Float.class.equals(type) || float.class.equals(type)) {
-				return ((Number)v).floatValue();
+				return ((Number) v).floatValue();
 			} else if (Integer.class.equals(type) || int.class.equals(type)) {
-				return ((Number)v).intValue();
+				return ((Number) v).intValue();
 			} else if (Long.class.equals(type) || long.class.equals(type)) {
-				return ((Number)v).longValue();
+				return ((Number) v).longValue();
 			} else {
 				return v;
 			}
-		} else if (JsonType.isObj(v)) {
-			Obj o = (Obj) v;
+		} else if (JsonType.isJSONObject(v)) {
+			JSONObject o = (JSONObject) v;
 			WrapType wrapType = type.getAnnotation(WrapType.class);
 			if (wrapType != null) {
-				Builder builder = createBuilder(wrapType, type);
-				return builder.apply(o);
+				return createBuilder(wrapType, type).apply(o);
 			} else if (WrapperItemFactory.class.isAssignableFrom(type)) {
 				try {
-					Method factoryMethod = findWrapMethod(type);
-					return factoryMethod.invoke(null, v);
+					return findWrapMethod(type).invoke(null, v);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					throw new RuntimeException(e);
 				}
 			} else if (ObjWrapper.class.isAssignableFrom(type)) { // sub object
 				return WF.wrap(o, type);
 			} else {
-				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
+				throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
 			}
 		} else {
-			throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
+			throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
 		}
 	}
 
 	private static final Map<Class<?>, Builder> BUILDERS_CACHE = new HashMap<>();
+
 	private class Builder {
 		private final String field;
 		private final Map<String, Class<?>> typeMap = new HashMap<>();
+
 		private Builder(WrapType wrapType, Class<?> type) {
 			field = wrapType.field();
 			String[] values = wrapType.values();
@@ -244,10 +255,12 @@ class WrapperInvocationHandler implements InvocationHandler {
 				typeMap.put(values[i], types[i]);
 			}
 		}
-		private Object apply(Obj o) {
+
+		private Object apply(JSONObject o) {
 			return WF.wrap(o, typeMap.get(o.opt(field)));
 		}
 	}
+
 	private Builder createBuilder(WrapType wrapType, Class<?> type) {
 		Builder builder = BUILDERS_CACHE.get(type);
 		if (builder == null) {
@@ -273,24 +286,24 @@ class WrapperInvocationHandler implements InvocationHandler {
 			throw new NoSuchMethodException();
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	private Object toObjValue(Object v) throws JSONException {
 		if (v instanceof Collection) {
 			Arr arr = new Arr();
-			for (Object o : (Collection<Object>)v) {
+			for (Object o : (Collection<Object>) v) {
 				arr.put(toObjValue(o));
 			}
 			return arr;
 		} else if (v instanceof Map) {
 			Obj obj = new Obj();
-			for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
+			for (Entry<String, Object> entry : ((Map<String, Object>) v).entrySet()) {
 				obj.put(entry.getKey(), toObjValue(entry.getValue()));
 			}
 			return obj;
 		} else if (v instanceof ObjWrapper) { // sub object
-			return ((ObjWrapper)v).unwrap();
+			return ((ObjWrapper) v).unwrap();
 		}
 		return v;
 	}
