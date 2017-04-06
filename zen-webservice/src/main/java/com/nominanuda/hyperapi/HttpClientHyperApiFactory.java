@@ -46,7 +46,7 @@ public class HttpClientHyperApiFactory extends ExceptionCatcherFactory implement
 	public <T> T getInstance(String instanceHint, Class<? extends T> apiInterface, T apiImpl) {
 		return STR.notNullOrBlank(instanceHint) ? getInstance(instanceHint, apiInterface) : allowExceptions ? apiImpl : getInstance(apiImpl, apiInterface);
 	}
-	public <T> T getInstance(Class<? extends T> apiInterface, T apiImpl) { // useful when commenting out instanceHint line in Spring xml
+	public <T> T getInstanceNoHint(Class<? extends T> apiInterface, T apiImpl) { // useful when commenting out instanceHint line in Spring xml
 		return getInstance(null, apiInterface, apiImpl);
 	}
 	
