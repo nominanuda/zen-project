@@ -9,9 +9,12 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.util.Pair;
 
+import com.nominanuda.web.http.Http500Exception;
+import com.nominanuda.web.http.HttpAppException;
 import com.nominanuda.zen.common.Util;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -59,6 +62,12 @@ public class AsyncCall<API, T> {
 			try {
 				T data = (T) mMethod.invoke(mApi, mMethodArgs);
 				return new Pair<T, Exception>(data, null);
+			} catch (InvocationTargetException e) {
+				Throwable cause = e.getCause();
+				return new Pair<T, Exception>(null, (cause != null && cause instanceof HttpAppException)
+						? (HttpAppException) cause
+						: new Http500Exception(e)
+				);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return new Pair<T, Exception>(null, e);
@@ -106,7 +115,7 @@ public class AsyncCall<API, T> {
 					} else {
 						mResultFnc.accept(result.first);
 					}
-//					mLoaderManager.destroyLoader(loaderId);
+					mLoaderManager.destroyLoader(loaderId);
 				}
 
 				@Override
@@ -120,7 +129,7 @@ public class AsyncCall<API, T> {
 
 
 	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		Class<?> apiClass = api.getClass();
+		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
 				new AsyncCallInvocationHandler<API, T>(activity, activity.getLoaderManager(), api, resultFnc, errorFnc)
@@ -134,7 +143,7 @@ public class AsyncCall<API, T> {
 	}
 
 	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		Class<?> apiClass = api.getClass();
+		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
 				new AsyncCallInvocationHandler<API, T>(fragment.getActivity(), fragment.getLoaderManager(), api, resultFnc, errorFnc)
@@ -148,7 +157,7 @@ public class AsyncCall<API, T> {
 	}
 
 	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		Class<?> apiClass = api.getClass();
+		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
 				new AsyncCallInvocationHandler<API, T>(fragment.getActivity(), fragment.getActivity().getLoaderManager(), api, resultFnc, errorFnc)
