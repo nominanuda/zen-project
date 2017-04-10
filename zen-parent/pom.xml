@@ -83,6 +83,7 @@ limitations under the License.
     <hibernate.version>5.2.6.Final</hibernate.version>
     <hibernate-c3p0.version>5.2.6.Final</hibernate-c3p0.version>
     <hsqldb.version>2.3.4</hsqldb.version>
+    <log4j2.version>2.7</log4j2.version>
 <!--     <mahout.version>0.9</mahout.version> -->
     <!-- HADOOP -->
 <!--     <avro.version>1.7.7</avro.version>
@@ -98,6 +99,11 @@ limitations under the License.
     <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>  </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.reactivestreams</groupId>
         <artifactId>reactive-streams</artifactId>
