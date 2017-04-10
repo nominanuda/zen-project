@@ -63,6 +63,7 @@ public class AsyncCall<API, T> {
 				T data = (T) mMethod.invoke(mApi, mMethodArgs);
 				return new Pair<T, Exception>(data, null);
 			} catch (InvocationTargetException e) {
+				e.printStackTrace();
 				Throwable cause = e.getCause();
 				return new Pair<T, Exception>(null, (cause != null && cause instanceof HttpAppException)
 						? (HttpAppException) cause
@@ -101,7 +102,7 @@ public class AsyncCall<API, T> {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] methodArgs) throws Throwable {
-			final int loaderId = 0; // TODO uniqueness
+			final int loaderId = (int)(Math.random() * 10000); // TODO uniqueness
 			mLoaderManager.initLoader(loaderId, null, new LoaderManager.LoaderCallbacks<Pair<T, Exception>>() {
 				@Override
 				public Loader<Pair<T, Exception>> onCreateLoader(int id, Bundle args) {

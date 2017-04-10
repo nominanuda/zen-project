@@ -233,6 +233,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 				}
 			} else if (ObjWrapper.class.isAssignableFrom(type)) { // sub object
 				return WF.wrap(o, type);
+			} else if (Obj.class.isAssignableFrom(type)) { // obj
+				return Obj.make(o);
 			} else {
 				throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
 			}

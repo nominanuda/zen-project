@@ -5,6 +5,9 @@ import com.nominanuda.zen.common.Check;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Created by azum on 17/03/17.
  */
@@ -25,12 +28,23 @@ public class Obj extends JSONObject implements Stru {
 		}
 		return o;
 	}
+	public static Obj make(JSONObject json) {
+		try {
+			return new Obj(json);
+		} catch (JSONException e) {
+			Check.illegalargument.fail();
+		}
+		return null;
+	}
 
 	public Obj() {
 		super();
 	}
 	public Obj(String json) throws JSONException {
 		super(json);
+	}
+	private Obj(JSONObject json) throws JSONException {
+		super(json, names(json));
 	}
 
 	@Override
@@ -49,5 +63,14 @@ public class Obj extends JSONObject implements Stru {
 	@Override
 	public Arr asArr() throws ClassCastException {
 		throw new ClassCastException();
+	}
+
+	private static String[] names(JSONObject json) {
+		Iterator<String> i = json.keys();
+		ArrayList<String> n = new ArrayList<>();
+		while (i.hasNext()) {
+			n.add(i.next());
+		}
+		return n.toArray(new String[n.size()]);
 	}
 }
