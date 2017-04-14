@@ -225,13 +225,21 @@ public interface TArr<T> extends Stru, List<T> {
 
 	@Override
 	default boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException("read-only collection");
+		boolean res = false;
+		for(T t : c) {
+			res = add(t) || res;
+		}
+		return res;
 	}
 
 
 	@Override
 	default boolean removeAll(Collection<?> c) {
-		throw new UnsupportedOperationException("read-only collection");
+		boolean res = false;
+		for(Object t : c) {
+			res = remove(t) || res;
+		}
+		return res;
 	}
 
 
@@ -239,8 +247,6 @@ public interface TArr<T> extends Stru, List<T> {
 	default boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException("read-only collection");
 	}
-
-
 
 	@Override
 	default int lastIndexOf(Object o) {
