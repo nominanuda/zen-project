@@ -42,7 +42,7 @@ public abstract class HttpAppException extends RuntimeException {
 		} else if (e instanceof IllegalArgumentException) {
 			return new Http400Exception(e);
 		} else if (e instanceof NullPointerException) {
-			return new Http400Exception(e);
+			return new Http500Exception(e);
 		}
 		return new Http500Exception(e);
 	}
