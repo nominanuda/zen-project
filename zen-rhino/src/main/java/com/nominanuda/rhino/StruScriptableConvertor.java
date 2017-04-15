@@ -70,12 +70,14 @@ public class StruScriptableConvertor {
 			NativeArray a = (NativeArray)s;//TODO unsafe
 			final int len = (int)a.getLength();
 			for (int i = 0; i < len; i++) {
+				Arr arr = ((Arr)res);
+				arr.add(null); // prepare empty slot
 				Object val = RHINO.getProperty(s, i);
 				if (JsonType.isNullablePrimitive(val)) {
-					((Arr)res).set(i, val);
+					arr.set(i, val);
 				} else if (RHINO.isUndefined(val)) {
 				} else {
-					((Arr)res).set(i, fromScriptable((Scriptable)val));
+					arr.set(i, fromScriptable((Scriptable)val));
 				}
 			}
 		} else {
