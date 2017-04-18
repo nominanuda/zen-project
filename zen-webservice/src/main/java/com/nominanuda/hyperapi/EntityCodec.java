@@ -36,7 +36,8 @@ public class EntityCodec {
 		(EntityDecoder)new JsonAnyValueDecoder(),
 		(EntityDecoder)new ByteArrayEntityDecoder(),
 		(EntityDecoder)new InputStreamEntityDecoder(),
-		(EntityDecoder)new JsonAnyValueDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE) // fallback for buggy server compat 
+		(EntityDecoder)new JsonAnyValueDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE), // fallback for buggy server compat 
+		(EntityDecoder)new VoidEntityDecoder()
 	);
 
 	public static EntityCodec createBasic() {
