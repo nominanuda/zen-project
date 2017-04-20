@@ -26,6 +26,9 @@ public class ExceptionCatcherFactory {
 		
 		@Override
 		public void parseAndThrow(int status, Object response) throws HttpAppException {
+			if(response == null) {
+				response = "null";
+			}
 			if (status >= 400) {
 				if (status < 500) {
 					switch (status) {
