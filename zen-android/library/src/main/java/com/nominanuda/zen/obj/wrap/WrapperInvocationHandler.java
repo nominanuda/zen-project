@@ -147,6 +147,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 				} else { // bail out
 					throw new RuntimeException();
 				}
+			} else if ("equals".equals(name) && args.length == 1) { // allows [Proxy].equals([Proxy])
+				return args[0] == proxy;
 			} else {
 				return method.invoke(o, args);
 			}
