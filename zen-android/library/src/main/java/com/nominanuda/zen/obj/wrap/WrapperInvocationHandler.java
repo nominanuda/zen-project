@@ -93,14 +93,14 @@ class WrapperInvocationHandler implements InvocationHandler {
 								// dynamic mode on
 							}
 							for (int i = 0, l = arr.length(); i < l; i++) {
-								Object v = arr.opt(i);
-								if (itemType == null && v == null) {
+								Object val = arr.isNull(i) ? null : arr.opt(i); // as per issue https://issuetracker.google.com/issues/36924550
+								if (itemType == null && val == null) {
 									coll.add(null);
 								} else {
 									if (itemType == null) {
-										itemType = v.getClass();
+										itemType = val.getClass();
 									}
-									coll.add(fromObjValue(v, itemType));
+									coll.add(fromObjValue(val, itemType));
 								}
 							}
 							return coll;
@@ -124,7 +124,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 							Iterator<String> i = obj.keys();
 							while (i.hasNext()) {
 								String key = i.next();
-								Object val = obj.get(key);
+								Object val = obj.isNull(key) ? null : obj.opt(key); // as per issue https://issuetracker.google.com/issues/36924550
 								if (itemType == null && val == null) {
 									map.put(key, null);
 								} else {
@@ -139,7 +139,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 							return null;
 						}
 					} else { // simple getter
-						return fromObjValue(o.opt(name), type);
+						return fromObjValue(o.isNull(name) ? null : o.opt(name), type); // as per issue https://issuetracker.google.com/issues/36924550
 					}
 				} else if (argsL == 1) { // setter
 					o.put(name, toObjValue(args[0]));
