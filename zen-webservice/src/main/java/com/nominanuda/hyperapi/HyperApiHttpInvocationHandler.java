@@ -15,6 +15,7 @@
  */
 package com.nominanuda.hyperapi;
 
+import static com.nominanuda.zen.io.Uris.URIS;
 import static com.nominanuda.zen.obj.JsonPath.JPATH;
 
 import java.io.UnsupportedEncodingException;
@@ -183,7 +184,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			} else if (a instanceof DELETE) {
 				httpMethod = "DELETE";
 			} else if (a instanceof Path) {
-				spec = new ObjURISpec(uriPrefix + ((Path) a).value());
+				spec = new ObjURISpec(URIS.pathJoin(uriPrefix, ((Path) a).value()));
 //			} else if (a instanceof Consumes) {
 //				consumedMediaTypes = ((Consumes) a).value();
 			}

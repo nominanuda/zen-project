@@ -61,16 +61,26 @@
 			<artifactId>htmlparser</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+		<!--dependency> TODO refactoring to support newest soy version, using r28 for now
 			<groupId>com.google.template</groupId>
 			<artifactId>soy</artifactId>
+		</dependency-->
+		<dependency>
+			<groupId>com.google.javascript</groupId>
+			<artifactId>closure-templates</artifactId>
+			<version>r28</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- TODO remove dependency> <groupId>rome</groupId> <artifactId>rome</artifactId> <version>1.0</version> <scope>provided</scope> </dependency -->
+		<!-- TODO remove dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency -->
 		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>

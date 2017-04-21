@@ -127,7 +127,7 @@ public class SoySource {
 
 	private void compile(String lang) throws IOException {
 		final List<String> jsTplNames = new LinkedList<String>();
-		final SoyFileSet.Builder builder = SoyFileSet.builder();
+		final SoyFileSet.Builder builder = new SoyFileSet.Builder();
 		cumulate(builder, jsTplNames);
 		SoyFileSet soyFileSet = builder.build();
 		List<String> jsTpls = soyFileSet.compileToJsSrc(new SoyJsSrcOptions(), getBundle(lang));

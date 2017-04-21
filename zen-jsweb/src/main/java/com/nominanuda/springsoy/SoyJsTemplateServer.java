@@ -46,12 +46,12 @@ public class SoyJsTemplateServer implements CommandRequestHandler, HttpProtocol 
 	}
 
 	public Object handle(Stru cmd, HttpRequest request) throws Exception {
-		Obj json = (Obj) cmd;
+		Obj json = cmd.asObj();
 		for (String key : hardParams.keySet()) {
 			json.put(key, hardParams.get(key));
 		}
 		// also removes any "classpath:", "classpath:/" in front of template url, in case some configs (wrongly) put it there
-		String tpl = soySource.getJsTemplate(getTemplateName(json, request), json.getStr("lang").replaceAll("^\\w+:/?", ""));
+		String tpl = soySource.getJsTemplate(getTemplateName(json, request).replaceAll("^\\w+:/?", ""), json.getStr("lang"));
 		return new StringEntity(tpl, ContentType.create(CT_TEXT_JAVASCRIPT, CS_UTF_8));
 	}
 
