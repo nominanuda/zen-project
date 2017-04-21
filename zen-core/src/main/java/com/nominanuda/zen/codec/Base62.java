@@ -16,9 +16,9 @@
 package com.nominanuda.zen.codec;
 
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import static com.nominanuda.zen.common.Str.UTF8;
+
+import javax.annotation.concurrent.ThreadSafe;
 
 @ThreadSafe
 public class Base62 {
@@ -27,6 +27,10 @@ public class Base62 {
 
 	public String encodeUtf8(String s) {
 		return encode(s.getBytes(UTF8));
+	}
+	
+	public String encodeHex(String hex) {
+		return encode(Hex.decode(hex));
 	}
 
 	public String encode(byte[] b) {
@@ -54,9 +58,14 @@ public class Base62 {
 		}
 		return new String(b62,0,count);
 	}
+	
 
 	public String decodeUtf8(String s) {
 		return new String(decode(s), UTF8);
+	}
+	
+	public String decodeHex(String s) {
+		return Hex.encode(decode(s));
 	}
 
 	public byte[] decode(String s) {
