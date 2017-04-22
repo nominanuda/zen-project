@@ -188,9 +188,6 @@ public class JsonPath {
 		return MATHS.isInteger(s) ? Integer.valueOf(s) : s;
 	}
 
-	private void setProperty(Stru ds, Object key, @Nullable Object value) {
-		_put(ds, key, value);
-	}
 	public void setOrPushProperty(Stru ds, Object key, @Nullable Object value) {
 		Stru _this = ds;
 		if (_exists(_this, key)) {
@@ -204,18 +201,16 @@ public class JsonPath {
 				_put(_this, key, darr);
 			}
 		} else {
-			setProperty(ds, key, value);
+			_put(ds, key, value);
 		}
 	}
 	public void setPathProperty(Stru ds, String path, @Nullable Object value) {
 		String[] pathBits = path.split("\\.");
-		int len = pathBits.length;
-		_put(explodePath(ds, path), pathBits[len-1], value);
+		_put(explodePath(ds, path), toStringOrIntKey(pathBits[pathBits.length - 1]), value);
 	}
 	public void setOrPushPathProperty(Stru ds, String path, @Nullable  Object value) {
 		String[] pathBits = path.split("\\.");
-		int len = pathBits.length;
-		setOrPushProperty(explodePath(ds, path), pathBits[len-1], value);
+		setOrPushProperty(explodePath(ds, path), toStringOrIntKey(pathBits[pathBits.length - 1]), value);
 	}
 
 	private Stru explodePath(Stru ds, String path) {
