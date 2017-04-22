@@ -102,6 +102,9 @@ class WrapperInvocationHandler implements InvocationHandler {
 					if (Collection.class.isAssignableFrom(type)) { // collection getter
 						Arr arr = o.getArr(name);
 						if (arr != null) {
+							if (type.equals(Arr.class)) {
+								return arr;
+							}
 							Collection<Object> coll = type.isInterface()
 								? new LinkedList<>()
 								: (Collection<Object>) type.newInstance();
@@ -128,6 +131,9 @@ class WrapperInvocationHandler implements InvocationHandler {
 					} else if (Map.class.isAssignableFrom(type)) { // map getter
 						Obj obj = o.getObj(name);
 						if (obj != null) {
+							if (type.equals(Obj.class)) {
+								return obj;
+							}
 							if (type.isInterface()) {
 								type = LinkedHashMap.class;
 							}

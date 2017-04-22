@@ -5,13 +5,8 @@ import java.util.Map;
 
 import com.google.template.soy.data.SoyListData;
 import com.google.template.soy.data.SoyMapData;
-import com.nominanuda.zen.obj.Obj;
 
 public class SoyHelper {
-	
-	public static SoyMapData model2soy(Obj json) {
-		return model2soy(json);
-	}
 	
 	@SuppressWarnings("unchecked")
 	public static SoyMapData model2soy(Map<String, ? super Object> m) {

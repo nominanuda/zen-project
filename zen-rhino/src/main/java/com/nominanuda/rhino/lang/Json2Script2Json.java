@@ -8,14 +8,13 @@ import org.mozilla.javascript.RhinoEmbedding;
 
 import com.nominanuda.rhino.IScriptSource;
 import com.nominanuda.rhino.IScriptSource.IScript;
-import com.nominanuda.rhino.ObjectFactory;
 import com.nominanuda.rhino.SimpleScriptSource;
 import com.nominanuda.zen.obj.Stru;
 import com.nominanuda.zen.stereotype.Disposable;
 
 public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 	
-	public static class Factory implements ObjectFactory<Json2Script2Json> {
+	public static class Factory implements com.nominanuda.zen.stereotype.Factory<Json2Script2Json> {
 		private final IScriptSource scriptSource;
 		
 		public Factory(IScriptSource scriptSource) {
@@ -33,7 +32,7 @@ public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 		}
 		
 		@Override
-		public Json2Script2Json getObject() {
+		public Json2Script2Json get() {
 			try {
 				return new Json2Script2Json(scriptSource);
 			} catch (Exception e) {

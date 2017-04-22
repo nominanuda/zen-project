@@ -21,7 +21,7 @@ import java.util.Map;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-import com.nominanuda.rhino.ObjectFactory;
+import com.nominanuda.zen.stereotype.Factory;
 
 public class JavaObjectFactory implements ModuleFactory {
 	private Map<String, Object> registry = new HashMap<String, Object>();
@@ -40,8 +40,8 @@ public class JavaObjectFactory implements ModuleFactory {
 	}
 
 	private Object instantiate(Object registryObject) {
-		return registryObject instanceof ObjectFactory<?>
-			? ((ObjectFactory<?>)registryObject).getObject()
+		return registryObject instanceof Factory<?>
+			? ((Factory<?>)registryObject).get()
 			: registryObject;
 	}
 }

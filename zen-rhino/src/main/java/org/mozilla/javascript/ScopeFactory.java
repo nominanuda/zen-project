@@ -11,14 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.nominanuda.rhino.ObjectFactory;
 import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.stereotype.Factory;
 
 /**
  * this class is supposed to be immutable by other parts of the framework !! beware
  *
  */
-public class ScopeFactory implements ObjectFactory<Scriptable> {
+public class ScopeFactory implements Factory<Scriptable> {
 	private final static int FIXED_ROOT = ScriptableObject.DONTENUM | ScriptableObject.READONLY;
 	private ScriptableObject cachedScope = null;
 	private RhinoEmbedding embedding;
@@ -92,7 +92,7 @@ public class ScopeFactory implements ObjectFactory<Scriptable> {
 	}
 
 	@Override
-	public Scriptable getObject() throws RuntimeException {
+	public Scriptable get() throws RuntimeException {
 		return create();
 	}
 	public Scriptable create() throws RuntimeException {

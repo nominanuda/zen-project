@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -28,7 +29,7 @@ public class JarSoySource extends SoySource {
 		this.templatesLocations = Arrays.asList(baseTemplatesLocations);
 	}
 	public JarSoySource() {
-		this(new String[] {});
+		this.templatesLocations = new ArrayList<>();
 	}
 	
 	
