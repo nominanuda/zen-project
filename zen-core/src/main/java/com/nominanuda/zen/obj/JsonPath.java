@@ -163,14 +163,14 @@ public class JsonPath {
 	}
 	
 	private Object _get(Stru s, Object intOrStringKey) {
-		if(s.isArr()) {
+		if (s.isArr()) {
 			return s.asArr().fetch((int)intOrStringKey);
 		} else {
 			return s.asObj().fetch((String)intOrStringKey);
 		}
 	}
 	private boolean _exists(Stru s, Object intOrStringKey) {
-		if(s.isArr()) {
+		if (s.isArr()) {
 			return s.asArr().exists((int)intOrStringKey);
 		} else {
 			return s.asObj().exists((String)intOrStringKey);
@@ -193,9 +193,9 @@ public class JsonPath {
 	}
 	public void setOrPushProperty(Stru ds, Object key, @Nullable Object value) {
 		Stru _this = ds;
-		if(_exists(_this, key)) {
+		if (_exists(_this, key)) {
 			Object cur = _get(_this, key);
-			if(JsonType.isArr(cur)) {
+			if (JsonType.isArr(cur)) {
 				((Arr)cur).push(value);
 			} else {
 				Arr darr = Arr.make();
@@ -222,12 +222,12 @@ public class JsonPath {
 		Stru _target = ds;
 		String[] pathBits = path.split("\\.");
 		int len = pathBits.length;
-		for(int i = 0; i < len - 1; i++) {
+		for (int i = 0; i < len - 1; i++) {
 			String pathBit = pathBits[i];
 			Object k = toStringOrIntKey(pathBit);
 			Object newTarget = _get(_target, k);
-			if(JsonType.isNullablePrimitive(newTarget)) {
-				if(MATHS.isInteger(pathBits[i + 1])) {
+			if (JsonType.isNullablePrimitive(newTarget)) {
+				if (MATHS.isInteger(pathBits[i + 1])) {
 					newTarget = Arr.make();
 				} else {
 					newTarget = Obj.make();
@@ -240,45 +240,45 @@ public class JsonPath {
 	}
 
 	//if convertor#canConvert returns false value is not added to result
-		@SuppressWarnings("unchecked")
-		public <X extends Stru> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
-			return Check.notNull(source) instanceof Obj
-				? (X)convertLeavesInternal((Obj)source, convertor)
-				: (X)convertLeavesInternal((Arr)source, convertor);
-		}
+	@SuppressWarnings("unchecked")
+	public <X extends Stru> X convertLeaves(X source, SafeConvertor<Object, Object> convertor) {
+		return Check.notNull(source) instanceof Obj
+			? (X)convertLeavesInternal((Obj)source, convertor)
+			: (X)convertLeavesInternal((Arr)source, convertor);
+	}
 
-		private Obj convertLeavesInternal(Obj source, SafeConvertor<Object, Object> convertor) {
-			Obj res = Obj.make();
-			for(Entry<String, Object> e : source) {
-				String k = e.getKey();
-				Object v = e.getValue();
-				if(JsonType.isNullablePrimitive(v) && convertor.canConvert(v)) {
-					res.store(k, convertor.apply(v));
-				} else if(v instanceof Obj) {
-					res.store(k, convertLeavesInternal((Obj)v, convertor));
-				} else {
-					res.store(k, convertLeavesInternal((Arr)v, convertor));
-				}
+	private Obj convertLeavesInternal(Obj source, SafeConvertor<Object, Object> convertor) {
+		Obj res = Obj.make();
+		for(Entry<String, Object> e : source) {
+			String k = e.getKey();
+			Object v = e.getValue();
+			if(JsonType.isNullablePrimitive(v) && convertor.canConvert(v)) {
+				res.store(k, convertor.apply(v));
+			} else if(v instanceof Obj) {
+				res.store(k, convertLeavesInternal((Obj)v, convertor));
+			} else {
+				res.store(k, convertLeavesInternal((Arr)v, convertor));
 			}
-			return res;
 		}
+		return res;
+	}
 
-		private Arr convertLeavesInternal(Arr source,
-				SafeConvertor<Object, Object> convertor) {
-			Arr res = Arr.make();
-			int len = source.len();
-			for(int i = 0; i < len; i++) {
-				Object v = source.fetch(i);
-				if(JsonType.isNullablePrimitive(v) && convertor.canConvert(v)) {
-					res.push(convertor.apply(v));
-				} else if(v instanceof Obj) {
-					res.push(convertLeavesInternal((Obj)v, convertor));
-				} else {
-					res.push(convertLeavesInternal((Arr)v, convertor));
-				}
+	private Arr convertLeavesInternal(Arr source,
+			SafeConvertor<Object, Object> convertor) {
+		Arr res = Arr.make();
+		int len = source.len();
+		for(int i = 0; i < len; i++) {
+			Object v = source.fetch(i);
+			if(JsonType.isNullablePrimitive(v) && convertor.canConvert(v)) {
+				res.push(convertor.apply(v));
+			} else if(v instanceof Obj) {
+				res.push(convertLeavesInternal((Obj)v, convertor));
+			} else {
+				res.push(convertLeavesInternal((Arr)v, convertor));
 			}
-			return res;
 		}
+		return res;
+	}
 
 	public interface ObjectConvertor<X, Y, E extends Exception> {
 		Y apply(X x) throws E;
@@ -324,29 +324,26 @@ public class JsonPath {
 		Check.illegalstate.assertTrue(suffix instanceof Integer || suffix instanceof String);
 		return (prefix.length() > 0) ? prefix + "." + suffix.toString() : suffix.toString();
 	}
-
-	private void writeFlatMapTo(Map<String, Object> pMap, Obj dest) {
-		for (Entry<String, ?> e : pMap.entrySet()) {
-			writeScalarOrMultivaluedProperty(dest, e.getKey(), e.getValue());
-		}
-	}
+	
 
 	public Stru fromFlatMap(Map<String, Object> map) {
 		Obj dest = Obj.make();
-		writeFlatMapTo(map, dest);
+		for (Entry<String, ?> e : map.entrySet()) {
+			writeScalarOrMultivaluedProperty(dest, e.getKey(), e.getValue());
+		}
 		return dest;
 	}
-
+	
 	private void writeScalarOrMultivaluedProperty(Obj target, String path, Object val) {
 		if (val != null && val.getClass().isArray()) {
 			val = Arrays.asList((Object[]) val);
 		}
-		if (!(val == null || val instanceof Collection<?>)) {// scalar
+		if (!(val == null || val instanceof Collection<?>)) { // scalar
 			if (path.endsWith(MULTIVALUE_SUFFIX)) {
 				path = path.substring(0, path.length() - MULTIVALUE_SUFFIX_LEN) + ".0";
 			}
 			writeScalarProperty(target, path, val);
-		} else {// Collection
+		} else { // Collection
 			Collection<?> l = (Collection<?>) val;
 			int len = l.size();
 			if (len == 0) {

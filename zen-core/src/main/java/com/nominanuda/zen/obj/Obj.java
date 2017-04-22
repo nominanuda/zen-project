@@ -94,29 +94,11 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 	default Any fetchAny(Key k) {
 		return Any.toStruObjModel(fetch(k.get()));
 	}
-
-	public default int indexOfKey(String k) {
-		int i = 0;
-		for(Entry<String, Object> x : this) {
-			if(k.equals(x.getKey())) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
+	
+	default boolean exists(Object k) {
+		return containsKey(k);
 	}
 
-	@Override
-	public default int indexOf(Object v, int start) {
-		int i = 0;
-		for(Entry<String, Object> x : this) {
-			if(i >= start && Value.nullSafeEquals(v, x.getValue())) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
 
 	/**
 	 * set the value if unset ({@link #indexOfKey(String)} == -1 ) or creates an {@link Arr}
@@ -231,11 +213,23 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 	////Map
 	@Override
 	default boolean containsKey(Object key) {
-		return key instanceof String ? indexOfKey((String)key) >= 0 : false;
+		if (key instanceof String) {
+			for (Entry<String, Object> x : this) {
+				if (key.equals(x.getKey())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	@Override
 	default boolean containsValue(Object value) {
-		return indexOf(value, 0) >= 0;
+		for (Entry<String, Object> x : this) {
+			if (Value.nullSafeEquals(value, x.getValue())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

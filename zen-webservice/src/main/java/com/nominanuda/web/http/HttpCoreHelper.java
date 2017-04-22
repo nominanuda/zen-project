@@ -498,33 +498,36 @@ public class HttpCoreHelper implements HttpProtocol {
 		return null;
 	}
 	
-
 	public @Nullable String getQueryParamFirstOccurrence(HttpRequest request, String name) {
 		List<NameValuePair> l = URLEncodedUtils.parse(URI.create(request.getRequestLine().getUri()), UTF_8);
-		for(NameValuePair nvp : l) {
-			if(name.equals(nvp.getName())) {
+		for (NameValuePair nvp : l) {
+			if (name.equals(nvp.getName())) {
 				return nvp.getValue();
 			}
 		}
 		return null;
 	}
+	
 	public Stru getQueryParams(HttpRequest request) {
 		List<NameValuePair> l = URLEncodedUtils.parse(URI.create(request.getRequestLine().getUri()), UTF_8);
-		return toDataStruct(l);
+		return toStru(l);
 	}
-	public Stru toDataStruct(List<NameValuePair> l) {
+	
+	public Stru toStru(List<NameValuePair> l) {
 		Obj res = Obj.make();
-		for(NameValuePair nvp : l) {
+		for (NameValuePair nvp : l) {
 			JPATH.setOrPushPathProperty(res, nvp.getName(), nvp.getValue());
 		}
 		return res;
 
 	}
+	
 	public HttpResponse createBasicResponse(int status) {
 		StatusLine statusline = statusLine(status);
 		HttpResponse resp = new BasicHttpResponse(statusline);
 		return resp;
 	}
+	
 	public HttpResponse redirectTo(String url) {
 		StatusLine statusline = statusLine(302);
 		HttpResponse resp = new BasicHttpResponse(statusline);
@@ -543,7 +546,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	public @Nullable HttpEntity getEntity(HttpMessage msg) {
 		if (! hasEntity(msg)) {
 			return null;
-		} else if(msg instanceof HttpResponse) {
+		} else if (msg instanceof HttpResponse) {
 			return ((HttpResponse)msg).getEntity();
 		} else {
 			return ((HttpEntityEnclosingRequest)msg).getEntity();

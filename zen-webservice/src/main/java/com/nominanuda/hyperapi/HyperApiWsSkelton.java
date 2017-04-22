@@ -149,9 +149,9 @@ public class HyperApiWsSkelton implements WebService {
 				} else if (annotation instanceof FormParam) {
 					annotationFound = true;
 					if (Obj.class.equals(parameterType)) {
-						args[i] = HTTP.toDataStruct(formParams).asObj();
+						args[i] = HTTP.toStru(formParams).asObj();
 					} else if (parameterType.isInterface() && ObjWrapper.class.isAssignableFrom(parameterType)) {
-						args[i] = WF.wrap(HTTP.toDataStruct(formParams).asObj(), parameterType);
+						args[i] = WF.wrap(HTTP.toStru(formParams).asObj(), parameterType);
 					} else {
 						Object o = getFormParams(formParams, ((FormParam) annotation).value());
 						args[i] = decast(o, parameterType);

@@ -59,8 +59,11 @@ public interface TArr<T> extends Stru, List<T> {
 	default TArr<T> copy() {
 		return this;
 	}
+	
+	default boolean exists(int k) {
+		return k < len();
+	}
 
-	@Override
 	default int indexOf(Object v, int start) {
 		int i = 0;
 		for(Object o : this) {
@@ -71,7 +74,7 @@ public interface TArr<T> extends Stru, List<T> {
 		}
 		return -1;
 	}
-
+	
 	@Override
 	default void sendTo(JixHandler sink) {
 		sink.startArr();

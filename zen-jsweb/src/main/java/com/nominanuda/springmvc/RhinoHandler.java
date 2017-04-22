@@ -105,7 +105,7 @@ public class RhinoHandler implements CommandRequestHandler {
 				Obj cmdFromReq = HTTP.getQueryParams(request).asObj();
 				if (entity != null) {
 					pairs = HTTP.parseEntityWithDefaultUtf8(entity);
-					JPATH.copyPush(HTTP.toDataStruct(pairs).asObj(), cmdFromReq);
+					JPATH.copyPush(HTTP.toStru(pairs).asObj(), cmdFromReq);
 				}
 				// TODO 
 				// here request params hide uriparams  

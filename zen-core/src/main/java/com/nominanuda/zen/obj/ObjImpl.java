@@ -107,29 +107,6 @@ public class ObjImpl implements Obj {
 		return removed == null ? null : removed.toJavaObjModel();
 	}
 	@Override
-	public int indexOf(Object v, int start) {
-		int i = 0;
-		for(Any x : members.values()) {
-			if(i >= start && Value.nullSafeEquals(v, x)) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-
-	@Override
-	public int indexOfKey(String k) {
-		int i = 0;
-		for(Key x : members.keySet()) {
-			if(Value.nullSafeEquals(k, x)) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-	@Override
 	public int push(String k, Object v) {
 		return pushInternal(k, v, false);
 	}

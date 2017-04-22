@@ -20,12 +20,8 @@ import static com.nominanuda.zen.obj.JsonDeserializer.JSON_DESERIALIZER;
 import java.io.InputStream;
 import java.io.Reader;
 
-import javax.annotation.Nullable;
-
 
 public interface Stru extends Any, StruFactory {
-	int indexOf(@Nullable Object v, int start);
-
 	@Override
 	default Object toJavaObjModel() {
 		return this;
@@ -47,12 +43,6 @@ public interface Stru extends Any, StruFactory {
 //	}
 
 	int len();
-
-
-	//other
-	default boolean exists(@Nullable Object v) {
-		return indexOf(v, 0) >= 0;
-	}
 
 	static Stru parse(Reader r) {
 		return (Stru)JSON_DESERIALIZER.deserialize(r);
