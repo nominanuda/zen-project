@@ -21,9 +21,9 @@ import org.apache.http.HttpEntity;
 
 import com.nominanuda.zen.obj.Stru;
 
-public class DataStructJsonDecoder extends AbstractEntityDecoder<Stru> {
+public class StruJsonDecoder extends AbstractEntityDecoder<Stru> {
 
-	public DataStructJsonDecoder() {
+	public StruJsonDecoder() {
 		super(Stru.class, CT_APPLICATION_JSON);
 	}
 

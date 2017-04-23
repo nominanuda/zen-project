@@ -19,18 +19,18 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
 import com.nominanuda.web.http.HttpProtocol;
-import com.nominanuda.zen.obj.JsonSerializer;
+import com.nominanuda.zen.common.Str;
 import com.nominanuda.zen.obj.Stru;
 
-public class DataStructJsonEntityEncoder extends AbstractEntityEncoder<Stru> {
+public class StruJsonEntityEncoder extends AbstractEntityEncoder<Stru> {
 
-	public DataStructJsonEntityEncoder() {
+	public StruJsonEntityEncoder() {
 		super(Stru.class);
 	}
 
 	@Override
 	protected HttpEntity encodeInternal(AnnotatedType p, Stru value) {
-		byte[] payload = JsonSerializer.JSON_SERIALIZER.serialize(value);;
+		byte[] payload = value.toString().getBytes(Str.UTF8);
 		ByteArrayEntity e = new ByteArrayEntity(payload);
 		e.setContentType(HttpProtocol.CT_APPLICATION_JSON_CS_UTF8);
 		return e;

@@ -45,7 +45,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.SpringScopeFactory;
 
 import com.nominanuda.hyperapi.AnnotatedType;
-import com.nominanuda.hyperapi.DataStructJsonDecoder;
+import com.nominanuda.hyperapi.StruJsonDecoder;
 import com.nominanuda.hyperapi.EntityDecoder;
 import com.nominanuda.jsweb.host.JsHttpRequest;
 import com.nominanuda.jsweb.host.Location;
@@ -60,7 +60,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	private final static String ENTITY_ARRAY_CMD_KEY = "_entity";
 	private final static String REQUEST_EXTRA_PATTERNID = "patternId";
 	
-	protected final EntityDecoder jsonDecoder = new DataStructJsonDecoder();
+	protected final EntityDecoder jsonDecoder = new StruJsonDecoder();
 	
 	protected Sitemap sitemap;
 	protected String patternId;
