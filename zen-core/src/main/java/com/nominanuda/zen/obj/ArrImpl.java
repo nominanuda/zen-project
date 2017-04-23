@@ -75,15 +75,7 @@ public class ArrImpl implements Arr {
 	@Override
 	public Object store(int idx, Object v) {
 		Any a = Any.toStruObjModel(v);
-		int delta = idx - members.size();
-		if (delta < 0) {
-			members.set(idx, a);
-		} else {
-			for (int i = 0; i < delta; i++) { // create missing slots
-				members.add(null);
-			}
-			members.add(a);
-		}
+		members.set(idx, a);
 		return v;
 	}
 
@@ -95,14 +87,14 @@ public class ArrImpl implements Arr {
 
 	@Override
 	public Any fetchAny(int idx) {
-		Any a = idx < members.size() ? members.get(idx) : null;
+		Any a = members.get(idx);
 		return a == null ? Val.NULL : a;
 	}
 	
 
 	@Override
 	public Object del(int idx) {
-		Any removed = idx < members.size() ? members.remove(idx) : null;
+		Any removed = members.remove(idx);
 		return removed == null ? null : removed.toJavaObjModel();
 	}
 

@@ -164,7 +164,9 @@ public class JsonPath {
 	
 	private Object _get(Stru s, Object intOrStringKey) {
 		if (s.isArr()) {
-			return s.asArr().fetch((int)intOrStringKey);
+			Arr a = s.asArr();
+			int k = (int) intOrStringKey;
+			return k < a.len() ? a.fetch(k) : null;
 		} else {
 			return s.asObj().fetch((String)intOrStringKey);
 		}
@@ -177,8 +179,18 @@ public class JsonPath {
 		}
 	}
 	private void _put(Stru s, Object intOrStringKey, Object val) {
-		if(s.isArr()) {
-			s.asArr().store((int)intOrStringKey, val);
+		if (s.isArr()) {
+			Arr a = s.asArr();
+			int k = (int) intOrStringKey;
+			int d = k - a.len();
+			if (d < 0) {
+				a.store(k, val);
+			} else {
+				for (int i = 0; i < d; i++) {
+					a.add(null);
+				}
+				a.add(val);
+			}
 		} else {
 			s.asObj().store((String)intOrStringKey, val);
 		}
@@ -189,16 +201,17 @@ public class JsonPath {
 	}
 
 	public void setOrPushProperty(Stru ds, Object key, @Nullable Object value) {
-		Stru _this = ds;
-		if (_exists(_this, key)) {
-			Object cur = _get(_this, key);
+		if (_exists(ds, key)) {
+			Object cur = _get(ds, key);
 			if (JsonType.isArr(cur)) {
 				((Arr)cur).push(value);
+			} else if (ds.isArr() && cur == null) {
+				_put(ds, key, value);
 			} else {
 				Arr darr = Arr.make();
 				darr.push(cur);
 				darr.push(value);
-				_put(_this, key, darr);
+				_put(ds, key, darr);
 			}
 		} else {
 			_put(ds, key, value);
