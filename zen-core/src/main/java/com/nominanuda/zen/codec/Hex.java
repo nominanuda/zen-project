@@ -20,11 +20,11 @@ public class Hex {
 
 
 	private static final char[] ALPHABET = new char[]
-		{'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+		{'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 	/**
 	 * 
 	 * @param barr
-	 * @return the hex string uppercase
+	 * @return the hex string lowercase
 	 */
 	public static String encode(byte[] barr) {
 		char[] result = new char[barr.length * 2];
