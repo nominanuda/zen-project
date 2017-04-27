@@ -6,7 +6,7 @@ import org.mozilla.javascript.Scriptable;
 import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Arr;
 
-public class ToArrCoercer implements ObjectConvertor<Scriptable, Arr, NoException> {
+public class ToArrCoercer implements ObjectCoercer<Scriptable, Arr, NoException> {
 	private StruScriptableConvertor convertor = new StruScriptableConvertor();
 
 	public Arr apply(Scriptable x) throws NoException {

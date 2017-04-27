@@ -20,7 +20,7 @@ import org.mozilla.javascript.Scriptable;
 import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Stru;
 
-public class ToStruCoercer implements ObjectConvertor<Scriptable, Stru, NoException> {
+public class ToStruCoercer implements ObjectCoercer<Scriptable, Stru, NoException> {
 	private StruScriptableConvertor convertor = new StruScriptableConvertor();
 
 	public Stru apply(Scriptable x) throws NoException {

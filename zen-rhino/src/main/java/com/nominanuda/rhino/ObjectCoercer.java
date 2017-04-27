@@ -15,7 +15,7 @@
  */
 package com.nominanuda.rhino;
 
-public interface ObjectConvertor<X,Y,E extends Exception> {
-	Y apply(X x) throws E;
+public interface ObjectCoercer<FROM,TO,E extends Exception> {
+	TO apply(FROM x) throws E;
 	boolean canConvert(Object o);
 }

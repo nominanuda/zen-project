@@ -21,36 +21,27 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
-import com.nominanuda.rhino.ObjectConvertor;
+import com.nominanuda.rhino.ObjectCoercer;
 import com.nominanuda.zen.common.Tuple2;
 
 public class PluggableMethodArgCoercer implements MethodArgCoercer {
-	private final Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> convertors = new HashMap<Class<?>, Tuple2<ObjectConvertor<Object,Object,Exception>,Integer>>();
+	private final Map<Class<?>, Tuple2<ObjectCoercer<Object, Object, Exception>, Integer>> convertors = new HashMap<>();
 
 	public PluggableMethodArgCoercer() {}
-	public PluggableMethodArgCoercer(Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
+	public PluggableMethodArgCoercer(Map<Class<?>, Tuple2<ObjectCoercer<Object, Object, Exception>, Integer>> convertors) {
 		setConvertors(convertors);
 	}
 	
-	public int getConversionWeight(Object value, Class<?> type) {
-		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type, value);
+	public int getConversionWeight(Object valueFrom, Class<?> typeTo) {
+		Tuple2<ObjectCoercer<Object, Object, Exception>,Integer> t = findConvertor(typeTo, valueFrom);
 		return t == null ? Integer.MIN_VALUE : t.get1();
 	}
 
-	private @Nullable Tuple2<ObjectConvertor<Object, Object, Exception>, Integer> findConvertor(Class<?> type, Object value) {
-		for (Entry<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>,Integer>> e : convertors.entrySet()) {
-			if (e.getKey().equals(type) && e.getValue().get0().canConvert(value)) {
-				return e.getValue();
-			}
-		}
-		return null;
-	}
-
-	public Object coerceTypeImpl(Class<?> type, Object value) {
-		Tuple2<ObjectConvertor<Object, Object, Exception>,Integer> t = findConvertor(type, value);
+	public Object coerceTypeImpl(Class<?> typeTo, Object valueFrom) {
+		Tuple2<ObjectCoercer<Object, Object, Exception>,Integer> t = findConvertor(typeTo, valueFrom);
 		if (t != null) {
 			try {
-				return t.get0().apply(value);
+				return t.get0().apply(valueFrom);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -59,9 +50,20 @@ public class PluggableMethodArgCoercer implements MethodArgCoercer {
 		}
 	}
 
-	public void setConvertors(Map<Class<?>, Tuple2<ObjectConvertor<Object, Object, Exception>, Integer>> convertors) {
+	protected @Nullable Tuple2<ObjectCoercer<Object, Object, Exception>, Integer> findConvertor(Class<?> typeTo, Object valueFrom) {
+		for (Entry<Class<?>, Tuple2<ObjectCoercer<Object, Object, Exception>,Integer>> e : convertors.entrySet()) {
+			if (e.getKey().equals(typeTo) && e.getValue().get0().canConvert(valueFrom)) {
+				return e.getValue();
+			}
+		}
+		return null;
+	}
+	
+	
+	/* setters */
+
+	public void setConvertors(Map<Class<?>, Tuple2<ObjectCoercer<Object, Object, Exception>, Integer>> convertors) {
 		this.convertors.clear();
 		this.convertors.putAll(convertors);
 	}
-
 }

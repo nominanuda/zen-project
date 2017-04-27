@@ -61,11 +61,11 @@ public abstract class AbsRhinoTestCase {
 	
 	protected MethodArgCoercer getMethodArgCoercer() {
 		return new PluggableMethodArgCoercer(SEQ.buildMap(LinkedHashMap.class,
-			String.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new UndefinedCoercer(), 1),
-			Arr.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToArrCoercer(), 1),
-			Obj.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToObjCoercer(), 1),
-			Stru.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToStruCoercer(), 1),
-			Object.class, new Tuple2<ObjectConvertor<?, ?, ?>, Integer>(new ToStruCoercer(), 2)));
+			String.class, new Tuple2<ObjectCoercer<?, ?, ?>, Integer>(new UndefinedCoercer(), 1),
+			Arr.class, new Tuple2<ObjectCoercer<?, ?, ?>, Integer>(new ToArrCoercer(), 1),
+			Obj.class, new Tuple2<ObjectCoercer<?, ?, ?>, Integer>(new ToObjCoercer(), 1),
+			Stru.class, new Tuple2<ObjectCoercer<?, ?, ?>, Integer>(new ToStruCoercer(), 1),
+			Object.class, new Tuple2<ObjectCoercer<?, ?, ?>, Integer>(new ToStruCoercer(), 2)));
 	}
 	
 	

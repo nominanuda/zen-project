@@ -28,12 +28,13 @@
 				<property name="convertors">
 					<list>
 						<bean class="com.nominanuda.rhino.StruConvertor" />
+						<bean class="com.nominanuda.rhino.ObjWrapperConvertor" />
 					</list>
 				</property>
 			</bean>
 		</property>
 		<property name="methodArgCoercer">
-			<bean class="org.mozilla.javascript.PluggableMethodArgCoercer">
+			<bean class="org.mozilla.javascript.PluggableWrapMethodArgCoercer">
 				<property name="convertors">
 					<map>
 						<entry key="java.lang.String">
