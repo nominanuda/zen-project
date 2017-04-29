@@ -79,9 +79,9 @@ class WrapperInvocationHandler implements InvocationHandler {
 			if ("unwrap".equals(name)) {
 				return o;
 			} else if ("as".equals(name)) {
-				Class<?> enhancement = (Class<?>) args[1];
-				InvocationHandler eh = new EnhancedInvocationHandler(enhancement, role, proxy);
-				return Proxy.newProxyInstance(enhancement.getClassLoader(), new Class[] { (Class<?>) args[0] }, eh);
+				Object enhancementMethods = args[1];
+				InvocationHandler eh = new EnhancedInvocationHandler(enhancementMethods, role, proxy);
+				return Proxy.newProxyInstance(enhancementMethods.getClass().getClassLoader(), new Class[] { (Class<?>) args[0] }, eh);
 			} else if (roleMethods.contains(method)) {
 				Class<?> type = method.getReturnType();
 				int argsL = (args == null ? 0 : args.length);

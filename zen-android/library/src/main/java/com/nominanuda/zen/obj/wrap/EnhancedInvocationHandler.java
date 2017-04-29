@@ -8,13 +8,13 @@ import java.lang.reflect.Method;
  */
 
 public class EnhancedInvocationHandler implements InvocationHandler {
-	private final Class<?> mEnhancement;
 	private final Object mOriginalProxy, mEnhancementProxy;
+	private final Class<?> mEnhancement;
 
-	EnhancedInvocationHandler(Class<?> enhancement, Class<?> originalRole, Object originalProxy) throws Exception {
-		mEnhancement = enhancement;
+	EnhancedInvocationHandler(Object enhancementProxy, Class<?> originalRole, Object originalProxy) throws Exception {
 		mOriginalProxy = originalProxy;
-		mEnhancementProxy = mEnhancement.getConstructor(originalRole).newInstance(new Object[] { originalProxy });
+		mEnhancementProxy = enhancementProxy;
+		mEnhancement = enhancementProxy.getClass();
 	}
 
 	@Override
