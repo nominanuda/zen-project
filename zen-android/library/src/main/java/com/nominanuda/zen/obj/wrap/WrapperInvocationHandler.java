@@ -31,6 +31,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,7 +48,8 @@ import static java.util.Arrays.asList;
 
 class WrapperInvocationHandler implements InvocationHandler {
 	private final JSONObject o;
-	private final Set<Method> roleMethods;
+	private final Class<?> role;
+	private final Set<Method> roleMethods = new HashSet<Method>();
 	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
 
 	static {
@@ -60,8 +62,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 	}
 
 	public WrapperInvocationHandler(JSONObject o, Class<?> role) {
+		this.role = role;
 		this.o = o != null ? o : new Obj();
-		roleMethods = new HashSet<Method>();
 		for (Method m : role.getMethods()) {
 			if (!nonRoleMethods.contains(m)) {
 				roleMethods.add(m);
@@ -76,6 +78,10 @@ class WrapperInvocationHandler implements InvocationHandler {
 		try {
 			if ("unwrap".equals(name)) {
 				return o;
+			} else if ("as".equals(name)) {
+				Class<?> enhancement = (Class<?>) args[1];
+				InvocationHandler eh = new EnhancedInvocationHandler(enhancement, role, proxy);
+				return Proxy.newProxyInstance(enhancement.getClassLoader(), new Class[] { (Class<?>) args[0] }, eh);
 			} else if (roleMethods.contains(method)) {
 				Class<?> type = method.getReturnType();
 				int argsL = (args == null ? 0 : args.length);

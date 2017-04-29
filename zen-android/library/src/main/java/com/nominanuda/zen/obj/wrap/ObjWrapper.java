@@ -8,4 +8,7 @@ import org.json.JSONObject;
 
 public interface ObjWrapper {
 	JSONObject unwrap();
+
+	/* android specific */
+	<ITYPE, IENHANCED extends ITYPE, METHODS extends ITYPE> IENHANCED as(Class<IENHANCED> enhanced, Class<METHODS> enhancement);
 }
