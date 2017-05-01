@@ -36,6 +36,14 @@ public class Obj extends JSONObject implements Stru {
 		}
 		return null;
 	}
+	public static Obj make(String json) {
+		try {
+			return new Obj(json);
+		} catch (JSONException e) {
+			Check.illegalargument.fail();
+		}
+		return null;
+	}
 
 	public Obj() {
 		super();
