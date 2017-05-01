@@ -13,6 +13,9 @@ import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.http.HttpAppException;
 import com.nominanuda.zen.common.Util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +26,7 @@ import java.lang.reflect.Proxy;
  */
 
 public class AsyncCall<API, T> {
+	protected final static Logger LOG = LoggerFactory.getLogger(AsyncCall.class);
 
 	private static class AsyncCallLoader<API, T> extends AsyncTaskLoader<Pair<T, Exception>> {
 		private final API mApi;
@@ -167,7 +171,7 @@ public class AsyncCall<API, T> {
 
 	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
 		this(fragment, api, callFnc, resultFnc, e -> {
-			// TODO default logging
+			LOG.error("errorFnc", e);
 		});
 	}
 }

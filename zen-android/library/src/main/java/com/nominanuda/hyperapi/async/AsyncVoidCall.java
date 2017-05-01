@@ -16,9 +16,13 @@ public class AsyncVoidCall<API> extends AsyncCall<API, Boolean> {
 		}, resultFnc, errorFnc);
 	}
 	public AsyncVoidCall(Activity activity, API api, Util.Consumer<API> callFnc, Util.Consumer<Boolean> resultFnc) {
-		this(activity, api, callFnc, resultFnc, null);
+		this(activity, api, callFnc, resultFnc, e -> {
+			LOG.error("errorFnc", e);
+		});
 	}
 	public AsyncVoidCall(Activity activity, API api, Util.Consumer<API> callFnc) {
-		this(activity, api, callFnc, null);
+		this(activity, api, callFnc, result -> {
+			LOG.info("resultFnc {}", result ? "ok" : "ko");
+		});
 	}
 }
