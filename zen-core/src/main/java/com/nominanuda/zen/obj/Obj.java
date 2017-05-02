@@ -342,6 +342,9 @@ public interface Obj extends Stru, Iterable<Entry<String, Object>>, Map<String,O
 	default Boolean getBoolean(String k) {
 		return (Boolean)fetch(k);
 	}
+	default boolean getStrictBoolean(String k) {
+		return Boolean.valueOf(getBoolean(k));
+	}
 
 	public static Obj parse(InputStream is) {
 		return (Obj)JSON_DESERIALIZER.deserialize(is);
