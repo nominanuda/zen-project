@@ -17,17 +17,17 @@ package com.nominanuda.hyperapi;
 
 import java.io.IOException;
 
-import org.apache.http.HttpEntity;
+import okhttp3.ResponseBody;
 
 public class VoidEntityDecoder implements EntityDecoder {
 
 	@Override
-	public boolean supports(AnnotatedType p, HttpEntity entity) {
+	public boolean supports(AnnotatedType p, ResponseBody entity) {
 		return Void.TYPE.equals(p.getType()) || Void.class.equals(p.getType());
 	}
 
 	@Override
-	public Object decode(AnnotatedType p, HttpEntity entity) throws IOException {
+	public Object decode(AnnotatedType p, ResponseBody entity) throws IOException {
 		return null;
 	}
 }
