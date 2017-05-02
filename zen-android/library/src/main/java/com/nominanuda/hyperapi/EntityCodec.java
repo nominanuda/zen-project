@@ -40,7 +40,8 @@ public class EntityCodec {
 		(EntityDecoder)new JsonAnyValueEntityDecoder(),
 		(EntityDecoder)new ByteArrayEntityDecoder(),
 		(EntityDecoder)new InputStreamEntityDecoder(),
-		(EntityDecoder)new JsonAnyValueEntityDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE) // fallback for buggy server compat
+		(EntityDecoder)new JsonAnyValueEntityDecoder(AbstractEntityDecoder.ANY_CONTENT_TYPE), // fallback for buggy server compat
+		(EntityDecoder)new VoidEntityDecoder()
 	);
 
 	public RequestBody encode(Object arg, AnnotatedType ap) {
