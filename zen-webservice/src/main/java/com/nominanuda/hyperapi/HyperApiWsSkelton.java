@@ -97,13 +97,18 @@ public class HyperApiWsSkelton implements WebService {
 				if (uriParams != null) {
 					if (supportsHttpMethod(m, request.getRequestLine().getMethod())) {
 						Object[] args = createArgs(uriParams, new HttpCoreHelper().getEntity(request), api, m);
-						Object result = m.invoke(service, args);
+						Object result = invokeMethod(m, args);
 						return new Tuple2<Object, AnnotatedType>(result, new AnnotatedType(m.getReturnType(), m.getAnnotations()));
 					}
 				}
 			}
 		}
 		throw new IllegalArgumentException("could not find any suitable method to call " + "for api request: " + apiRequestUri);
+	}
+
+	protected Object invokeMethod(Method m, Object[] args) throws IllegalAccessException, InvocationTargetException {
+		Object result = m.invoke(service, args);
+		return result;
 	}
 	
 	private boolean supportsHttpMethod(Method method, String httpMethod) {
