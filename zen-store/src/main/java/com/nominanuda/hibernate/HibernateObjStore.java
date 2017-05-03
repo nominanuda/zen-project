@@ -24,7 +24,7 @@ import org.hibernate.query.Query;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.zen.obj.Obj;
 
-public class HibernateDataObjectStore extends AbstractHibernateStructStore implements HttpProtocol {
+public class HibernateObjStore extends AbstractHibernateStructStore implements HttpProtocol {
 //	protected Logger log = LoggerFactory.getLogger(HibernateDataObjectStore.class);
 
 	public Obj get(String type, String id) throws Exception {

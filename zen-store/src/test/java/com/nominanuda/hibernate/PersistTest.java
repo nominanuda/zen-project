@@ -54,7 +54,7 @@ public class PersistTest {
 		cfg.setResource("com/nominanuda/hibernate/sample.hbm.xml");
 		
 //TODO		new SchemaExport(cfg.getConfiguration()).create(true, true);
-		HibernateDataObjectStore hdos = new HibernateDataObjectStore();
+		HibernateObjStore hdos = new HibernateObjStore();
 		hdos.setSessionFactory(cfg.getSessionFactory());
 		DataView<Map<String,? extends Object>> dataView = new DataView<Map<String,? extends Object>>();
 		dataView.setPropertyReader(new MapPropertyReader());

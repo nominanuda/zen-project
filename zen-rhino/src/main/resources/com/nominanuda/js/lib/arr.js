@@ -38,6 +38,23 @@ function filterEmpties(arr, fnc) {
 
 
 exports = {
+	build: function(from, to, fnc) {
+		var a = [];
+		if (fnc) { // two params
+			for (var i = from; i < to; i++) {
+				a.push(fnc(i));
+			}
+		} else {
+			if (to === undefined) { // single param
+				from = 0;
+				to = from;
+			}
+			for (var i = from; i < to; i++) {
+				a.push(i);
+			}
+		}
+		return a;
+	},
 	equals: function(a1, a2) {
 		a1 = CAST_toArray(a1);
 		a2 = CAST_toArray(a2);

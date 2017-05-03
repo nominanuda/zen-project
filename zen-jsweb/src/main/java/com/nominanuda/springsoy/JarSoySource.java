@@ -22,14 +22,13 @@ import com.nominanuda.zen.common.Tuple2;
 
 
 public class JarSoySource extends SoySource {
-	private final List<String> templatesLocations;
+	private final List<String> templatesLocations = new ArrayList<>();
 	
 	
 	public JarSoySource(String... baseTemplatesLocations) {
-		this.templatesLocations = Arrays.asList(baseTemplatesLocations);
+		setTemplatesLocations(baseTemplatesLocations);
 	}
 	public JarSoySource() {
-		this.templatesLocations = new ArrayList<>();
 	}
 	
 	
