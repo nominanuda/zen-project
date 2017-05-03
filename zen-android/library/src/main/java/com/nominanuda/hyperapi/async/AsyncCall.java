@@ -28,7 +28,7 @@ import java.lang.reflect.Proxy;
 public class AsyncCall<API, T> {
 	protected final static Logger LOG = LoggerFactory.getLogger(AsyncCall.class);
 
-	private static class AsyncCallLoader<API, T> extends AsyncTaskLoader<Pair<T, Exception>> {
+	private static class AsyncCallLoader<API, RESULT> extends AsyncTaskLoader<Pair<RESULT, Exception>> {
 		private final API mApi;
 		private final Method mMethod;
 		private final Object[] mMethodArgs;
@@ -62,25 +62,25 @@ public class AsyncCall<API, T> {
 		}
 
 		@Override
-		public Pair<T, Exception> loadInBackground() {
+		public Pair<RESULT, Exception> loadInBackground() {
 			try {
-				T data = (T) mMethod.invoke(mApi, mMethodArgs);
-				return new Pair<T, Exception>(data, null);
+				RESULT data = (RESULT) mMethod.invoke(mApi, mMethodArgs);
+				return new Pair<RESULT, Exception>(data, null);
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 				Throwable cause = e.getCause();
-				return new Pair<T, Exception>(null, (cause != null && cause instanceof HttpAppException)
+				return new Pair<RESULT, Exception>(null, (cause != null && cause instanceof HttpAppException)
 						? (HttpAppException) cause
 						: new Http500Exception(e)
 				);
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new Pair<T, Exception>(null, e);
+				return new Pair<RESULT, Exception>(null, e);
 			}
 		}
 
 		@Override
-		public void deliverResult(Pair<T, Exception> result) {
+		public void deliverResult(Pair<RESULT, Exception> result) {
 			if (isStarted()) {
 				super.deliverResult(result);
 			}
