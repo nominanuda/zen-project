@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -205,6 +206,21 @@ public enum Check {
 		}
 		return false;
 	}
+
+	public String matches(String s, Pattern regex) {
+		if(! regex.matcher(s).matches()) {
+			fail();
+		}
+		return s;
+	}
+
+	public String matches(String s, Pattern regex, String reason) {
+		if(! regex.matcher(s).matches()) {
+			fail(reason);
+		}
+		return s;
+	}
+
 	public <T extends Number> T assertNotNegative(T val) {
 		if(val.doubleValue() < 0) {
 			fail();
