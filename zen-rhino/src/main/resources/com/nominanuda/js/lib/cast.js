@@ -15,6 +15,31 @@ function toFloat(o, v) {
 		if (!isNaN(f)) {
 			return f;
 		}
+	} else if (o == 0) {
+		return 0.0;
+	}
+	return v;
+}
+
+function toInt(o, v) {
+	if (o) {
+		if (o.splice) { // array
+			return o.map(function(o) {
+				return toInt(o, v);
+			});
+		}
+		if (typeof o == 'object') {
+			for (var p in o) {
+				o[p] = toInt(o[p], v);
+			}
+			return o;
+		}
+		var i = parseInt(o);
+		if (!isNaN(i)) {
+			return i;
+		}
+	} else if (o == 0) {
+		return 0;
 	}
 	return v;
 }
@@ -63,7 +88,8 @@ exports = {
 		return fnc ? arr.map(fnc) : arr;
 	},
 	toString: function(o, j) {
-		return (o ? o.splice ? o.join(j||'') : o : '');
+		return (o ? o.splice ? o.join(j||'') : o.toString() : '');
 	},
-	toFloat: toFloat
+	toFloat: toFloat,
+	toInt: toInt
 };
