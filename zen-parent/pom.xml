@@ -40,7 +40,7 @@
 		<zen.version>1.3.0-SNAPSHOT</zen.version>
 		<spring.version>4.3.5.RELEASE</spring.version>
 		<jetty.version>9.3.14.v20161028</jetty.version>
-		<luceneandsolr.version>6.3.0</luceneandsolr.version>
+		<luceneandsolr.version>6.5.1</luceneandsolr.version>
 		<httpcore.version>4.4.5</httpcore.version>
 		<httpclient.version>4.5.2</httpclient.version>
 		<httpasyncclient.version>4.1.2</httpasyncclient.version>
