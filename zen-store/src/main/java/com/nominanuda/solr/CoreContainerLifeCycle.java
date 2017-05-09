@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrResourceLoader;
+import org.apache.solr.core.SolrXmlConfig;
 
 public class CoreContainerLifeCycle {
 	private Map<String, SolrCore> coresByDataDir = new HashMap<String, SolrCore>();
@@ -29,8 +30,9 @@ public class CoreContainerLifeCycle {
 		String solrHome = illegalargument.assertNotNull((String)
 			props.remove("solr.solr.home"), "missing solr.solr.home");
 		SolrResourceLoader loader = new SolrResourceLoader(Paths.get(solrHome), getClass().getClassLoader(), props);
-//		ConfigSolr config = ConfigSolr.fromSolrHome(loader, loader.getInstanceDir());
-		CoreContainer cores = new CoreContainer(loader/*, config*/);
+
+		CoreContainer cores = new CoreContainer(
+			SolrXmlConfig.fromSolrHome(loader, loader.getInstancePath()), new Properties(), /*asyncLoad*/false);
 		cores.load();
 		//no exception maybe sorlrhome already used but different data dirs
 		List<SolrEndpoint> l = coreContainersBySolrHome.get(solrHome);
