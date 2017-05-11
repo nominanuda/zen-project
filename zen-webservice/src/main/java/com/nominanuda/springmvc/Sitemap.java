@@ -22,10 +22,7 @@ public class Sitemap {
 	
 	public String getUrl(String id, Obj o) {
 		ObjURISpec s = specs.get(id);
-		if (null != s) {
-			return s.template(o != null ? o : Obj.make());
-		}
-		return null;
+		return s != null ? s.template(o != null ? o : Obj.make()) : null;
 	}
 	
 	
