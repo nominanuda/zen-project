@@ -31,6 +31,8 @@ import com.nominanuda.web.http.HttpProtocol;
 
 public class HttpEntityView implements View, HttpProtocol {
 	private final HttpEntity entity;
+	private boolean assumeServletContainerEnsuresContentLength = false;
+
 	public HttpEntityView(HttpEntity entity) {
 		this.entity = entity;
 	}
@@ -44,9 +46,23 @@ public class HttpEntityView implements View, HttpProtocol {
 			HttpServletResponse response) throws Exception {
 		response.setContentType(getContentType());
 		InputStream is = entity.getContent();
-		byte[] b = IO.readAndClose(is);
-		response.setContentLength(b.length);
-		response.getOutputStream().write(b);
+		long cl = entity.getContentLength();
+		if(cl < 0) {
+			if(assumeServletContainerEnsuresContentLength) {
+				IO.pipeAndClose(is, response.getOutputStream());
+			} else {
+				byte[] b = IO.readAndClose(is);
+				response.setContentLength(b.length);
+				response.getOutputStream().write(b);
+			}
+		} else {
+			response.setContentLength((int)cl);
+			IO.pipeAndClose(is, response.getOutputStream());
+		}
+	}
+
+	public void setAssumeServletContainerEnsuresContentLength(boolean assumeServletContainerEnsuresContentLength) {
+		this.assumeServletContainerEnsuresContentLength = assumeServletContainerEnsuresContentLength;
 	}
 
 }
