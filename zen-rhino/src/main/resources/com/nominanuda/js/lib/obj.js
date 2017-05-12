@@ -24,6 +24,13 @@ function map(obj, fnc) {
 	return obj;
 }
 
+function arr(obj, fnc) {
+	!obj && (obj = {});
+	return Object.keys(obj).map(function(key) {
+		return fnc(key, obj[key]);
+	});
+}
+
 function _eval(obj) { // with "_" to keep eval() visible
 	cycle(obj, function(k, v) {
 		delete obj[k];
@@ -166,6 +173,7 @@ exports = {
 	keys: keys,
 	vals: vals,
 	map: map,
+	arr: arr,
 	eval: _eval,
 	cycle: cycle,
 	filter: filter,
