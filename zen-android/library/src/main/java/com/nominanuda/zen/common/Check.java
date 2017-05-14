@@ -3,6 +3,8 @@ package com.nominanuda.zen.common;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 public enum Check {
 	nullpointer(NullPointerException.class),
 	illegalstate(IllegalStateException.class),
@@ -191,6 +193,19 @@ public enum Check {
 			}
 		}
 		return null;
+	}
+
+	public static <T, R> R ifNotNullApplyElse(@Nullable T o, Util.Function<T, R> fnc, R defaultVal) {
+		return o == null ? defaultVal : fnc.apply(o);
+	}
+
+	@Nullable
+	public static <T, R> R ifNotNullApply(@Nullable T o, Util.Function<T, R> fnc) {
+		return ifNotNullApplyElse(o, fnc, null);
+	}
+
+	public static <T> void ifNotNullAccept(@Nullable T o, Util.Consumer<T> c) {
+		if (o != null) c.accept(o);
 	}
 
 	@SafeVarargs
