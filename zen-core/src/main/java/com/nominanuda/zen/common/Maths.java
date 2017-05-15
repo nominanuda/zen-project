@@ -16,6 +16,7 @@
 package com.nominanuda.zen.common;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -44,9 +45,18 @@ public class Maths {
 	}
 
 	public byte[] getBytes(UUID uuid) {
-		byte[] b1 = getBytes(uuid.getMostSignificantBits());
-		byte[] b2 = getBytes(uuid.getLeastSignificantBits());
-		return concat(b1, b2);
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+		return bb.array();
+	}
+
+	public UUID getUUID(byte[] bytes) {
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+		long high = bb.getLong();
+		long low = bb.getLong();
+		UUID uuid = new UUID(high, low);
+		return uuid;
 	}
 
 	private byte[] concat(byte[]...bs) {
