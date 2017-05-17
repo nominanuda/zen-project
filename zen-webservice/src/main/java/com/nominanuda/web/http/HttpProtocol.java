@@ -58,6 +58,7 @@ public interface HttpProtocol {
 	String HDR_CONTENT_LENGTH = "Content-Length";
 	String HDR_AUTHORIZATION = "Authorization";
 	String HDR_WWW_AUTHENTICATE = "WWW-Authenticate";
+	String HDR_LAST_MODIFIED = "Last-Modified";
 	String HDR_CONNECTION = "Connection";
 	String HDR_CLOSE = "close";
 	String HDR_KEEP_ALIVE = "keep-alive";

@@ -15,6 +15,7 @@
  */
 package com.nominanuda.web.mvc;
 
+import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
 import static com.nominanuda.zen.oio.OioUtils.IO;
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -23,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -30,13 +34,12 @@ import org.apache.http.StatusLine;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.http.MimeHelper;
 
 public abstract class URLStreamer implements WebService, HttpProtocol {
-	private static final HttpCoreHelper httpCoreHelper = new HttpCoreHelper();
 	private static final MimeHelper mimeHelper = new MimeHelper();
+	private static final DateTimeFormatter HDF_DTF = DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC);
 	private String defaultContentType = CT_APPLICATION_OCTET_STREAM;
 
 	public HttpResponse handle(HttpRequest request) throws IOException {
@@ -44,32 +47,34 @@ public abstract class URLStreamer implements WebService, HttpProtocol {
 		URLConnection conn = url.openConnection();
 		conn.connect();
 		int len = conn.getContentLength();
+		long tstamp = conn.getLastModified();
 		InputStream is = conn.getInputStream();
 		String ce = conn.getContentEncoding();
 		String ct = determineContentType(url, conn);
-		if(len < 0) {
+		if (len < 0) {
 			byte[] content = IO.readAndClose(is);
 			is = new ByteArrayInputStream(content);
 			len = content.length;	
 		}
-		StatusLine statusline = httpCoreHelper.statusLine(SC_OK);
+		StatusLine statusline = HTTP.statusLine(SC_OK);
 		HttpResponse resp = new BasicHttpResponse(statusline);
 		resp.setEntity(new InputStreamEntity(is, len));
-		httpCoreHelper.setContentType(resp, ct);
-		httpCoreHelper.setContentLength(resp, len);//TODO not needed ??
-		if(ce != null) {
-			httpCoreHelper.setContentEncoding(resp, ce);
+		HTTP.setContentType(resp, ct);
+		HTTP.setContentLength(resp, len);//TODO not needed ??
+		if (ce != null) {
+			HTTP.setContentEncoding(resp, ce);
 		}
+		resp.setHeader(HttpProtocol.HDR_LAST_MODIFIED, HDF_DTF.format(Instant.ofEpochMilli(tstamp)));
 		return resp;
 	}
 
 	private String determineContentType(URL url, URLConnection conn) {
 		String ct = conn.getContentType();
-		if(ct == null || "content/unknown".equals(ct)) {
+		if (ct == null || "content/unknown".equals(ct)) {
 			ct = mimeHelper.guessContentTypeFromPath(url.toString());
 			//TODO add default charset if contenttype is textual
 		}
-		if(ct == null) {
+		if (ct == null) {
 			ct = defaultContentType;
 		}
 		return ct;
