@@ -317,8 +317,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 			return arr;
 		} else if (v instanceof Map) {
 			Obj obj = Obj.make();
-			for (Entry<String, Object> entry : ((Map<String, Object>)v).entrySet()) {
-				obj.store(entry.getKey(), toDataObjectValue(entry.getValue()));
+			for (Entry<Object, Object> entry : ((Map<Object, Object>)v).entrySet()) {
+				obj.store(entry.getKey().toString(), toDataObjectValue(entry.getValue()));
 			}
 			return obj;
 		} else if (v instanceof ObjWrapper) { // sub object
