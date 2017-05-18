@@ -72,7 +72,7 @@ UnquotedString	:
 	;
 
 fragment ESCAPEDCHAR
-    	:   '\\' (UCODEPOINT |'b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\'|'\\/')
+    	:   '\\' (UCODEPOINT |'b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\'|'\\/')
     	;
 
 fragment UCODEPOINT
