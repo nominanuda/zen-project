@@ -47,6 +47,10 @@ import com.nominanuda.zen.stereotype.Copyable;
 import com.nominanuda.zen.stereotype.Value;
 
 class WrapperInvocationHandler implements InvocationHandler {
+	private final static Function<String, String> stringToString = s -> s;
+	private final static Function<String, Integer> stringToInt = s -> Integer.parseInt(s);
+	private final static Function<String, Long> stringToLong = s -> Long.parseLong(s);
+	
 	private final Obj o;
 	private final Set<Method> roleMethods;
 	private final Set<Method> defaultMethods;
@@ -137,10 +141,17 @@ class WrapperInvocationHandler implements InvocationHandler {
 							if (type.isInterface()) {
 								type = LinkedHashMap.class;
 							}
-							Map<String, Object> map = (Map<String, Object>) type.newInstance();
+							Map<Object, Object> map = (Map<Object, Object>) type.newInstance();
+							Function<String, ?> keyConvertor = stringToString;
 							Class<?> itemType = null;
 							try {
 								Tuple2<Class<?>, Class<?>> keyValTypes = getMapReturnComponentTypes(method);
+								Class<?> keyType = keyValTypes.get0();
+								if (Integer.class.equals(keyType)) {
+									keyConvertor = stringToInt;
+								} else if (Long.class.equals(keyType)) {
+									keyConvertor = stringToLong;
+								}
 								itemType = keyValTypes.get1();
 							} catch(Exception e) {
 								// dynamic mode on
@@ -148,12 +159,12 @@ class WrapperInvocationHandler implements InvocationHandler {
 							for (String key : obj.keySet()) {
 								Object val = obj.get(key);
 								if (itemType == null && val == null) {
-									map.put(key, null);
+									map.put(keyConvertor.apply(key), null);
 								} else {
-									if(itemType == null) {
+									if (itemType == null) {
 										itemType = val.getClass();
 									}
-									map.put(key, fromObjValue(val, itemType));
+									map.put(keyConvertor.apply(key), fromObjValue(val, itemType));
 								}
 							}
 							return map;
