@@ -93,7 +93,7 @@ exports = {
 			return item;
 		});
 		arr = CAST_toArray(arr);
-		if (LIB_CAST.isFunction(propOrFnc)) {
+		if (typeof propOrFnc == 'function') {
 			arr.forEach(function(item) {
 				map[propOrFnc(item)] = transFnc(item);
 			});
