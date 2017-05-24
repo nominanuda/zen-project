@@ -162,7 +162,7 @@ class AnyNioDeserializer implements Subscriber<ByteBuffer>, Factory<Any> {
 					break;
 				case 'u':
 					for(int j = 0; j < 4; j++) {
-						illegalargument.assertTrue(incr() >= '/' && cur <= ':', "illegal unicode digit "+cur+" at position "+pos);
+						illegalargument.assertTrue(incr() > '/' && cur < ':' || cur >= 'a' && cur <= 'f', "illegal unicode digit "+cur+" at position "+pos);
 					}
 					backSlashSeen = false;
 					break;
