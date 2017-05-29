@@ -96,7 +96,10 @@ public class JarSoySource extends SoySource {
 		List<Tuple2<String, String>> result = new LinkedList<Tuple2<String, String>>();
 		String[] arr = jarSrcDir.substring("file:".length()).split("!");
 		String jarPath = arr[0];
-		String dirPathInJar = arr[1].substring(1) + "/";
+		String dirPathInJar = arr[1].substring(1);
+		if (!dirPathInJar.endsWith("/")) { // happens on some machines
+			dirPathInJar += "/";
+		}
 		//int dirPathInJarLen = dirPathInJar.length();
 		File f = new File(jarPath);
 		JarFile jf = new JarFile(f);
