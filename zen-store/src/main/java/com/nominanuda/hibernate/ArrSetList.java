@@ -1,13 +1,22 @@
 package com.nominanuda.hibernate;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Spliterator;
 
+import org.hibernate.HibernateException;
+import org.hibernate.collection.spi.PersistentCollection;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.persister.collection.CollectionPersister;
+import org.hibernate.usertype.UserCollectionType;
+
+import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.ArrImpl;
 
 //TODO avoid duplicates
-public class DataArraySetList extends ArrImpl implements Set<Object> {
+public class ArrSetList extends ArrImpl implements Set<Object>, UserCollectionType {
 
 	@Override
 	public Spliterator<Object> spliterator() {
@@ -72,6 +81,48 @@ public class DataArraySetList extends ArrImpl implements Set<Object> {
 	@Override
 	public void clear() {
 		super.clear();
+	}
+
+	@Override
+	public PersistentCollection instantiate(SharedSessionContractImplementor session, CollectionPersister persister)
+			throws HibernateException {
+		return new HibTArr(session);
+	}
+
+	@Override
+	public PersistentCollection wrap(SharedSessionContractImplementor session, Object collection) {
+		HibTArr htarr = new HibTArr(session);
+		htarr.addAll((Collection)collection);
+		return htarr;
+	}
+
+	@Override
+	public Iterator<?> getElementsIterator(Object collection) {
+		return ((Iterable)collection).iterator();	}
+
+	@Override
+	public boolean contains(Object collection, Object entity) {
+		return ((HibTArr)collection).contains(entity);
+	}
+
+	@Override
+	public Object indexOf(Object collection, Object entity) {
+		return ((HibTArr)collection).indexOf(entity);
+	}
+
+	@Override
+	public Object replaceElements(Object original, Object target, CollectionPersister persister, Object owner,
+			Map copyCache, SharedSessionContractImplementor session) throws HibernateException {
+		Collection originalColl = (Collection)original;
+		Collection targetColl = (Collection)target;
+		targetColl.clear();
+		targetColl.addAll(originalColl);
+		return targetColl;
+	}
+
+	@Override
+	public Object instantiate(int anticipatedSize) {
+		return Arr.make();//new HibTArr();
 	}
 
 
