@@ -50,6 +50,9 @@ public class HibernateConfiguration {
 	private boolean dynamic = true;
 	private boolean c3p0 = false;
 
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
+	}
 	public void setC3p0(boolean c3p0) {
 		this.c3p0 = c3p0;
 	}

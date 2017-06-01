@@ -101,7 +101,7 @@ public interface TArr<T> extends Stru, List<T> {
 	}
 
 	@Override
-	Arr reset();
+	TArr<T> reset();
 
 
 	@Override
