@@ -29,8 +29,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -50,7 +51,7 @@ public class SimpleJsonTest {
 	private void parse(Reader in)
 			throws UncheckedIOException {
 		try {
-			ANTLRInputStream src = new ANTLRInputStream(in);
+			CharStream src = CharStreams.fromReader(in);
 			JclLexer lexer = new JclLexer(src);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 //			for(Token t : tokens.getTokens()) {

@@ -15,16 +15,18 @@
  */
 package com.nominanuda.zen.obj;
 
-import static org.junit.Assert.*;
+import static com.nominanuda.zen.obj.SimpleJixParser.obj;
+import static com.nominanuda.zen.obj.SimpleJixParser.parse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 
 import org.junit.Test;
-
-import com.nominanuda.zen.obj.Obj;
-
-import static com.nominanuda.zen.obj.SimpleJixParser.*;
-import static com.nominanuda.zen.obj.Stru.*;
 
 public class ObjBasicsTest {
 

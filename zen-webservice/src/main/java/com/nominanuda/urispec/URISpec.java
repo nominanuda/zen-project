@@ -17,8 +17,9 @@ package com.nominanuda.urispec;
 
 import java.io.StringReader;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -32,7 +33,7 @@ public class URISpec<T> {
 	public URISpec(String spec, StringModelAdapter<?> ma) {
 		try {
 			canonicalSpec = spec.replace("+", "%20");
-			ANTLRInputStream src = new ANTLRInputStream(new StringReader(canonicalSpec));
+			CharStream src = CharStreams.fromReader(new StringReader(canonicalSpec));
 			UriSpecLexer lexer = new UriSpecLexer(src);
 			CommonTokenStream dd = new CommonTokenStream(lexer);
 			UriSpecParser parser = new UriSpecParser(dd);

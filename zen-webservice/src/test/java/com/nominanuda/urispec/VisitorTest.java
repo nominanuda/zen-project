@@ -18,7 +18,8 @@ package com.nominanuda.urispec;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -32,7 +33,7 @@ public class VisitorTest {
 		//fail("Not yet implemented");
 	}
 	private void parse(String uriPattern) throws IOException {
-		ANTLRInputStream src = new ANTLRInputStream(new StringReader(uriPattern));
+		CharStream src = CharStreams.fromReader(new StringReader(uriPattern));
 		UriSpecLexer lexer = new UriSpecLexer(src);
 		CommonTokenStream dd = new CommonTokenStream(lexer);
 		UriSpecParser parser = new UriSpecParser(dd);

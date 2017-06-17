@@ -26,11 +26,10 @@ import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonPath;
+import com.nominanuda.zen.obj.JsonPath.SafeConvertor;
 import com.nominanuda.zen.obj.JsonSerializer;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
-import com.nominanuda.zen.obj.Stru;
-import com.nominanuda.zen.obj.JsonPath.SafeConvertor;
 
 public class ObjURISpec extends URISpec<Obj> {
 	private static final JsonSerializer jsonSerializer = new JsonSerializer();

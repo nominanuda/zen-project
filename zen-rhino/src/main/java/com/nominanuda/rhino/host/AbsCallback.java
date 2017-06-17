@@ -6,6 +6,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 abstract class AbsCallback<RET> extends ScriptableObject implements Callable {
+	private static final long serialVersionUID = 18089380274748L;
+
 	abstract RET call(Object... args);
 	
 	@Override

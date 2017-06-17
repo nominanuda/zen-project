@@ -6,12 +6,10 @@ import java.io.File;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.eclipse.jetty.util.IO;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.nominanuda.zen.maven.FailSafeTest;
-import com.nominanuda.zen.oio.OioUtils;
 
 
 @Category(FailSafeTest.class)

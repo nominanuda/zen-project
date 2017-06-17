@@ -76,7 +76,7 @@ public class HibernateQuerableStore extends AbstractHibernateStructStore {
 			for(String k : params.keySet()) {
 				bind(q, k, params.get(k));
 			}
-			Object o = q.uniqueResult();
+			Object o = q.getSingleResult();
 			if(o == null) {
 				return null;
 			} else if(o instanceof Map<?,?>) {

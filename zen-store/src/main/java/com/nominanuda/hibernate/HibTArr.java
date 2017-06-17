@@ -9,6 +9,7 @@ import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.TArr;
 
+@SuppressWarnings("rawtypes")
 public class HibTArr extends PersistentList implements TArr {
 	private static final long serialVersionUID = 6669958680391933385L;
 

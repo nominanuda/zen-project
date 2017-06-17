@@ -27,17 +27,15 @@ import java.io.UncheckedIOException;
 
 import javax.annotation.Nullable;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import com.nominanuda.zen.obj.SimpleJsonLexer;
-import com.nominanuda.zen.obj.SimpleJsonListener;
-import com.nominanuda.zen.obj.SimpleJsonParser;
 import com.nominanuda.zen.obj.SimpleJsonParser.ArrayContext;
 import com.nominanuda.zen.obj.SimpleJsonParser.BoolContext;
 import com.nominanuda.zen.obj.SimpleJsonParser.ElementsContext;
@@ -89,7 +87,7 @@ public class SimpleJixParser implements SimpleJsonListener {
 	private void parseInternal()
 			throws UncheckedIOException {
 		try {
-			ANTLRInputStream src = new ANTLRInputStream(in);
+			CharStream src = CharStreams.fromReader(in);
 			SimpleJsonLexer lexer = new SimpleJsonLexer(src);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			SimpleJsonParser parser = new SimpleJsonParser(tokens);

@@ -24,7 +24,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -37,7 +36,6 @@ import com.nominanuda.hyperapi.TestHyperApi.Moo;
 import com.nominanuda.web.http.BaseHttpTest;
 import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.zen.obj.Obj;
-import com.nominanuda.zen.oio.OioUtils;
 
 
 public class HttpClientHyperApiFactoryTest extends BaseHttpTest {

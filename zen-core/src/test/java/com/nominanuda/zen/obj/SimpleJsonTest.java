@@ -15,16 +15,11 @@
  */
 package com.nominanuda.zen.obj;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.junit.Test;
-
-import com.nominanuda.zen.obj.JixEvent;
-import com.nominanuda.zen.obj.Obj;
-import com.nominanuda.zen.reactivestreams.DevNull;
 
 public class SimpleJsonTest {
 

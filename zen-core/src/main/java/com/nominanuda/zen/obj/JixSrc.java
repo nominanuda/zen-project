@@ -15,8 +15,6 @@
  */
 package com.nominanuda.zen.obj;
 
-import org.reactivestreams.Subscriber;
-
 public interface JixSrc {
 
 	public void sendTo(JixHandler sink);

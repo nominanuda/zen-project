@@ -1,9 +1,7 @@
 package com.nominanuda.zen.reactivestreams;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.ByteBuffer;
-import java.nio.channels.ByteChannel;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
 

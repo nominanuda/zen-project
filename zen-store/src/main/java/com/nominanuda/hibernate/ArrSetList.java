@@ -89,6 +89,7 @@ public class ArrSetList extends ArrImpl implements Set<Object>, UserCollectionTy
 		return new HibTArr(session);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public PersistentCollection wrap(SharedSessionContractImplementor session, Object collection) {
 		HibTArr htarr = new HibTArr(session);
@@ -96,6 +97,7 @@ public class ArrSetList extends ArrImpl implements Set<Object>, UserCollectionTy
 		return htarr;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Iterator<?> getElementsIterator(Object collection) {
 		return ((Iterable)collection).iterator();	}
@@ -110,6 +112,7 @@ public class ArrSetList extends ArrImpl implements Set<Object>, UserCollectionTy
 		return ((HibTArr)collection).indexOf(entity);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object replaceElements(Object original, Object target, CollectionPersister persister, Object owner,
 			Map copyCache, SharedSessionContractImplementor session) throws HibernateException {

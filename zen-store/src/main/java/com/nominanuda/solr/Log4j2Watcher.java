@@ -243,7 +243,7 @@ public class Log4j2Watcher extends LogWatcher<LogEvent> {
 		if (t != null)
 			doc.setField("trace", Throwables.getStackTraceAsString(t));
 
-		Map<String, String> contextMap = event.getContextMap();
+		Map<String, String> contextMap = event.getContextData().toMap();
 		if (contextMap != null) {
 			for (String key : contextMap.keySet())
 				doc.setField(key, contextMap.get(key));

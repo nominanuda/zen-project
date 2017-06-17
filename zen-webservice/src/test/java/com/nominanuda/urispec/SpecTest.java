@@ -15,16 +15,13 @@
  */
 package com.nominanuda.urispec;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
-import static java.util.Arrays.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-
-import com.nominanuda.urispec.StringMapURISpec;
-import com.nominanuda.web.mvc.ObjURISpec;
 
 
 public class SpecTest {

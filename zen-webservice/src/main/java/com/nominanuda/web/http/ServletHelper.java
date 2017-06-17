@@ -16,6 +16,7 @@
 package com.nominanuda.web.http;
 
 import static com.nominanuda.zen.oio.OioUtils.IO;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpCookie;
@@ -46,7 +47,6 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.message.BasicHttpRequest;
-import org.eclipse.jetty.util.IO;
 
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Stru;

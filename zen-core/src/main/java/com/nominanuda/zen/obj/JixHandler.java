@@ -15,20 +15,6 @@
  */
 package com.nominanuda.zen.obj;
 
-import static com.nominanuda.zen.common.Check.illegalargument;
-import static com.nominanuda.zen.common.Check.notNull;
-import static com.nominanuda.zen.obj.JixEvent.E_ARR;
-import static com.nominanuda.zen.obj.JixEvent.E_OBJ;
-import static com.nominanuda.zen.obj.JixEvent.S_ARR;
-import static com.nominanuda.zen.obj.JixEvent.S_OBJ;
-
-import javax.annotation.Nullable;
-
-import org.reactivestreams.Subscriber;
-
-import com.nominanuda.zen.common.Check;
-
-
 public interface JixHandler {
 //TODO remove	/**
 //	 * emits a sequence of {@link JixHandler#key(Key)} {@link JixHandler#val(Val)} events

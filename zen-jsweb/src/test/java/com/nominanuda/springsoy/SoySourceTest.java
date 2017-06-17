@@ -36,7 +36,6 @@ import org.springframework.web.servlet.View;
 import com.nominanuda.springmvc.QueryParamLocaleResolver;
 import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.web.mvc.CommandRequestHandlerAdapter;
-import com.nominanuda.web.mvc.ObjURISpec;
 import com.nominanuda.zen.obj.Obj;
 
 public class SoySourceTest {

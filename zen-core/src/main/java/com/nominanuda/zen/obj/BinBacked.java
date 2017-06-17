@@ -16,10 +16,6 @@
 package com.nominanuda.zen.obj;
 
 import static com.nominanuda.zen.common.Maths.MATHS;
-import static com.nominanuda.zen.common.Str.UTF8;
-
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 
 import javax.annotation.Nullable;
 

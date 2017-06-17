@@ -15,21 +15,6 @@
  */
 package com.nominanuda.zen.reactivestreams;
 
-import static java.lang.Character.isSpaceChar;
-import static java.lang.Character.toLowerCase;
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Test;
-import org.reactivestreams.Processor;
-
-import com.nominanuda.zen.reactivestreams.Pipe.ClosedPipe;
-import com.nominanuda.zen.reactivestreams.Pipe.LeftClosed;
-import com.nominanuda.zen.reactivestreams.Pipe.RightClosed;
-import com.nominanuda.zen.stereotype.Factory;
-
 public class PipeTest {
 //	Poem poem = new Poem();//Publisher<String>
 //	Factory<Processor<String,Character>> letterSplit = () -> new LetterSplitter();

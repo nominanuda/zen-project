@@ -26,8 +26,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nominanuda.zen.common.Str;
-
 public class Console extends ScriptableObject {
 	private static final long serialVersionUID = 924498336863426363L;
 	private static final Logger log = LoggerFactory.getLogger("rhinoConsole");

@@ -3,7 +3,6 @@ package com.nominanuda.rhino;
 import static com.nominanuda.zen.seq.Seq.SEQ;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,7 +30,6 @@ import com.nominanuda.zen.jvmurl.PluggableURLStreamHandlerFactory;
 import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
-import com.nominanuda.zen.seq.Seq;
 
 public abstract class AbsRhinoTestCase {
 	

@@ -21,8 +21,12 @@ import javax.annotation.concurrent.Immutable;
 import com.nominanuda.zen.stereotype.Decorator;
 
 @Immutable
+public
 interface Val extends JixEvent, Any, Decorator<Object> {
 	public static final Val NULL = new ValImpl(null);
+	public static final Val TRUE = new ValImpl(true);
+	public static final Val FALSE = new ValImpl(false);
+	public static final Val EMPTY_STR = new ValImpl("");
 
 	static Val of(@Nullable Object v) {
 		return new ValImpl(v);

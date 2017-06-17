@@ -21,6 +21,7 @@ import com.nominanuda.zen.stereotype.Decorator;
 import com.nominanuda.zen.stereotype.Value;
 
 @Immutable
+public
 interface Key extends JixEvent, Value, Decorator<String> {
 
 	static Key of(String key) {

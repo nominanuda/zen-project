@@ -8,6 +8,7 @@ import com.nominanuda.zen.obj.Stru;
 
 public class RhinoOverloadingTest extends RhinoTestCase {
 	@Override
+	@SuppressWarnings("unused")
 	protected Map<String, Object> buildJavaObjectsMap() {
 		Map<String, Object> m = super.buildJavaObjectsMap();
 		

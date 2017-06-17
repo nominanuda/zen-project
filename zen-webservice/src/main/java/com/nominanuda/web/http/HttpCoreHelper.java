@@ -33,9 +33,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.sql.Struct;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -88,7 +86,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.DefaultCookieSpec;
 import org.apache.http.impl.cookie.NetscapeDraftSpec;
 import org.apache.http.impl.cookie.RFC2109Spec;
 import org.apache.http.impl.cookie.RFC2965Spec;
@@ -106,19 +104,12 @@ import org.apache.http.message.LineParser;
 import org.apache.http.message.ParserCursor;
 import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
-import org.eclipse.jetty.util.IO;
-import org.springframework.expression.spel.support.ReflectionHelper;
 
-import com.nominanuda.zen.classwork.Reflect;
 import com.nominanuda.zen.codec.Base64Codec;
 import com.nominanuda.zen.common.Check;
-import com.nominanuda.zen.common.Ex;
-import com.nominanuda.zen.common.Str;
 import com.nominanuda.zen.common.Tuple2;
-import com.nominanuda.zen.obj.JsonPath;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
-import com.nominanuda.zen.seq.Seq;
 
 @ThreadSafe
 public class HttpCoreHelper implements HttpProtocol {
@@ -415,77 +406,6 @@ public class HttpCoreHelper implements HttpProtocol {
 		return result;
 	}
 
-	private void parseUrlEncodedParamList(List<NameValuePair> result, String content, String charset) {
-		try {
-			content = URLDecoder.decode(content, charset);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		if (content != null && content.length() > 0) {
-			char[] carr = content.toCharArray();
-			int len = carr.length;
-			StringBuilder name = new StringBuilder();
-			StringBuilder value = new StringBuilder();
-			int STATE_PARSING_KEY = 0;
-			int STATE_PARSING_VAL = 1;
-			int state = STATE_PARSING_KEY;
-			for (int i = 0; i < len; i++) {
-				char c = carr[i];
-				switch (c) {
-//					case '%':
-//						Check.illegalargument.assertTrue(len > i + 2);
-//						String sss = new StringBuilder(2)
-//							.append(carr[i+1])
-//							.append(carr[i+2])
-//							.toString();
-//						i += 2;
-//						char rr = Character.forDigit(Integer.parseInt(sss, 16), 16);
-//						if(state == STATE_PARSING_KEY) {
-//							name.append(rr);
-//						} else {
-//							value.append(rr);
-//						}
-//						break;
-				case '=':
-					if (state == STATE_PARSING_KEY) {
-						state = STATE_PARSING_VAL;
-						Check.illegalargument.assertTrue(name.length() > 0);
-					} else {
-						value.append(c);
-					}
-					break;
-				case '&':
-					Check.illegalargument.assertTrue(state == STATE_PARSING_VAL);
-					result.add(new BasicNameValuePair(
-						name.toString(), 
-						value.toString()));
-					name = new StringBuilder();
-					value = new StringBuilder();
-					state = STATE_PARSING_KEY;
-					break;
-//					case '+':
-//						if(state == STATE_PARSING_KEY) {
-//							name.append(' ');
-//						} else {
-//							value.append(' ');
-//						}
-//						break;
-				default:
-					if (state == STATE_PARSING_KEY) {
-						name.append(c);
-					} else {
-						value.append(c);
-					}
-					break;
-				}
-			}
-			if (name.length() > 0) {
-				result.add(new BasicNameValuePair(
-						name.toString(), 
-						value.toString()));
-			}
-		}
-	}
 	
 	private String getBodyPartName(BodyPart bp) throws MessagingException {
 		String[] d = bp.getHeader("Content-Disposition");
@@ -665,7 +585,7 @@ public class HttpCoreHelper implements HttpProtocol {
 	public enum CookieSpecKind {
 		rfc2965Spec(new RFC2965Spec()), 
 		rfc2109Spec(new RFC2109Spec()), 
-		browserCompat(new BrowserCompatSpec()), 
+		browserCompat(new DefaultCookieSpec()), 
 		netscape(new NetscapeDraftSpec());
 
 		private CookieSpec cookieSpec;

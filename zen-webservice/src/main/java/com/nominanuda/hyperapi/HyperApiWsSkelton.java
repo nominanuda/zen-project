@@ -57,7 +57,7 @@ import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
 public class HyperApiWsSkelton implements WebService {
-	private final EntityCodec entityCodec = EntityCodec.createBasic();
+	private final EntityCodec entityCodec;// = EntityCodec.createBasic();
 	private final HyperApiIntrospector apiIntrospector = new HyperApiIntrospector();
 	
 	private Class<?> api;
@@ -65,7 +65,12 @@ public class HyperApiWsSkelton implements WebService {
 	private String jsonDurationProperty;
 	private Object service;
 
-	
+	public HyperApiWsSkelton() {
+		entityCodec = initEntityCodec();
+	}
+	protected EntityCodec initEntityCodec() {
+		return EntityCodec.createBasic();
+	}
 	public HttpResponse handle(HttpRequest request) throws Exception {
 		long start = System.currentTimeMillis();
 		try {

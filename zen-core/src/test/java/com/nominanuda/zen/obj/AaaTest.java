@@ -16,14 +16,11 @@
 package com.nominanuda.zen.obj;
 
 import static com.nominanuda.zen.common.Str.UTF8;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import com.nominanuda.zen.common.Str;
-import com.nominanuda.zen.obj.Obj;
-import com.nominanuda.zen.obj.ObjImpl;
-import com.nominanuda.zen.obj.Stru;
 
 public class AaaTest {
 

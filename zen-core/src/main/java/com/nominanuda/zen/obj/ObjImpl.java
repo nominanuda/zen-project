@@ -29,15 +29,15 @@ import com.nominanuda.zen.seq.ReadOnlyCollection;
 import com.nominanuda.zen.stereotype.Value;
 
 public class ObjImpl implements Obj {
-	private final LinkedHashMap<Key,Any> members;
+	protected final LinkedHashMap<Key,Any> members;
 
-	ObjImpl(BinRange range, LinkedHashMap<Key, Any> m) {
+	protected ObjImpl(BinRange range, LinkedHashMap<Key, Any> m) {
 		this(m);
 	}
-	ObjImpl() {
+	protected ObjImpl() {
 		this(new LinkedHashMap<>(16));
 	}
-	private ObjImpl(LinkedHashMap<Key, Any> m) {
+	protected ObjImpl(LinkedHashMap<Key, Any> m) {
 		members = m;
 	}
 
@@ -78,7 +78,7 @@ public class ObjImpl implements Obj {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Any> T storeAny(Key k, Any val) {
-		//Any copy = val.copy();
+		//Any copy = val.copy();//TODO
 		members.put(k, val);
 		return (T)val;
 	}

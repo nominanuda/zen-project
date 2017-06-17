@@ -59,6 +59,7 @@ public class Maths {
 		return uuid;
 	}
 
+	@SuppressWarnings("unused")
 	private byte[] concat(byte[]...bs) {
 		int len = 0;
 		for(int i = 0; i < bs.length; i++) {
