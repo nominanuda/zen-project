@@ -100,7 +100,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
-			<!-- TODO remove when servlet 2.5 is dropped for 3.0 -->
+			<version>3.2.8.RELEASE</version><!-- TODO remove when servlet 2.5 is dropped for 3.0 -->
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
