@@ -211,7 +211,7 @@ public class HyperApiWsSkelton implements WebService {
 				result.add((String) decast(val, String.class));
 				return result;
 			}
-			if (Arr.class.equals(targetType)) {
+			if (Arr.class.isAssignableFrom(targetType)) {
 				if (val instanceof Arr) {
 					return val;
 				}
