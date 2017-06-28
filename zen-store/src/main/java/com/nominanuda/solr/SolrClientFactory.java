@@ -53,6 +53,7 @@ public class SolrClientFactory {
 					} else {
 						//try to bootstrap
 						try {
+							//calls core.open() and thus sets ref-count to 1
 							sep = coreContainerLifeCycle.bootstrap(props);
 							EmbeddedSolrServer ess = sep.createEmbeddedSolrServer(coreName);
 							return ess;

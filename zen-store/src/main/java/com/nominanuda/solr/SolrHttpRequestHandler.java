@@ -44,6 +44,7 @@ import org.apache.solr.request.SolrRequestInfo;
 import org.apache.solr.response.QueryResponseWriter;
 import org.apache.solr.response.QueryResponseWriterUtil;
 import org.apache.solr.response.SolrQueryResponse;
+import org.apache.solr.security.AuthenticationPlugin;
 import org.apache.solr.servlet.ResponseUtils;
 import org.apache.solr.servlet.cache.HttpCacheHeaderUtil;
 import org.apache.solr.servlet.cache.Method;
@@ -75,6 +76,8 @@ public class SolrHttpRequestHandler implements HttpRequestHandler {
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		LocalSolrQueryRequest solrReq = null;
+		core.open();
 		try {
 			Map<String, String> command = extractQueryParams(request);
 			SolrParams q = new MapSolrParams(command);
@@ -83,7 +86,7 @@ public class SolrHttpRequestHandler implements HttpRequestHandler {
 			illegalargument.assertTrue(ru.startsWith(requestPrefix), "request " + ru + " must start with " + requestPrefix);
 			URI reqUri = URI.create(ru.substring(requestPrefix.length()));
 			String reqPath = reqUri.getPath();
-			LocalSolrQueryRequest solrReq = new LocalSolrQueryRequest(core, q);
+			solrReq = new LocalSolrQueryRequest(core, q);
 
 			final Method reqMethod = Method.getMethod(request.getMethod());
 			HttpCacheHeaderUtil.setCacheControlHeader(core.getSolrConfig(), response, reqMethod);
@@ -146,6 +149,20 @@ public class SolrHttpRequestHandler implements HttpRequestHandler {
 			}
 		} finally {
 			consumeInputFully(request);
+			try {
+				try {
+					if (solrReq != null) {
+						log.debug("Closing out SolrRequest: {}", solrReq);
+						solrReq.close();
+					}
+				} finally {
+					if (core != null) {
+						core.close();
+					}
+				}
+			} finally {
+				SolrRequestInfo.clearRequestInfo();
+			}
 		}
 	}
 
