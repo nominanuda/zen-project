@@ -52,7 +52,7 @@ public class SingletonSolrAware extends SearchComponent implements SolrCoreAware
 	}
 	public void inform(SolrCore core) {
 		if (coreContainer == null) {
-			coreContainer = core.getCoreDescriptor().getCoreContainer();
+			coreContainer = core.getCoreContainer();
 		}
 		core.addCloseHook(closeHook);
 	}
@@ -63,7 +63,7 @@ public class SingletonSolrAware extends SearchComponent implements SolrCoreAware
 		return INSTANCE;
 	}
 	public Collection<String> getCoreNames() {
-		return coreContainer.getCoreNames();
+		return coreContainer.getAllCoreNames();
 	}
 	public SolrCore getCoreByName(String coreName) {
 		return coreContainer.getCore(coreName);
@@ -71,7 +71,7 @@ public class SingletonSolrAware extends SearchComponent implements SolrCoreAware
 	public synchronized EmbeddedSolrServer getEmbeddedSolrServerByCoreName(String coreName) {
 		EmbeddedSolrServer server = serverMap.get(coreName);
 		if (server == null) {
-			if(coreContainer.getCoreNames().contains(coreName)) {
+			if(coreContainer.getAllCoreNames().contains(coreName)) {
 				server = new EmbeddedSolrServer(coreContainer, coreName);
 				serverMap.put(coreName, server);
 			} else {

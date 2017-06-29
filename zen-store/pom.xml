@@ -51,6 +51,16 @@
     </dependency>
     <dependency>
       <groupId>org.apache.solr</groupId>
+      <artifactId>solr-dataimporthandler</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.solr</groupId>
+      <artifactId>solr-dataimporthandler-extras</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.solr</groupId>
       <artifactId>solr-core</artifactId>
       <exclusions>
         <exclusion>

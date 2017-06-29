@@ -42,7 +42,7 @@ public class CoreContainerLifeCycle {
 		}
 		SolrEndpoint sep = new SolrEndpoint(cores);
 		l.add(sep);
-		for(String cn : cores.getCoreNames()) {
+		for(String cn : cores.getAllCoreNames()) {
 			SolrCore cr = cores.getCore(cn);
 			String dataDir = cr.getDataDir();
 			coresByDataDir.put(dataDir, cr);
