@@ -39,6 +39,6 @@ exports = {
 	},
 	
 	remap: function(str, map) {
-		return str && map && map[str] || str;
+		return map && map[str] || str;
 	}
 };

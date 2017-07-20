@@ -15,7 +15,7 @@ function toFloat(o, v) {
 		if (!isNaN(f)) {
 			return f;
 		}
-	} else if (o == 0) {
+	} else if (o === 0) {
 		return 0.0;
 	}
 	return v;
@@ -38,7 +38,7 @@ function toInt(o, v) {
 		if (!isNaN(i)) {
 			return i;
 		}
-	} else if (o == 0) {
+	} else if (o === 0) {
 		return 0;
 	}
 	return v;

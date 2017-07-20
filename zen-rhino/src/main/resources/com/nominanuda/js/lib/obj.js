@@ -25,10 +25,9 @@ function map(obj, fnc) {
 }
 
 function arr(obj, fnc) {
-	!obj && (obj = {});
-	return Object.keys(obj).map(function(key) {
+	return obj ? Object.keys(obj).map(function(key) {
 		return fnc(key, obj[key]);
-	});
+	}) : [];
 }
 
 function _eval(obj) { // with "_" to keep eval() visible

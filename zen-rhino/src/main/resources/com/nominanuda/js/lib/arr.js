@@ -87,21 +87,35 @@ exports = {
 		return arr;
 	},
 	
-	toMap: function(arr, propOrFnc, transFnc) {
+	toMap: function(arr, keyFnc, valueFnc) {
 		var map = {};
-		!transFnc && (transFnc = function(item) {
+		(keyFnc == null) && (keyFnc = function(item) { // if null/undefined use item as key
 			return item;
 		});
-		arr = CAST_toArray(arr);
-		if (typeof propOrFnc == 'function') {
-			arr.forEach(function(item) {
-				map[propOrFnc(item)] = transFnc(item);
-			});
-		} else {
-			arr.forEach(function(item) {
-				map[item[propOrFnc]] = transFnc(item);
-			});
+		(valueFnc == null) && (valueFnc = function(item) { // if null/undefined use item as value
+			return item;
+		});
+		if (typeof keyFnc == 'string') {
+			const kKey = keyFnc;
+			keyFnc = function(item) {
+				return item[kKey];
+			};
 		}
+		if (typeof valueFnc == 'string') {
+			const vKey = valueFnc;
+			valueFnc = function(item) {
+				return item[vKey];
+			};
+		}
+		if (typeof valueFnc != 'function') {
+			const vValue = valueFnc; // allows default value for all entries
+			valueFnc = function(item) {
+				return vValue;
+			};
+		}
+		CAST_toArray(arr).forEach(function(item) {
+			map[keyFnc(item)] = valueFnc(item);
+		});
 		return map;
 	}
 };

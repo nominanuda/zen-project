@@ -135,7 +135,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 					annotationFound = true;
 					if (arg != null) {
 						uriParams.put(((QueryParam) annotation).value(), arg instanceof Collection
-							? toDataArray((Collection<?>) arg)
+							? toArr((Collection<?>) arg)
 							: arg.toString()
 						);
 					}
@@ -207,7 +207,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	}
 	
 	
-	private Arr toDataArray(Collection<?> arg) {
+	private Arr toArr(Collection<?> arg) {
 		Arr arr = Arr.make();
 		for (Object obj : arg) {
 			if (obj != null) {
