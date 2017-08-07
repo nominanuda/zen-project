@@ -1,7 +1,16 @@
+function trim(str) {
+	if (typeof str == 'object') {
+		for (var p in str) {
+			str[p] = trim(str[p]);
+		}
+		return str;
+	}
+	return (str || '').trim();
+}
+
+
 exports = {
-	trim: function(str) {
-		return (str || '').trim();
-	},
+	trim: trim,
 	
 	capitalize: function(str) {
 		return str && (str.charAt(0).toUpperCase() + str.substr(1)) || str;
