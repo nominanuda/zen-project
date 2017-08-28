@@ -10,6 +10,9 @@ import com.nominanuda.web.http.Http5xxException;
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Obj;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -50,6 +53,7 @@ import static com.nominanuda.zen.io.Uris.URIS;
 public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	private final static CacheControl CACHE_CONTROL = new CacheControl.Builder().noCache().noStore().build();
 	private final static RequestBody EMPTY_REQUEST_BODY = RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "".getBytes());
+	private final static Logger LOG = LoggerFactory.getLogger(HyperApiHttpInvocationHandler.class);
 	protected final OkHttpClient client;
 	protected final String uriPrefix;
 
@@ -62,6 +66,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Request request = encode(method, args);
+		LOG.debug("{} {}", request.method(), request.url());
 		Response response = client.newCall(request).execute();
 		int status = response.code();
 		if (status >= 400) {

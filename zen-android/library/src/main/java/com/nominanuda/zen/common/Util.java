@@ -63,8 +63,17 @@ public class Util {
 		return s == null || TextUtils.isEmpty(s.trim());
 	}
 
-	public static boolean notBlank(CharSequence s) {
-		return !isBlank(s);
+	public static boolean notBlank(CharSequence... seqs) {
+		if (seqs != null && seqs.length > 0) {
+			for (CharSequence seq : seqs) {
+				if (isBlank(seq)) {
+					return false;
+				}
+			}
+		} else {
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean isEmpty(CharSequence s) {
@@ -72,10 +81,14 @@ public class Util {
 	}
 
 	public static boolean notEmpty(CharSequence... seqs) {
-		for (CharSequence seq : seqs) {
-			if (TextUtils.isEmpty(seq)) {
-				return false;
+		if (seqs != null && seqs.length > 0) {
+			for (CharSequence seq : seqs) {
+				if (TextUtils.isEmpty(seq)) {
+					return false;
+				}
 			}
+		} else {
+			return false;
 		}
 		return true;
 	}

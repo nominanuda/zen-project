@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.nominanuda.zen.codec;
+
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -49,24 +50,31 @@ public class Digester {
 		public Digest(byte[] digest) {
 			b = digest;
 		}
+
 		public String toBase64Classic() {
 			return B64.encodeClassic(b);
 		}
+
 		public String toBase64GzipClassic() {
 			return B64.gzipEncodeClassic(b);
 		}
+
 		public String toBase64UrlSafeNoPad() {
 			return B64.encodeUrlSafeNoPad(b);
 		}
+
 		public String toBase62() {
 			return B62.encode(b);
 		}
+
 		public String toBase64GzipUrlSafeNoPad() {
 			return B64.gzipEncodeUrlSafeNoPad(b);
 		}
+
 		public String toHex() {
 			return Hex.encode(b);
 		}
+
 		public byte[] unwrap() {
 			return b;
 		}
@@ -82,6 +90,7 @@ public class Digester {
 	public String hash(String seed, int nchars) {
 		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
 	}
+
 	public String hash(byte[] seed, int nchars) {
 		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
 	}
@@ -122,6 +131,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+
 	public byte[] decriptAes128(byte[] encrypted) {
 		try {
 			Cipher cipher = Cipher.getInstance(AES);
@@ -139,6 +149,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+
 	public Digest encriptBlowfish128(byte[] clearMessage) {
 		try {
 			Cipher cipher = Cipher.getInstance(BLOWFISH);
@@ -157,6 +168,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+
 	public byte[] decriptBlowfish128(byte[] encrypted) {
 		try {
 			Cipher cipher = Cipher.getInstance(BLOWFISH);
@@ -201,18 +213,28 @@ public class Digester {
 		setCharset(cs);
 		return this;
 	}
+
 	public void setCharset(String cs) {
 		charset = Charset.forName(cs);
+	}
+
+	public Digester withSecretKeySpec(byte[] b) {
+		setSecretKeySpec(b);
+		return this;
 	}
 
 	public Digester withSecretKeySpec(String secretKey) {
 		setSecretKeySpec(secretKey);
 		return this;
 	}
-	public void setSecretKeySpec(String secretKey) {
-		byte[] b = stringToBytes(secretKey);
+
+	public void setSecretKeySpec(byte[] b) {
 		aes128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), AES);
 		sha256SecretKey = new SecretKeySpec(Arrays.copyOf(b, 32), HMAC_SHA256);
 		blowfish128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), BLOWFISH);
+	}
+
+	public void setSecretKeySpec(String secretKey) {
+		setSecretKeySpec(stringToBytes(secretKey));
 	}
 }

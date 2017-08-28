@@ -14,9 +14,9 @@ import java.util.Iterator;
 
 public class Obj extends JSONObject implements Stru {
 	public static Obj make(Object...keysAndVals) {
-		Check.illegalargument.assertTrue(keysAndVals.length % 2 == 0, "odd number of arguments");
 		Obj o = new Obj();
 		if (keysAndVals != null) {
+			Check.illegalargument.assertTrue(keysAndVals.length % 2 == 0, "odd number of arguments");
 			int halflen = keysAndVals.length / 2;
 			for (int i = 0; i < halflen; i++) {
 				try {

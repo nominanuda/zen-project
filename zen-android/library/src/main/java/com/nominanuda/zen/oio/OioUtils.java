@@ -387,4 +387,12 @@ public class OioUtils {
 		}
 	}
 
+
+	public long computeSizeRecursive(File path) {
+		long size = 0;
+		for (File file : path.listFiles()) {
+			size += file.isFile() ? file.length() : computeSizeRecursive(file);
+		}
+		return size;
+	}
 }
