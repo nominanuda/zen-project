@@ -21,10 +21,8 @@ import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +45,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHttpResponse;
 
 import com.nominanuda.web.http.Http500Exception;
-import com.nominanuda.web.http.HttpCoreHelper;
 import com.nominanuda.web.mvc.ObjURISpec;
 import com.nominanuda.web.mvc.WebService;
 import com.nominanuda.zen.common.Check;
@@ -60,17 +57,20 @@ public class HyperApiWsSkelton implements WebService {
 	private final EntityCodec entityCodec;// = EntityCodec.createBasic();
 	private final HyperApiIntrospector apiIntrospector = new HyperApiIntrospector();
 	
-	private Class<?> api;
+	private Object service;
+	private Class<?>[] apis;
 	private String requestUriPrefix = "";
 	private String jsonDurationProperty;
-	private Object service;
 
 	public HyperApiWsSkelton() {
 		entityCodec = initEntityCodec();
 	}
+	
 	protected EntityCodec initEntityCodec() {
 		return EntityCodec.createBasic();
 	}
+	
+	
 	public HttpResponse handle(HttpRequest request) throws Exception {
 		long start = System.currentTimeMillis();
 		try {
@@ -94,26 +94,27 @@ public class HyperApiWsSkelton implements WebService {
 		String requestUri = request.getRequestLine().getUri();
 		Check.illegalargument.assertTrue(requestUri.startsWith(requestUriPrefix));
 		String apiRequestUri = requestUri.substring(requestUriPrefix.length());
-		for (Method m : api.getMethods()) { // better than getDeclaredMethods(), as we use interfaces and they could extend one another
-			Path pathAnno = apiIntrospector.findPathAnno(m);
-			if (pathAnno != null) {
-				ObjURISpec spec = new ObjURISpec(pathAnno.value());
-				Obj uriParams = spec.match(apiRequestUri);
-				if (uriParams != null) {
-					if (supportsHttpMethod(m, request.getRequestLine().getMethod())) {
-						Object[] args = createArgs(uriParams, new HttpCoreHelper().getEntity(request), api, m);
-						Object result = invokeMethod(m, args);
-						return new Tuple2<Object, AnnotatedType>(result, new AnnotatedType(m.getReturnType(), m.getAnnotations()));
+		for (Class<?> api : apis) {
+			for (Method apiM : api.getMethods()) { // better than getDeclaredMethods(), as we use interfaces and they could extend one another
+				Path pathAnno = apiIntrospector.findPathAnno(apiM);
+				if (pathAnno != null) {
+					ObjURISpec spec = new ObjURISpec(pathAnno.value());
+					Obj uriParams = spec.match(apiRequestUri);
+					if (uriParams != null) {
+						if (supportsHttpMethod(apiM, request.getRequestLine().getMethod())) {
+							Method serviceM = service.getClass().getMethod(apiM.getName(), apiM.getParameterTypes()); // "same" method but in service (in case it doesn't implement this current api interface)
+							Object result = invokeMethod(apiM, serviceM, createArgs(uriParams, HTTP.getEntity(request), apiM));
+							return new Tuple2<Object, AnnotatedType>(result, new AnnotatedType(apiM.getReturnType(), apiM.getAnnotations()));
+						}
 					}
 				}
 			}
 		}
-		throw new IllegalArgumentException("could not find any suitable method to call " + "for api request: " + apiRequestUri);
+		throw new IllegalArgumentException("could not find any suitable method to call for api request: " + apiRequestUri);
 	}
 
-	protected Object invokeMethod(Method m, Object[] args) throws IllegalAccessException, InvocationTargetException {
-		Object result = m.invoke(service, args);
-		return result;
+	protected Object invokeMethod(Method apiM, Method serviceM, Object[] args) throws IllegalAccessException, InvocationTargetException {
+		return serviceM.invoke(service, args);
 	}
 	
 	private boolean supportsHttpMethod(Method method, String httpMethod) {
@@ -130,13 +131,13 @@ public class HyperApiWsSkelton implements WebService {
 		return false;
 	}
 
-	private Object[] createArgs(Obj uriParams, HttpEntity entity, Class<?> api2, Method method) throws IOException {
+	private Object[] createArgs(Obj uriParams, HttpEntity entity, Method apiMethod) throws IOException {
 		List<NameValuePair> formParams = Collections.emptyList();
 		if (entity != null) {
 			formParams = HTTP.parseEntityWithDefaultUtf8(entity);
 		}
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		Class<?>[] parameterTypes = apiMethod.getParameterTypes();
+		Annotation[][] parameterAnnotations = apiMethod.getParameterAnnotations();
 		Object[] args = new Object[parameterTypes.length];
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Class<?> parameterType = parameterTypes[i];
@@ -169,14 +170,8 @@ public class HyperApiWsSkelton implements WebService {
 					break;
 				}
 			}
-			if(! annotationFound) {
-				if(entity == null) {
-					args[i] = null;
-				}/* else if(parameterType.isInterface() && ObjWrapper.class.isAssignableFrom(parameterType)) {
-					args[i] = WF.wrap((ObjWrapper)entityCodec.decode(entity, p), parameterType);
-				}*/ else {
-					args[i] = entityCodec.decode(entity, p);
-				}
+			if (! annotationFound) {
+				args [i] = entity != null ? entityCodec.decode(entity, p) : null;
 			}
 		}
 		return args;
@@ -238,14 +233,14 @@ public class HyperApiWsSkelton implements WebService {
 	
 
 	protected HttpResponse response(Object result, AnnotatedType ap) {
-		if(result instanceof HttpResponse) {
+		if (result instanceof HttpResponse) {
 			return (HttpResponse)result;
 		} else {
 			BasicHttpResponse resp = new BasicHttpResponse(HTTP.statusLine(200));
 			HttpEntity entity = null;
-			if(result instanceof HttpEntity) {
+			if (result instanceof HttpEntity) {
 				entity = (HttpEntity)result;
-			} else if(result != null) {
+			} else if (result != null) {
 				entity = entityCodec.encode(result, ap);
 			}
 			if (entity != null) {
@@ -254,45 +249,26 @@ public class HyperApiWsSkelton implements WebService {
 			return resp;
 		}
 	}
+	
+	
 
-	/* proxy magic */
-	
-	private void evCreateProxy() {
-		if (api != null && service != null) {
-			if (!api.isInstance(service)) {
-				final Object origService = service;
-				service = Proxy.newProxyInstance(api.getClassLoader(), new java.lang.Class[] { api }, new InvocationHandler() {
-					@Override
-					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						try {
-							Method m = origService.getClass().getMethod(method.getName(), method.getParameterTypes()); // "same" method in different objs hierarchy
-							return m.invoke(origService, args);
-						} catch (InvocationTargetException e) {
-							Throwable cause = e.getCause();
-							if (cause != null && cause instanceof Exception) {
-								throw (Exception) cause;
-							} else {
-								throw new Http500Exception(e);
-							}
-						}
-					}
-				});
-			}
-		}
-	}
-	
-	
-	
 	/* setters */
 
-	public void setApi(Class<?> api) {
-		this.api = api;
-		evCreateProxy();
+	/**
+	 * @param apis One or more java interfaces.
+	 * Declaring multiple api interfaces allows to have additional uritemplate annotations mapped to
+	 * the same java method signatures already present in the first api interface (the use of many
+	 * separated interfaces avoids the annotation overriding that would happen through simple
+	 * inheritance).
+	 * Useful when having to support simultaneously and old and new version of the same api, where
+	 * there has been an evolution only in the http request path name, parameters names, etc.
+	 */
+	public void setApi(Class<?>... apis) {
+		this.apis = apis;
 	}
-
+	
 	public void setService(Object service) {
 		this.service = service;
-		evCreateProxy();
 	}
 
 	public void setRequestUriPrefix(String requestUriPrefix) {

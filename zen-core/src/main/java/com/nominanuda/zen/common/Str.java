@@ -218,4 +218,11 @@ public class Str {
 		return new String(res, 0, written);
 	}
 
+	public StringBuilder builder(String... strings) {
+		StringBuilder sb = new StringBuilder();
+		for (String string : strings) {
+			sb.append(string);
+		}
+		return sb;
+	}
 }
