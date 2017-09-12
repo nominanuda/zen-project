@@ -237,15 +237,27 @@ public class Util {
 
 
 
-	/* stuff */
+	/* iterations */
 
 	public static <T> Iterable<T> toIterable(final Iterator<T> source) {
-		return new Iterable<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return source;
-			}
-		};
+		return () -> source;
+	}
+
+	public interface ForEachConsumer<T> {
+		void item(T item, int index);
+	}
+
+	public static <T> Iterable<T> forEach(final Iterable<T> iterable, ForEachConsumer<T> consumer) {
+		int i = 0;
+		for (T item : iterable) {
+			consumer.item(item, i);
+			i++;
+		}
+		return iterable;
+	}
+
+	public static <T> Iterable<T> forEach(final Iterator<T> source, ForEachConsumer<T> consumer) {
+		return forEach(toIterable(source), consumer);
 	}
 
 
