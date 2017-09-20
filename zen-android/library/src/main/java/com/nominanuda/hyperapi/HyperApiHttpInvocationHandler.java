@@ -54,11 +54,11 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	private final static CacheControl CACHE_CONTROL = new CacheControl.Builder().noCache().noStore().build();
 	private final static RequestBody EMPTY_REQUEST_BODY = RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "".getBytes());
 	private final static Logger LOG = LoggerFactory.getLogger(HyperApiHttpInvocationHandler.class);
-	protected final OkHttpClient client;
+	protected final OkHttpClient okHttpClient;
 	protected final String uriPrefix;
 
 	protected HyperApiHttpInvocationHandler(OkHttpClient client, String uriPrefix) {
-		this.client = client;
+		this.okHttpClient = client;
 		this.uriPrefix = uriPrefix;
 	}
 
@@ -67,7 +67,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Request request = encode(method, args);
 		LOG.debug("{} {}", request.method(), request.url());
-		Response response = client.newCall(request).execute();
+		Response response = okHttpClient.newCall(request).execute();
 		int status = response.code();
 		if (status >= 400) {
 			String message = response.message();
@@ -195,7 +195,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 						.add("Cache-Control", "no-cache")
 						.add("Connection", "close") // TODO remove?
 						.add("Pragma", "no-cache").build())
-				.method(httpMethod, entity == null && HttpMethod.requiresRequestBody(httpMethod) ? EMPTY_REQUEST_BODY : entity )
+				.method(httpMethod, entity == null && HttpMethod.requiresRequestBody(httpMethod) ? EMPTY_REQUEST_BODY : entity)
 				.build();
 	}
 

@@ -11,9 +11,8 @@ import static com.nominanuda.zen.io.Uris.URIS;
  */
 
 public class HttpHyperApiFactory implements HyperApiFactory {
-
+	private final String uriPrefix;
 	private final OkHttpClient okHttpClient;
-	private final String uriPrefix; // TODO configurable (how?)
 
 
 	public HttpHyperApiFactory(String prefix, OkHttpClient client) {

@@ -20,68 +20,92 @@ public class AsyncCall<API, T> {
 
 	/* activity */
 
-	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
-				new AsyncLoaderInvocationHandler<API, T>(activity, activity.getLoaderManager(), api, resultFnc, errorFnc)
+				new AsyncLoaderInvocationHandler<API, T>(activity, activity.getLoaderManager(), api, resultFnc, errorFnc, finalFnc)
 		)));
 	}
 
+	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+		this(activity, api, callFnc, resultFnc, errorFnc, () -> {});
+	}
+
+	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Runnable finalFnc) {
+		this(activity, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e), finalFnc);
+	}
+
 	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
-		this(activity, api, callFnc, resultFnc, e -> {
-			LOG.error("errorFnc", e);
-		});
+		this(activity, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e));
 	}
 
 
 	/* fragment */
 
-	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
-				new AsyncLoaderInvocationHandler<API, T>(fragment.getActivity(), fragment.getLoaderManager(), api, resultFnc, errorFnc)
+				new AsyncLoaderInvocationHandler<API, T>(fragment.getActivity(), fragment.getLoaderManager(), api, resultFnc, errorFnc, finalFnc)
 		)));
 	}
 
+	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+		this(fragment, api, callFnc, resultFnc, errorFnc, () -> {});
+	}
+
+	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Runnable finalFnc) {
+		this(fragment, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e), finalFnc);
+	}
+
 	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
-		this(fragment, api, callFnc, resultFnc, e -> {
-			LOG.error("errorFnc", e);
-		});
+		this(fragment, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e));
 	}
 
 
 	/* support fragment */
 
-	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
-				new AsyncLoaderInvocationHandler<API, T>(fragment.getActivity(), fragment.getActivity().getLoaderManager(), api, resultFnc, errorFnc)
+				new AsyncLoaderInvocationHandler<API, T>(fragment.getActivity(), fragment.getActivity().getLoaderManager(), api, resultFnc, errorFnc, finalFnc)
 		)));
 	}
 
+	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+		this(fragment, api, callFnc, resultFnc, errorFnc, () -> {});
+	}
+
+	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Runnable finalFnc) {
+		this(fragment, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e), finalFnc);
+	}
+
 	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
-		this(fragment, api, callFnc, resultFnc, e -> {
-			LOG.error("errorFnc", e);
-		});
+		this(fragment, api, callFnc, resultFnc, e -> LOG.error("errorFnc", e));
 	}
 
 
 	/* async task */
 
-	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		Class<API> apiClass = (Class<API>) api.getClass();
 		callFnc.apply((API) apiClass.cast(Proxy.newProxyInstance(
 				apiClass.getClassLoader(), apiClass.getInterfaces(),
-				new AsyncTaskInvocationHandler<API, T>(api, resultFnc, errorFnc)
+				new AsyncTaskInvocationHandler<>(api, resultFnc, errorFnc, finalFnc)
 		)));
 	}
 
+	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+		this(api, callFnc, resultFnc, errorFnc, () -> {});
+	}
+
+	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Runnable finalFnc) {
+		this(api, callFnc, resultFnc, e -> LOG.error("errorFnc", e), finalFnc);
+	}
+
 	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
-		this(api, callFnc, resultFnc, e -> {
-			LOG.error("errorFnc", e);
-		});
+		this(api, callFnc, resultFnc, e -> LOG.error("errorFnc", e));
 	}
 }

@@ -34,6 +34,10 @@ public class Util {
 		T get();
 	}
 
+	public static <T> T get(Supplier<T> s) {
+		return s.get();
+	}
+
 
 
     /* objects */
@@ -267,6 +271,10 @@ public class Util {
 	public static class BB { // Bundle builder
 		private Bundle mBundle = new Bundle();
 
+		protected BB() {
+			// just for subclasses
+		}
+
 		public BB(String key, boolean b) {
 			put(key, b);
 		}
@@ -349,8 +357,22 @@ public class Util {
 			return this;
 		}
 
-		public Bundle go() {
+		/**
+		 * After this call the BB can still be used
+		 * @return the currently cumulated Bundle
+		 */
+		public Bundle build() {
 			return mBundle;
+		}
+
+		/**
+		 * After this call the BB cannot be used anymore
+		 * @return the resulting Bundle
+		 */
+		public Bundle go() {
+			Bundle b = mBundle;
+			mBundle = null;
+			return b;
 		}
 	}
 

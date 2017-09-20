@@ -58,17 +58,17 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 		public Pair<RESULT, Exception> loadInBackground() {
 			try {
 				RESULT data = (RESULT) mMethod.invoke(mApi, mMethodArgs);
-				return new Pair<RESULT, Exception>(data, null);
+				return new Pair<>(data, null);
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 				Throwable cause = e.getCause();
-				return new Pair<RESULT, Exception>(null, (cause != null && cause instanceof HttpAppException)
+				return new Pair<>(null, (cause != null && cause instanceof HttpAppException)
 						? (HttpAppException) cause
 						: new Http500Exception(e)
 				);
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new Pair<RESULT, Exception>(null, e);
+				return new Pair<>(null, e);
 			}
 		}
 
@@ -86,14 +86,16 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 	private final API mApi;
 	private final Util.Consumer<T> mResultFnc;
 	private final Util.Consumer<Exception> mErrorFnc;
+	private final Runnable mFinalFnc;
 
 	AsyncLoaderInvocationHandler(Context ctx, LoaderManager loaderManager, API api,
-								 Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
+								 Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		mCtx = ctx;
 		mLoaderManager = loaderManager;
 		mApi = api;
 		mResultFnc = resultFnc;
 		mErrorFnc = errorFnc;
+		mFinalFnc = finalFnc;
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 		mLoaderManager.initLoader(loaderId, null, new LoaderManager.LoaderCallbacks<Pair<T, Exception>>() {
 			@Override
 			public Loader<Pair<T, Exception>> onCreateLoader(int id, Bundle args) {
-				return new AsyncCallLoader<API, T>(mCtx, mApi, method, methodArgs);
+				return new AsyncCallLoader<>(mCtx, mApi, method, methodArgs);
 			}
 
 			@Override
@@ -112,6 +114,7 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 				} else {
 					mResultFnc.accept(result.first);
 				}
+				mFinalFnc.run();
 				mLoaderManager.destroyLoader(loaderId);
 			}
 
