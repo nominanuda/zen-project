@@ -1,5 +1,6 @@
 package com.nominanuda.zen.common;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -36,6 +37,43 @@ public class Util {
 
 	public static <T> T get(Supplier<T> s) {
 		return s.get();
+	}
+
+	public static class AsyncLambdaTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+		private final Function<Params[], Result> mDoInBackgroundFnc;
+		private final Consumer<Progress[]> mOnProgressUpdateFnc;
+		private final Consumer<Result> mOnPostExecuteFnc;
+
+		public AsyncLambdaTask(Function<Params[], Result> doInBackgroundFnc,
+							   Consumer<Progress[]> onProgressUpdateFnc,
+							   Consumer<Result> onPostExecuteFnc,
+							   Params... params) {
+			mDoInBackgroundFnc = doInBackgroundFnc;
+			mOnProgressUpdateFnc = onProgressUpdateFnc;
+			mOnPostExecuteFnc = onPostExecuteFnc;
+			execute(params);
+		}
+
+		public AsyncLambdaTask(Function<Params[], Result> doInBackgroundFnc,
+							   Consumer<Result> onPostExecuteFnc,
+							   Params... params) {
+			this(doInBackgroundFnc, values -> {}, onPostExecuteFnc, params);
+		}
+
+		@Override
+		final protected Result doInBackground(Params... params) {
+			return mDoInBackgroundFnc.apply(params);
+		}
+
+		@Override
+		final protected void onProgressUpdate(Progress... values) {
+			mOnProgressUpdateFnc.accept(values);
+		}
+
+		@Override
+		final protected void onPostExecute(Result result) {
+			mOnPostExecuteFnc.accept(result);
+		}
 	}
 
 
@@ -264,6 +302,14 @@ public class Util {
 		return forEach(toIterable(source), consumer);
 	}
 
+	public static <T> T[] forEach(T[] items, ForEachConsumer<T> consumer) {
+		int l = items.length;
+		for (int i = 0; i < l; i++) {
+			consumer.item(items[i], i);
+		}
+		return items;
+	}
+
 
 
 	/* bundles */
@@ -359,6 +405,7 @@ public class Util {
 
 		/**
 		 * After this call the BB can still be used
+		 *
 		 * @return the currently cumulated Bundle
 		 */
 		public Bundle build() {
@@ -367,6 +414,7 @@ public class Util {
 
 		/**
 		 * After this call the BB cannot be used anymore
+		 *
 		 * @return the resulting Bundle
 		 */
 		public Bundle go() {
