@@ -151,7 +151,7 @@ public class Util {
 	public static String trimOrNull(String s) {
 		if (s != null) {
 			s = s.trim();
-			if (s.length() == 0) {
+			if (s.isEmpty()) {
 				return null;
 			}
 		}
