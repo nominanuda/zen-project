@@ -82,7 +82,7 @@ public class Str {
 	private final <T> ToString<T> toStringy() {
 		return (ToString<T>) toStringyObj; 
 	}
-	private final ToString<Object> toStringyObj = new ToString<Object>(); 
+	private final ToString<Object> toStringyObj = new ToString<>();
 
 	public <T> String join(String separator, Iterable<T> collection) {
 		return join(separator, collection, toStringy());
