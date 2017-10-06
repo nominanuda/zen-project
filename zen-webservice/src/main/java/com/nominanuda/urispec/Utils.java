@@ -63,7 +63,7 @@ public class Utils {
 		o.add(val);
 	}
 
-	public static String extracturiSpecFromSitemapMatch(String spec) {
+	public static String extractUriSpecFromSitemapMatch(String spec) {
 		if (spec.contains(" ")) {
 			String[] parts = spec.split("\\s+");
 			if (PIPEDMETHODS.matcher(parts[0]).matches()) {

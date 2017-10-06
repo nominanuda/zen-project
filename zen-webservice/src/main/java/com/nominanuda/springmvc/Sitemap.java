@@ -30,7 +30,7 @@ public class Sitemap {
 	
 	public void setEntries(Map<String, String> entries) {
 		for (String id : entries.keySet()) {
-			specs.put(id, new ObjURISpec(Utils.extracturiSpecFromSitemapMatch(entries.get(id))));
+			specs.put(id, new ObjURISpec(Utils.extractUriSpecFromSitemapMatch(entries.get(id))));
 		}
 	}
 	

@@ -53,7 +53,7 @@ public class MvcFrontControllerBeanDefinitionParser extends AbstractBeanDefiniti
 		BeanDefinitionBuilder bdBuilder = BeanDefinitionBuilder.rootBeanDefinition(HandlerMatcherMapping.class);
 		String pattern = ((Element) element.getElementsByTagNameNS(ns, "pattern").item(0)).getTextContent();
 		Sitemap.registerPattern(element.getAttribute("id"), pattern, parserContext);
-		String uriSpec = Utils.extracturiSpecFromSitemapMatch(pattern);
+		String uriSpec = Utils.extractUriSpecFromSitemapMatch(pattern);
 		
 		BeanDefinitionBuilder matchBuilder = BeanDefinitionBuilder
 			.genericBeanDefinition(URISpecMatcher.class)
