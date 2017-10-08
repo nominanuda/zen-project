@@ -15,7 +15,7 @@
  */
 package com.nominanuda.zen.codec;
 
-
+import static com.nominanuda.zen.codec.Base64Codec.B64;
 import static com.nominanuda.zen.common.Str.UTF8;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -23,7 +23,6 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class Base62 {
 	public static final Base62 B62 = new Base62();
-	private static final Base64Codec base64 = new Base64Codec();
 
 	public String encodeUtf8(String s) {
 		return encode(s.getBytes(UTF8));
@@ -34,7 +33,7 @@ public class Base62 {
 	}
 
 	public String encode(byte[] b) {
-		char[] b64 = base64.encodeUrlSafeNoPad(b).toCharArray();
+		char[] b64 = B64.encodeUrlSafeNoPad(b).toCharArray();
 		char[] b62 = new char[b64.length*2];
 		int count = 0;
 		for(char c : b64) {
@@ -103,6 +102,6 @@ public class Base62 {
 			}
 		}
 		String b64s = new String(b64, 0, count);
-		return  base64.decodeNoGzip(b64s);
+		return  B64.decodeNoGzip(b64s);
 	}
 }
