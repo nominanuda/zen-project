@@ -27,6 +27,10 @@ public class Util {
 		R apply(T t);
 	}
 
+	public interface BiFunction<T, U, R> {
+		R apply(T t, U u);
+	}
+
 	public interface Consumer<T> {
 		void accept(T result);
 	}
@@ -363,14 +367,26 @@ public class Util {
 			return this;
 		}
 
+		public BB put(String key, Integer i) {
+			return put(key, i.intValue());
+		}
+
 		public BB put(String key, double d) {
 			mBundle.putDouble(key, d);
 			return this;
 		}
 
+		public BB put(String key, Double d) {
+			return put(key, d.doubleValue());
+		}
+
 		public BB put(String key, float f) {
 			mBundle.putFloat(key, f);
 			return this;
+		}
+
+		public BB put(String key, Float f) {
+			return put(key, f.floatValue());
 		}
 
 		public BB put(String key, String s) {
