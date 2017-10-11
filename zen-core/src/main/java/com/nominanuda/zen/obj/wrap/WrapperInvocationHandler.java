@@ -200,15 +200,10 @@ class WrapperInvocationHandler implements InvocationHandler {
 			ParameterizedType t2 = (ParameterizedType)t1;
 			Type[] actualTypeArgs = t2.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 1) {
-				try {
-					return Class.forName(actualTypeArgs[0].getTypeName());
-				} catch (ClassNotFoundException e) {
-					throw e;
-				}
+				return Class.forName(actualTypeArgs[0].getTypeName());
 			}
 		}
-		throw new ClassNotFoundException(
-			"could not determine generic return type for method "+method.toString());
+		throw new ClassNotFoundException("could not determine generic return type for method " + method.toString());
 	}
 
 	private Tuple2<Class<?>, Class<?>> getMapReturnComponentTypes(Method method) throws ClassNotFoundException {
@@ -221,26 +216,23 @@ class WrapperInvocationHandler implements InvocationHandler {
 			ParameterizedType t2 = (ParameterizedType)t1;
 			Type[] actualTypeArgs = t2.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 2) {
-				try {
-					return new Tuple2<>(
-						Class.forName(actualTypeArgs[0].getTypeName()),
-						Class.forName(actualTypeArgs[1].getTypeName()));
-				} catch (ClassNotFoundException e) {
-					throw e;
-				}
+				return new Tuple2<>(
+					Class.forName(actualTypeArgs[0].getTypeName()),
+					Class.forName(actualTypeArgs[1].getTypeName()));
 			}
 		}
-		throw new ClassNotFoundException(
-			"could not determine generic return type for method "+method.toString());
+		throw new ClassNotFoundException("could not determine generic return type for method " + method.toString());
 	}
 
 	private Object fromObjValue(Object v, Class<?> type) {
-		if (null == v) {
+		if (Boolean.TYPE.equals(type)) { // expected boolean (not Boolean)
+			return Boolean.TRUE.equals(v); // force true/false (also when v == null)
+		} else if (null == v) {
 			return null;
-		} else if (Boolean.TYPE.equals(type)) { // expected boolean
-			return Boolean.TRUE.equals((Boolean)v); // force true/false (also when v == null)
 		} else if (JsonType.isNullablePrimitive(v)) {
-			if (Double.class.equals(type) || double.class.equals(type)) {
+			if (Boolean.class.equals(type)) {
+				return Boolean.TRUE.equals(v);
+			} else if (Double.class.equals(type) || double.class.equals(type)) {
 				return ((Number)v).doubleValue();
 			} else if (Float.class.equals(type) || float.class.equals(type)) {
 				return ((Number)v).floatValue();
@@ -255,8 +247,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 			Obj o = (Obj)v;
 			WrapType wrapType = type.getAnnotation(WrapType.class);
 			if (wrapType != null) {
-				Function<Obj, Object> builder = createBuilder(wrapType, type);
-				return builder.apply(o);
+				return createBuilder(wrapType, type).apply(o);
 			} else if (WrapperItemFactory.class.isAssignableFrom(type)) {
 				try {
 					Method factoryMethod = findWrapMethod(type);
@@ -267,16 +258,16 @@ class WrapperInvocationHandler implements InvocationHandler {
 			} else if (ObjWrapper.class.isAssignableFrom(type)) { // sub object
 				return WF.wrap(o, type);
 			} else {
-				throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
+				throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
 			}
 		} else {
-			throw new IllegalArgumentException("cannot convert value:"+v+" to type:"+type.getName());
+			throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
 		}
 	}
 
-	private static final Map<Class<?>, Function<Obj, Object>> BUILDER_CACHE = new HashMap<>();
+	private static final Map<Class<?>, Function<Obj, Object>> BUILDERS_CACHE = new HashMap<>();
 	private Function<Obj, Object> createBuilder(WrapType wrapType, Class<?> type) {
-		Function<Obj, Object> builder = BUILDER_CACHE.get(type);
+		Function<Obj, Object> builder = BUILDERS_CACHE.get(type);
 		if (builder == null) {
 			String field = wrapType.field();
 			Map<String, Class<?>> typeMap = new HashMap<>();
@@ -284,9 +275,9 @@ class WrapperInvocationHandler implements InvocationHandler {
 			Class<?>[] types = wrapType.types();
 			for (int i = 0; i < values.length; i++) {
 				typeMap.put(values[i], types[i]);
-				builder = (o) -> WF.wrap(o, typeMap.get(o.fetch(field)));
-				BUILDER_CACHE.put(type, builder);
 			}
+			builder = (o) -> WF.wrap(o, typeMap.get(o.fetch(field)));
+			BUILDERS_CACHE.put(type, builder);
 		}
 		return builder;
 	}

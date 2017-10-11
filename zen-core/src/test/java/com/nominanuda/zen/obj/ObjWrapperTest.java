@@ -17,8 +17,10 @@ package com.nominanuda.zen.obj;
 
 import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -64,7 +66,7 @@ public class ObjWrapperTest {
 		assertTrue(bo2 instanceof BizObject2);
 	}
 
-	public interface BizObject extends ObjWrapper, TypeChooser {
+	interface BizObject extends ObjWrapper, TypeChooser {
 		void foo(String s);
 		String foo();
 		String chain1();
@@ -77,8 +79,37 @@ public class ObjWrapperTest {
 		List<BizObject2> subObjects();
 	}
 
-	public interface BizObject2 extends ObjWrapper, Obj, TypeChooser {
+	interface BizObject2 extends ObjWrapper, Obj, TypeChooser {
 		
 	}
 
+	
+	@Test
+	public void testPrimitiveWrapping() {
+		PrimitiveObject o = WF.wrap(PrimitiveObject.class);
+		assertFalse(o.booleanNull());
+		assertNull(o.getBooleanNull());
+		assertNull(o.getIntegerNull());
+		assertNull(o.getDoubleNull());
+		assertNull(o.getFloatNull());
+		try {
+			o.intNull();
+			o.doubleNull();
+			o.floatNull();
+			fail("didn't throw exception as expected"); // should not arrive here
+		} catch (Exception e) {
+			assertTrue(e instanceof NullPointerException);
+		}
+	}
+	
+	interface PrimitiveObject extends ObjWrapper {
+		boolean booleanNull();
+		Boolean getBooleanNull();
+		int intNull();
+		Integer getIntegerNull();
+		float floatNull();
+		Float getFloatNull();
+		double doubleNull();
+		Double getDoubleNull();
+	}
 }
