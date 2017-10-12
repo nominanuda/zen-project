@@ -68,26 +68,30 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		Request request = encode(method, args);
 		LOG.debug("{} {}", request.method(), request.url());
 		Response response = okHttpClient.newCall(request).execute();
-		int status = response.code();
-		if (status >= 400) {
-			String message = response.message();
-			if (status < 500) {
-				switch (status) {
-				case 400:
-					throw new Http400Exception(message);
-				case 401:
-					throw new Http401Exception(message);
-				case 403:
-					throw new Http403Exception(message);
-				case 404:
-					throw new Http404Exception(message);
-				default:
-					throw new Http4xxException(message, status);
+		try {
+			int status = response.code();
+			if (status >= 400) {
+				String message = response.message();
+				if (status < 500) {
+					switch (status) {
+					case 400:
+						throw new Http400Exception(message);
+					case 401:
+						throw new Http401Exception(message);
+					case 403:
+						throw new Http403Exception(message);
+					case 404:
+						throw new Http404Exception(message);
+					default:
+						throw new Http4xxException(message, status);
+					}
 				}
+				throw new Http5xxException(message, status);
 			}
-			throw new Http5xxException(message, status);
+			return ENC.decode(response.body(), new AnnotatedType(method.getReturnType(), method.getAnnotations()));
+		} finally {
+			response.close();
 		}
-		return ENC.decode(response.body(), new AnnotatedType(method.getReturnType(), method.getAnnotations()));
 	}
 
 

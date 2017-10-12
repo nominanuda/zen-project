@@ -18,6 +18,7 @@ package com.nominanuda.zen.obj.wrap;
 import android.util.Pair;
 
 import com.nominanuda.zen.common.Check;
+import com.nominanuda.zen.common.Util;
 import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
@@ -81,7 +82,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 			} else if ("as".equals(name)) {
 				Object enhancementMethods = args[1];
 				InvocationHandler eh = new EnhancedInvocationHandler(enhancementMethods, role, proxy);
-				return Proxy.newProxyInstance(enhancementMethods.getClass().getClassLoader(), new Class[] { (Class<?>) args[0] }, eh);
+				return Proxy.newProxyInstance(enhancementMethods.getClass().getClassLoader(), new Class[]{(Class<?>) args[0]}, eh);
 			} else if (roleMethods.contains(method)) {
 				Class<?> type = method.getReturnType();
 				int argsL = (args == null ? 0 : args.length);
@@ -174,12 +175,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 			ParameterizedType pt = (ParameterizedType) t;
 			Type[] actualTypeArgs = pt.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 1) {
-				try {
-					String name = actualTypeArgs[0].toString();
-					return Class.forName(name.substring(name.indexOf(' ') + 1)); // remove "interface " in front of name
-				} catch (ClassNotFoundException e) {
-					throw e;
-				}
+				String name = actualTypeArgs[0].toString();
+				return Class.forName(name.substring(name.indexOf(' ') + 1)); // remove "interface " in front of name
 			}
 		}
 		throw new ClassNotFoundException("could not determine generic return type for method " + method.toString());
@@ -195,16 +192,12 @@ class WrapperInvocationHandler implements InvocationHandler {
 			ParameterizedType pt = (ParameterizedType) t;
 			Type[] actualTypeArgs = pt.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 2) {
-				try {
-					String name0 = actualTypeArgs[0].toString();
-					String name1 = actualTypeArgs[1].toString();
-					return new Pair<>(
-							Class.forName(name0.substring(name0.indexOf(' ') + 1)), // remove "interface " in front of name
-							Class.forName(name1.substring(name1.indexOf(' ') + 1)) // remove "interface " in front of name
-					);
-				} catch (ClassNotFoundException e) {
-					throw e;
-				}
+				String name0 = actualTypeArgs[0].toString();
+				String name1 = actualTypeArgs[1].toString();
+				return new Pair<>(
+						Class.forName(name0.substring(name0.indexOf(' ') + 1)), // remove "interface " in front of name
+						Class.forName(name1.substring(name1.indexOf(' ') + 1)) // remove "interface " in front of name
+				);
 			}
 		}
 		throw new ClassNotFoundException("could not determine generic return type for method " + method.toString());
@@ -212,12 +205,14 @@ class WrapperInvocationHandler implements InvocationHandler {
 
 
 	private Object fromObjValue(Object v, Class<?> type) {
-		if (null == v) {
-			return null;
-		} else if (Boolean.TYPE.equals(type)) { // expected boolean
+		if (Boolean.TYPE.equals(type)) { // expected boolean (not Boolean)
 			return Boolean.TRUE.equals((Boolean) v); // force true/false (also when v == null)
+		} else if (null == v) {
+			return null;
 		} else if (JsonType.isNullablePrimitive(v)) {
-			if (Double.class.equals(type) || double.class.equals(type)) {
+			if (Boolean.class.equals(type)) {
+				return Boolean.TRUE.equals(v);
+			} else if (Double.class.equals(type) || double.class.equals(type)) {
 				return ((Number) v).doubleValue();
 			} else if (Float.class.equals(type) || float.class.equals(type)) {
 				return ((Number) v).floatValue();
@@ -251,30 +246,19 @@ class WrapperInvocationHandler implements InvocationHandler {
 		}
 	}
 
-	private static final Map<Class<?>, Builder> BUILDERS_CACHE = new HashMap<>();
+	private static final Map<Class<?>, Util.Function<JSONObject, Object>> BUILDERS_CACHE = new HashMap<>();
 
-	private class Builder {
-		private final String field;
-		private final Map<String, Class<?>> typeMap = new HashMap<>();
-
-		private Builder(WrapType wrapType, Class<?> type) {
-			field = wrapType.field();
+	private Util.Function<JSONObject, Object> createBuilder(WrapType wrapType, Class<?> type) {
+		Util.Function<JSONObject, Object> builder = BUILDERS_CACHE.get(type);
+		if (builder == null) {
+			String field = wrapType.field();
+			Map<String, Class<?>> typeMap = new HashMap<>();
 			String[] values = wrapType.values();
 			Class<?>[] types = wrapType.types();
 			for (int i = 0; i < values.length; i++) {
 				typeMap.put(values[i], types[i]);
 			}
-		}
-
-		private Object apply(JSONObject o) {
-			return WF.wrap(o, typeMap.get(o.opt(field)));
-		}
-	}
-
-	private Builder createBuilder(WrapType wrapType, Class<?> type) {
-		Builder builder = BUILDERS_CACHE.get(type);
-		if (builder == null) {
-			builder = new Builder(wrapType, type);
+			builder = (o) -> WF.wrap(o, typeMap.get(o.optString(field)));
 			BUILDERS_CACHE.put(type, builder);
 		}
 		return builder;
