@@ -5,6 +5,7 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.nominanuda.web.http.Http500Exception;
@@ -14,6 +15,7 @@ import com.nominanuda.zen.common.Util;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * Created by azum on 13/05/17.
@@ -61,11 +63,14 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 				return new Pair<>(data, null);
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
-				Throwable cause = e.getCause();
-				return new Pair<>(null, (cause != null && cause instanceof HttpAppException)
+				@Nullable Throwable cause = e.getCause();
+				return new Pair<>(null, cause instanceof UndeclaredThrowableException
+						? (Exception) cause.getCause()
+						: cause instanceof HttpAppException
 						? (HttpAppException) cause
-						: new Http500Exception(e)
-				);
+						: cause instanceof Exception
+						? new Http500Exception((Exception) cause)
+						: new Http500Exception(e));
 			} catch (Exception e) {
 				e.printStackTrace();
 				return new Pair<>(null, e);

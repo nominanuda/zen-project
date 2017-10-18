@@ -16,6 +16,9 @@ import java.lang.reflect.Proxy;
 
 public class AsyncCall<API, T> {
 	protected final static Logger LOG = LoggerFactory.getLogger(AsyncCall.class);
+	protected final static Runnable DEFAULT_FINAL_FNC = () -> {
+		// do nothing
+	};
 
 
 	/* activity */
@@ -36,9 +39,7 @@ public class AsyncCall<API, T> {
 
 	// no finalFnc
 	static <API, T> API proxy(final Activity activity, final API api, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		return proxy(activity, api, resultFnc, errorFnc, () -> {
-			// do nothing
-		});
+		return proxy(activity, api, resultFnc, errorFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
@@ -58,7 +59,7 @@ public class AsyncCall<API, T> {
 
 	// just resultFnc
 	static <API, T> API proxy(final Activity activity, final API api, Util.Consumer<T> resultFnc) {
-		return proxy(activity, api, resultFnc, e -> LOG.error("errorFnc", e));
+		return proxy(activity, api, resultFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final Activity activity, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
@@ -85,9 +86,7 @@ public class AsyncCall<API, T> {
 
 	// no finalFnc
 	static <API, T> API proxy(final Fragment fragment, final API api, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		return proxy(fragment, api, resultFnc, errorFnc, () -> {
-			// do nothing
-		});
+		return proxy(fragment, api, resultFnc, errorFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
@@ -107,7 +106,7 @@ public class AsyncCall<API, T> {
 
 	// just resultFnc
 	static <API, T> API proxy(final Fragment fragment, final API api, Util.Consumer<T> resultFnc) {
-		return proxy(fragment, api, resultFnc, e -> LOG.error("errorFnc", e));
+		return proxy(fragment, api, resultFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
@@ -134,9 +133,7 @@ public class AsyncCall<API, T> {
 
 	// no finalFnc
 	static <API, T> API proxy(final android.support.v4.app.Fragment fragment, final API api, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		return proxy(fragment, api, resultFnc, errorFnc, () -> {
-			// do nothing
-		});
+		return proxy(fragment, api, resultFnc, errorFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
@@ -156,7 +153,7 @@ public class AsyncCall<API, T> {
 
 	// just resultFnc
 	static <API, T> API proxy(final android.support.v4.app.Fragment fragment, final API api, Util.Consumer<T> resultFnc) {
-		return proxy(fragment, api, resultFnc, e -> LOG.error("errorFnc", e));
+		return proxy(fragment, api, resultFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final android.support.v4.app.Fragment fragment, final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
@@ -183,9 +180,7 @@ public class AsyncCall<API, T> {
 
 	// no finalFnc
 	static <API, T> API proxy(final API api, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
-		return proxy(api, resultFnc, errorFnc, () -> {
-			// do nothing
-		});
+		return proxy(api, resultFnc, errorFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc) {
@@ -205,7 +200,7 @@ public class AsyncCall<API, T> {
 
 	// just resultFnc
 	static <API, T> API proxy(final API api, Util.Consumer<T> resultFnc) {
-		return proxy(api, resultFnc, e -> LOG.error("errorFnc", e));
+		return proxy(api, resultFnc, DEFAULT_FINAL_FNC);
 	}
 
 	public AsyncCall(final API api, Util.Function<API, T> callFnc, Util.Consumer<T> resultFnc) {
