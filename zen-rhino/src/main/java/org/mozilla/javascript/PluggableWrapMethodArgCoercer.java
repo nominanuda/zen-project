@@ -15,6 +15,8 @@ public class PluggableWrapMethodArgCoercer extends PluggableMethodArgCoercer {
 	@Override
 	public Object coerceTypeImpl(Class<?> typeTo, Object valueFrom) {
 		Object result = super.coerceTypeImpl(typeTo, valueFrom);
-		return result instanceof Obj ? Wrap.WF.wrap((Obj) result, typeTo) : result; // if we did it to Obj, wrap it
+		return result instanceof Obj && ObjWrapper.class.isAssignableFrom(typeTo)
+				? Wrap.WF.wrap((Obj) result, typeTo) // if we did it to Obj and typeTo is an ObjWrapper, wrap it
+				: result;
 	}
 }
