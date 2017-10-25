@@ -60,13 +60,14 @@ import org.springframework.web.HttpRequestHandler;
 </property>
 </bean>
 
-<bean id="solrCatalogCoreHandler" class="com.nominanuda.solr.SolrHttpRequestHandler" lazy-init="true">
-<property name="core" ref="core1"/>
-<property name="prefix" value="/core1"/>
+<bean id="solrCore1CoreHandler" class="com.nominanuda.solr.SolrHttpRequestHandler" lazy-init="true">
+	<property name="core" ref="core1"/>
+	<property name="prefix" value="/core1"/>
 </bean>
 
 <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 */
+
 public class SolrHttpRequestHandler implements HttpRequestHandler {
 	private final Logger log = LoggerFactory.getLogger(SolrHttpRequestHandler.class);
 	private SolrCore core;
