@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 26
@@ -36,11 +35,11 @@ dependencies {
 	compile 'org.antlr:antlr-runtime:3.5.2'
 	compile 'javax.ws.rs:javax.ws.rs-api:2.0'
 	compile 'com.google.code.findbugs:jsr305:3.0.1'
-	compile 'com.squareup.okhttp3:okhttp:3.6.0'
+	compile 'com.squareup.okhttp3:okhttp:3.7.0'
 	compile fileTree(include: ['*.jar'], dir: 'libs')
 	androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
 		exclude group: 'com.android.support', module: 'support-annotations'
 	})
-	compile 'com.android.support:appcompat-v7:26.0.2'
+	compile 'com.android.support:appcompat-v7:26.1.0'
 	testCompile 'junit:junit:4.12'
 }
