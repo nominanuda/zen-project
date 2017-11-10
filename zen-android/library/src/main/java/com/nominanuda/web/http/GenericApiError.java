@@ -1,9 +1,20 @@
 package com.nominanuda.web.http;
 
 
-public class BasicApiError implements IApiError {
+public class GenericApiError implements IApiError {
 	private final static String NAME = "generic_error";
-	private String p, m = "generic error";
+	private final String m;
+	private String p;
+
+
+	public GenericApiError(String message) {
+		m = message;
+	}
+
+	public GenericApiError() {
+		this("generic error");
+	}
+
 
 	@Override
 	public String name() {
@@ -16,13 +27,8 @@ public class BasicApiError implements IApiError {
 	}
 
 	@Override
-	public BasicApiError param(String param) {
+	public GenericApiError param(String param) {
 		this.p = param;
-		return this;
-	}
-
-	public BasicApiError message(String message) {
-		if (message != null) m = message;
 		return this;
 	}
 

@@ -2,6 +2,7 @@ package com.nominanuda.zen.common;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.Serializable;
@@ -367,8 +368,8 @@ public class Util {
 			return this;
 		}
 
-		public BB put(String key, Integer i) {
-			return put(key, i.intValue());
+		public BB put(String key, @Nullable Integer i) {
+			return i != null ? put(key, i.intValue()) : this;
 		}
 
 		public BB put(String key, double d) {
@@ -376,8 +377,8 @@ public class Util {
 			return this;
 		}
 
-		public BB put(String key, Double d) {
-			return put(key, d.doubleValue());
+		public BB put(String key, @Nullable Double d) {
+			return d != null ? put(key, d.doubleValue()) : this;
 		}
 
 		public BB put(String key, float f) {
@@ -385,8 +386,8 @@ public class Util {
 			return this;
 		}
 
-		public BB put(String key, Float f) {
-			return put(key, f.floatValue());
+		public BB put(String key, @Nullable Float f) {
+			return f != null ? put(key, f.floatValue()) : this;
 		}
 
 		public BB put(String key, String s) {

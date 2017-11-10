@@ -15,6 +15,8 @@
  */
 package com.nominanuda.zen.codec;
 
+import com.nominanuda.zen.common.Util;
+
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -40,67 +42,20 @@ public class Digester {
 	private static final String AES = "AES";
 	private static final String MD5 = "MD5";
 	private static final String HMAC_SHA256 = "HmacSHA256";
-	private SecretKeySpec aes128SecretKey, sha256SecretKey, blowfish128SecretKey;
-	private Charset charset = UTF8; // default UTF8
+	private SecretKeySpec aes128SecretKey;
+	private SecretKeySpec sha256SecretKey;
+	private SecretKeySpec blowfish128SecretKey;
+	private Charset charset = UTF8;
 
-
-	public static class Digest {
-		private byte[] b;
-
-		public Digest(byte[] digest) {
-			b = digest;
-		}
-
-		public String toBase64Classic() {
-			return B64.encodeClassic(b);
-		}
-
-		public String toBase64GzipClassic() {
-			return B64.gzipEncodeClassic(b);
-		}
-
-		public String toBase64UrlSafeNoPad() {
-			return B64.encodeUrlSafeNoPad(b);
-		}
-
-		public String toBase62() {
-			return B62.encode(b);
-		}
-
-		public String toBase64GzipUrlSafeNoPad() {
-			return B64.gzipEncodeUrlSafeNoPad(b);
-		}
-
-		public String toHex() {
-			return Hex.encode(b);
-		}
-
-		public byte[] unwrap() {
-			return b;
-		}
+	public void setSecretKeySpec(byte[] b) {
+		this.aes128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), AES);
+		this.sha256SecretKey = new SecretKeySpec(Arrays.copyOf(b, 32), HMAC_SHA256);
+		this.blowfish128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), BLOWFISH);
 	}
 
-
-	public Digest hmacSHA256(String value) throws NoSuchAlgorithmException, InvalidKeyException {
-		Mac mac = Mac.getInstance(HMAC_SHA256);
-		mac.init(sha256SecretKey);
-		return new Digest(mac.doFinal(stringToBytes(value)));
-	}
-
-	public String hash(String seed, int nchars) {
-		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
-	}
-
-	public String hash(byte[] seed, int nchars) {
-		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
-	}
-
-	public Digest md5(String seed) {
-		try {
-			return md5(stringToBytes(seed));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
+	public Digester withSecretKeySpec(byte[] b) {
+		setSecretKeySpec(b);
+		return this;
 	}
 
 	public Digest md5(byte[] seed) {
@@ -111,6 +66,32 @@ public class Digester {
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	public Digest sha1(byte[] seed) {
+		try {
+			MessageDigest md = MessageDigest.getInstance(SHA1);
+			md.update(seed);
+			return new Digest(md.digest());
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public String hash(byte[] seed, int nchars) {
+		return sha1(seed)
+				.toBase64UrlSafeNoPad()
+				.substring(0, nchars);
+	}
+
+	public Util.Function<byte[], Digest> lambdHmacSHA256fromBytes() throws NoSuchAlgorithmException, InvalidKeyException {
+		Mac mac = Mac.getInstance(HMAC_SHA256);
+		mac.init(sha256SecretKey);
+		return bytes -> new Digest(mac.doFinal(bytes));
+	}
+
+	public Digest hmacSHA256(byte[] value) throws NoSuchAlgorithmException, InvalidKeyException {
+		return lambdHmacSHA256fromBytes().apply(value);
 	}
 
 	public Digest encriptAes128(byte[] clearMessage) {
@@ -187,26 +168,15 @@ public class Digester {
 		}
 	}
 
-	public Digest sha1(byte[] seed) {
-		try {
-			MessageDigest md = MessageDigest.getInstance(SHA1);
-			md.update(seed);
-			return new Digest(md.digest());
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
 
-	public Digest sha1(String seed) {
-		try {
-			return sha1(stringToBytes(seed));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
+	/* and everything with strings */
 
 	private byte[] stringToBytes(String seed) {
 		return seed.getBytes(charset);
+	}
+
+	public void setCharset(String cs) {
+		charset = Charset.forName(cs);
 	}
 
 	public Digester withCharset(String cs) {
@@ -214,13 +184,8 @@ public class Digester {
 		return this;
 	}
 
-	public void setCharset(String cs) {
-		charset = Charset.forName(cs);
-	}
-
-	public Digester withSecretKeySpec(byte[] b) {
-		setSecretKeySpec(b);
-		return this;
+	public void setSecretKeySpec(String secretKey) {
+		setSecretKeySpec(stringToBytes(secretKey));
 	}
 
 	public Digester withSecretKeySpec(String secretKey) {
@@ -228,13 +193,70 @@ public class Digester {
 		return this;
 	}
 
-	public void setSecretKeySpec(byte[] b) {
-		aes128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), AES);
-		sha256SecretKey = new SecretKeySpec(Arrays.copyOf(b, 32), HMAC_SHA256);
-		blowfish128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), BLOWFISH);
+	public void setSecretHexKeySpec(String secretHexKey) {
+		setSecretKeySpec(Hex.decode(secretHexKey));
 	}
 
-	public void setSecretKeySpec(String secretKey) {
-		setSecretKeySpec(stringToBytes(secretKey));
+	public Digester withSecretHexKeySpec(String secretHexKey) {
+		setSecretHexKeySpec(secretHexKey);
+		return this;
+	}
+
+	public Digest md5(String seed) {
+		return md5(stringToBytes(seed));
+	}
+
+	public Digest sha1(String seed) {
+		return sha1(stringToBytes(seed));
+	}
+
+	public String hash(String seed, int nchars) {
+		return hash(stringToBytes(seed), nchars);
+	}
+
+	public Util.Function<String, Digest> lambdHmacSHA256fromStrings() throws NoSuchAlgorithmException, InvalidKeyException {
+		Util.Function<byte[], Digest> fnc = lambdHmacSHA256fromBytes();
+		return s -> fnc.apply(stringToBytes(s));
+	}
+
+	public Digest hmacSHA256(String value) throws NoSuchAlgorithmException, InvalidKeyException {
+		return hmacSHA256(stringToBytes(value));
+	}
+
+
+	public static class Digest {
+		private byte[] b;
+
+		public Digest(byte[] digest) {
+			b = digest;
+		}
+
+		public String toBase64Classic() {
+			return B64.encodeClassic(b);
+		}
+
+		public String toBase64GzipClassic() {
+			return B64.gzipEncodeClassic(b);
+		}
+
+		public String toBase64UrlSafeNoPad() {
+			return B64.encodeUrlSafeNoPad(b);
+		}
+
+		public String toBase62() {
+			return B62.encode(b);
+		}
+
+		public String toBase64GzipUrlSafeNoPad() {
+			return B64.gzipEncodeUrlSafeNoPad(b);
+		}
+
+		public String toHex() {
+			return Hex.encode(b);
+		}
+
+		public byte[] unwrap() {
+			return b;
+		}
 	}
 }

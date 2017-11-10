@@ -92,6 +92,7 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 	private final Util.Consumer<T> mResultFnc;
 	private final Util.Consumer<Exception> mErrorFnc;
 	private final Runnable mFinalFnc;
+	private int mLoaderId = -1;
 
 	AsyncLoaderInvocationHandler(Context ctx, LoaderManager loaderManager, API api,
 								 Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
@@ -105,8 +106,8 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] methodArgs) throws Throwable {
-		final int loaderId = (int) (Math.random() * 10000); // TODO uniqueness
-		mLoaderManager.initLoader(loaderId, null, new LoaderManager.LoaderCallbacks<Pair<T, Exception>>() {
+		mLoaderId = (int) (Math.random() * 10000); // TODO uniqueness
+		mLoaderManager.initLoader(mLoaderId, null, new LoaderManager.LoaderCallbacks<Pair<T, Exception>>() {
 			@Override
 			public Loader<Pair<T, Exception>> onCreateLoader(int id, Bundle args) {
 				return new AsyncCallLoader<>(mCtx, mApi, method, methodArgs);
@@ -120,7 +121,7 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 					mResultFnc.accept(result.first);
 				}
 				mFinalFnc.run();
-				mLoaderManager.destroyLoader(loaderId);
+				mLoaderManager.destroyLoader(mLoaderId);
 			}
 
 			@Override
@@ -129,5 +130,12 @@ public class AsyncLoaderInvocationHandler<API, T> implements InvocationHandler {
 			}
 		});
 		return null; // just for signature check
+	}
+
+	void cancel() {
+		if (mLoaderId > -1) {
+			mLoaderManager.destroyLoader(mLoaderId);
+			// TODO call finalFnc?
+		}
 	}
 }

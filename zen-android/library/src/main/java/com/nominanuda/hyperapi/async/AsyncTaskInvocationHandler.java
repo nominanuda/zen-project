@@ -57,13 +57,22 @@ public class AsyncTaskInvocationHandler<API, T> implements InvocationHandler {
 		}
 
 		@Override
+		protected void onCancelled() {
+			// TODO call finalFnc?
+		}
+
+		@Override
 		protected void onPostExecute(Pair<RESULT, Exception> result) {
-			if (result.second != null) {
-				mErrorFnc.accept(result.second);
+			if (isCancelled()) {
+				// TODO call finalFnc?
 			} else {
-				mResultFnc.accept(result.first);
+				if (result.second != null) {
+					mErrorFnc.accept(result.second);
+				} else {
+					mResultFnc.accept(result.first);
+				}
+				mFinalFnc.run();
 			}
-			mFinalFnc.run();
 		}
 	}
 
@@ -72,6 +81,7 @@ public class AsyncTaskInvocationHandler<API, T> implements InvocationHandler {
 	private final Util.Consumer<T> mResultFnc;
 	private final Util.Consumer<Exception> mErrorFnc;
 	private final Runnable mFinalFnc;
+	private AsyncCallTask<API, T> mTask;
 
 	AsyncTaskInvocationHandler(API api, Util.Consumer<T> resultFnc, Util.Consumer<Exception> errorFnc, Runnable finalFnc) {
 		mApi = api;
@@ -80,11 +90,13 @@ public class AsyncTaskInvocationHandler<API, T> implements InvocationHandler {
 		mFinalFnc = finalFnc;
 	}
 
-
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		AsyncCallTask task = new AsyncCallTask<>(mApi, method, mResultFnc, mErrorFnc, mFinalFnc);
-		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args);
+		(mTask = new AsyncCallTask<>(mApi, method, mResultFnc, mErrorFnc, mFinalFnc)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args);
 		return null; // just for signature check
+	}
+
+	void cancel() {
+		if (mTask != null) mTask.cancel(true);
 	}
 }

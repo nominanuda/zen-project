@@ -1,12 +1,8 @@
 package com.nominanuda.hyperapi;
 
+import android.support.annotation.Nullable;
+
 import com.nominanuda.urispec.StringMapURISpec;
-import com.nominanuda.web.http.Http400Exception;
-import com.nominanuda.web.http.Http401Exception;
-import com.nominanuda.web.http.Http403Exception;
-import com.nominanuda.web.http.Http404Exception;
-import com.nominanuda.web.http.Http4xxException;
-import com.nominanuda.web.http.Http5xxException;
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Obj;
 
@@ -54,12 +50,14 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	private final static CacheControl CACHE_CONTROL = new CacheControl.Builder().noCache().noStore().build();
 	private final static RequestBody EMPTY_REQUEST_BODY = RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "".getBytes());
 	private final static Logger LOG = LoggerFactory.getLogger(HyperApiHttpInvocationHandler.class);
-	protected final OkHttpClient okHttpClient;
-	protected final String uriPrefix;
+	@Nullable private final IHttpAppExceptionRenderer exceptionRenderer;
+	private final OkHttpClient okHttpClient;
+	private final String uriPrefix;
 
-	protected HyperApiHttpInvocationHandler(OkHttpClient client, String uriPrefix) {
+	HyperApiHttpInvocationHandler(OkHttpClient client, String uriPrefix, @Nullable IHttpAppExceptionRenderer exceptionRenderer) {
 		this.okHttpClient = client;
 		this.uriPrefix = uriPrefix;
+		this.exceptionRenderer = exceptionRenderer;
 	}
 
 
@@ -69,26 +67,11 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		LOG.debug("{} {}", request.method(), request.url());
 		Response response = okHttpClient.newCall(request).execute();
 		try {
-			int status = response.code();
-			if (status >= 400) {
-				String message = response.message();
-				if (status < 500) {
-					switch (status) {
-					case 400:
-						throw new Http400Exception(message);
-					case 401:
-						throw new Http401Exception(message);
-					case 403:
-						throw new Http403Exception(message);
-					case 404:
-						throw new Http404Exception(message);
-					default:
-						throw new Http4xxException(message, status);
-					}
-				}
-				throw new Http5xxException(message, status);
+			Object result = ENC.decode(response.body(), new AnnotatedType(method.getReturnType(), method.getAnnotations()));
+			if (exceptionRenderer != null) { // can be null if we don't want to throw exceptions
+				exceptionRenderer.parseAndThrow(response.code(), result);
 			}
-			return ENC.decode(response.body(), new AnnotatedType(method.getReturnType(), method.getAnnotations()));
+			return result;
 		} finally {
 			response.close();
 		}
@@ -184,8 +167,11 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 
 		FormBody formBody = formBodyBuilder.build();
 		if (formBody.size() > 0) {
-			httpMethod = "POST";
 			entity = formBody;
+			if ("GET".equals(httpMethod)) {
+				// just to prevent a common mistake when writing hyperapis...
+				httpMethod = "POST";
+			}
 		}
 
 		return new Request.Builder()

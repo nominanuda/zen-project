@@ -16,69 +16,82 @@
 package com.nominanuda.web.http;
 
 import com.nominanuda.zen.common.Check;
-
-import java.util.List;
+import com.nominanuda.zen.common.Util;
 
 import static com.nominanuda.zen.common.Str.STR;
 
 public abstract class HttpAppException extends RuntimeException {
 	private static final long serialVersionUID = 7813677042673120866L;
+	private final IApiError apiError;
+	private final int status;
+
+	protected HttpAppException(Exception e, int status) {
+		super(e);
+		apiError = null;
+		this.status = status;
+	}
+
+	protected HttpAppException(String msg, int status) {
+		super(msg);
+		apiError = null;
+		this.status = status;
+	}
+
+	protected HttpAppException(IApiError apiError, int status) {
+		super(serialize(apiError));
+		this.apiError = apiError;
+		this.status = status;
+	}
+
+
+	/* public stuff */
 
 	public HttpAppException(Exception e) {
-		super(e);
+		this(e, 0);
 	}
 
 	public HttpAppException(String msg) {
-		super(msg);
+		this(msg, 0);
 	}
-	
+
+	public HttpAppException(IApiError apiError) {
+		this(apiError, 0);
+	}
+
+	public IApiError getApiError() {
+		return apiError;
+	}
+
 	public int getStatusCode() {
-		return 0;
+		return status;
 	}
-	
-	
+
 	public static HttpAppException from(Exception e) {
 		if (e instanceof HttpAppException) {
 			return (HttpAppException) e;
 		} else if (e instanceof IllegalArgumentException) {
 			return new Http400Exception(e);
 		} else if (e instanceof NullPointerException) {
-			return new Http400Exception(e);
+			return new Http500Exception(e);
 		}
 		return new Http500Exception(e);
 	}
 	
 	
-	/* generic situations */
-	
-	public static void badParamExAssertTrue(boolean cond, IApiError msg) throws Http400Exception {
-		if (!cond) {
-			throw new Http400Exception(msg != null ? msg : BasicApiError.generic_badParameter);
-		}
-	}
-	public static void badParamExAssertTrue(boolean cond) throws Http400Exception {
-		authExAssertTrue(cond, null);
-	}
-	
-	public static void authExAssertTrue(boolean cond, IApiError msg) throws Http401Exception {
-		if (!cond) {
-			throw new Http401Exception(msg != null ? msg : BasicApiError.generic_unauthorized);
-		}
-	}
-	public static void authExAssertTrue(boolean cond) throws Http401Exception {
-		authExAssertTrue(cond, null);
-	}
-	
-	
 	/* IApiError <-> String */
-	
-	protected static String serialize(IApiError err) {
+
+	private static String serialize(IApiError err) {
 		return STR.joinArgs("|", err.name(), Check.ifNull(err.param(), ""));
 	}
-	
-	public static <E extends Enum<E> & IApiError> IApiError deserialize(String msg, Class<E> apiErrorEnum) {
-		List<String> parts = STR.splitAndTrim(msg, "\\|");
-		IApiError err = Enum.valueOf(apiErrorEnum, parts.get(0));
-		return err.param(parts.size() > 1 ? parts.get(1) : null);
+
+	public static <E extends Enum<E> & IApiError> IApiError deserialize(String msg, Class<E> apiErrorEnum)
+			throws IllegalArgumentException, NullPointerException {
+		String param = null;
+		int index = msg.indexOf('|');
+		if (index > -1) {
+			param = Util.notEmptyElse(msg.substring(index + 1), null);
+			msg = msg.substring(0, index);
+		}
+		return Enum.valueOf(apiErrorEnum, msg).param(param);
 	}
 }
