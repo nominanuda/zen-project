@@ -176,13 +176,13 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		URISpec<Obj> spec = null;
 		for (Annotation a : method.getAnnotations()) {
 			if (a instanceof POST) {
-				httpMethod = "POST";
+				httpMethod = HttpProtocol.POST;
 			} else if (a instanceof GET) {
-				httpMethod = "GET";
+				httpMethod = HttpProtocol.GET;
 			} else if (a instanceof PUT) {
-				httpMethod = "PUT";
+				httpMethod = HttpProtocol.PUT;
 			} else if (a instanceof DELETE) {
-				httpMethod = "DELETE";
+				httpMethod = HttpProtocol.DELETE;
 			} else if (a instanceof Path) {
 				spec = new ObjURISpec(URIS.pathJoin(uriPrefix, ((Path) a).value()));
 //			} else if (a instanceof Consumes) {
@@ -192,8 +192,11 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		
 		if (!formParams.isEmpty()) {
 			try {
-				httpMethod = "POST";
 				entity = new UrlEncodedFormEntity(formParams, HttpProtocol.UTF_8);
+				if (HttpProtocol.GET.equals(httpMethod)) {
+					// just to prevent a common mistake when writing hyperapis...
+					httpMethod = HttpProtocol.POST;
+				}
 			} catch (UnsupportedEncodingException e) {
 				throw new Http500Exception("Unsupported parameter encoding");
 			}
@@ -223,26 +226,26 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		request.setConfig(requestConfig);
 		request.setHeaders(headers.toArray(new Header[headers.size()]));
 		if (Stru.class.isAssignableFrom(returnType)) {
-			request.setHeader("Accept", HttpProtocol.CT_APPLICATION_JSON);
+			request.setHeader(HttpProtocol.HDR_ACCEPT, HttpProtocol.CT_APPLICATION_JSON);
 		} else {
-			request.setHeader("Accept", "*/*");
+			request.setHeader(HttpProtocol.HDR_ACCEPT, HttpProtocol.CT_ANY);
 		}
-		request.setHeader("Cache-Control", "no-cache");
-		request.setHeader("Connection", "close"); // TODO remove?
-		request.setHeader("Pragma", "no-cache");
-		request.setHeader("User-Agent", userAgent);
+		request.setHeader(HttpProtocol.HDR_CACHE_CONTROL, "no-cache");
+		request.setHeader(HttpProtocol.HDR_CONNECTION, "close"); // TODO remove?
+		request.setHeader(HttpProtocol.HDR_PRAGMA, "no-cache");
+		request.setHeader(HttpProtocol.HDR_USER_AGENT, userAgent);
 		return request;
 	}
 
 	private HttpRequestBase createRequest(String uri, String httpMethod) {
 		switch (httpMethod) {
-		case "GET":
+		case HttpProtocol.GET:
 			return new HttpGet(uri);
-		case "POST":
+		case HttpProtocol.POST:
 			return new HttpPost(uri);
-		case "PUT":
+		case HttpProtocol.PUT:
 			return new HttpPut(uri);
-		case "DELETE":
+		case HttpProtocol.DELETE:
 			return new HttpDelete(uri);
 		}
 		throw new IllegalArgumentException("unknown http method " + httpMethod);

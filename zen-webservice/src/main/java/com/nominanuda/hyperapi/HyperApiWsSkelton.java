@@ -44,7 +44,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicHttpResponse;
 
-import com.nominanuda.web.http.Http500Exception;
 import com.nominanuda.web.mvc.ObjURISpec;
 import com.nominanuda.web.mvc.WebService;
 import com.nominanuda.zen.common.Check;
@@ -72,7 +71,7 @@ public class HyperApiWsSkelton implements WebService {
 	
 	
 	public HttpResponse handle(HttpRequest request) throws Exception {
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 		try {
 			Tuple2<Object, AnnotatedType> result = handleCall(request);
 			Object handlerResult = result.get0();
@@ -81,12 +80,7 @@ public class HyperApiWsSkelton implements WebService {
 			}
 			return response(handlerResult, result.get1());
 		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-			if (cause != null && cause instanceof Exception) {
-				throw (Exception) cause;
-			} else {
-				throw new Http500Exception(e);
-			}
+			throw (Exception) e.getCause();
 		}
 	}
 
@@ -171,7 +165,7 @@ public class HyperApiWsSkelton implements WebService {
 				}
 			}
 			if (! annotationFound) {
-				args [i] = entity != null ? entityCodec.decode(entity, p) : null;
+				args[i] = entity != null ? entityCodec.decode(entity, p) : null;
 			}
 		}
 		return args;

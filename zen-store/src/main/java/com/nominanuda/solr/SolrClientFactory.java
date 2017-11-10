@@ -8,8 +8,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 
 //Doc solrHome {coreName}.solr.data.dir special case
@@ -27,10 +28,44 @@ public class SolrClientFactory {
 	public SolrClient getOrBootstrapByURL(String url) throws Exception {
 		URI loc = URI.create(url);
 		String scheme = loc.getScheme();
-		if("http".equals(scheme)||"https".equals(scheme)) {
-			SolrClient s = new HttpSolrClient.Builder(url).build();
-			return s;
-		} else if(scheme == null || "file".equals(scheme)) {
+		
+		if ("http".equals(scheme) || "https".equals(scheme)) {
+			return new HttpSolrClient.Builder(url).build();
+			
+		} else if (scheme == null || "file".equals(scheme)) {
+			final String solrHome = loc.getPath();
+			final String coreName = loc.getFragment();
+			final Properties props = splitQuery(loc.getQuery());
+			props.put("solr.solr.home", solrHome);
+
+			List<SolrEndpoint> endpointsBySolrHome = coreContainerLifeCycle.findEndpointsBySolrHome(solrHome);
+			switch (endpointsBySolrHome.size()) {
+			case 0:
+				break; // go to bootstrap
+				
+			case 1:
+				SolrEndpoint endpoint = endpointsBySolrHome.get(0);
+				return endpoint.createEmbeddedSolrServer(coreName);
+			
+			default: // how do we get here? endpointsBySolrHome.size() is never bigger than 1
+				final String dataDir = props.getProperty(coreName + ".solr.data.dir");
+				illegalstate.assertNotNull(dataDir, "ambiguous solr.solr.home " + solrHome);
+				SolrEndpoint endpointByDataDir = coreContainerLifeCycle.findEndpointByDataDir(dataDir);
+				if (endpointByDataDir != null) {
+					illegalstate.assertEquals(solrHome, endpointByDataDir.getSolrHome());
+					illegalstate.assertEquals(dataDir, endpointByDataDir.getCoreByName(coreName).getDataDir());
+					return endpointByDataDir.createEmbeddedSolrServer(coreName);
+				}
+				// go to bootstrap
+			}
+			
+			SolrEndpoint sep = coreContainerLifeCycle.bootstrap(props);
+			return sep.createEmbeddedSolrServer(coreName);
+			
+			
+			/*
+			 * Old code version for reference (how do we get to lcc.size() > 1?)
+			 * 
 			String solrHome = loc.getPath();
 			String coreName = loc.getFragment();
 			String q = loc.getQuery();
@@ -69,25 +104,28 @@ public class SolrClientFactory {
 				EmbeddedSolrServer ess = sep.createEmbeddedSolrServer(coreName);
 				return ess;
 			}
-		} else {
-			throw new IllegalArgumentException(
-				"missing or wrong URI scheme in locator "+url);
+			*/
 		}
+		
+		throw new IllegalArgumentException("missing or wrong URI scheme in locator " + url);
 	}
+	
 
-	public static Properties splitQuery(String query) {
-		Properties params = new Properties();
-		String[] pairs = query.split("&");
-		for (String pair : pairs) {
-			int idx = pair.indexOf("=");
-			try {
-				params.put(
-					decode(pair.substring(0, idx), "UTF-8"),
-					decode(pair.substring(idx + 1), "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalArgumentException(e);
+	private static Properties splitQuery(@Nullable String query) {
+		Properties props = new Properties();
+		if (query != null) {
+			String[] pairs = query.split("&");
+			for (String pair : pairs) {
+				int idx = pair.indexOf("=");
+				try {
+					props.put(
+						decode(pair.substring(0, idx), "UTF-8"),
+						decode(pair.substring(idx + 1), "UTF-8"));
+				} catch (UnsupportedEncodingException e) {
+					throw new IllegalArgumentException(e);
+				}
 			}
 		}
-		return params;
+		return props;
 	}
 }

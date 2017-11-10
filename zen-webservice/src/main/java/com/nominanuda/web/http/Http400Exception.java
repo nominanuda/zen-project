@@ -20,19 +20,14 @@ public class Http400Exception extends Http4xxException {
 	private static final long serialVersionUID = 1743745763945084329L;
 
 	public Http400Exception(Exception e) {
-		super(e);
+		super(e, 400);
 	}
 
 	public Http400Exception(String msg) {
-		super(msg);
+		super(msg, 400);
 	}
 
-	public Http400Exception(IApiError err) {
-		this(serialize(err));
-	}
-	
-	@Override
-	public int getStatusCode() {
-		return 400;
+	public Http400Exception(IApiError apiError) {
+		super(apiError, 400);
 	}
 }

@@ -57,7 +57,7 @@ public enum Check {
 				throw new IllegalStateException();
 			}
 		};
-		if(UncheckedIOException.class.equals(ex)) {
+		if (UncheckedIOException.class.equals(ex)) {
 			reasonBuilder = (reason) -> new UncheckedIOException(new IOException(reason));
 		} else {
 			try {

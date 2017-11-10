@@ -45,26 +45,15 @@ public class Digester {
 	private SecretKeySpec blowfish128SecretKey;
 	private Charset charset = UTF8;
 
-	public Digest hmacSHA256(String value)
-			throws NoSuchAlgorithmException, InvalidKeyException {
-		Mac mac = Mac.getInstance(HMAC_SHA256);
-		mac.init(sha256SecretKey);
-		return new Digest(mac.doFinal(stringToBytes(value)));
+	public void setSecretKeySpec(byte[] b) {
+		this.aes128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), AES);
+		this.sha256SecretKey = new SecretKeySpec(Arrays.copyOf(b, 32), HMAC_SHA256);
+		this.blowfish128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), BLOWFISH);
 	}
-
-	public String hash(String seed, int nchars) {
-		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
-	}
-	public String hash(byte[] seed, int nchars) {
-		return sha1(seed).toBase64UrlSafeNoPad().substring(0, nchars);
-	}
-
-	public Digest md5(String seed) {
-		try {
-			return md5(stringToBytes(seed));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
+	
+	public Digester withSecretKeySpec(byte[] b) {
+		setSecretKeySpec(b);
+		return this;
 	}
 
 	public Digest md5(byte[] seed) {
@@ -75,6 +64,28 @@ public class Digester {
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	public Digest sha1(byte[] seed) {
+		try {
+			MessageDigest md = MessageDigest.getInstance(SHA1);
+			md.update(seed);
+			return new Digest(md.digest());
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+	
+	public String hash(byte[] seed, int nchars) {
+		return sha1(seed)
+			.toBase64UrlSafeNoPad()
+			.substring(0, nchars);
+	}
+	
+	public Digest hmacSHA256(byte[] value) throws NoSuchAlgorithmException, InvalidKeyException {
+		Mac mac = Mac.getInstance(HMAC_SHA256);
+		mac.init(sha256SecretKey);
+		return new Digest(mac.doFinal(value));
 	}
 
 	public Digest encriptAes128(byte[] clearMessage) {
@@ -95,6 +106,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+	
 	public byte[] decriptAes128(byte[] encrypted) {
 		try {
 			Cipher cipher = Cipher.getInstance(AES);
@@ -112,6 +124,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+	
 	public Digest encriptBlowfish128(byte[] clearMessage) {
 		try {
 			Cipher cipher = Cipher.getInstance(BLOWFISH);
@@ -130,6 +143,7 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
+	
 	public byte[] decriptBlowfish128(byte[] encrypted) {
 		try {
 			Cipher cipher = Cipher.getInstance(BLOWFISH);
@@ -147,48 +161,58 @@ public class Digester {
 			throw new IllegalStateException(e);
 		}
 	}
-
-	public Digest sha1(byte[] seed) {
-		try {
-			MessageDigest md = MessageDigest.getInstance(SHA1);
-			md.update(seed);
-			return new Digest(md.digest());
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	public Digest sha1(String seed) {
-		try {
-			return sha1(stringToBytes(seed));
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
+	
+	
+	/* and everything with strings */
 
 	private byte[] stringToBytes(String seed) {
 		return seed.getBytes(charset);
 	}
+	
+	public void setCharset(String cs) {
+		charset = Charset.forName(cs);
+	}
+	
 	public Digester withCharset(String cs) {
 		setCharset(cs);
 		return this;
 	}
-	public void setCharset(String cs) {
-		charset = Charset.forName(cs);
-	}
 
+	public void setSecretKeySpec(String secretKey) {
+		setSecretKeySpec(stringToBytes(secretKey));
+	}
+	
 	public Digester withSecretKeySpec(String secretKey) {
 		setSecretKeySpec(secretKey);
 		return this;
 	}
 
-	public void setSecretKeySpec(String secretKey) {
-		byte[] b = stringToBytes(secretKey);
-		this.aes128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), AES);
-		this.sha256SecretKey = new SecretKeySpec(Arrays.copyOf(b, 32), HMAC_SHA256);
-		this.blowfish128SecretKey = new SecretKeySpec(Arrays.copyOf(b, 16), BLOWFISH);
+	public void setSecretHexKeySpec(String secretHexKey) {
+		setSecretKeySpec(Hex.decode(secretHexKey));
+	}
+	
+	public Digester withSecretHexKeySpec(String secretHexKey) {
+		setSecretHexKeySpec(secretHexKey);
+		return this;
+	}
+	
+	public Digest md5(String seed) {
+		return md5(stringToBytes(seed));
 	}
 
+	public Digest sha1(String seed) {
+		return sha1(stringToBytes(seed));
+	}
+
+	public String hash(String seed, int nchars) {
+		return hash(stringToBytes(seed), nchars);
+	}
+	
+	public Digest hmacSHA256(String value) throws NoSuchAlgorithmException, InvalidKeyException {
+		return hmacSHA256(stringToBytes(value));
+	}
+	
+	
 	public static class Digest {
 		private byte[] b;
 
