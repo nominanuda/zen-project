@@ -24,7 +24,7 @@ exports = {
 	},
 //	ms2MMddyyyyHHmmssxxx TODO
 	
-	ddMMyyy2ms: function(datetime) {
+	ddMMyyyy2ms: function(datetime) {
 		(arguments.length > 1) && (datetime = Array.prototype.slice.call(arguments)); // when passing day, month, year,... as params
 		(datetime && datetime.splice) && (datetime = datetime.join('.')); // if is array
 		if (!RE_DDMMYYYYHHMM.test(datetime)) {
