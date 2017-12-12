@@ -27,8 +27,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Console extends ScriptableObject {
+	public final static String HOSTOBJ_KEY = "CONSOLE";
 	private static final long serialVersionUID = 924498336863426363L;
-	private static final Logger log = LoggerFactory.getLogger("rhinoConsole");
+	private static final RhinoLogger logger = new RhinoLogger();
+	
+	private static class RhinoLogger {
+		private static final Logger log = LoggerFactory.getLogger("rhinoConsole");
+		
+		private void log(Object... args) {
+			log.info(STR.join(",", Arrays.asList(args)));
+		}
+		
+		private void info(Object... args) {
+			log.info(STR.join(",", Arrays.asList(args)));
+		}
+
+		private void debug(Object... args) {
+			log.debug(STR.join(",", Arrays.asList(args)));
+		}
+
+		private void warn(Object... args) {
+			log.warn(STR.join(",", Arrays.asList(args)));
+		}
+
+		private void error(Object... args) {
+			log.error(STR.join(",", Arrays.asList(args)));
+		}
+	}
+	
 
 	public void jsConstructor() {}
 
@@ -37,23 +63,28 @@ public class Console extends ScriptableObject {
 		return "Console";
 	}
 	
-	public static void jsFunction_log(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.info(STR.join(",", Arrays.asList(args)));
+	public static void jsFunction_log(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		logger.log(args);
 	}
 	
-	public static void jsFunction_info(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.info(STR.join(",", Arrays.asList(args)));
+	public static void jsFunction_info(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		logger.info(args);
 	}
 	
-	public static void jsFunction_debug(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.debug(STR.join(",", Arrays.asList(args)));
+	public static void jsFunction_debug(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		logger.debug(args);
 	}
 	
-	public static void jsFunction_warn(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.warn(STR.join(",", Arrays.asList(args)));
+	public static void jsFunction_warn(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		logger.warn(args);
 	}
 	
-	public static void jsFunction_error(Context cx, Scriptable thisObj,Object[] args, Function funObj){
-		log.error(STR.join(",", Arrays.asList(args)));
+	public static void jsFunction_error(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		logger.error(args);
+	}
+	
+	
+	public static Object asJavaHostObj() {
+		return logger;
 	}
 }

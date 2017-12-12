@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,7 @@ public class RhinoHelper {
 		res.setParentScope(null);
 		return res;
 	}
+	
 	public ScriptableObject createTopScope(Context cx, boolean allowJavaPackageAccess) throws Exception {//TODO more fine grained IOEx + some other
 		ScriptableObject root;
 		if(allowJavaPackageAccess) {
@@ -58,6 +60,7 @@ public class RhinoHelper {
 		}
 		return root;
 	}
+	
 	private void disallowJavaPackagesAccess(ScriptableObject root) {
 		for(String topJavaName : TOP_JAVA_NAMES) {
 			ScriptableObject.deleteProperty(root, topJavaName);
@@ -160,6 +163,7 @@ public class RhinoHelper {
 		Reader r = new InputStreamReader(url.openStream(), "UTF-8");///TODO detect charset if possible
 		return evaluateReader(cx, r, url.toString(), scope);
 	}
+	
 	public Object evaluateReader(Context cx, Reader src, String path,
 			Scriptable scope) {
 		//TODO should throw exceptions..
@@ -184,6 +188,21 @@ public class RhinoHelper {
 	}
 	public boolean isArray(Object o) {
 		return ScriptRuntime.isArrayObject(o);
+	}
+	
+	public Scriptable fromList(List<?> list, Context cx, Scriptable scope) {
+		Scriptable array = RHINO.newArray(cx, scope);
+		for (int i = 0; i < list.size(); i++) {
+			RHINO.putProperty(array, i, list.get(i));
+		}
+		return array;
+	}
+	public Scriptable fromMap(Map<?, ?> map, Context cx, Scriptable scope) {
+		Scriptable object = RHINO.newObject(cx, scope);
+		for (Object k : map.keySet()) {
+			RHINO.putProperty(object, k.toString(), map.get(k));
+		}
+		return object;
 	}
 	
 
@@ -292,6 +311,7 @@ public class RhinoHelper {
 			ScriptableObject.putProperty(obj, ((Number)index).intValue(), value);
 		}
 	}
+	
 	private Object validateIndex(Object index) {
 		Check.notNull(index);
 		if (index instanceof String) {

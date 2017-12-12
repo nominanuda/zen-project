@@ -5,6 +5,7 @@ import static org.mozilla.javascript.RhinoHelper.RHINO;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -68,12 +69,18 @@ public abstract class AbsScriptSource implements IScriptSource {
 	/* host objs smartness */
 	
 	private Object resolveHostObject(Object value, Context cx, Scriptable scope) throws Exception {
+		if (value instanceof List) { // list -> array
+			return RHINO.fromList((List<?>) value, cx, scope);
+		}
+		if (value instanceof Map) { // map -> object
+			return RHINO.fromMap((Map<?, ?>) value, cx, scope);
+		}
 		if (value instanceof String) {
 			String string = (String) value;
-			if (string.endsWith(jsSuffix)) {
+			if (string.endsWith(jsSuffix)) { // .js source
 				return MODS.create(string, null, scope, cx);
 			}
-			if (string.endsWith(jsonSuffix)) {
+			if (string.endsWith(jsonSuffix)) { // .json structure
 				return JsonDeserializer.JSON_DESERIALIZER.deserialize((new URL(string).openStream()));
 			}
 		}

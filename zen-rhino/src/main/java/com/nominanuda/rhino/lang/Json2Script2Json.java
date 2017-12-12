@@ -9,18 +9,19 @@ import org.mozilla.javascript.RhinoEmbedding;
 import com.nominanuda.rhino.IScriptSource;
 import com.nominanuda.rhino.IScriptSource.IScript;
 import com.nominanuda.rhino.SimpleScriptSource;
+import com.nominanuda.rhino.host.Console;
 import com.nominanuda.zen.obj.Stru;
 import com.nominanuda.zen.stereotype.Disposable;
+import com.nominanuda.zen.stereotype.Reloadable;
 
 public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 	
-	public static class Factory implements com.nominanuda.zen.stereotype.Factory<Json2Script2Json> {
+	public static class Factory implements com.nominanuda.zen.stereotype.Factory<Json2Script2Json>, Reloadable {
 		private final IScriptSource scriptSource;
 		
 		public Factory(IScriptSource scriptSource) {
 			this.scriptSource = scriptSource;
 		}
-		
 		public Factory(String file, Map<String, Object> objs, RhinoEmbedding embedding) throws IOException {
 			SimpleScriptSource scriptSource = new SimpleScriptSource(file);
 			scriptSource.setRhinoEmbedding(embedding);
@@ -39,6 +40,19 @@ public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 				e.printStackTrace();
 				throw new RuntimeException("could not istantiate scriptSource, error: " + e.getMessage());
 			}
+		}
+		
+		@Override
+		public void reload() throws Exception {
+			scriptSource.reset();
+		}
+		
+		public void setEnableConsoleWithKey(String consoleKey) {
+			scriptSource.setHostObject(consoleKey, Console.asJavaHostObj());
+		}
+		
+		public void setEnableConsole(boolean enable) {
+			if (enable) setEnableConsoleWithKey(Console.HOSTOBJ_KEY);
 		}
 	}
 	

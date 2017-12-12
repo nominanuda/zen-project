@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.nominanuda.rhino.host.Console;
 import com.nominanuda.rhino.host.HostObjectFactory;
 import com.nominanuda.rhino.host.JavaObjectFactory;
 import com.nominanuda.rhino.host.ModuleFactory;
@@ -41,7 +42,7 @@ public class SpringScopeFactory extends ScopeFactory {
 			List<ModuleFactory> factories = new LinkedList<>();
 			factories.add(new SourceModuleFactory());
 			HostObjectFactory hoFactory = new HostObjectFactory();
-			hoFactory.addObject("CONSOLE", "com.nominanuda.rhino.host.Console");
+			hoFactory.addObject(Console.HOSTOBJ_KEY, "com.nominanuda.rhino.host.Console");
 			factories.add(hoFactory);
 			if (requireJavaObjs != null) {
 				factories.add(new JavaObjectFactory(requireJavaObjs));
