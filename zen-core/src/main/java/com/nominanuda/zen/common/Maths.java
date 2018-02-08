@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.nominanuda.zen.stereotype.ScopedSingletonFactory;
@@ -38,6 +39,47 @@ public class Maths {
 			return false;
 		}
 		return true;
+	}
+
+	public boolean isNumber(String n) {
+		try {
+			Double.valueOf(n);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+	
+	public double parseDoubleOr(@Nullable String str, double fallback) {
+		try {
+			return Double.valueOf(str);
+		} catch (Exception e) {
+			return fallback;
+		}
+	}
+	
+	public float parseFloatOr(@Nullable String str, float fallback) {
+		try {
+			return Float.valueOf(str);
+		} catch (Exception e) {
+			return fallback;
+		}
+	}
+	
+	public int parseIntOr(@Nullable String str, int fallback) {
+		try {
+			return Integer.valueOf(str);
+		} catch (Exception e) {
+			return fallback;
+		}
+	}
+	
+	public long parseLongOr(@Nullable String str, long fallback) {
+		try {
+			return Long.valueOf(str);
+		} catch (Exception e) {
+			return fallback;
+		}
 	}
 
 	public byte[] getBytes(long n) {
@@ -78,15 +120,6 @@ public class Maths {
 		return isInteger((Number)o)
 			? new Long(((Number)o).longValue()).toString()
 			: o.toString();
-	}
-
-	public boolean isNumber(String n) {
-		try {
-			Double.valueOf(n);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
-		}
 	}
 
 	public int asUnsignedByte(byte b) {

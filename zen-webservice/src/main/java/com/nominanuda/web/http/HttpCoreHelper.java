@@ -80,6 +80,7 @@ import org.apache.http.entity.mime.HttpMultipart;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
@@ -566,15 +567,21 @@ public class HttpCoreHelper implements HttpProtocol {
 		return httpClient;
 	}
 	
-	public CloseableHttpAsyncClient createAsyncClient(int maxConnPerRoute) {
+	public CloseableHttpAsyncClient createAsyncClient(int maxConnPerRoute, boolean reuse) {
 		CloseableHttpAsyncClient httpclient = HttpAsyncClients
 			.custom()
 			.setMaxConnPerRoute(maxConnPerRoute)
 			.setMaxConnTotal(maxConnPerRoute)
-			.setConnectionReuseStrategy(DefaultConnectionReuseStrategy.INSTANCE)
+			.setConnectionReuseStrategy(reuse
+				? DefaultConnectionReuseStrategy.INSTANCE
+				: NoConnectionReuseStrategy.INSTANCE)
 			.build();
 		httpclient.start();
 		return httpclient;
+	}
+	
+	public CloseableHttpAsyncClient createAsyncClient(int maxConnPerRoute) {
+		return createAsyncClient(maxConnPerRoute, true); // reuse true was default behavior
 	}
 	
 	

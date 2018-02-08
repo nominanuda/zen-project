@@ -34,7 +34,7 @@ function toInt(o, v) {
 			}
 			return o;
 		}
-		var i = parseInt(o);
+		var i = parseInt(o, 10); // default base is 8 when string start with '0'
 		if (!isNaN(i)) {
 			return i;
 		}

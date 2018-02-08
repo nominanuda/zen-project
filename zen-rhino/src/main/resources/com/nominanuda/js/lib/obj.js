@@ -3,6 +3,22 @@ function CAST_toArray(o, fnc) { // redefined here just to avoid require
 	return fnc ? arr.map(fnc) : arr;
 }
 
+
+function nth(obj, pos) {
+	var k = keys(obj)[pos];
+	return k ? obj[k] : undefined;
+}
+
+function first(obj) {
+	return nth(obj, 0);
+}
+
+function last(obj) {
+	var ks = keys(obj);
+	var k = ks[ks.length - 1];
+	return k ? obj[k] : undefined;
+}
+
 function keys(obj) {
 	return Object.keys(obj);
 }
@@ -169,6 +185,9 @@ function contains(obj, value) {
 
 
 exports = {
+	nth: nth,
+	first: first,
+	last: last,
 	keys: keys,
 	vals: vals,
 	map: map,

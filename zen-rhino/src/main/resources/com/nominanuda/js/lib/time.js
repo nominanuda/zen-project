@@ -5,7 +5,7 @@ exports = {
 	ms2ddMMyyyy: function(ms, sep) {
 		sep = sep || '.';
 		var date = ms ? new Date(ms) : new Date();
-		var d = date.getDate(), m = (date.getMonth()+1);
+		var d = date.getDate(), m = date.getMonth() + 1;
 		return ('0' + d).slice(-2) + sep + ('0' + m).slice(-2) + sep + date.getFullYear();
 	},
 //	ms2MMddyyyy TODO
@@ -35,7 +35,7 @@ exports = {
 			}
 		}
 		var params = RE_DDMMYYYYHHMM.exec(datetime);
-		var dt = new Date(params[3], parseInt(params[2],10)-1, params[1], params[4], params[5]);
+		var dt = new Date(params[3], parseInt(params[2], 10) - 1, params[1], params[4], params[5]);
 		return dt.getTime();
 	},
 //	MMddyyyy2ms TODO

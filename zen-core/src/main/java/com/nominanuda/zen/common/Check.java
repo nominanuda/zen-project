@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -92,18 +93,18 @@ public enum Check {
 	}
 
 	public static void notNulls(Object... objs) throws NullPointerException {
-		for(Object o : objs) {
+		for (Object o : objs) {
 			notNull(o);
 		}
 	}
 	public static <T> T notNull(T o) throws NullPointerException {
-		if(o == null) {
+		if (o == null) {
 			throw nullpointer.buildEx();
 		}
 		return o;
 	}
 	public static <T> T notNull(T o, String reason) {
-		if(o == null) {
+		if (o == null) {
 			throw nullpointer.buildEx(reason);
 		}
 		return o;
@@ -115,24 +116,24 @@ public enum Check {
 		}
 	}
 	public void assertNull(Object o, String reason) {
-		if(o != null) {
+		if (o != null) {
 			throw buildEx(reason);
 		}
 	}
 
 	public void assertEquals(Object o1, Object o2) {
-		if(o1 == null || o2 == null || !o1.equals(o2)) {
+		if (o1 == null || o2 == null || !o1.equals(o2)) {
 			throw buildEx();
 		}
 	}
 	public void assertEquals(Object o1, Object o2, String reason) {
-		if(o1 == null || o2 == null || !o1.equals(o2)) {
+		if (o1 == null || o2 == null || !o1.equals(o2)) {
 			throw buildEx(reason);
 		}
 	}
 
 	public <T> T assertInstanceOf(Object o1, Class<T> type, String reason) {
-		if(Check.isNotInstanceOf(o1, type)) {
+		if (Check.isNotInstanceOf(o1, type)) {
 			throw buildEx(reason);
 		}
 		return type.cast(o1);
@@ -143,13 +144,13 @@ public enum Check {
 	}
 
 	public <T> T assertNotNull(T o) throws NullPointerException {
-		if(o == null) {
+		if (o == null) {
 			throw buildEx();
 		}
 		return o;
 	}
 	public <T> T assertNotNull(T o, String reason) {
-		if(o == null) {
+		if (o == null) {
 			throw buildEx(reason);
 		}
 		return o;
@@ -169,9 +170,17 @@ public enum Check {
 		assertFalse(STR.nullOrEmpty(s));
 		return s;
 	}
+	public String notNullOrEmpty(String s, String reason) {
+		assertFalse(STR.nullOrEmpty(s), reason);
+		return s;
+	}
 
 	public String notNullOrBlank(String s) {
 		assertFalse(STR.nullOrBlank(s));
+		return s;
+	}
+	public String notNullOrBlank(String s, String reason) {
+		assertFalse(STR.nullOrBlank(s), reason);
 		return s;
 	}
 
@@ -183,58 +192,58 @@ public enum Check {
 		throw buildEx(reason);
 	}
 	public boolean assertTrue(boolean cond) {
-		if(! cond) {
+		if (! cond) {
 			fail();
 		}
 		return true;
 	}
 	public boolean assertTrue(boolean cond, String reason) {
-		if(! cond) {
+		if (! cond) {
 			fail(reason);
 		}
 		return true;
 	}
 	public boolean assertFalse(boolean cond) {
-		if(cond) {
+		if (cond) {
 			fail();
 		}
 		return false;
 	}
 	public boolean assertFalse(boolean cond, String reason) {
-		if(cond) {
+		if (cond) {
 			fail(reason);
 		}
 		return false;
 	}
 
 	public String matches(String s, Pattern regex) {
-		if(! regex.matcher(s).matches()) {
+		if (! regex.matcher(s).matches()) {
 			fail();
 		}
 		return s;
 	}
 
 	public String matches(String s, Pattern regex, String reason) {
-		if(! regex.matcher(s).matches()) {
+		if (! regex.matcher(s).matches()) {
 			fail(reason);
 		}
 		return s;
 	}
 
 	public <T extends Number> T assertNotNegative(T val) {
-		if(val.doubleValue() < 0) {
+		if (val.doubleValue() < 0) {
 			fail();
 		}
 		return val;
 	}
 	public int assertGtZero(int val) {
-		if(val <= 0) {
+		if (val <= 0) {
 			fail();
 		}
 		return val;
 	}
 	public long assertGtZero(long val) {
-		if(val <= 0) {
+		if (val <= 0) {
 			fail();
 		}
 		return val;
@@ -253,53 +262,66 @@ public enum Check {
 		return null;
 	}
 
-	public static <T> T ifNull(T o, Supplier<T> defaultVal) {
-		return o == null ? defaultVal.get() : o;
-	}
-
 	/**
-	 * 
-	 * @param o
-	 * @param defaultVal
 	 * @return o == null ? null : f()
 	 */
+	public static @Nullable <T> T nullOrGet(@Nullable T o, Supplier<T> f) {
+		return o == null ? null : f.get();
+	}
+	@Deprecated
 	public static @Nullable <T> T nullOr(@Nullable T o, Supplier<T> defaultVal) {
-		return o != null ? o : defaultVal.get();
+		// NOTE: had wrong implementation so we call notNullOrGet instead of nullOrGet for back-compatibility
+		// old impl: return o != null ? o : defaultVal.get();
+		System.out.println("THE METHOD Check.nullOr(T o, Supplier<T> defaultVal) HAD A WRONG IMPLEMENTATION, CHECK ITS USAGE!!!");
+		return notNullOrGet(o, defaultVal);
 	}
-
+	
 	/**
-	 * 
-	 * @param o
-	 * @param defaultVal
-	 * @return o == null ? null : f(o)
-	 */
-	public static @Nullable <T,R> R nullOr(@Nullable T o, Function<T,R> defaultVal) {
-		return o == null ? null : defaultVal.apply(o);
-	}
-
-	/**
-	 * 
-	 * @param o
-	 * @param defaultVal
 	 * @return o != null ? o : f()
 	 */
+	public static <T> T notNullOrGet(@Nullable T o, Supplier<T> f) {
+		return o != null ? o : f.get();
+	}
+	@Deprecated
+	public static <T> T ifNull(T o, Supplier<T> defaultVal) {
+		// old impl: return o == null ? defaultVal.get() : o;
+		return notNullOrGet(o, defaultVal);
+	}
+	@Deprecated
 	public static <T> T notNullOr(@Nullable T o, Supplier<T> defaultVal) {
-		return o != null ? o : defaultVal.get();
+		// old impl: return o != null ? o : defaultVal.get();
+		return notNullOrGet(o, defaultVal);
+	}
+	
+	/**
+	 * @return o != null -> f(o)
+	 */
+	public static @Nullable <T> void nullOrAccept(@Nullable T o, Consumer<T> f) {
+		if (o != null) f.accept(o);
 	}
 
 	/**
-	 * 
-	 * @param o
-	 * @param defaultVal
 	 * @return o == null ? null : f(o)
 	 */
-	public static @Nullable <T,R> R ifNotNullApply(@Nullable T o, Function<T,R> defaultVal) {
-		return o == null ? null : defaultVal.apply(o);
+	public static @Nullable <T, R> R nullOrApply(@Nullable T o, Function<T, R> f) {
+		return o == null ? null : f.apply(o);
 	}
+	@Deprecated
+	public static @Nullable <T, R> R nullOr(@Nullable T o, Function<T, R> defaultVal) {
+		// old impl: return o == null ? null : defaultVal.apply(o);
+		return nullOrApply(o, defaultVal);
+	}
+	@Deprecated
+	public static @Nullable <T, R> R ifNotNullApply(@Nullable T o, Function<T, R> defaultVal) {
+		// return o == null ? null : defaultVal.apply(o);
+		return nullOrApply(o, defaultVal);
+	}
+
 
 	public static String ifNullOrEmpty(String s, String defaultVal) {
 		return STR.nullOrEmpty(s) ? defaultVal : s;
 	}
+	
 	public static String ifNullOrBlank(String s, String defaultVal) {
 		return STR.nullOrBlank(s) ? defaultVal : s;
 	}
@@ -309,11 +331,11 @@ public enum Check {
 	}
 
 	public static boolean isInstanceOf(@Nullable Object o, Class<?>... types) {
-		if(o == null) {
+		if (o == null) {
 			return false;
 		} else {
-			for(Class<?> cl : types) {
-				if(cl.isInstance(o)) {
+			for (Class<?> cl : types) {
+				if (cl.isInstance(o)) {
 					return true;
 				}
 			}
