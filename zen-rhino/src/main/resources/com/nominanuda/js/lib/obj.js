@@ -33,9 +33,11 @@ function vals(obj) {
 
 function map(obj, fnc) {
 	if (obj) {
+		var mapped = {};
 		for (var k in obj) {
-			obj[k] = fnc(k, obj[k]);
+			mapped[k] = fnc(k, obj[k]);
 		}
+		return mapped;
 	}
 	return obj;
 }
