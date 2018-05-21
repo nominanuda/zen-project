@@ -18,7 +18,7 @@ class StruUtils {
 				deepCopy((Map<?,?>)v, tobj);
 			} else if (v instanceof Collection<?>) {
 				Arr tarr = o.putArr(key);
-				StruUtils.deepCopy((Collection<?>)v, tarr);
+				deepCopy((Collection<?>)v, tarr);
 			} else {
 				o.put(key, v);
 			}

@@ -21,7 +21,7 @@
 
 package com.nominanuda.springmvc;
 
-import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.ScriptableConvertor.SCONVERTOR;
 import static com.nominanuda.web.http.HttpCoreHelper.HTTP;
 import static com.nominanuda.zen.obj.JsonPath.JPATH;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
@@ -130,7 +130,7 @@ public class RhinoHandler implements CommandRequestHandler {
 			Scriptable controllerScope = buildScope(cx);
 			evaluateScript(cx, controllerScope, calcScriptUri(cmd, request));
 			Object res = executeFunction(cx, controllerScope, function, cmd, request);
-			return DSS_CONVERTOR.fromScriptable((Scriptable)res);
+			return SCONVERTOR.fromScriptable((Scriptable)res);
 		} finally {
 			Context.exit();
 		}
@@ -152,7 +152,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	}
 	
 	protected Object executeFunction(Context cx, Scriptable controllerScope, String function, Stru cmd, HttpRequest request) {
-		Scriptable jsCmd = DSS_CONVERTOR.toScriptable(cx, cmd, controllerScope);
+		Scriptable jsCmd = SCONVERTOR.struToScriptable(cx, cmd, controllerScope);
 		JsHttpRequest jsReq = (JsHttpRequest) cx.newObject(controllerScope, "HttpRequest", new Object[] {
 			request,
 			Obj.make(

@@ -21,7 +21,7 @@ import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Stru;
 
 public class ToStruCoercer implements ObjectCoercer<Scriptable, Stru, NoException> {
-	private StruScriptableConvertor convertor = new StruScriptableConvertor();
+	private ScriptableConvertor convertor = new ScriptableConvertor();
 
 	public Stru apply(Scriptable x) throws NoException {
 		return convertor.fromScriptable(x);

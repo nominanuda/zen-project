@@ -53,7 +53,7 @@ public abstract class AbsRhinoTestCase {
 	
 	protected WrapFactory getWrapFactory(RhinoEmbedding rhinoEmbedding) {
 		PluggableWrapFactory wf = new PluggableWrapFactory(rhinoEmbedding);
-		wf.setConvertors(Arrays.asList(new StruConvertor()));
+		wf.setConvertors(Arrays.asList(new SeqConvertor(), new StruConvertor(), new ObjWrapperConvertor()));
 		return wf;
 	}
 	

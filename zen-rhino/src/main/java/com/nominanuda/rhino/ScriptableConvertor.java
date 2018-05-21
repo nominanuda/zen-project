@@ -17,6 +17,9 @@ package com.nominanuda.rhino;
 
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
+import java.util.List;
+import java.util.Map;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
@@ -25,44 +28,79 @@ import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
 
-public class StruScriptableConvertor {
-	public static final StruScriptableConvertor DSS_CONVERTOR = new StruScriptableConvertor();
+public class ScriptableConvertor {
+	public static final ScriptableConvertor SCONVERTOR = new ScriptableConvertor();
 	
-	public Scriptable toScriptable(Context cx, Stru source, Scriptable topScope) {
+	
+	public Scriptable listToScriptable(Context cx, List<?> list, Scriptable topScope) {
+		Scriptable res = RHINO.newArray(cx, topScope);
+		final int len = list.size();
+		for (int i = 0; i < len; i++) {
+			RHINO.putProperty(res, i, convertObjectToRhino(cx, list.get(i), topScope));
+		}
+		return res;
+	}
+	
+	public Scriptable mapToScriptable(Context cx, Map<?, ?> map, Scriptable topScope) {
+		Scriptable res = RHINO.newObject(cx, topScope);
+		for (Object k : map.keySet()) { // k has to be String or Number
+			RHINO.putProperty(res, k, convertObjectToRhino(cx, map.get(k), topScope));
+		}
+		return res;
+	}
+	
+	public Scriptable struToScriptable(Context cx, Stru stru, Scriptable topScope) {
 		Scriptable res;
-		if (source.isArr()) {
+		if (stru.isArr()) {
 			res = RHINO.newArray(cx, topScope);
-			Arr a = (Arr)source;
+			Arr a = (Arr)stru;
 			final int len = a.len();
 			for (int i = 0; i < len; i++) {
 				Object val = a.get(i);
 				if (JsonType.isNullablePrimitive(val)) {
 					RHINO.putProperty(res, i, convertPrimitiveToRhino(val));
 				} else {
-					RHINO.putProperty(res, i, toScriptable(cx, (Stru)val, topScope));
+					RHINO.putProperty(res, i, struToScriptable(cx, (Stru)val, topScope));
 				}
 			}
 		} else {
 			res = RHINO.newObject(cx, topScope);
-			Obj o = (Obj)source;
+			Obj o = (Obj)stru;
 			for (String k : o.keySet()) {
 				Object val = o.get(k);
 				if (JsonType.isNullablePrimitive(val)) {
 					RHINO.putProperty(res, k, convertPrimitiveToRhino(val));
 				} else {
-					RHINO.putProperty(res, k, toScriptable(cx, (Stru)val, topScope));
+					RHINO.putProperty(res, k, struToScriptable(cx, (Stru)val, topScope));
 				}
 			}
 		}
 		return res;
 	}
-
+	
+	private Object convertObjectToRhino(Context cx, Object val, Scriptable topScope) {
+		if (JsonType.isNullablePrimitive(val)) {
+			return convertPrimitiveToRhino(val);
+		} else if (val instanceof List) {
+			return listToScriptable(cx, (List<?>)val, topScope);
+		} else if (val instanceof Map) {
+			return mapToScriptable(cx, (Map<?, ?>)val, topScope);
+		} else if (val instanceof ObjWrapper) {
+			return struToScriptable(cx, (Stru)((ObjWrapper)val).unwrap(), topScope);
+		} else if (val instanceof Stru) {
+			return struToScriptable(cx, (Stru)val, topScope);
+		}
+		return val;
+	}
+	
 	private Object convertPrimitiveToRhino(Object val) {
 		return val;//TODO date number
 	}
 
+	
 	public Stru fromScriptable(Scriptable s) {
 		Stru res;
 		if (RHINO.isArray(s)) {

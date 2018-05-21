@@ -15,7 +15,7 @@
  */
 package com.nominanuda.jsweb.host;
 
-import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.ScriptableConvertor.SCONVERTOR;
 import static com.nominanuda.zen.oio.OioUtils.IO;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
@@ -108,6 +108,6 @@ public class JsHttpRequest extends ScriptableObject implements HttpProtocol, Wra
 	}
 	
 	public @Nullable Scriptable jsGet_extra() {
-		return extra != null ? DSS_CONVERTOR.toScriptable(Context.getCurrentContext(), extra, getParentScope()) : null;
+		return extra != null ? SCONVERTOR.struToScriptable(Context.getCurrentContext(), extra, getParentScope()) : null;
 	}
 }

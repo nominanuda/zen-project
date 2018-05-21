@@ -12,7 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
 
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.common.Tuple2;
@@ -84,11 +86,13 @@ public abstract class AbsFilesScanner<T> {
 	
 	public List<T> list(File[] files, int start, int count) {
 		final List<T> results = new ArrayList<>();
-		scan(files, start, count, new Function<File, Void>() {
+		scan(files, start, count, new Consumer<File>() {
 			@Override
-			public Void apply(File file) {
-				results.add(file2list(file));
-				return null;
+			public void accept(File file) {
+				@Nullable T entry = file2list(file);
+				if (entry != null) {
+					results.add(entry);
+				}
 			}
 		});
 		return results;
@@ -106,12 +110,13 @@ public abstract class AbsFilesScanner<T> {
 	
 	public Map<String, T> map(File[] files, int start, int count) {
 		final Map<String, T> results = new LinkedHashMap<>();
-		scan(files, start, count, new Function<File, Void>() {
+		scan(files, start, count, new Consumer<File>() {
 			@Override
-			public Void apply(File file) {
-				Tuple2<String, T> mapping = file2map(file);
-				results.put(mapping.get0(), mapping.get1());
-				return null;
+			public void accept(File file) {
+				@Nullable Tuple2<String, T> mapping = file2map(file);
+				if (mapping != null) {
+					results.put(mapping.get0(), mapping.get1());
+				}
 			}
 		});
 		return results;
@@ -139,7 +144,7 @@ public abstract class AbsFilesScanner<T> {
 							return i.hasNext();
 						}
 						@Override
-						public T next() {
+						public @Nullable T next() {
 							return file2list(i.next());
 						}
 						@Override
@@ -158,19 +163,19 @@ public abstract class AbsFilesScanner<T> {
 	
 	/* transformations */
 	
-	protected T file2list(File file) {
-		return null;
+	protected @Nullable T file2list(File file) {
+		return null; // adding to list only if not null
 	};
-	protected Tuple2<String, T> file2map(File file) {
-		return null;
+	protected @Nullable Tuple2<String, T> file2map(File file) {
+		return null; // adding to map only if not null
 	};
 	
-	protected final void scan(File[] files, int start, int count, Function<File, Void> fnc) {
+	protected final void scan(File[] files, int start, int count, Consumer<File> cback) {
 		if (files != null) {
 			Arrays.sort(files, sorter);
 			if (start < files.length) {
 				for (File file : Arrays.copyOfRange(files, start, Math.min(start + count, files.length))) {
-					fnc.apply(file);
+					cback.accept(file);
 				}
 			}
 		}

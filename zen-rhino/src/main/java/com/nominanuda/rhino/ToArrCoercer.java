@@ -7,7 +7,7 @@ import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Arr;
 
 public class ToArrCoercer implements ObjectCoercer<Scriptable, Arr, NoException> {
-	private StruScriptableConvertor convertor = new StruScriptableConvertor();
+	private ScriptableConvertor convertor = new ScriptableConvertor();
 
 	public Arr apply(Scriptable x) throws NoException {
 		return convertor.fromScriptable(x).asArr();

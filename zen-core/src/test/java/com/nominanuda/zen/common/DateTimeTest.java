@@ -11,7 +11,8 @@ public class DateTimeTest {
 		"1969-06-01",
 		"2015-12-01T09:30:00",
 		"2015-12-01T09:30:00Z",
-		"2015-12-01T09:30:00-08:00"
+		"2015-12-01T09:30:00-08:00",
+		"2017-09-08T00:00:00+00:00"
 	};
 	private final static DateTimeZone[] TEST_ZONES = new DateTimeZone[] {
 		DateTimeZone.forID("Europe/Rome"),

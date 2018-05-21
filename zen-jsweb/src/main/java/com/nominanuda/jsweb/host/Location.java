@@ -5,13 +5,13 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.nominanuda.rhino.StruScriptableConvertor;
+import com.nominanuda.rhino.ScriptableConvertor;
 import com.nominanuda.springmvc.Sitemap;
 import com.nominanuda.zen.obj.Obj;
 
 public class Location extends ScriptableObject implements Callable {
 	private static final long serialVersionUID = 3193397575047488553L;
-	private StruScriptableConvertor dataStructScriptableConvertor = new StruScriptableConvertor();
+	private ScriptableConvertor dataStructScriptableConvertor = new ScriptableConvertor();
 	private Sitemap sitemap;
 
 	@Override

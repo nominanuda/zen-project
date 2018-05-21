@@ -43,9 +43,9 @@ public class Seq {
 	public static final Seq SEQ = ScopedSingletonFactory.getInstance().buildJvmSingleton(Seq.class);
 
 	public boolean nullOrEmpty(@Nullable Iterable<?> coll) {
-		if(coll == null) {
+		if (coll == null) {
 			return true;
-		} else if(coll instanceof Collection) {
+		} else if (coll instanceof Collection) {
 			return ((Collection<?>)coll).size() == 0;
 		} else {
 			return ! coll.iterator().hasNext();
@@ -55,12 +55,12 @@ public class Seq {
 	@SuppressWarnings("unchecked")
 	public <K,V> Map<K,V> buildMap(@SuppressWarnings("rawtypes") Class<? extends Map> mclass, Object... members) throws IllegalArgumentException {
 		int len = members.length;
-		if(len % 2 != 0) {
+		if (len % 2 != 0) {
 			throw new IllegalArgumentException("odd number of arguments");
 		}
 		try {
 			Map<K,V> m = mclass.newInstance();
-			for(int i = 0; i < len; i += 2) {
+			for (int i = 0; i < len; i += 2) {
 				m.put((K)members[i], (V)members[i+1]);
 			}
 			return m;
@@ -68,7 +68,23 @@ public class Seq {
 			throw new IllegalArgumentException(e);
 		}
 	}
+	@SuppressWarnings("unchecked")
+	public <K,V> LinkedHashMap<K,V> linkedHashMap(Object... members) {
+		return (LinkedHashMap<K,V>)buildMap(LinkedHashMap.class, members);
+	}
 
+	@SuppressWarnings("unchecked")
+	public <T> Set<T> buildSet(@SuppressWarnings("rawtypes") Class<? extends Set> sclass, T... ts) {
+		try {
+			Set<T> s = sclass.newInstance();
+			for (T t : ts) {
+				s.add(t);
+			}
+			return (Set<T>)s;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 	public <T> HashSet<T> hashSet(@SuppressWarnings("unchecked") T... ts) {
 		return (HashSet<T>)buildSet(HashSet.class, ts);
 	}
@@ -77,40 +93,10 @@ public class Seq {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K,V> LinkedHashMap<K,V> linkedHashMap(Object... ts) {
-		return (LinkedHashMap<K,V>)buildMap(LinkedHashMap.class, ts);
-	}
-
-	public <T> LinkedList<T> linkedList(Iterable<T> c) {
-		LinkedList<T> l = new LinkedList<>();
-		for(T t : c) {
-			l.add(t);
-		}
-		return l;
-	}
-
-	public <T> LinkedList<T> linkedList(@SuppressWarnings("unchecked") T... ts) {
-		return (LinkedList<T>)buildList(LinkedList.class, ts);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> Set<T> buildSet(@SuppressWarnings("rawtypes") Class<? extends Set> sclass, T...ts) {
+	public <T> List<T> buildList(@SuppressWarnings("rawtypes") Class<? extends List> lclass, T... ts) {
 		try {
-			Set<T> s = sclass.newInstance();
-			for(T t : ts) {
-				s.add(t);
-			}
-			return (Set<T>)s;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> List<T> buildList(@SuppressWarnings("rawtypes") Class<? extends List> sclass, T...ts) {
-		try {
-			List<T> s = sclass.newInstance();
-			for(T t : ts) {
+			List<T> s = lclass.newInstance();
+			for (T t : ts) {
 				s.add(t);
 			}
 			return s;
@@ -118,28 +104,35 @@ public class Seq {
 			throw new RuntimeException(e);
 		}
 	}
+	public <T> LinkedList<T> linkedList(@SuppressWarnings("unchecked") T... ts) {
+		return (LinkedList<T>)buildList(LinkedList.class, ts);
+	}
+	
+	public <T> LinkedList<T> linkedList(Iterable<T> c) {
+		LinkedList<T> l = new LinkedList<>();
+		for (T t : c) {
+			l.add(t);
+		}
+		return l;
+	}
 
 	public <T> boolean find(T needle, Iterable<? extends T> haystack) {
-		for(T x : haystack) {
-			if(needle.equals(x)) {
+		for (T x : haystack) {
+			if (needle.equals(x)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 	public <T> boolean find(T needle, T[] haystack) {
-		for(T x : haystack) {
-			if(needle.equals(x)) {
+		for (T x : haystack) {
+			if (needle.equals(x)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	public <K,V> MapEntry<K, V> mapEntry(K k, V v) {
-		return new MapEntry<K, V>(k, v);
-	}
-
+	
 	public class MapEntry<K,V> implements Entry<K, V> {
 		private final K k;
 		private final V v;
@@ -163,6 +156,9 @@ public class Seq {
 			return k;
 		}
 	}
+	public <K,V> MapEntry<K, V> mapEntry(K k, V v) {
+		return new MapEntry<K, V>(k, v);
+	}
 
 	public <T> ReadOnlyCollection<? extends T> toSizedIterable(final Iterable<T> iter) {
 		return ReadOnlyCollection.wrap(iter);
@@ -172,7 +168,7 @@ public class Seq {
 	public <T,K extends Collection<? extends T>> K copyAndReverse(K coll) throws RuntimeException /* wrapping InstantiationException, IllegalAccessException*/ {
 		try {
 			K res = (K) coll.getClass().newInstance();
-			if(res instanceof List) {
+			if (res instanceof List) {
 				((Collection<? super T>)res).addAll(coll);
 				Collections.reverse((List<?>)res);
 			} else {
@@ -199,8 +195,37 @@ public class Seq {
 
 	public <T> LinkedList<T> copyToList(Iterable<T> iter) {
 		LinkedList<T> l = new LinkedList<>();
-		for(T t : iter) {
+		for (T t : iter) {
 			l.add(t);
+		}
+		return l;
+	}
+	
+	public <K, MK,MV> Map<MK, MV> getMap(Map<K, Map<MK, MV>> map, K key, @SuppressWarnings("rawtypes") Class<? extends Map> mclass) {
+		Map<MK, MV> m = map.get(key);
+		if (m == null) {
+			m = buildMap(mclass);
+			map.put(key, m);
+		}
+		return m;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <K, T> Set<T> getSet(Map<K, Set<T>> map, K key, @SuppressWarnings("rawtypes") Class<? extends Set> sclass) {
+		Set<T> s = map.get(key);
+		if (s == null) {
+			s = buildSet(sclass);
+			map.put(key, s);
+		}
+		return s;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <K, T> List<T> getList(Map<K, List<T>> map, K key, @SuppressWarnings("rawtypes") Class<? extends List> lclass) {
+		List<T> l = map.get(key);
+		if (l == null) {
+			l = buildList(lclass);
+			map.put(key, l);
 		}
 		return l;
 	}
@@ -221,9 +246,9 @@ public class Seq {
 	public int writeToArray(Iterable<? extends Object> iter, Object[] arr) {
 		int idx = 0;
 		int max = arr.length;
-		for(Object o : iter) {
+		for (Object o : iter) {
 			arr[idx++] = o;
-			if(max == idx) {
+			if (max == idx) {
 				break;
 			}
 		}
@@ -250,6 +275,7 @@ public class Seq {
 		return Collections.emptyMap();
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> fixedList(T... ts) {
 		return Arrays.asList(ts);
 	}

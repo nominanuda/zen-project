@@ -1,6 +1,6 @@
 package com.nominanuda.rhino;
 
-import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.ScriptableConvertor.SCONVERTOR;
 import static org.mozilla.javascript.RhinoHelper.RHINO;
 
 import org.mozilla.javascript.Context;
@@ -27,7 +27,7 @@ public class ScriptWrapper implements IScript {
 		Object[] jsArgs = new Object[args.length];
 		for (int i = 0; i < args.length; i++) {
 			Object arg = args[i];
-			jsArgs[i] = (arg != null && arg instanceof Stru) ? DSS_CONVERTOR.toScriptable(cx, (Stru)arg, scope) : arg;
+			jsArgs[i] = (arg != null && arg instanceof Stru) ? SCONVERTOR.struToScriptable(cx, (Stru)arg, scope) : arg;
 		}
 		return RHINO.callFunctionInScope(cx, scope, function, jsArgs);
 	}
@@ -35,7 +35,7 @@ public class ScriptWrapper implements IScript {
 	@Override
 	public Stru callForDataStruct(String function, Object... args) {
 		Scriptable result = (Scriptable) call(function, args);
-		return result != null ? DSS_CONVERTOR.fromScriptable(result) : null;
+		return result != null ? SCONVERTOR.fromScriptable(result) : null;
 	}
 	@Override
 	public Arr callForDataArray(String function, Object... args) {

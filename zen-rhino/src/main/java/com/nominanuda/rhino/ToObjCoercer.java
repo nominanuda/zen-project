@@ -7,7 +7,7 @@ import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Obj;
 
 public class ToObjCoercer implements ObjectCoercer<Scriptable, Obj, NoException> {
-	private StruScriptableConvertor convertor = new StruScriptableConvertor();
+	private ScriptableConvertor convertor = new ScriptableConvertor();
 
 	public Obj apply(Scriptable x) throws NoException {
 		return convertor.fromScriptable(x).asObj();

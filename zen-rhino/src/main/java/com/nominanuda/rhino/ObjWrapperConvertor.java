@@ -13,6 +13,6 @@ public class ObjWrapperConvertor extends StruConvertor {
 	
 	@Override
 	public boolean canConvert(Object obj) {
-		return obj != null && obj instanceof ObjWrapper;
+		return obj instanceof ObjWrapper;
 	}
 }

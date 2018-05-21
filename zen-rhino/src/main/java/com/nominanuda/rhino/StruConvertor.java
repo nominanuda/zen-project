@@ -15,7 +15,7 @@
  */
 package com.nominanuda.rhino;
 
-import static com.nominanuda.rhino.StruScriptableConvertor.DSS_CONVERTOR;
+import static com.nominanuda.rhino.ScriptableConvertor.SCONVERTOR;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -25,11 +25,11 @@ import com.nominanuda.zen.obj.Stru;
 
 public class StruConvertor implements ToScriptableConvertor {
 	public Scriptable convert(Context cx, Scriptable prototypeSearchScope, Object o) {
-		return DSS_CONVERTOR.toScriptable(cx, (Stru)o, prototypeSearchScope);
+		return SCONVERTOR.struToScriptable(cx, (Stru)o, prototypeSearchScope);
 	}
 
 	public boolean canConvert(Object obj) {
-		return obj != null && obj instanceof Stru;
+		return obj instanceof Stru;
 	}
 
 }

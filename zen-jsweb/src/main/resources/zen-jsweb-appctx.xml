@@ -27,6 +27,7 @@
 				<constructor-arg ref="zen-jsweb-rhino-embedding" />
 				<property name="convertors">
 					<list>
+						<bean class="com.nominanuda.rhino.SeqConvertor" />
 						<bean class="com.nominanuda.rhino.StruConvertor" />
 						<bean class="com.nominanuda.rhino.ObjWrapperConvertor" />
 					</list>
