@@ -41,10 +41,10 @@ exports = {
 		if (!v) return msg;
 	},
 	
-	ddMMyyy: function(d, msg) {
+	ddMMyyyy: function(d, msg) {
 		if (!RE_DDMMYYYY.test(d)) return msg;
 	},
-	ddMMyyyHHmm: function(d, msg) {
+	ddMMyyyyHHmm: function(d, msg) {
 		if (!RE_DDMMYYYYHHMM.test(d)) return msg;
 	},
 	

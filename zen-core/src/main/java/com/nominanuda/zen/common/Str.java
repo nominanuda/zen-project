@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -135,6 +137,19 @@ public class Str {
 		}
 		return l;
 	}
+	public <R, A, T> T splitAndTrim(String str, String regex, Function<String, R> mapper, Collector<R, A, T> collector) {
+		return splitAndTrim(str, regex).stream().map(mapper).collect(collector);
+	}
+	public <R, A, T> T splitAndTrim(String str, Pattern regex, Function<String, R> mapper, Collector<R, A, T> collector) {
+		return splitAndTrim(str, regex).stream().map(mapper).collect(collector);
+	}
+	public <R> List<R> splitAndTrim(String str, String regex, Function<String, R> mapper) {
+		return splitAndTrim(str, regex, mapper, Collectors.toList());
+	}
+	public <R> List<R> splitAndTrim(String str, Pattern regex, Function<String, R> mapper) {
+		return splitAndTrim(str, regex, mapper, Collectors.toList());
+	}
+	
 
 	public String ntimes(CharSequence cs, int times) {
 		StringBuilder sb = new StringBuilder();

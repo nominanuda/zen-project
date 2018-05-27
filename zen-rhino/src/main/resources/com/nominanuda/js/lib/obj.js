@@ -34,11 +34,15 @@ function vals(obj) {
 function map(obj, valueFnc, keyFnc) { // first valueFnc because keyFnc is normally unused
 	if (obj) {
 		var map = {};
-		(keyFnc == null) && (keyFnc = function(key) { // if null/undefined use key
-			return key;
+		(keyFnc == null) && (keyFnc = function(k, v) { // if null/undefined use key
+			return k;
+		});
+		(valueFnc == null) && (valueFnc = function(k, v) { // if null/undefined use value
+			return v;
 		});
 		for (var k in obj) {
-			map[keyFnc(k)] = valueFnc(k, obj[k]);
+			var v = obj[k];
+			map[keyFnc(k, v)] = valueFnc(k, v);
 		}
 		return map;
 	}
