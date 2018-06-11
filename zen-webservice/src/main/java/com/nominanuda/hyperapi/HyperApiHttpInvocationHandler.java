@@ -202,7 +202,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 			}
 		}
 		
-		HttpRequestBase request = buildRequest(spec.template(uriParams), httpMethod, requestHeaders, method.getReturnType());
+		HttpRequestBase request = buildRequest(httpMethod, spec.template(uriParams), requestHeaders, method.getReturnType());
 		if (entity != null && request instanceof HttpEntityEnclosingRequest) {
 			((HttpEntityEnclosingRequest) request).setEntity(entity);
 		}
@@ -221,8 +221,8 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 	}
 	
 	
-	private HttpRequestBase buildRequest(String uri, String httpMethod, List<Header> headers, Class<?> returnType) {
-		HttpRequestBase request = createRequest(uri, httpMethod);
+	private HttpRequestBase buildRequest(String httpMethod, String uri, List<Header> headers, Class<?> returnType) {
+		HttpRequestBase request = createRequest(httpMethod, uri);
 		request.setConfig(requestConfig);
 		request.setHeaders(headers.toArray(new Header[headers.size()]));
 		if (Stru.class.isAssignableFrom(returnType)) {
@@ -237,7 +237,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 		return request;
 	}
 
-	private HttpRequestBase createRequest(String uri, String httpMethod) {
+	private HttpRequestBase createRequest(String httpMethod, String uri) {
 		switch (httpMethod) {
 		case HttpProtocol.GET:
 			return new HttpGet(uri);

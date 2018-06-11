@@ -25,11 +25,21 @@ exports = {
 //	ms2MMddyyyyHHmmssxxx TODO
 	
 	ddMMyyyy2ms: function(datetime) {
-		(arguments.length > 1) && (datetime = Array.prototype.slice.call(arguments)); // when passing day, month, year,... as params
-		(datetime && datetime.splice) && (datetime = datetime.join('.')); // if is array
+		var endOfDay = false;
+		switch (arguments.length) {
+		case 0:
+			return Date.now();
+		case 1: // has to be parseable string
+			break;
+		case 2:
+			endOfDay = arguments[1] ? true : false;
+			break;
+		default: // 3 or more -> passing day, month, year,... as params
+			datetime = Array.prototype.slice.call(arguments).join('.');
+		}
 		if (!RE_DDMMYYYYHHMM.test(datetime)) {
 			if (RE_DDMMYYYY.test(datetime)) {
-				datetime += ', 00:00';
+				datetime += (endOfDay ? ', 23:59' : ', 00:00');
 			} else {
 				return null;
 			}

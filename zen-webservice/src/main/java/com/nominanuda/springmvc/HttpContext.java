@@ -83,7 +83,7 @@ public class HttpContext {
 	private boolean verbose = false;
 
 
-	private static HttpContext THIS = new HttpContext();
+	private static final HttpContext THIS = new HttpContext();
 	public static synchronized HttpContext getInstance() {
 		return THIS;
 	}
