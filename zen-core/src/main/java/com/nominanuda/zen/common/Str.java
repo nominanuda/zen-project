@@ -55,30 +55,6 @@ public class Str {
 		return s.getBytes(UTF8);
 	}
 
-	public <T> String join1(String separator, Object... strings) {
-		int len = strings.length;
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < len; i++) {
-			sb.append(strings[i].toString());
-			if(i < len - 1) {
-				sb.append(separator);
-			}
-		}
-		return sb.toString();
-	}
-
-	public <T> String join(String separator, Object[] strings) {
-		int len = strings.length;
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < len; i++) {
-			sb.append(strings[i].toString());
-			if(i < len - 1) {
-				sb.append(separator);
-			}
-		}
-		return sb.toString();
-	}
-
 	private class ToString<T> implements Function<T, String> {
 		@Override
 		public String apply(T t) {
@@ -98,19 +74,7 @@ public class Str {
 	public <T> String join(String separator, Iterable<T> collection, Function<T, String> f) {
 		return join(separator, collection.iterator(), f);
 	}
-
-	public  String joinArgs(String separator, Object... strings) {
-		int len = strings.length;
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < len; i++) {
-			sb.append(strings[i].toString());
-			if (i < len - 1) {
-				sb.append(separator);
-			}
-		}
-		return sb.toString();
-	}
-
+	
 	public <T> String join(String separator, Iterator<T> itr) {
 		return join(separator, itr, toStringy());
 	}
@@ -124,6 +88,33 @@ public class Str {
 			}
 		}
 		return sb.toString();
+	}
+	
+	public <T> String join(String separator, Object[] strings) {
+		int len = strings.length;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < len; i++) {
+			sb.append(strings[i].toString());
+			if (i < len - 1) {
+				sb.append(separator);
+			}
+		}
+		return sb.toString();
+	}
+
+	public  String joinArgs(String separator, Object... strings) {
+		return join(separator, strings);
+	}
+	
+	/**
+	 * use {@link Str#joinArgs(String, Object...)}
+	 * @param separator
+	 * @param strings
+	 * @return
+	 */
+	@Deprecated
+	public <T> String join1(String separator, Object... strings) {
+		return joinArgs(separator, strings);
 	}
 
 	public List<String> splitAndTrim(String str, String regex) {

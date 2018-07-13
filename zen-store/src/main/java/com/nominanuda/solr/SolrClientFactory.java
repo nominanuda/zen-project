@@ -1,6 +1,5 @@
 package com.nominanuda.solr;
 
-import static com.nominanuda.zen.common.Check.illegalstate;
 import static java.net.URLDecoder.decode;
 
 import java.io.UnsupportedEncodingException;
@@ -12,6 +11,8 @@ import javax.annotation.Nullable;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+
+import com.nominanuda.zen.common.Check;
 
 //Doc solrHome {coreName}.solr.data.dir special case
 public class SolrClientFactory {
@@ -49,11 +50,11 @@ public class SolrClientFactory {
 			
 			default: // how do we get here? endpointsBySolrHome.size() is never bigger than 1
 				final String dataDir = props.getProperty(coreName + ".solr.data.dir");
-				illegalstate.assertNotNull(dataDir, "ambiguous solr.solr.home " + solrHome);
+				Check.illegalstate.assertNotNull(dataDir, "ambiguous solr.solr.home " + solrHome);
 				SolrEndpoint endpointByDataDir = coreContainerLifeCycle.findEndpointByDataDir(dataDir);
 				if (endpointByDataDir != null) {
-					illegalstate.assertEquals(solrHome, endpointByDataDir.getSolrHome());
-					illegalstate.assertEquals(dataDir, endpointByDataDir.getCoreByName(coreName).getDataDir());
+					Check.illegalstate.assertEquals(solrHome, endpointByDataDir.getSolrHome());
+					Check.illegalstate.assertEquals(dataDir, endpointByDataDir.getCoreByName(coreName).getDataDir());
 					return endpointByDataDir.createEmbeddedSolrServer(coreName);
 				}
 				// go to bootstrap
