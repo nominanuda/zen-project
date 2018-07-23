@@ -115,7 +115,10 @@ public abstract class AbsFilesScanner<T> {
 			public void accept(File file) {
 				@Nullable Tuple2<String, T> mapping = file2map(file);
 				if (mapping != null) {
-					results.put(mapping.get0(), mapping.get1());
+					String key = mapping.get0();
+					results.put(key, results.containsKey(key)
+						? duplicate2map(results.get(key), mapping.get1())
+						: mapping.get1());
 				}
 			}
 		});
@@ -165,10 +168,13 @@ public abstract class AbsFilesScanner<T> {
 	
 	protected @Nullable T file2list(File file) {
 		return null; // adding to list only if not null
-	};
+	}
 	protected @Nullable Tuple2<String, T> file2map(File file) {
 		return null; // adding to map only if not null
-	};
+	}
+	protected T duplicate2map(T t0, T t1) {
+		return t1; // new one overwrites
+	}
 	
 	protected final void scan(File[] files, int start, int count, Consumer<File> cback) {
 		if (files != null) {
