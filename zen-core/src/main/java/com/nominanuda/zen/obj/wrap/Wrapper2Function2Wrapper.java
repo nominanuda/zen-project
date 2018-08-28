@@ -1,4 +1,4 @@
-package com.nominanuda.rhino.lang;
+package com.nominanuda.zen.obj.wrap;
 
 import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 
@@ -7,14 +7,13 @@ import java.util.function.Function;
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
-import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
-public class Wrapper2Script2Wrapper<WRAPPER extends ObjWrapper> implements Function<WRAPPER, WRAPPER> {
+public class Wrapper2Function2Wrapper<WRAPPER extends ObjWrapper> implements Function<WRAPPER, WRAPPER> {
 	private final Function<Obj, Stru> fnc;
 	private final Class<WRAPPER> clz;
 	
 	
-	public Wrapper2Script2Wrapper(Function<Obj, Stru> fnc, Class<WRAPPER> clz) {
+	public Wrapper2Function2Wrapper(Function<Obj, Stru> fnc, Class<WRAPPER> clz) {
 		this.fnc = Check.notNull(fnc, "wrapped script is null!");
 		this.clz = clz;
 	}
