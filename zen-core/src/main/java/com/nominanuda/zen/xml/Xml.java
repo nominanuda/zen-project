@@ -68,13 +68,16 @@ import com.nominanuda.zen.common.Str;
 @ThreadSafe
 public class Xml {
 	public static final Xml XML = new Xml();
-
+	
 	public static final String identityXslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
 		+ "<xsl:template match=\"/|@*|node()\">"
 		+ "<xsl:copy>"
 		+ "<xsl:apply-templates select=\"@* | node()\"/>"
 		+ "</xsl:copy>"
 		+ "</xsl:template>" + "</xsl:stylesheet>";
+	
+	private static final XPath xPath = XPathFactory.newInstance().newXPath();
+
 	private static final ThreadLocal<DocumentBuilder> documentBuilder = new ThreadLocal<DocumentBuilder>() {
 		@Override
 		protected DocumentBuilder initialValue() {
@@ -87,17 +90,16 @@ public class Xml {
 			}
 		}
 	};
-	private final SAXTransformerFactory txFactory = 
-					(SAXTransformerFactory) SAXTransformerFactory.newInstance();
+	
+	private final SAXTransformerFactory txFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+	private final Templates identity;
 	{
 		try {
-			identity = txFactory.newTemplates(new StreamSource(
-					new StringReader(identityXslt)));
+			identity = txFactory.newTemplates(new StreamSource(new StringReader(identityXslt)));
 		} catch (TransformerConfigurationException e) {
 			throw new IllegalStateException(e);
 		}
 	}
-	private final Templates identity;
 
 	public Document newDocument() {
 		return documentBuilder.get().newDocument();
@@ -158,8 +160,7 @@ public class Xml {
 		return result.toString();
 	}
 
-	public Document parseAsDocument(InputSource is) throws SAXException,
-			IOException {
+	public Document parseAsDocument(InputSource is) throws SAXException, IOException {
 		Document doc;
 		SAXParser sp = newParser();
 		doc = newDocument();
@@ -272,8 +273,7 @@ public class Xml {
 		serialize(node, out, outputProperties);
 	}
 
-	public void serialize(Node node, OutputStream out,
-			Properties outputProperties) {
+	public void serialize(Node node, OutputStream out, Properties outputProperties) {
 		try {
 			Source xmlSource = new DOMSource(node);
 			Result output = new StreamResult(out);
@@ -293,30 +293,25 @@ public class Xml {
 		return outputProperties;
 	}
 
-	public String xPathForString(Object nodeOrNodeList, String xpathExpr,
-			String... nsBindings) throws IllegalArgumentException {
+	public String xPathForString(Object nodeOrNodeList, String xpathExpr, String... nsBindings) throws IllegalArgumentException {
 		return (String) xPath(nodeOrNodeList, xpathExpr, XPathConstants.STRING, nsBindings);
 	}
 
-	public Number xPathForNumber(Object nodeOrNodeList, String xpathExpr,
-			String... nsBindings) throws IllegalArgumentException {
+	public Number xPathForNumber(Object nodeOrNodeList, String xpathExpr, String... nsBindings) throws IllegalArgumentException {
 		return (Number) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NUMBER, nsBindings);
 	}
 
-	public Boolean xPathForBoolean(Object nodeOrNodeList, String xpathExpr,
-			String... nsBindings) throws IllegalArgumentException {
+	public Boolean xPathForBoolean(Object nodeOrNodeList, String xpathExpr, String... nsBindings) throws IllegalArgumentException {
 		return (Boolean) xPath(nodeOrNodeList, xpathExpr, XPathConstants.BOOLEAN,
 				nsBindings);
 	}
 
-	public NodeList xPathForNodeList(Object nodeOrNodeList, String xpathExpr,
-			String... nsBindings) throws IllegalArgumentException {
+	public NodeList xPathForNodeList(Object nodeOrNodeList, String xpathExpr, String... nsBindings) throws IllegalArgumentException {
 		return (NodeList) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NODESET,
 				nsBindings);
 	}
 
-	public Node xPathForNode(Object nodeOrNodeList, String xpathExpr,
-			String... nsBindings) throws IllegalArgumentException {
+	public Node xPathForNode(Object nodeOrNodeList, String xpathExpr, String... nsBindings) throws IllegalArgumentException {
 		return (Node) xPath(nodeOrNodeList, xpathExpr, XPathConstants.NODE, nsBindings);
 	}
 
@@ -328,12 +323,10 @@ public class Xml {
 	 * @return
 	 * @throws XPathExpressionException 
 	 */
-	private Object xPath(Object nodeOrNodeList, String xpathExpr, QName resultType, String... nsBindings)
-			throws IllegalArgumentException {
+	private Object xPath(Object nodeOrNodeList, String xpathExpr, QName resultType, String... nsBindings) throws IllegalArgumentException {
 		try {
-			XPath xpath = XPathFactory.newInstance().newXPath();
-			xpath.setNamespaceContext(new MyNamespaceContext(nsBindings));
-			XPathExpression expr = xpath.compile(xpathExpr);
+			xPath.setNamespaceContext(new MyNamespaceContext(nsBindings));
+			XPathExpression expr = xPath.compile(xpathExpr);
 			Object result = expr.evaluate(nodeOrNodeList, resultType);
 			return result;
 		} catch (XPathExpressionException e) {
