@@ -1,8 +1,11 @@
-The project is unusable at the moment, in case you wonder ZEN is an acronym for Zoe Enea Nina.
+Zen is an undocumented framework for fast web site/service iterations. Used in production under heavy load for years.
+Supports a pervasive Jsonish OM, reads/writes/pipelines JSON XML and HTML. Features Spring support and js scripting server side, allowing effective and simple java/js communication. 
+A few ANTLR DSLs are used for URI Template roundripping, JSON schema definition and an alternative simpler JSON grammar.
+It's architecture is heavily inspired by the popular Apache Cocoon web framework. Persistence hooks for JDBC, Mongo, Hibernate, Solr are avalilable.
 
-cheers
 
-Michele
+In case you wonder ZEN is an acronym for Zoe Enea Nina.
+
 
 to build the maven google-closure-templates dependency has to installed locally
 
