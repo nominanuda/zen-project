@@ -2,7 +2,9 @@ Zen is an undocumented framework for fast web site/service iterations. Used in p
 Supports a pervasive Jsonish OM, reads/writes/pipelines JSON XML and HTML. Features Spring support and js scripting server side, allowing effective and simple java/js communication. 
 A few ANTLR DSLs are used for URI Template roundripping, JSON schema definition and an alternative simpler JSON grammar.
 It's architecture is heavily inspired by the popular Apache Cocoon web framework. Persistence hooks for JDBC, Mongo, Hibernate, Solr are avalilable.
-
+A subset of JAX-RS and Jsonih OM binding to java interfaces for DTOs, make it very convenient to document and implement a full RESTful protocol.
+Binding for Android and partially for JS on browsers are also provided so that ws stub and skeltons are available just descibing data structures and protocol.
+Server side streaming JSON reading and writing is achieved by a hand written parser and a custom event model inspired by and interoperable with XML SAX. 
 
 In case you wonder ZEN is an acronym for Zoe Enea Nina.
 
