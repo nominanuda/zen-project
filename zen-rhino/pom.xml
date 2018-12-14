@@ -11,7 +11,7 @@
   <parent>
     <artifactId>zen-parent</artifactId>
     <groupId>com.nominanuda</groupId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.3.0</version>
     <relativePath>../zen-parent/pom.xml</relativePath>
   </parent>
   <artifactId>zen-rhino</artifactId>
