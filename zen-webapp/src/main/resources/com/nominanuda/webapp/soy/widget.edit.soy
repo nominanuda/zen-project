@@ -1,0 +1,324 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+{namespace com.nominanuda.webapp.widget.edit}
+
+
+
+/**
+ * @param name
+ * @param value
+ * @param? editing
+ */
+{template .sorter}
+	{if $editing}
+		{call com.nominanuda.webapp.widget.hidden data="all"}
+			{param clss: 'zen-webapp-sorter' /}
+		{/call}
+	{/if}
+{/template}
+
+
+
+/**
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param type
+ * @param label
+ * @param? value
+ * @param? explode
+ * @param? clss
+ * @param? submit
+ * @param? attrs
+ */
+{template .upload}
+<span data-name="{call com.nominanuda.webapp.widget._name_ data="all"/}"
+	{call com.nominanuda.webapp.widget._behavior_ data="all"}
+		{param baseclss: 'zen-webapp-upload' /}
+	{/call}
+	{if $attrs} {$attrs} {/if}
+	data-type="{$type}"
+	{if $explode} data-explode="true"{/if}
+>
+	<span class="button action-upload">{$label}</span> // span instead of a (avoids problems)
+	{sp} // spaces buttons without requiring margin from css
+	<span class="button action-delete" style="display:none">Remove</span>
+	{call com.nominanuda.webapp.widget.hidden data="all" /}
+</span>
+{/template}
+
+
+
+
+/**
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? values
+ * @param? clss
+ * @param? multi
+ * @param? elastic
+ * @param? placeholder
+ * @param? rendering
+ * @param? editing
+ */
+{template .keywords}
+<span class="zen-webapp-keywords{if $clss} {$clss}{/if}">
+	{if $values and length($values)}
+		{foreach $value in $values}
+			<label>
+				{call com.nominanuda.webapp.widget.text data="all"}
+					{param rendering: true /}
+					{param value: $value /}
+				{/call}
+				{if $editing}
+					<a class="m">&#x2726;</a>
+					<a class="x">&#x2716;</a>
+				{/if}
+			</label>
+		{/foreach}
+	{elseif $editing}
+		<label>
+			{call com.nominanuda.webapp.widget.text data="all" /}
+			<a class="m">&#x2726;</a>
+			<a class="x">&#x2716;</a>
+		</label>
+	{/if}
+</span>
+{/template}
+
+
+
+
+/**
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? values
+ * @param? fillH
+ * @param? fillV
+ * @param? extra
+ * @param? clss
+ * @param? editing
+ * @param? size
+ */
+{template .gallery}
+<span class="zen-webapp-gallery{if $clss} {$clss}{/if}"
+	{if $extra} data-extra="{$extra}"{/if}
+	{if $fillH or $fillV} data-constrain="{$fillH ? 'h' : 'v'}"{/if}
+>
+	{foreach $item in $values ?: []}
+		{call .gallery_item data="$item"}
+			{param root: $root /}
+			{param scope}{if $scope}{$scope}.{/if}{$name}.{index($item)}{/param}
+			{param hasExtra: $extra /}
+			{param editing: $editing /}
+		{/call}
+	{/foreach}
+	{if $editing}
+		{for $i in range(($values ? length($values) : 0), ($size ?: 0))}
+			{call .gallery_item}
+				{param root: $root /}
+				{param scope}{if $scope}{$scope}.{/if}{$name}.{$i}{/param}
+				{param hasExtra: $extra /}
+				{param editing: true /}
+			{/call}
+		{/for}
+	{/if}
+</span>
+{/template}
+
+
+/**
+ * @param? root
+ * @param? scope
+ * @param? url
+ * @param? img
+ * @param? file
+ * @param? caption
+ * @param? hasExtra
+ * @param? extra
+ * @param? editing
+ */
+{template .gallery_item}
+	<a{if $url} href="{$url}"{/if}{if $caption} title="{$caption}"{/if}>
+		<img{if $img} src="{$img}"{/if} />
+		{if $editing}
+			{call com.nominanuda.webapp.widget.hidden data="all"}
+				{param name: 'file' /}
+				{param value: $file /}
+				{param clss: 'file' /}
+			{/call}
+			{call com.nominanuda.webapp.widget.hidden data="all"}
+				{param name: 'caption' /}
+				{param value: $caption /}
+				{param clss: 'caption' /}
+			{/call}
+			{if $hasExtra}
+				{call com.nominanuda.webapp.widget.hidden data="all"}
+					{param name: 'extra' /}
+					{param value: $extra /}
+					{param clss: 'extra' /}
+				{/call}
+			{/if}
+		{/if}
+	</a>
+{/template}
+
+
+/**
+ */
+{template .gallery_box}
+<div class="zen-webapp-box box-gallery">
+	<h3>Image editor</h3>
+	<div class="preview"></div>
+	<p class="ctrls img">
+		<a class="cancel delete">Remove</a>
+		<a class="button upload">Upload image</a>
+	</p>
+	<p>
+		{call com.nominanuda.webapp.widget.text data="all"}
+			{param name: 'caption' /}
+			{param placeholder: 'Caption' /}
+			{param clss: 'caption' /}
+			{param multi: true /}
+		{/call}
+		<label class="extra">
+			{call com.nominanuda.webapp.widget.text data="all"}
+				{param name: 'extra' /}
+				{param clss: 'extra' /}
+			{/call}
+		</label>
+	</p>
+	<p class="ctrls box">
+		<a class="cancel">Cancel</a>
+		<button class="button">Ok</button>
+	</p>
+</div>
+{/template}
+
+
+
+
+/**
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? value
+ * @param? rules
+ * @param? style
+ * @param? clss
+ * @param? elastic
+ * @param? placeholder
+ * @param? rendering
+ * @param? editing
+ */
+{template .richtext}
+	{if $rendering and not $editing}
+		{if $value}
+			{$value |noAutoescape}
+		{/if}
+	{else}
+<div class="zen-webapp-richtext{if $elastic} elastic{/if}"
+	{if $rules}data-rules="{$rules}"{/if}
+	{if $style}data-style="{$style}"{/if}
+>
+	<div class="toolbar" style="display:none;">
+		<a class="button b" data-wysihtml5-command="bold" title="bold (ctrl+B)">Bold</a>
+		<a class="button i" data-wysihtml5-command="italic" title="italic (ctrl+I)">Italic</a>
+		<a class="button ul" data-wysihtml5-command="insertUnorderedList" title="unordered list">•.•.•.</a>
+		<a class="button ol" data-wysihtml5-command="insertOrderedList" title="ordered list">1.2.3.</a>
+		<a class="button a" data-wysihtml5-command="createLink" title="link">Link</a>
+		<span data-wysihtml5-dialog="createLink" style="display:none;">
+			<a class="button link" data-wysihtml5-dialog-action="save">Ok</a>
+			<a class="button link" data-wysihtml5-dialog-action="cancel">Cancel</a>
+			<label>
+				<input data-wysihtml5-dialog-field="href" value="http://" class="text" />
+			</label>
+		</span>
+	</div>
+	{call com.nominanuda.webapp.widget.text data="all"}
+		{param elastic: false /} // avoids nested elastic textarea
+		{param multi: true /}
+	{/call}
+</div>
+	{/if}
+{/template}
+
+
+
+
+/**
+ * @param name
+ * @param syntax
+ * @param? lines
+ * @param? images
+ * @param? submit
+ */
+{template .codearea}
+<div data-syntax="{$syntax}"
+	{call com.nominanuda.webapp.widget._behavior_ data="all"}
+		{param baseclss: 'zen-webapp-codearea' /}
+	{/call}
+>
+	<div class="title">
+		<h4>{$syntax} editor</h4>
+	</div>
+	<div class="editor with-images">
+		{call com.nominanuda.webapp.widget.text data="all"}
+			{param multi: true /}
+		{/call}
+	</div>
+	{if $images}
+		<div class="images">
+			<label title="Load a picture and use the generated url into your code">
+				<input type="text" readonly="readonly" class="text" />
+			</label>
+			<a class="button">Upload image</a>
+		</div>
+	{/if}
+	<div class="zen-webapp-ctrls">
+		<a class="button link cancel">Cancel</a>
+		<button class="button">Ok</button>
+	</div>
+</div>
+{/template}
+
+
+/**
+ * @param? root
+ * @param name
+ * @param label
+ * @param syntax
+ * @param? images
+ * @param? clss
+ * @param? submit
+ * @param? attrs
+ */
+{template .codelauncher}
+<span data-syntax="{$syntax}"{if $images} data-images="true"{/if}
+	{call com.nominanuda.webapp.widget._behavior_ data="all"}
+		{param baseclss: 'zen-webapp-codearea' /}
+	{/call}
+>
+	<a class="button"{if $attrs} {$attrs |noAutoescape}{/if}>{$label}</a>
+	{call com.nominanuda.webapp.widget.hidden data="all" /}
+</span>
+{/template}

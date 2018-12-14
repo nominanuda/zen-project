@@ -1,0 +1,161 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+input,
+select,
+textarea,
+button,
+table {
+	font-size: 1em;
+	font-style: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	text-decoration: inherit;
+	text-transform: inherit;
+	text-shadow: inherit;
+	line-height: inherit;
+	text-align: inherit;
+	color: inherit;
+	margin: 0;
+}
+label.check,
+label.radio {
+	cursor: pointer;
+}
+input.check {
+	margin: -2px 5px 0 0;
+	vertical-align: middle;
+	cursor: pointer;
+}
+input.text,
+select,
+textarea {
+	background: transparent;
+	border: 1px solid #ccc;
+	padding: 3px 4px 5px 4px;
+	box-sizing: border-box;
+}
+select {
+	padding: 2px 0 4px 0;
+	cursor: pointer;
+}
+textarea {
+	resize: none;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+.button {
+	color: #fff;
+	background: #939393;
+	box-sizing: border-box;
+	border: none;
+	padding: 5px 10px;
+	text-align: center;
+	cursor: pointer;
+}
+.button.ok {
+	border-color: #7BB14A;
+	background: #7BB14A;
+}
+.button.warn {
+	border-color: #F9E9A0;
+	background: #F9E9A0;
+}
+.button.ko {
+	border-color: #DC001B;
+	background: #DC001B;
+}
+.button.link {
+	color: #333;
+	background: transparent;
+	border: none;
+	padding: 0;
+}
+.button.link:hover {
+	text-decoration: underline;
+}
+
+.button input {
+	width: 100%;
+	height: 100%;
+}
+
+
+input.text.zen-webapp-elastic {
+	width: 10px; /* 10px minimum width by default */
+	min-width: 10px;
+}
+textarea.zen-webapp-elastic {
+	height: 0; /* no minimum height by default */
+}
+
+
+
+.zen-webapp-repeater-row:hover,
+tr.zen-webapp-repeater-row:hover > * {
+	box-shadow: 0 0 1px #099 !important;
+}
+.zen-webapp-repeater-row .zen-webapp-repeater-row:hover {
+	background: rgba(0, 153, 153, .05);
+}
+
+tr.zen-webapp-repeater-row > td:last-child { /* the del host */
+	width: 16px !important;
+	padding: 0 !important;
+}
+
+.zen-webapp-repeater-add {
+	clear: left;
+	display: block;
+	font-size: 12px;
+	color: #099;
+	background: url(../img/edit/icn.add.green.2x.png) left center / 16px no-repeat;
+	margin-bottom: 4px;
+	border-top: 1px solid #099;
+	padding-left: 24px;
+	line-height: 16px;
+	font-weight: normal;
+	text-transform: uppercase;
+	cursor: pointer;
+	opacity: .3;
+}
+.zen-webapp-repeater-add.multi {
+	display: inline;
+	line-height: 24px; /* to add distance above/below */
+}
+.zen-webapp-repeater-add:hover {
+	opacity: 1;
+}
+
+.zen-webapp-repeater-del {
+	display: block;
+	height: 16px;
+	background: url(../img/edit/icn.remove.green.2x.png) right center / 16px no-repeat;
+	border-bottom: 1px solid #099;
+	cursor: pointer;
+	opacity: .3;
+}
+td > .zen-webapp-repeater-del {
+	width: 16px;
+	border-bottom: none;
+}
+.zen-webapp-repeater-del:hover {
+	opacity: 1;
+}

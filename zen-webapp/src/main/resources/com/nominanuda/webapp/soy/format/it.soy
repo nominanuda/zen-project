@@ -1,0 +1,55 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+{namespace com.nominanuda.webapp.format}
+
+
+/**
+ * @param? value
+ * @param? decimals
+ */
+{deltemplate com.nominanuda.webapp.format.number variant="'it'"}
+	{call ._format_number data="all"}
+		{param separatorT: '.' /}
+		{param separatorD: ',' /}
+	{/call}
+{/deltemplate}
+
+
+/**
+ * @param? value
+ */
+{deltemplate com.nominanuda.webapp.format.currency variant="'it'"}
+	{call ._format_number data="all"}
+		{param separatorT: '.' /}
+		{param separatorD: ',' /}
+		{param decimals: 2 /}
+	{/call}<abbr title="EUR">€</abbr>
+{/deltemplate}
+
+
+/**
+ * @param? value
+ */
+{deltemplate com.nominanuda.webapp.format.cents variant="'it'"}
+	{call ._format_number}
+		{param value: ($value ?: 0) / 100 /}
+		{param separatorT: '.' /}
+		{param separatorD: ',' /}
+		{param decimals: 2 /}
+	{/call}<abbr title="EUR">€</abbr>
+{/deltemplate}

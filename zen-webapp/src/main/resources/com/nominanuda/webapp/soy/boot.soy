@@ -1,0 +1,120 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+{namespace com.nominanuda.webapp}
+
+
+/**
+ * @param? __webapp
+ * @param? jsPaths
+ * @param? jsConfig
+ * @param? cssPaths
+ * @param? soyPaths
+ */
+{template .boot}
+	{let $WEBAPP_DEV: false /} // true only when developing stuff
+	{let $WEBAPP_V: 'v20181213a' /} // as in zen-webapp-wro.xml
+	{if $__webapp}
+		{if $WEBAPP_DEV}
+			<link href="{$__webapp.servlet}/zen-webapp-cdn/css/boot.css" rel="stylesheet" />
+			<script src="wro4j.zen.webapp.{$WEBAPP_V}.boot.js" type="text/javascript"></script>
+		{else}
+			<link href="{$__webapp.servlet}/wro4j.zen.webapp.{$WEBAPP_V}.main.css" rel="stylesheet" />
+		{/if}
+		{if $cssPaths}
+			{foreach $css in $__webapp.css}
+				<link href="{$cssPaths[$css.prefix]}{$css.stylesheet}.css" rel="stylesheet" />
+			{/foreach}
+		{/if}
+		
+		{if $WEBAPP_DEV}
+			<script src="{$__webapp.servlet}/zen-webapp-soy/alert.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/format.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/format/it.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/layout.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/widget.ajax.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/widget.edit.soy.js" type="text/javascript"></script>
+			<script src="{$__webapp.servlet}/zen-webapp-soy/widget.soy.js" type="text/javascript"></script>
+		{else}
+			<script src="{$__webapp.servlet}/wro4j.zen.webapp.{$WEBAPP_V}.main.js" type="text/javascript"></script>
+		{/if}
+		
+		<script type="text/javascript">
+			require.config({lb}
+//				waitSeconds: 0,
+				baseUrl: '{$__webapp.servlet}/zen-webapp-cdn/lib/requirejs',
+				paths: {lb}
+					{if $jsPaths}
+						{foreach $key in keys($jsPaths)}
+							'{$key}': '{$jsPaths[$key]}',
+						{/foreach}
+					{/if}
+					{if $cssPaths}
+						{foreach $key in keys($cssPaths)}
+							'{$key}___css': '{$cssPaths[$key]}',
+						{/foreach}
+					{/if}
+					{if $soyPaths}
+						{foreach $key in keys($soyPaths)}
+							'{$key}___soy': '{$soyPaths[$key]}',
+						{/foreach}
+					{/if}
+					'jquery': 'jquery-3.1.1.min',
+					'd3': '{$__webapp.servlet}/zen-webapp-cdn/lib/d3js/d3.v5.min',
+					'zen-webapp': '{$__webapp.servlet}/zen-webapp-cdn/js',
+					'zen-webapp-lib': '{$__webapp.servlet}/zen-webapp-cdn/lib',
+					'zen-webapp___css': '{$__webapp.servlet}/zen-webapp-cdn/css',
+					'zen-webapp___soy': '{$__webapp.servlet}/zen-webapp-soy'
+				{rb},
+				map: {lb}
+					'*': {lb}
+						'zen-webapp/alert': 'zen-webapp/_alert_/boxes',
+						'zen-webapp-lib/jqueryui': 'zen-webapp-lib/jqueryui/jquery-ui-1.12.1.min',
+						'zen-webapp-lib/jqueryui.touch': 'zen-webapp-lib/jqueryui/jquery.ui.touch-punch.min',
+						'zen-webapp-lib/jscookie': 'zen-webapp-lib/jscookie/js.cookie-2.1.4'
+					{rb}
+				{rb},
+				shim: {lb} // add here all jquery plugins that do not use define() syntax
+					'zen-webapp-lib/d3js/c3js/c3.min': ['d3'],
+					'zen-webapp-lib/jqueryui': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.cssmap': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.elastic': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.fileupload': ['zen-webapp-lib/jqueryui'],
+					'zen-webapp-lib/jquery/jquery.history': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.inputmask.min': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.json-2.3.min': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.transit-0.9.12.min': ['jquery']
+				{rb},
+				config: {lb}
+					'zen-webapp/ajax': {lb}
+						servletPath: '{$__webapp.servlet}'
+					{rb}
+				{rb}
+			{rb});
+			{if $jsConfig}
+				require.config({lb}
+					config: {$jsConfig |noAutoescape}
+				{rb});
+			{/if}
+			require([{if $soyPaths} // load soy first, then js (which may require the soy)
+				{foreach $soy in $__webapp.soy}'{$soy.prefix}___soy{$soy.template}.soy'{if not isLast($soy)},{/if}{/foreach}
+			{/if}], function() {lb}
+				boot([{foreach $js in $__webapp.js}'{$js}'{if not isLast($js)},{/if}{/foreach}]);
+			{rb});
+		</script>
+	{/if}
+{/template}

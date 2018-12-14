@@ -1,0 +1,636 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+{namespace com.nominanuda.webapp.widget}
+
+
+
+/**
+ * @param? root
+ * @param? scope
+ * @param? name
+ */
+{template ._name_ private="true"}
+{$root ? $root + '.' : ($root == false) ? '' : 'data.'}{if $scope}{$scope}.{/if}{$name}
+{/template}
+
+
+/**
+ * @param? root
+ * @param? scope
+ * @param? name
+ * @param? clss
+ * @param? submit
+ * @param baseclss
+ */
+{template ._behavior_ private="true"}
+{if $name and $name != ''} name="{call ._name_ data="all"/}"{/if} // allowing no name attribute by passing ''
+{sp}class="{$baseclss}{if $clss} {$clss}{/if}{if $submit} doSubmit{/if}"
+{if $submit and not($submit == true) and $submit != $name} // is string and doesn't overlap
+{sp}data-do-submit="{call ._name_ data="all"}{param name: $submit /}{/call}" // reach as $elm.data('doSubmit')
+{/if}
+{/template}
+
+
+/**
+ * @param? id
+ * @param? root
+ * @param? scope
+ * @param? name
+ * @param? clss
+ * @param? submit
+ * @param? attrs
+ * @param? disabled
+ * @param? readonly
+ * @param? tabindex
+ * @param baseclss
+ */
+{template ._attrs_ private="true"}
+{if $id} id="{$id}"{/if}
+{call ._behavior_ data="all" /}
+{if $attrs} {$attrs |noAutoescape}{/if}
+{if $disabled} disabled="disabled"{/if}
+{if $readonly} readonly="readonly"{/if}
+{if $tabindex} tabindex="{$tabindex}"{/if}
+{/template}
+
+
+
+/**
+ * @param? value
+ * @param? format
+ */
+{template ._format_ private="true"}
+	{switch $format}
+	{case 'number'}
+		{delcall com.nominanuda.webapp.format.number data="all" /}
+	{case 'currency'}
+		{delcall com.nominanuda.webapp.format.currency data="all" /}
+	{default}
+		{$value}
+	{/switch}
+{/template}
+
+
+
+/**
+ * @param? id
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? value
+ * @param? clss
+ * @param? attrs
+ * @param? disabled
+ * @param? explode
+ */
+{template .hidden}
+	{if $explode}
+		{if $value}
+			{foreach $prop in keys($value)}
+				{call .hidden data="all"}
+					{param name: $name + '.' + $prop /}
+					{param value: $value[$prop] /}
+					{param explode: false /}
+				{/call}
+			{/foreach}
+		{elseif $data?[$name]}
+			{foreach $prop in keys($data[$name])}
+				{call .hidden data="all"}
+					{param name: $name + '.' + $prop /}
+					{param value: $data[$name][$prop] /}
+					{param explode: false /}
+				{/call}
+			{/foreach}
+		{else}
+			{call .hidden data="all"}
+				{param explode: false /}
+			{/call}
+		{/if}
+	{else}
+<input type="hidden" value="{$value ?: $data?[$name] ?: ''}"
+	{call ._attrs_ data="all"}
+		{param baseclss: 'hidden' /}
+	{/call}
+/>
+	{/if}
+{/template}
+
+/**
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param? names
+ * @param? value
+ * @param? clss
+ * @param? attrs
+ * @param? disabled
+ * @param? explode
+ */
+{template .hiddens}
+	{if $names}
+		{foreach $name in $names}
+			{call .hidden}
+				{param data: $data /}
+				{param root: $root /}
+				{param scope: $scope /}
+				{param name: $name /}
+				{param value: $value /}
+				{param clss: $clss /}
+				{param attrs: $attrs /}
+				{param disabled: $disabled /}
+				{param explode: $explode /}
+			{/call}
+		{/foreach}
+	{else}
+		{let $keys: keys($data) /}
+		{if length($keys)}
+			{call .hiddens data="all"}
+				{param names: $keys /}
+			{/call}
+		{/if}
+	{/if}
+{/template}
+
+
+
+/**
+ * @param? id
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? value
+ * @param? type
+ * @param? clss
+ * @param? multi
+ * @param? lines
+ * @param? attrs
+ * @param? format
+ * @param? elastic
+ * @param? disabled
+ * @param? readonly
+ * @param? placeholder
+ * @param? autocomplete
+ * @param? required
+ * @param? tabindex
+ * @param? length
+ * @param? rendering
+ * @param? editing
+ */
+{template .text}
+	{let $value: $value ?: $data?[$name] ?: '' /}
+	{if $rendering and not $editing}
+		{if $multi or $lines}
+			{$value |noAutoescape |changeNewlineToBr}
+		{else}
+			{call ._format_ data="all" /}
+		{/if}
+	{else}
+		{if $multi or $lines}
+<textarea {call ._attrs_ data="all"}{param baseclss: $elastic ? 'zen-webapp-elastic' : '' /}{/call}
+			{if $placeholder} placeholder="{$placeholder}"{/if}
+			{if $lines} rows="{$lines}"{/if}
+>
+			{$value |noAutoescape}
+</textarea>
+		{else}
+<input type="{$type ?: 'text'}" value="{$value}"
+			{if $placeholder} placeholder="{$placeholder}"{/if}
+			{if $autocomplete} autocomplete="{$autocomplete}"{/if}
+			{if $required} required="required"{/if}
+			{if $length} maxlength="{$length}" size="{$length}"{/if}
+			{call ._attrs_ data="all"}
+				{param baseclss: 'text' + ($elastic ? ' zen-webapp-elastic' : '') /}
+			{/call}
+/>
+		{/if}
+	{/if}
+{/template}
+
+
+
+/**
+ * @param? id
+ * @param? root
+ * @param? scope
+ * @param? name
+ * @param? value
+ * @param? label
+ * @param? clss
+ * @param? attrs
+ * @param? disabled
+ * @param? tabindex
+ */
+{template .submit}
+	{if $value}
+		{call .button data="all"}
+			{param type: 'submit' /}
+		{/call}
+	{else}
+<input type="submit"{if $label} value="{$label}"{/if}
+	{call ._attrs_ data="all"}
+		{param baseclss: 'button' /}
+	{/call}
+/>
+	{/if}
+{/template}
+
+
+
+/**
+ * @param? id
+ * @param? root
+ * @param? scope
+ * @param? name
+ * @param? value
+ * @param? type
+ * @param? label
+ * @param? clss
+ * @param? attrs
+ * @param? disabled
+ * @param? tabindex
+ */
+{template .button}
+<button type="{$type ?: 'button'}"{if $value} value="{$value}"{/if}
+	{call ._attrs_ data="all"}
+		{param baseclss: 'button' /}
+	{/call}
+>{if $label}{$label |noAutoescape}{/if}</button>
+{/template}
+
+
+
+/**
+ * @param? id
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param? widgets
+ * @param? widget
+ * @param? empty
+ * @param? combox
+ * @param name
+ * @param? value
+ * @param? values
+ * @param? vfrom
+ * @param? vstep
+ * @param? vto
+ * @param? labels
+ * @param? ltemplate
+ * @param? otemplate
+ * @param? groups
+ * @param? clss
+ * @param? multi
+ * @param? submit
+ * @param? attrs
+ * @param? format
+ * @param? disabled
+ * @param? vdisabled
+ * @param? placeholder
+ * @param? autocomplete
+ * @param? required
+ * @param? tabindex
+ * @param? length
+ */
+{template .select}
+	{let $widget: $widget ?: $widgets?[$name] /}
+	{let $value: $value ?: $data?[$name] ?: '' /}
+	{let $labels: $labels ?: $widget?.labels /}
+	{let $ltemplate: $ltemplate ?: '' /} // needs to be a string
+	{let $otemplate: $otemplate ?: '' /} // needs to be a string
+<select {call ._attrs_ data="all"}{param baseclss: $combox ? 'combox' : '' /}{/call}
+	{if $multi} multiple="multiple"{/if}
+	{if $autocomplete} autocomplete="{$autocomplete}"{/if}
+	{if $required} required="required"{/if}
+>
+	{if $placeholder}
+<option disabled="disabled" selected="selected">{$placeholder}</option>
+	{/if}
+	{if $empty}
+<option value="">{$empty}</option>
+	{/if}
+	{if $vto}
+		{let $reverse: min($vfrom, $vto) == $vto /}
+		{for $val in range(($reverse ? $vto : $vfrom) ?: 0, ($reverse ? $vfrom : $vto) + 1, max(1, $vstep ?: 0))} // ensure step is positive (soy bug)
+			{let $val: $reverse ? ($vfrom + $vto - $val) : $val /}
+			{delcall com.nominanuda.webapp.widget.select.option variant="$otemplate"}
+				{param value: $val /}
+				{param label: $labels?[$val] ?: $labels?['_' + $val] ?: $val /}
+				{param ltemplate: $ltemplate /}
+				{param selected}
+					{if $multi and $data?[$name]}
+						{foreach $v in $data[$name]}
+							{if $v == $val}true{/if}
+						{/foreach}
+					{elseif ''+$value == (''+$val)}true{/if} // add '' to force string comparison
+				{/param}
+				{param disabled: $vdisabled and ($vdisabled[$val]) /}
+				{param format: $format /}
+			{/delcall}
+		{/for}
+	{else}
+		{let $groups: $groups ?: $widget?.groups /}
+		{let $values: $values ?: $widget?.values ?: $labels ? keys($labels) : [] /}
+		{foreach $val in $values}
+			{if $groups?[$val]?.label}
+<optgroup label="{$groups[$val].label}">
+			{/if}
+			{delcall com.nominanuda.webapp.widget.select.option variant="$otemplate"}
+				{param value: $val /}
+				{param label: $labels?[$val] ?: $labels?['_' + $val] ?: $val /}
+				{param ltemplate: $ltemplate /}
+				{param selected}
+					{if $multi and $data?[$name]}
+						{foreach $v in $data[$name]}
+							{if $v == $val}true{/if}
+						{/foreach}
+					{elseif ''+$value == (''+$val)}true{/if} // add '' to force string comparison
+				{/param}
+				{param disabled: $vdisabled and ($vdisabled[$val]) /}
+				{param format: $format /}
+			{/delcall}
+			{if $groups?[$val]?.last}
+</optgroup>
+			{/if}
+		{/foreach}
+	{/if}
+	{if $combox}
+	<option value="">{$combox}</option>
+</select>
+{call .text data="all"}
+	{param type: 'search' /} // for X button
+	{param root: 'data_combox' /}
+	{param placeholder: $combox /}
+{/call}
+	{else}
+</select>
+	{/if}
+{/template}
+
+
+/** default option template, override with custom variants
+ * @param value
+ * @param label
+ * @param? ltemplate
+ * @param? selected
+ * @param? disabled
+ * @param? format
+ */
+{deltemplate com.nominanuda.webapp.widget.select.option}
+<option value="{$value}"{if $selected} selected="selected"{/if}{if $disabled} disabled="disabled"{/if}>
+	{delcall com.nominanuda.webapp.widget.label variant="$ltemplate"}
+		{param label: $label /}
+		{param format: $format /}
+	{/delcall}
+</option>
+{/deltemplate}
+
+
+
+/**
+ * @param? id
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? value
+ * @param? label
+ * @param? vlabel
+ * @param? clss
+ * @param? vclss
+ * @param? checked
+ * @param? multi
+ * @param? submit
+ * @param? attrs
+ * @param? format
+ * @param? disabled
+ * @param? tabindex
+ * @param? rendering
+ * @param? editing
+ */
+{template .check}
+	{let $chk}
+		{if $value}
+			{if $multi}
+				{foreach $c in ($checked ?: $data?[$name] ?: [])}
+					{if $c == $value}true{/if}
+				{/foreach}
+			{elseif $checked or $data?[$name] == $value}true{/if}
+		{elseif $checked or $data?[$name]}true{/if}
+	{/let}
+	{let $wgt: not $rendering or $rendering and $editing /} // show widget
+
+	{if $chk or $wgt}
+		{if $label or $vlabel}
+<label class="{if $multi == false}radio{else}check{/if}
+			{if $clss} {$clss}{/if}
+			{if $vclss and $value} check-{$name}-{$value}{/if}
+			{if $disabled} disabled{/if}
+			{if $chk} checked{/if}"
+>
+		{/if}
+		{if $wgt}
+<input type="{if $multi == false}radio{else}checkbox{/if}"
+			{call ._attrs_ data="all"}
+				{param baseclss}
+					check
+					{if $vclss and $value} {$value}{/if}
+				{/param}
+			{/call}
+		value="{$value ?: $value == '' ? '' : 'true'}" // allow '' value for empty radios
+		{if $chk} checked="checked"{/if}
+/>
+		{/if}
+		{if $label}
+			{delcall com.nominanuda.webapp.widget.label}
+				{param label: $label /}
+				{param format: $format /}
+			{/delcall}
+</label>
+		{elseif $vlabel}
+			{call ._format_ data="all" /}
+</label>
+		{/if}
+	{/if}
+{/template}
+
+
+/**
+ * @param? data
+ * @param? root
+ * @param? scope
+ * @param name
+ * @param? widgets
+ * @param? widget
+ * @param? empty
+ * @param? values
+ * @param? labels
+ * @param? ltemplate
+ * @param? vlabel
+ * @param? clss
+ * @param? vclss
+ * @param? checked
+ * @param? multi
+ * @param? submit
+ * @param? attrs
+ * @param? format
+ * @param? disabled
+ * @param? rendering
+ * @param? editing
+ */
+{template .checks}
+	{let $widget: $widget ?: $widgets?[$name] /}
+	{let $labels: $labels ?: $widget?.labels /}
+	{let $ltemplate: $ltemplate ?: '' /}
+	{if ($multi == false) and $empty} // makes sense only in case of radios
+		{call .check data="all"}
+			{param value: '' /}
+			{param label: $empty /}
+			{param checked: true /}
+			{param multi: false /}
+		{/call}
+	{/if}
+	{foreach $val in ($values ?: $widget?.values ?: $labels ? keys($labels) : [])}
+		{call .check data="all"}
+			{param value: $val /}
+			{param label}
+				{delcall com.nominanuda.webapp.widget.label variant="$ltemplate"}
+					{param label: ($labels?[$val] ?: $labels?['_' + $val] ?: $val) /}
+					{param format: $format /}
+				{/delcall}
+			{/param}
+			{param format: null /} // force format resetting
+			{param checked: ($multi == false ? (isFirst($val) and not $checked and not $empty ? true : ($checked == $val)) : $checked) /}
+			{param multi: not($multi == false) /}
+		{/call}
+	{/foreach}
+{/template}
+
+
+
+
+/** default widget label, override with custom variants
+ * @param label
+ * @param? format
+ */
+{deltemplate com.nominanuda.webapp.widget.label}
+	{if $format}
+		{call ._format_ data="all"}
+			{param value: $label /}
+		{/call}
+	{else}
+		{$label |noAutoescape}
+	{/if}
+{/deltemplate}
+
+
+
+
+
+/**
+ * @param? id
+ * @param? scope
+ * @param? list
+ * @param? size
+ * @param prefix
+ * @param template
+ * @param? element
+ * @param? clss
+ * @param? editing
+ */
+{template .repeater}
+	{let $s: ($size ?: 0) /}
+	{let $l: ($list ? length($list) : 0) /}
+	{let $rows: max($l, $s) /}
+	{if $element != -1} // element == -1 -> no add/remove allowed
+		<{$element ?: 'span'}
+			{if $id} id="{$id}"{/if}
+			{sp}class="zen-webapp-repeater{if $clss} {$clss}{/if}"
+			data-scope="{if $scope}{$scope}.{/if}{$prefix}" data-template="{$template}"
+		>
+	{/if}
+	{foreach $elm in ($list ?: [])}
+		{call .repeater_row data="all"}
+			{param row: $elm /}
+			{param rows: $rows /}
+			{param index: index($elm) /}
+			{param scope}{if $scope}{$scope}.{/if}{$prefix}{/param}
+		{/call}
+	{/foreach}
+	{if $editing}
+		{for $i in range($l, $s)}
+			{call .repeater_row data="all"}
+				{param row: ['':''] /} // trick because [:] gives syntax error
+				{param rows: $rows /}
+				{param index: $i /}
+				{param scope}{if $scope}{$scope}.{/if}{$prefix}{/param}
+			{/call}
+		{/for}
+	{/if}
+	{if $element != -1}
+		</{$element ?: 'span'}>
+	{/if}
+{/template}
+
+
+/**
+ * @param? type
+ * @param label
+ * @param? editing
+ */
+{template .repeatadd}
+	{if $editing}
+		<span class="zen-webapp-repeater-add{if $type} multi" data-type="{$type}{/if}">{$label}</span>
+	{/if}
+{/template}
+
+
+/** just for use by repeater.js
+ */
+{template .repeater_del}
+	<span class="zen-webapp-repeater-del"><!-- del --></span>
+{/template}
+
+
+/** for use by repeater.js too
+ * @param row
+ * @param rows
+ * @param index
+ * @param scope
+ * @param template
+ */
+{template .repeater_row}
+	{delcall com.nominanuda.webapp.widget.repeated variant="$template" data="all"}
+		{param row: $row /}
+		{param clss: null /} // force clss resetting
+		{param scope}{$scope}.{$index}{/param}
+	{/delcall}
+{/template}
+
+
+/** default (empty) repeated row template, override with custom variants
+ * @param? clss
+ * @param? scope
+ * @param index
+ * @param rows
+ * @param row
+ */
+{deltemplate com.nominanuda.webapp.widget.repeated}
+	<!-- {$clss}{$scope}{$index}{$rows}{$row} -->
+{/deltemplate}

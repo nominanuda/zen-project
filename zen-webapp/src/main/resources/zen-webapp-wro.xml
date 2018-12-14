@@ -1,0 +1,44 @@
+<groups xmlns="http://www.isdc.ro/wro">
+	<group name="wro4j.zen.webapp.v20181213a.main">
+		<group-ref>wro4j.zen.webapp.v20181213a.boot</group-ref>
+		<group-ref>wro4j.zen.webapp.v20181213a.soy</group-ref>
+
+		<!-- css -->
+		<css>classpath:com/nominanuda/webapp/client/css/boot.css</css>
+
+		<!-- js -->
+		<js>classpath:com/nominanuda/webapp/client/js/_alert_/basic.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/_alert_/boxes.js</js>
+		
+		<js>classpath:com/nominanuda/webapp/client/js/util/css.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/dom.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/event.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/image.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/js.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/json.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/util/soy.js</js>
+
+		<js>classpath:com/nominanuda/webapp/client/js/ajax.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/overlay.js</js>
+		<js>classpath:com/nominanuda/webapp/client/js/sfx.js</js>
+	</group>
+
+
+	<group name="wro4j.zen.webapp.v20181213a.boot">
+		<js>classpath:com/nominanuda/webapp/client/lib/requirejs/require-2.3.2.min.js</js>
+		<js>classpath:com/nominanuda/webapp/client/lib/requirejs/bootloader.js</js>
+		<js>classpath:com/nominanuda/jsweb/soy/soyutils-r28.js</js>
+	</group>
+
+
+	<group name="wro4j.zen.webapp.v20181213a.soy">
+		<js>/zen-webapp-soy/alert.soy.js</js>
+		<js>/zen-webapp-soy/format.soy.js</js>
+		<js>/zen-webapp-soy/format/de.soy.js</js>
+		<js>/zen-webapp-soy/format/it.soy.js</js>
+		<js>/zen-webapp-soy/layout.soy.js</js>
+		<js>/zen-webapp-soy/widget.ajax.soy.js</js>
+		<js>/zen-webapp-soy/widget.edit.soy.js</js>
+		<js>/zen-webapp-soy/widget.soy.js</js>
+	</group>
+</groups>

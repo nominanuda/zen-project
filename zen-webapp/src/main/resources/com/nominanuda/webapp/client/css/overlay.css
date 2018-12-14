@@ -1,0 +1,133 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+#zen-webapp-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999;
+	perspective: 1200px;
+	-moz-perspective: 1200px;
+	-webkit-perspective: 1200px;
+}
+/*#zen-webapp-overlay.ontop {
+	z-index: 1001;
+}*/
+
+#zen-webapp-overlay > .zen-webapp-shadow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #000;
+	opacity: .8;
+}
+
+
+
+/* lightbox */
+
+#zen-webapp-overlay > .zen-webapp-lightbox {
+	position: absolute;
+	top: 40px;
+	left: 40%;
+	width: 20%;
+	height: auto;
+	box-shadow: 0 5px 20px #000;
+}
+
+#zen-webapp-overlay > .zen-webapp-lightbox iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+#zen-webapp-overlay > .zen-webapp-lightbox > .content {
+	float: left; /* avoid block width */
+	max-height: 700px;
+	overflow: auto;
+}
+
+#zen-webapp-overlay > .zen-webapp-lightbox > a.close {
+	display: none;
+	position: absolute;
+	top: -10px;
+	right: -10px;
+	width: 20px;
+	height: 20px;
+	/*background: url(img/tool/btn.close.png);*/
+	cursor: pointer;
+}
+
+#zen-webapp-overlay > .zen-webapp-lightbox > .floor {
+	clear: left;
+}
+
+
+
+/* overlayed + spinner */
+
+#zen-webapp-overlay .overlayed {
+	position: absolute;
+	/*backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;*/
+}
+
+#zen-webapp-overlay .zen-webapp-spinner {
+	position: absolute;
+	perspective: 300px;
+	-moz-perspective: 300px;
+	-webkit-perspective: 300px;
+}
+#zen-webapp-overlay .zen-webapp-spinner.zoomed {
+	transform: scale3d(1.3, 1.3, 0);
+	-moz-transform: scale3d(1.3, 1.3, 0);
+	-webkit-transform: scale3d(1.3, 1.3, 0);
+	transition: transform .5s;
+	-moz-transition: -moz-transform .5s;
+	-webkit-transition: -webkit-transform .5s;
+}
+
+#zen-webapp-overlay .zen-webapp-spinner > .overlayed {
+	display: block;
+	position: static;
+	animation: 3s linear infinite;
+	-moz-animation: 3s linear infinite;
+	-webkit-animation: 3s linear infinite;
+	/*backface-visibility: visible;
+	-moz-backface-visibility: visible;
+	-webkit-backface-visibility: visible;*/
+}
+#zen-webapp-overlay .zen-webapp-spinner.x > .overlayed {animation-name: zen-webapp-spin-x; -moz-animation-name: zen-webapp-spin-x; -webkit-animation-name: zen-webapp-spin-x;}
+#zen-webapp-overlay .zen-webapp-spinner.y > .overlayed {animation-name: zen-webapp-spin-y; -moz-animation-name: zen-webapp-spin-y; -webkit-animation-name: zen-webapp-spin-y;}
+#zen-webapp-overlay .zen-webapp-spinner.z > .overlayed {animation-name: zen-webapp-spin-z; -moz-animation-name: zen-webapp-spin-z; -webkit-animation-name: zen-webapp-spin-z;}
+
+@keyframes zen-webapp-spin-x {from {transform: rotateX(0);} to {transform: rotateX(-360deg);}}
+@-moz-keyframes zen-webapp-spin-x {from {-moz-transform: rotateX(0);} to {-moz-transform: rotateX(-360deg);}}
+@-webkit-keyframes zen-webapp-spin-x {from {-webkit-transform: rotateX(0);} to {-webkit-transform: rotateX(-360deg);}}
+
+@keyframes zen-webapp-spin-y {from {transform: rotateY(0);} to {transform: rotateY(-360deg);}}
+@-moz-keyframes zen-webapp-spin-y {from {-moz-transform: rotateY(0);} to {-moz-transform: rotateY(-360deg);}}
+@-webkit-keyframes zen-webapp-spin-y {from {-webkit-transform: rotateY(0);} to {-webkit-transform: rotateY(-360deg);}}
+
+@keyframes zen-webapp-spin-z {from {transform: rotateZ(0);} to {transform: rotateZ(360deg);}}
+@-moz-keyframes zen-webapp-spin-z {from {-moz-transform: rotateZ(0);} to {-moz-transform: rotateZ(360deg);}}
+@-webkit-keyframes zen-webapp-spin-z {from {-webkit-transform: rotateZ(0);} to {-webkit-transform: rotateZ(360deg);}}

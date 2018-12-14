@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified"
+	targetNamespace="http://nominanuda.com/ns/2018/zen-webapp-1.0"
+	xmlns:webapp="http://nominanuda.com/ns/2018/zen-webapp-1.0">
+
+	<xs:element name="pattern">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="id" type="xs:string" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="handler">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="match" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="webapp:pattern" maxOccurs="1" />
+						<xs:element name="param" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="name" type="xs:string" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="webapp:pattern" maxOccurs="unbounded" />
+		</xs:choice>
+		<xs:attribute name="src" type="xs:string" />
+	</xs:complexType>
+
+	<xs:element name="resource">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="webapp:handler">
+					<xs:attribute name="default-content-type" type="xs:string" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="soy" type="webapp:handler" />
+
+	<xs:element name="ctrl">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="webapp:handler">
+					<xs:sequence minOccurs="0">
+						<xs:element name="require" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence minOccurs="0">
+									<xs:any namespace="http://www.springframework.org/schema/beans" />
+								</xs:sequence>
+								<xs:attribute name="name" type="xs:string" />
+								<xs:attribute name="value" type="xs:string" />
+								<xs:attribute name="ref" type="xs:string" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:group name="anyElement">
+		<xs:sequence>
+			<xs:any processContents="skip" />
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

@@ -1,0 +1,34 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:map="http://nominanuda.com/ns/2011/mvcfrontcontroller-1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://nominanuda.com/ns/2011/mvcfrontcontroller-1.0 http://nominanuda.com/ns/2011/mvcfrontcontroller-1.0.xsd">
+
+	<!-- Example usage -->
+
+	<bean id="imageStore" class="com.nominanuda.image.FakeImageStore">
+		<property name="imagePath" value="/com/nominanuda/image/legend.jpg" />
+	</bean>
+
+	<map:match id="imagePut">
+		<map:pattern>POST /image/add</map:pattern>
+		<map:handler>
+			<bean class="com.nominanuda.image.ImagePost">
+				<property name="imageStore" ref="imageStore" />
+				<property name="forceTextResponse" value="true" />
+				<!-- TODO add size and type (jpg, png, ecc) validation -->
+			</bean>
+		</map:handler>
+	</map:match>
+
+	<map:match id="imageGet">
+		<map:pattern>GET /image/{name}.{ext jpg|jpeg|png}</map:pattern>
+		<map:handler>
+			<bean class="com.nominanuda.image.ImageGet">
+				<property name="imageStore" ref="imageStore" />
+			</bean>
+		</map:handler>
+	</map:match>
+
+</beans>

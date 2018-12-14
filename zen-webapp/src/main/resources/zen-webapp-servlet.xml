@@ -1,0 +1,15 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:webapp="http://nominanuda.com/ns/2018/zen-webapp-1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://nominanuda.com/ns/2018/zen-webapp-1.0 http://nominanuda.com/ns/2018/zen-webapp-1.0.xsd">
+
+	<webapp:resource src="classpath:com/nominanuda/webapp/client/{resource}">
+		<webapp:pattern id="zen-webapp-cdn">/zen-webapp-cdn/{resource */0*}</webapp:pattern>
+	</webapp:resource>
+	
+	<webapp:soy src="classpath:com/nominanuda/webapp/soy/{template}">
+		<webapp:pattern id="zen-webapp-soy">/zen-webapp-soy/{template */0*}.js</webapp:pattern>
+	</webapp:soy>
+</beans>

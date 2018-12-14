@@ -1,0 +1,342 @@
+/*
+ * Copyright 2008-2018 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/* sorter */
+
+.zen-webapp-sorters {
+	overflow: auto; /* for jquery ui dnd */
+}
+
+.zen-webapp-sortable {
+	cursor: move;
+}
+
+
+
+/* upload */
+
+.zen-webapp-upload .button {
+	position: relative;
+}
+.zen-webapp-upload .button.action-upload {
+	overflow: hidden;
+}
+.zen-webapp-upload .button.action-delete {
+	z-index: 1; /* over the overflowing input */
+}
+
+.zen-webapp-upload .button.action-upload input {
+	width: 100%;
+	height: 100%;
+}
+
+
+
+/* keywords */
+
+.zen-webapp-keywords {
+	overflow: auto; /* fixes dnd page scroll offset */
+}
+
+.zen-webapp-keywords label {
+	position: relative;
+	cursor: text;
+}
+
+.zen-webapp-keywords label a {
+	position: absolute;
+	display: none;
+	top: 0;
+	width: 20px;
+	height: 100%;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+}
+.zen-webapp-keywords label a.m {
+	right: 20px;
+	cursor: move;
+}
+.zen-webapp-keywords label a.x {
+	right: 0;
+	cursor: pointer;
+}
+.zen-webapp-keywords label:hover a {
+	display: block;
+}
+
+
+
+/* gallery */
+
+.zen-webapp-gallery > a[href] {
+	cursor: pointer;
+}
+
+.zen-webapp-gallery > a img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.zen-webapp-box.box-gallery .preview {
+	height: 200px;
+}
+.zen-webapp-box.box-gallery .preview img {
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto;
+}
+
+
+.zen-webapp-box.box-gallery p {
+	clear: both;
+	font-size: 14px;
+	margin: 0;
+	padding: 0 20px;
+	box-sizing: border-box; /* needed for textarea width:100% */
+}
+.zen-webapp-box.box-gallery .ctrls {
+	font-size: 12px;
+	height: 44px;
+	padding: 10px 20px;
+	text-transform: uppercase;
+}
+
+
+.zen-webapp-box.box-gallery p .text,
+.zen-webapp-box.box-gallery p textarea {
+	font-size: 1em;
+	width: 100%;
+	color: #ccc;
+	background: #333;
+	border: 1px solid #666;
+	padding: 5px 10px;
+	line-height: normal;
+}
+.zen-webapp-box.box-gallery p .text:focus,
+.zen-webapp-box.box-gallery p textarea:focus {
+	border-color: #099;
+}
+.zen-webapp-box.box-gallery p textarea {
+	display: block;
+}
+
+.zen-webapp-box.box-gallery p * + label {
+	display: block;
+	margin-top: 5px;
+}
+
+
+.zen-webapp-box.box-gallery .ctrls.img .upload {
+	display: block; /* to contain upload widget (or it will overflow) */
+	float: right;
+}
+
+.zen-webapp-box.box-gallery .ctrls .cancel {
+	color: #fff;
+	border: 1px solid #099;
+	padding: 0 20px;
+	line-height: 22px;
+	text-align: center;
+}
+
+.zen-webapp-box.box-gallery .ctrls .button {
+	color: #fff;
+	background-color: #099;
+	padding: 0 20px;
+	line-height: 24px;
+}
+
+
+
+
+/* repeater */
+
+.zen-webapp-repeater-add,
+.zen-webapp-repeater-del {
+	cursor: pointer;
+}
+
+
+
+
+/* richtext */
+
+.zen-webapp-richtext .toolbar {
+	height: 20px;
+	font-size: 12px;
+	background: #ccc;
+	padding: 5px;
+	white-space: nowrap;
+	line-height: normal !important;
+}
+
+.zen-webapp-richtext .toolbar > .button {
+	float: left !important;
+	width: 20px !important;
+	height: 20px !important;
+	color: transparent !important;
+	background: #099 center / 16px no-repeat;
+	margin-right: 5px !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+}
+.zen-webapp-richtext .button.wysihtml5-command-active {
+	width: 18px !important;
+	height: 18px !important;
+	background-color: #366 !important;
+	border: 1px solid #397373 !important;
+	border-left-color: #264d4d;
+	border-top-color: #264d4d;
+}
+.zen-webapp-richtext .button.a {
+	background-image: url(../img/edit/icn.link.on.2x.png) !important;
+	margin-right: 0 !important;
+}
+.zen-webapp-richtext .button.b {
+	background-image: url(../img/edit/icn.bold.on.2x.png) !important;
+}
+.zen-webapp-richtext .button.i {
+	background-image: url(../img/edit/icn.italic.on.2x.png) !important;
+}
+.zen-webapp-richtext .button.ol {
+	background-image: url(../img/edit/icn.olist.on.2x.png) !important;
+}
+.zen-webapp-richtext .button.ul {
+	background-image: url(../img/edit/icn.ulist.on.2x.png) !important;
+}
+.zen-webapp-richtext .button.link {
+	float: right !important;
+	color: #099 !important;
+	margin-left: 1px !important;
+	margin-right: 0 !important;
+	border: 1px solid #099;
+	padding: 1px 5px 2px 5px !important;
+	text-transform: none !important;
+}
+
+.zen-webapp-richtext .toolbar > span {
+	display: block;
+}
+
+.zen-webapp-richtext .toolbar > span > label {
+	display: block;
+	margin: 0 80px 0 121px !important;
+}
+
+.zen-webapp-richtext .toolbar .text {
+	width: 100% !important;
+	border: 1px solid #666;
+	padding: 1px 4px 2px 4px !important;
+	line-height: normal !important;
+	font-weight: normal !important;
+}
+.zen-webapp-richtext .toolbar .text:focus {
+	border-color: #099 !important;
+}
+
+.zen-webapp-richtext.elastic textarea {
+	height: 0; /* no minimum height by default */
+}
+
+.zen-webapp-richtext iframe {
+	box-sizing: border-box;
+}
+
+
+
+/* codearea */
+
+.zen-webapp-codearea {
+	position: relative;
+}
+.zen-webapp-lightbox .zen-webapp-codearea {
+	width: 800px;
+	height: 600px;
+}
+
+.zen-webapp-codearea textarea {
+	width: 100%;
+}
+
+.zen-webapp-lightbox .zen-webapp-codearea .title {
+	height: 29px;
+	border-bottom: 1px solid #ccc;
+}
+
+.zen-webapp-lightbox .zen-webapp-codearea .title h4 {
+	font-size: 20px;
+	margin: 0;
+}
+
+.zen-webapp-lightbox .zen-webapp-codearea .editor {
+	position: absolute;
+	top: 40px;
+	left: 0;
+	right: 0;
+	height: auto;
+	bottom: 50px;
+}
+.zen-webapp-codearea .editor.with-images {
+	bottom: 80px;
+}
+
+.CodeMirror {
+	font-size: 12px;
+	text-align: left;
+}
+.zen-webapp-codearea .CodeMirror {
+	height: 100%;
+}
+
+.CodeMirror .cm-operator {
+	color: #ffa500;
+}
+
+.zen-webapp-codearea .images {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 50px;
+	text-align: center;
+}
+
+.zen-webapp-codearea .images label {
+	float: left;
+	width: 75%;
+}
+.zen-webapp-codearea .images label input.text {
+	width: 100%;
+	color: #fff;
+	background: #333;
+	padding: 2px;
+	line-height: inherit;
+	cursor: move;
+}
+
+.zen-webapp-codearea .images .button {
+	float: left;
+	font-size: 12px;
+	width: 25%;
+	color: #fff;
+	background: #099;
+	padding: 2px 0;
+	font-weight: normal;
+	text-transform: uppercase;
+}
