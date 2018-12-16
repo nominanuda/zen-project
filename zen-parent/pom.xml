@@ -16,10 +16,13 @@
 	</scm>
 	<modules>
 		<module>../zen-core</module>
+		<module>../zen-security</module>
 		<module>../zen-rhino</module>
 		<module>../zen-webservice</module>
+		<module>../zen-image</module>
 		<module>../zen-store</module>
 		<module>../zen-jsweb</module>
+		<module>../zen-webapp</module>
 	</modules>
 	<licenses>
 		<license>
@@ -107,12 +110,27 @@
 			</dependency>
 			<dependency>
 				<groupId>com.nominanuda</groupId>
+				<artifactId>zen-core</artifactId>
+				<version>${zen.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nominanuda</groupId>
+				<artifactId>zen-image</artifactId>
+				<version>${zen.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nominanuda</groupId>
 				<artifactId>zen-jsweb</artifactId>
 				<version>${zen.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.nominanuda</groupId>
-				<artifactId>zen-core</artifactId>
+				<artifactId>zen-rhino</artifactId>
+				<version>${zen.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nominanuda</groupId>
+				<artifactId>zen-security</artifactId>
 				<version>${zen.version}</version>
 			</dependency>
 			<dependency>
@@ -120,12 +138,9 @@
 				<artifactId>zen-store</artifactId>
 				<version>${zen.version}</version>
 			</dependency>
-			<!-- <dependency> <groupId>com.nominanuda</groupId> <artifactId>zen-urispec</artifactId> <version>${zen.version}</version> </dependency> <dependency> <groupId>com.nominanuda</groupId> <artifactId>zen-base</artifactId> <version>${zen.version}</version> 
-				</dependency> <dependency> <groupId>com.nominanuda</groupId> <artifactId>zen-dataobject</artifactId> <version>${zen.version}</version> </dependency> -->
-
 			<dependency>
 				<groupId>com.nominanuda</groupId>
-				<artifactId>zen-rhino</artifactId>
+				<artifactId>zen-webapp</artifactId>
 				<version>${zen.version}</version>
 			</dependency>
 			<dependency>
