@@ -15,7 +15,7 @@
  */
 
 
-define('zen-webapp/edit/keywords', [
+define('zen-webapp/widget/keywords', [
         'jquery',
         'zen-webapp/util/dom',
         'zen-webapp-lib/jqueryui'

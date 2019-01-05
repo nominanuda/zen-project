@@ -24,7 +24,7 @@ require.config({
 });
 
 
-define('zen-webapp/edit/richtext', [
+define('zen-webapp/widget/richtext', [
         'jquery',
         'require',
         'zen-webapp-lib/wysihtml5/wysihtml5-0.3.0.min',

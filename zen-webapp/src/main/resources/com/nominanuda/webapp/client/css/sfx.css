@@ -23,8 +23,19 @@
 	left: 0;
 	background: rgba(255, 255, 255, .5);
 }
+
+
+/* those are for using com.nominanuda.webapp.layout.loader as a root-level loading mask while zen-webapp is enabling ajax */
 body > .zen-webapp-loader {
+	opacity: 0;
+	visibility: hidden;
+	position: fixed;
 	z-index: 9999;
+}
+body > .zen-webapp-loading + .zen-webapp-loader {
+	opacity: 1;
+	visibility: visible;
+	transition: opacity 1s ease-in-out;
 }
 
 

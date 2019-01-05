@@ -150,6 +150,9 @@ tr.zen-webapp-repeater-row > td:last-child { /* the del host */
 	background: url(../img/edit/icn.remove.green.2x.png) right center / 16px no-repeat;
 	border-bottom: 1px solid #099;
 	cursor: pointer;
+	opacity: 0;
+}
+.zen-webapp-repeater-row:hover > .zen-webapp-repeater-del {
 	opacity: .3;
 }
 td > .zen-webapp-repeater-del {
@@ -158,4 +161,12 @@ td > .zen-webapp-repeater-del {
 }
 .zen-webapp-repeater-del:hover {
 	opacity: 1;
+}
+
+/* tmp workaround to allow deletion of the last row only (in order to send array indexes without missing elements) */
+.zen-webapp-repeater-del {
+	display: none;
+}
+.zen-webapp-repeater-row:last-child > .zen-webapp-repeater-del {
+	display: block;
 }

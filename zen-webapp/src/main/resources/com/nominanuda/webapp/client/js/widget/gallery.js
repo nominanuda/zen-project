@@ -15,7 +15,7 @@
  */
 
 
-define('zen-webapp/edit/gallery', [
+define('zen-webapp/widget/gallery', [
         'jquery',
         'zen-webapp/overlay',
         'zen-webapp/util/dom',

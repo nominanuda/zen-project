@@ -58,14 +58,14 @@
 
 
 /**
- * @param? zenWebappSnippet
+ * @param? webappSnippet
  * @param? element
  * @param? clss
  * @param? id
  * @param body
  */
 {template .snippet}
-	<{$element ?: 'span'}{if $id} id="{$id}"{/if} class="zen-webapp-snippet{if $clss} {$clss}{/if}" data-name="{$zenWebappSnippet}">
+	<{$element ?: 'span'}{if $id} id="{$id}"{/if} class="zen-webapp-snippet{if $clss} {$clss}{/if}" data-name="{$webappSnippet}">
 		{$body |noAutoescape}
 	</{$element ?: 'span'}>
 {/template}

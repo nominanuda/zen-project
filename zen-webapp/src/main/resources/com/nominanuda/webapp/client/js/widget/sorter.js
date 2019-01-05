@@ -15,7 +15,7 @@
  */
 
 
-define('zen-webapp/edit/sorter', [
+define('zen-webapp/widget/sorter', [
         'jquery',
         'zen-webapp/util/dom',
         'zen-webapp-lib/jqueryui'

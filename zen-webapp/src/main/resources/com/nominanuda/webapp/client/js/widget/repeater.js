@@ -15,7 +15,7 @@
  */
 
 
-define('zen-webapp/edit/repeater', [
+define('zen-webapp/widget/repeater', [
         'jquery',
         'zen-webapp/util/dom',
         'zen-webapp-lib/jqueryui' // for sorting
@@ -32,29 +32,6 @@ define('zen-webapp/edit/repeater', [
 	
 	var TEMPLATE_ROW = com.nominanuda.webapp.widget.repeater_row;
 	var TEMPLATE_DEL = com.nominanuda.webapp.widget.repeater_del;
-	
-	
-	function init($repeater) {
-		var scope = $repeater.data(DATA_SCOPE);
-		var template = $repeater.data(DATA_TEMPLATE);
-		return {
-			add: function(obj, type) {
-				obj = obj || {};
-				obj.clss = null; // forces clss resetting
-				obj.scope = scope;
-				obj.template = template;
-				obj.index = $repeater.children().length;
-				obj.row = $.extend(obj.row || {}, {
-					type: type
-				});
-				obj.rows = obj.index + 1;
-				var $row = $(TEMPLATE_ROW(obj));
-				$repeater.append($row); // first add, then effects (for tables)
-				$row.hide().fadeIn();
-				return $row;
-			}
-		};
-	}
 	
 	
 	function dynamize($row, $addBtn) {
@@ -87,35 +64,57 @@ define('zen-webapp/edit/repeater', [
 	}
 	
 	
+	function init($repeater, json, addCback) {
+		var scope = $repeater.data(DATA_SCOPE);
+		var template = $repeater.data(DATA_TEMPLATE);
+		var addFnc = function(obj, type) {
+			obj = obj || {};
+			obj.clss = null; // forces clss resetting
+			obj.scope = scope;
+			obj.template = template;
+			obj.index = $repeater.children().length;
+			obj.row = $.extend(obj.row || {}, {
+				type: type
+			});
+			obj.rows = obj.index + 1;
+			var $row = $(TEMPLATE_ROW(obj));
+			$repeater.append($row); // first add, then effects (for tables)
+			$row.hide().fadeIn();
+			return $row;
+		};
+		if (json) {
+			var $addBtn = $repeater.siblings(SELECTOR_ADD);
+			if ($addBtn.length == 0 && $repeater.is('thead,tbody')) { // help for tables
+				$addBtn = $repeater.closest('table').siblings(SELECTOR_ADD);
+			}
+			if ($addBtn.length > 0) {
+				$addBtn.on('click', function() {
+					var obj = (typeof json == 'function' ? json() : json); // TODO args to pass to json()?
+					var $row = addFnc(obj, $(this).data(DATA_ADD_TYPE));
+					addCback && addCback($row);
+					dynamize($row, $addBtn);
+					$('input', $row).first().focus();
+				});
+				$repeater.children().each(function() {
+					dynamize($(this), $addBtn);
+				});
+			}
+		}
+		return {
+			add: addFnc
+		};
+	}
+	
+	
 	function widget($elms, json, cback) {
 		UTIL_DOM.findter(SELECTOR_WIDGET, $elms).each(function() {
 			var $repeater = $(this);
-			var r = init($repeater);
-			if (json) {
-				var $addBtn = $repeater.siblings(SELECTOR_ADD);
-				if ($addBtn.length == 0 && $repeater.is('thead,tbody')) { // help for tables
-					$addBtn = $repeater.closest('table').siblings(SELECTOR_ADD);
-				}
-				if ($addBtn.length > 0) {
-					$addBtn.on('click', function() {
-						var obj = (typeof json == 'function' ? json() : json); // TODO args to pass to json()?
-						var $row = r.add(obj, $(this).data(DATA_ADD_TYPE));
-						if (cback) {
-							cback($row);
-						} else {
-							$(SELECTOR, $row).each(function() {
-								var $this = $(this);
-								widget($this, json);
-							});
-						}
-						dynamize($row, $addBtn);
-						$('input', $row).first().focus();
-					});
-					$repeater.children().each(function() {
-						dynamize($(this), $addBtn);
-					});
-				}
-			}
+			var addCback = function($row) {
+				$(SELECTOR, $row).each(function() {
+					widget($(this), json, addCback);
+				});
+			};
+			init($repeater, json, cback || addCback);
 		});
 	}
 	

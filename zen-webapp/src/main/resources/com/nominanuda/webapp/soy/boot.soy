@@ -26,7 +26,7 @@
  * @param? soyPaths
  */
 {template .boot}
-	{let $WEBAPP_DEV: false /} // true only when developing stuff
+	{let $WEBAPP_DEV: true /} // true only when developing stuff
 	{let $WEBAPP_V: 'v20181213a' /} // as in zen-webapp-wro.xml
 	{if $__webapp}
 		{if $WEBAPP_DEV}
@@ -95,7 +95,7 @@
 					'zen-webapp-lib/jquery/jquery.elastic': ['jquery'],
 					'zen-webapp-lib/jquery/jquery.fileupload': ['zen-webapp-lib/jqueryui'],
 					'zen-webapp-lib/jquery/jquery.history': ['jquery'],
-					'zen-webapp-lib/jquery/jquery.inputmask.min': ['jquery'],
+					'zen-webapp-lib/jquery/jquery.inputmask.bundle-4.0.5.min': ['jquery'],
 					'zen-webapp-lib/jquery/jquery.json-2.3.min': ['jquery'],
 					'zen-webapp-lib/jquery/jquery.transit-0.9.12.min': ['jquery']
 				{rb},
