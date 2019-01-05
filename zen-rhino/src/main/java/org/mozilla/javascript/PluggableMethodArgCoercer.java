@@ -33,11 +33,19 @@ public class PluggableMethodArgCoercer implements MethodArgCoercer {
 	}
 	
 	public int getConversionWeight(Object valueFrom, Class<?> typeTo) {
+		if (Enum.class.isAssignableFrom(typeTo)) { // enum is a special more-generic case
+			return 1;
+		}
 		Tuple2<ObjectCoercer<Object, Object, Exception>,Integer> t = findConvertor(typeTo, valueFrom);
 		return t == null ? Integer.MIN_VALUE : t.get1();
 	}
 
 	public Object coerceTypeImpl(Class<?> typeTo, Object valueFrom) {
+		if (Enum.class.isAssignableFrom(typeTo)) { // enum is a special more-generic case
+			return valueFrom != null
+				? Enum.valueOf((Class<Enum>) typeTo, valueFrom.toString())
+				: null;
+		}
 		Tuple2<ObjectCoercer<Object, Object, Exception>,Integer> t = findConvertor(typeTo, valueFrom);
 		if (t != null) {
 			try {

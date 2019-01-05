@@ -220,6 +220,8 @@ public class HyperApiWsSkelton implements WebService {
 				return Double.parseDouble(sval);
 			} else if (Boolean.class.equals(targetType) || boolean.class.equals(targetType) || "boolean".equals(targetType.getSimpleName())) {
 				return Boolean.parseBoolean(sval);
+			} else if (Enum.class.isAssignableFrom(targetType)) {
+				return Enum.valueOf((Class<Enum>) targetType, sval);
 			}
 		}
 		return null;
