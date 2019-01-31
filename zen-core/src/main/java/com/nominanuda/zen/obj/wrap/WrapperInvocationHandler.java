@@ -133,6 +133,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 			return obj;
 		} else if (v instanceof ObjWrapper) { // sub object
 			return ((ObjWrapper)v).unwrap();
+		} else if (v instanceof Enum) {
+			return v.toString();
 		}
 		return v;
 	}

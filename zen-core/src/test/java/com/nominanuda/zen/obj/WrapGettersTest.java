@@ -3,6 +3,7 @@ package com.nominanuda.zen.obj;
 import static com.nominanuda.zen.seq.Seq.SEQ;
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -159,7 +160,6 @@ public class WrapGettersTest {
 		assertList(castCollWrap.unexistingWrapper());
 	}
 	
-	
 	private <T> void assertList(List<T> actualList, T... expectedValues) {
 		final int l = expectedValues.length;
 		assertEquals(l, actualList.size());
@@ -167,4 +167,21 @@ public class WrapGettersTest {
 			assertEquals(expectedValues[i], actualList.get(i));
 		}
 	}
+	
+	
+	/* big decimal */
+	
+	interface MyBdWrapper extends ObjWrapper {
+		BigDecimal bd();
+		MyBdWrapper bd(BigDecimal bd);
+	}
+
+	@Test
+	public void bigDecimalTest() {
+		final BigDecimal bd035 = new BigDecimal("0.35");
+		MyBdWrapper mbw = DEFAULT_WF.wrap(Obj.parse("{\"bd\": 0.35}"), MyBdWrapper.class);
+		assertEquals(bd035, mbw.bd());
+		assertEquals(bd035, mbw.bd(bd035).bd());
+	}
+
 }

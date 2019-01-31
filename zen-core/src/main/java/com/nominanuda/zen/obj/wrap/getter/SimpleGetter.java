@@ -2,6 +2,7 @@ package com.nominanuda.zen.obj.wrap.getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -56,6 +57,8 @@ public class SimpleGetter implements IGetter {
 		} else if (JsonType.isNullablePrimitive(v)) {
 			if (Boolean.class.equals(type)) {
 				return Boolean.TRUE.equals(v);
+			} else if (BigDecimal.class.equals(type)) {
+				return new BigDecimal(v.toString()); // not v.doubleValue() to avoid "new BigDecimal(double)" problem (ex: BigDecimal(0.35d) -> 0.34999999999999997779553950749686919152736663818359375)
 			} else if (Double.class.equals(type) || double.class.equals(type)) {
 				return ((Number)v).doubleValue();
 			} else if (Float.class.equals(type) || float.class.equals(type)) {
@@ -64,6 +67,8 @@ public class SimpleGetter implements IGetter {
 				return ((Number)v).intValue();
 			} else if (Long.class.equals(type) || long.class.equals(type)) {
 				return ((Number)v).longValue();
+			} else if (Enum.class.isAssignableFrom(type)) {
+				return Enum.valueOf((Class<Enum>) type, v.toString());
 			} else {
 				return v;
 			}
