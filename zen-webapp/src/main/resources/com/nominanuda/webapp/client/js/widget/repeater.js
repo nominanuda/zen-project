@@ -22,8 +22,9 @@ define('zen-webapp/widget/repeater', [
         ], function($, UTIL_DOM) {
 	
 	var DATA_SCOPE = 'scope';
-	var DATA_TEMPLATE = 'template';
+	var DATA_VARIANT = 'variant';
 	var DATA_ADD_TYPE = 'type';
+	var DATA_NEXT_INDEX = '_index';
 	
 	var CLASS_ROW = 'zen-webapp-repeater-row';
 	
@@ -34,9 +35,8 @@ define('zen-webapp/widget/repeater', [
 	var TEMPLATE_DEL = com.nominanuda.webapp.widget.repeater_del;
 	
 	
-	function dynamize($row, $addBtn) {
-		var $del = $(TEMPLATE_DEL({}));
-		$del.on('click', function(e) {
+	function dynamize($row, $addBtn, customDelCback) {
+		var delCback = function(e) {
 			if ($row.is('tr')) { // no animation
 				$row.remove();
 			} else {
@@ -44,13 +44,20 @@ define('zen-webapp/widget/repeater', [
 					$row.remove();
 				});
 			}
+		};
+		var $delBtn = $(TEMPLATE_DEL({})).on('click', function(e) {
+			if (customDelCback) {
+				customDelCback($delBtn, delCback);
+			} else {
+				delCback();
+			};
 			return UTIL_DOM.noevents(e);
 		});
 		
 		if ($row.is('tr')) {
-			$row.append($('<td />').append($del));
+			$row.append($('<td />').append($delBtn));
 		} else {
-			$row.prepend($del);
+			$row.prepend($delBtn);
 		}
 		$row.addClass(CLASS_ROW).on('keypress', 'input', function(e) {
 			switch (e.keyCode) {
@@ -64,24 +71,31 @@ define('zen-webapp/widget/repeater', [
 	}
 	
 	
-	function init($repeater, json, addCback) {
+	function init($repeater, json, addCback, delCback) {
 		var scope = $repeater.data(DATA_SCOPE);
-		var template = $repeater.data(DATA_TEMPLATE);
+		var variant = $repeater.data(DATA_VARIANT);
+		
 		var addFnc = function(obj, type) {
-			obj = obj || {};
-			obj.clss = null; // forces clss resetting
-			obj.scope = scope;
-			obj.template = template;
-			obj.index = $repeater.children().length;
+			var size = $repeater.children().length;
+			var index = $repeater.data(DATA_NEXT_INDEX) || size;
+			$repeater.data(DATA_NEXT_INDEX, index + 1);
+			
+			!obj && (obj = {});
 			obj.row = $.extend(obj.row || {}, {
 				type: type
 			});
-			obj.rows = obj.index + 1;
+			obj.rows = size + 1;
+			obj.index = index;
+			obj.scope = scope;
+			obj.variant = variant;
+			obj.clss = null; // forces clss resetting
+			
 			var $row = $(TEMPLATE_ROW(obj));
 			$repeater.append($row); // first add, then effects (for tables)
 			$row.hide().fadeIn();
 			return $row;
 		};
+		
 		if (json) {
 			var $addBtn = $repeater.siblings(SELECTOR_ADD);
 			if ($addBtn.length == 0 && $repeater.is('thead,tbody')) { // help for tables
@@ -92,14 +106,15 @@ define('zen-webapp/widget/repeater', [
 					var obj = (typeof json == 'function' ? json() : json); // TODO args to pass to json()?
 					var $row = addFnc(obj, $(this).data(DATA_ADD_TYPE));
 					addCback && addCback($row);
-					dynamize($row, $addBtn);
+					dynamize($row, $addBtn, delCback);
 					$('input', $row).first().focus();
 				});
 				$repeater.children().each(function() {
-					dynamize($(this), $addBtn);
+					dynamize($(this), $addBtn, delCback);
 				});
 			}
 		}
+		
 		return {
 			add: addFnc
 		};

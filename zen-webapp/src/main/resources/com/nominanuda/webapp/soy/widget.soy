@@ -549,9 +549,10 @@
  * @param? list
  * @param? size
  * @param prefix
- * @param template
+ * @param variant
  * @param? element
  * @param? clss
+ * @param? extra
  * @param? editing
  */
 {template .repeater}
@@ -562,7 +563,7 @@
 		<{$element ?: 'span'}
 			{if $id} id="{$id}"{/if}
 			{sp}class="zen-webapp-repeater{if $clss} {$clss}{/if}"
-			data-scope="{if $scope}{$scope}.{/if}{$prefix}" data-template="{$template}"
+			data-scope="{if $scope}{$scope}.{/if}{$prefix}" data-variant="{$variant}"
 		>
 	{/if}
 	{foreach $elm in ($list ?: [])}
@@ -613,10 +614,11 @@
  * @param rows
  * @param index
  * @param scope
- * @param template
+ * @param variant
+ * @param? extra
  */
 {template .repeater_row}
-	{delcall com.nominanuda.webapp.widget.repeated variant="$template" data="all"}
+	{delcall com.nominanuda.webapp.widget.repeated variant="$variant" data="all"}
 		{param row: $row /}
 		{param clss: null /} // force clss resetting
 		{param scope}{$scope}.{$index}{/param}
@@ -626,11 +628,12 @@
 
 /** default (empty) repeated row template, override with custom variants
  * @param? clss
+ * @param? extra
  * @param? scope
  * @param index
  * @param rows
  * @param row
  */
 {deltemplate com.nominanuda.webapp.widget.repeated}
-	<!-- {$clss}{$scope}{$index}{$rows}{$row} -->
+	<!-- {$clss}{$extra}{$scope}{$index}{$rows}{$row} -->
 {/deltemplate}

@@ -26,26 +26,33 @@ import com.nominanuda.zen.obj.Obj;
 
 public class URITransformerURLStreamer extends URLStreamer {
 	private URISpec<Obj> match;
-	private URISpec<Obj> template;
+	protected URISpec<Obj> template;
 
 	@Override
 	protected URL getURL(HttpRequest request) throws IllegalArgumentException {
 		String reqURI = request.getRequestLine().getUri();
 		try {
-			com.nominanuda.zen.obj.Obj o = match.match(reqURI);
-			Check.illegalargument.assertNotNull(o);
-			return new URL(template.template(o));
+			Obj model = match.match(reqURI);
+			Check.illegalargument.assertNotNull(model);
+			return new URL(calcResourceUrl(model));
 		} catch(Exception e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	public void setMatch(String match) {
-		this.match = new URISpec<Obj>(
-				match, new ObjStringModelAdapter());
+	
+	protected String calcResourceUrl(Obj model) {
+		return template.template(model);
 	}
+	
+	
+	/* setters */
+	
+	public void setMatch(String match) {
+		this.match = new URISpec<Obj>(match, new ObjStringModelAdapter());
+	}
+	
 	public void setTemplate(String template) {
-		this.template = new URISpec<Obj>(
-				template, new ObjStringModelAdapter());
+		this.template = new URISpec<Obj>(template, new ObjStringModelAdapter());
 	}
 
 }

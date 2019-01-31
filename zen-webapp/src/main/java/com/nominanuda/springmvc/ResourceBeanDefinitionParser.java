@@ -25,15 +25,14 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 import com.nominanuda.urispec.Utils;
-import com.nominanuda.web.mvc.URITransformerURLStreamer;
 import com.nominanuda.zen.common.Tuple2;
 
 
 public class ResourceBeanDefinitionParser extends AbsHandlerBeanDefinitionParser {
 	@Override
 	protected BeanDefinition getHandlerDefinition(Element element, ParserContext parserContext, Tuple2<String, String> idAndPattern, Map<String, Object> hardParams) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(URITransformerURLStreamer.class)
-//			.addConstructorArgValue(hardParams) // TODO
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(WebappURLStreamer.class)
+			.addConstructorArgValue(hardParams)
 			.addPropertyValue("match", Utils.extractUriSpecFromSitemapMatch(idAndPattern.get1()))
 			.addPropertyValue("template", element.getAttribute("src"));
 		@Nullable String defaultContentType = element.getAttribute("default-content-type");

@@ -40,8 +40,8 @@ public class WebappRhinoHandler extends CompilingRhinoHandler {
 	private final Map<String, Object> hardParams, hostObjects;
 	
 	public WebappRhinoHandler(Map<String, Object> hardParams, Map<String, Object> hostObjects) {
-		this.hardParams = hardParams != null ? hardParams : new HashMap<String, Object>();
-		this.hostObjects = hostObjects != null ? hostObjects : new HashMap<String, Object>();
+		this.hardParams = hardParams != null ? hardParams : new HashMap<>();
+		this.hostObjects = hostObjects != null ? hostObjects : new HashMap<>();
 	}
 	
 	@Override
@@ -56,6 +56,12 @@ public class WebappRhinoHandler extends CompilingRhinoHandler {
 		hostObjects.put(KEY_WEBAPP_REQUIRE, req);
 		hostObjects.put(KEY_WEBAPP_HELPER, new Helper(sitemap));
 		super.init();
+	}
+	
+	@Override
+	protected String calcScriptUri(Stru cmd, HttpRequest request) throws IOException {
+		// TODO merge here hardParams with cmd coming from request, instead of doing it in executeFunction(...)?
+		return super.calcScriptUri(cmd, request);
 	}
 	
 	@Override

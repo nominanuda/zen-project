@@ -152,21 +152,15 @@ tr.zen-webapp-repeater-row > td:last-child { /* the del host */
 	cursor: pointer;
 	opacity: 0;
 }
-.zen-webapp-repeater-row:hover > .zen-webapp-repeater-del {
-	opacity: .3;
-}
 td > .zen-webapp-repeater-del {
 	width: 16px;
 	border-bottom: none;
 }
-.zen-webapp-repeater-del:hover {
+.zen-webapp-repeater-row:hover > .zen-webapp-repeater-del,
+tr.zen-webapp-repeater-row:hover > td > .zen-webapp-repeater-del {
+	opacity: .3;
+}
+.zen-webapp-repeater-row:hover > .zen-webapp-repeater-del:hover,
+tr.zen-webapp-repeater-row:hover > td > .zen-webapp-repeater-del:hover {
 	opacity: 1;
-}
-
-/* tmp workaround to allow deletion of the last row only (in order to send array indexes without missing elements) */
-.zen-webapp-repeater-del {
-	display: none;
-}
-.zen-webapp-repeater-row:last-child > .zen-webapp-repeater-del {
-	display: block;
 }
