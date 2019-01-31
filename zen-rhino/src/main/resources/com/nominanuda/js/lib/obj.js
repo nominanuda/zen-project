@@ -122,6 +122,18 @@ function override(src, dst, fnc) { // override existing properties
 	return dst;
 }
 
+function replace(src, dst, fnc) { // replace dst properties with src properties
+	if (src) {
+		if (dst) {
+			for (var p in dst) {
+				delete dst[p];
+			}
+		}
+		return merge(src, dst, fnc);
+	}
+	return dst;
+}
+
 function pour(src, dst, fnc, defs) { // keep all dst private properties but add all src public properties
 	if (src) {
 		dst = dst || {};
@@ -208,6 +220,7 @@ exports = {
 	merge: merge,
 	expand: expand,
 	override: override,
+	replace: replace,
 	pour: pour,
 	build: build,
 	flatten: flatten,

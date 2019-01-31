@@ -41,6 +41,14 @@ exports = {
 		if (!v) return msg;
 	},
 	
+	notNull: function(v, msg) {
+		return v === null ? false : true;
+	},
+	
+	nullOrApply: function(v, fnc) {
+		return v === null ? v : fnc(v);
+	},
+	
 	ddMMyyyy: function(d, msg) {
 		if (!RE_DDMMYYYY.test(d)) return msg;
 	},
