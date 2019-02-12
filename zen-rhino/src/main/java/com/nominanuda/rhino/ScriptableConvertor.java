@@ -114,6 +114,7 @@ public class ScriptableConvertor {
 				if (JsonType.isNullablePrimitive(val)) {
 					arr.set(i, val);
 				} else if (RHINO.isUndefined(val)) {
+					// do nothing
 				} else {
 					arr.set(i, fromScriptable((Scriptable)val));
 				}
@@ -125,6 +126,7 @@ public class ScriptableConvertor {
 				if (JsonType.isNullablePrimitive(val)) {
 					((Obj)res).put(k.toString(), val);
 				} else if (RHINO.isUndefined(val)) {
+					// do nothing
 				} else {
 					((Obj)res).put(k.toString(), fromScriptable((Scriptable)val));
 				}

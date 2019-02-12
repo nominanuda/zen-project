@@ -15,18 +15,20 @@
  */
 package com.nominanuda.rhino;
 
+import static com.nominanuda.rhino.ScriptableConvertor.SCONVERTOR;
+
 import org.mozilla.javascript.Scriptable;
 
 import com.nominanuda.zen.common.Ex.NoException;
 import com.nominanuda.zen.obj.Stru;
 
 public class ToStruCoercer implements ObjectCoercer<Scriptable, Stru, NoException> {
-	private ScriptableConvertor convertor = new ScriptableConvertor();
-
+	@Override
 	public Stru apply(Scriptable x) throws NoException {
-		return convertor.fromScriptable(x);
+		return SCONVERTOR.fromScriptable(x);
 	}
 
+	@Override
 	public boolean canConvert(Object o) {
 		return o != null && o instanceof Scriptable;
 	}
