@@ -13,9 +13,10 @@ In case you wonder ZEN is an acronym for Zoe Enea Nina.
 to build the maven google-closure-templates dependency has to installed locally
 
 
-mvn install:install-file -Dfile=soy-latest.jar -DartifactId=closure-templates -DgroupId=com.google.javascript -Dversion=r23 -Dpackaging=jar
+mvn install:install-file -Dfile=closure-templates-r28.jar -DgroupId=com.google.javascript -DartifactId=closure-templates -Dversion=r28 -Dpackaging=jar
 
-http://closure-templates.googlecode.com/files/closure-templates-for-java-latest.zip
+https://github.com/nominanuda/nominanuda.github.io/raw/master/m2/closure-templates-r28.jar
+
 
 snapshot deploy cmd
 
