@@ -17,11 +17,12 @@ package com.nominanuda.hyperapi;
 
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.wrap.ObjWrapper;
-import com.nominanuda.zen.obj.wrap.Wrap;
 
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
+
+import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 
 public class ObjWrapperEntityDecoder extends AbstractEntityDecoder<ObjWrapper> {
 	public ObjWrapperEntityDecoder(String contentType) {
@@ -40,7 +41,7 @@ public class ObjWrapperEntityDecoder extends AbstractEntityDecoder<ObjWrapper> {
 				return null;
 			} else {
 				Obj ds = new Obj(s);
-				return (ObjWrapper) Wrap.WF.wrap(ds, p.getType());
+				return (ObjWrapper) WF.wrap(ds, p.getType());
 			}
 		} catch (Exception e) {
 			throw new IOException(e);

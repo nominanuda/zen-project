@@ -23,8 +23,8 @@ import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.obj.wrap.getter.IGetter;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,9 +37,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -48,28 +45,30 @@ import static com.nominanuda.zen.obj.wrap.Wrap.WF;
 import static java.util.Arrays.asList;
 
 class WrapperInvocationHandler implements InvocationHandler {
+	private static final HashSet<Method> NON_ROLE_METHODS = new HashSet<Method>();
+	static {
+		NON_ROLE_METHODS.addAll(asList(Object.class.getDeclaredMethods()));
+		NON_ROLE_METHODS.addAll(asList(ObjWrapper.class.getDeclaredMethods()));
+		NON_ROLE_METHODS.addAll(asList(Obj.class.getDeclaredMethods()));
+		NON_ROLE_METHODS.addAll(asList(Stru.class.getDeclaredMethods()));
+		NON_ROLE_METHODS.addAll(asList(Map.class.getDeclaredMethods()));
+		NON_ROLE_METHODS.addAll(asList(Iterable.class.getDeclaredMethods()));
+	}
+
 	private final JSONObject o;
 	private final Class<?> role;
 	private final Set<Method> roleMethods = new HashSet<Method>();
-	private static final HashSet<Method> nonRoleMethods = new HashSet<Method>();
+	private final IGetter[] getters;
 
-	static {
-		nonRoleMethods.addAll(asList(Object.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(ObjWrapper.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(Obj.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(Stru.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(Map.class.getDeclaredMethods()));
-		nonRoleMethods.addAll(asList(Iterable.class.getDeclaredMethods()));
-	}
-
-	public WrapperInvocationHandler(JSONObject o, Class<?> role) {
+	public WrapperInvocationHandler(JSONObject o, Class<?> role, IGetter[] getters) {
 		this.role = role;
 		this.o = o != null ? o : new Obj();
 		for (Method m : role.getMethods()) {
-			if (!nonRoleMethods.contains(m)) {
+			if (!NON_ROLE_METHODS.contains(m)) {
 				roleMethods.add(m);
 			}
 		}
+		this.getters = getters;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,6 +83,21 @@ class WrapperInvocationHandler implements InvocationHandler {
 				InvocationHandler eh = new EnhancedInvocationHandler(enhancementMethods, role, proxy);
 				return Proxy.newProxyInstance(enhancementMethods.getClass().getClassLoader(), new Class[]{(Class<?>) args[0]}, eh);
 			} else if (roleMethods.contains(method)) {
+				switch (args == null ? 0 : args.length) {
+				case 0: // getter
+					for (IGetter getter : getters) {
+						if (getter.supports(method)) {
+							return getter.extract(o, method);
+						}
+					}
+					throw new RuntimeException("don't have any getter for property " + name);
+				case 1:
+					o.put(name, toObjValue(args[0]));
+					return proxy;
+				}
+				throw new RuntimeException("don't know how to manage ObjWrapper method " + name);
+
+				/*
 				Class<?> type = method.getReturnType();
 				int argsL = (args == null ? 0 : args.length);
 				if (argsL == 0) { // any getter
@@ -154,6 +168,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 				} else { // bail out
 					throw new RuntimeException();
 				}
+				*/
+
 			} else if ("equals".equals(name) && args.length == 1) { // allows [Proxy].equals([Proxy])
 				return args[0] == proxy;
 			} else {
@@ -220,6 +236,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 				return ((Number) v).intValue();
 			} else if (Long.class.equals(type) || long.class.equals(type)) {
 				return ((Number) v).longValue();
+			} else if (Enum.class.isAssignableFrom(type)) {
+				return Enum.valueOf((Class<Enum>) type, v.toString());
 			} else {
 				return v;
 			}

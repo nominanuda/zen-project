@@ -1,5 +1,7 @@
 package com.nominanuda.zen.obj;
 
+import com.nominanuda.zen.common.Check;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -17,12 +19,23 @@ public class Arr extends JSONArray implements Stru {
 		}
 		return arr;
 	}
+	public static Arr make(JSONArray json) {
+		try {
+			return new Arr(json);
+		} catch (JSONException e) {
+			Check.illegalargument.fail();
+		}
+		return null;
+	}
 
 	public Arr() {
 		super();
 	}
 	public Arr(String json) throws JSONException {
 		super(json);
+	}
+	public Arr(JSONArray json) throws JSONException {
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
