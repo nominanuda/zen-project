@@ -67,7 +67,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 		for (Method m : role.getMethods()) {
 			if (m.isDefault()) {
 				defaultMethods.add(m);
-			} else if(NON_ROLE_METHODS.contains(m)) {
+			} else if (NON_ROLE_METHODS.contains(m)) {
 				// standard behaviour
 			} else {
 				roleMethods.add(m);

@@ -58,10 +58,10 @@ public class CollectionGetter extends SimpleGetter {
 		if (cls != null) {
 			return cls.value();
 		}
-		Type t1 = method.getGenericReturnType();
-		if (t1 instanceof ParameterizedType) {
-			ParameterizedType t2 = (ParameterizedType)t1;
-			Type[] actualTypeArgs = t2.getActualTypeArguments();
+		Type t = method.getGenericReturnType();
+		if (t instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType)t;
+			Type[] actualTypeArgs = pt.getActualTypeArguments();
 			if (actualTypeArgs != null && actualTypeArgs.length == 1) {
 				return Class.forName(actualTypeArgs[0].getTypeName());
 			}

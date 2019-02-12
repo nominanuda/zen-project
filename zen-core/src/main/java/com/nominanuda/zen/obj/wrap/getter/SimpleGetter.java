@@ -114,7 +114,9 @@ public class SimpleGetter implements IGetter {
 				if (WrapperItemFactory.class.isAssignableFrom(ancestor)) {
 					try {
 						return findWrapMethod(ancestor);
-					} catch(NoSuchMethodException e1) {}
+					} catch(NoSuchMethodException e1) {
+						// TODO something?
+					}
 				}
 			}
 			throw new NoSuchMethodException();

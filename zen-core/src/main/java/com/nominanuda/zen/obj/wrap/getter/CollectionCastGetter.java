@@ -11,6 +11,12 @@ import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.Obj;
 
 
+/**
+ * Always returns a collection, even if the value inside the source json is not an Arr.
+ * In particular:
+ * <br>- if the value is not null (and not an Arr), it will be used as the first/only element of the returned collection.
+ * <br>- if the value is null, the returned collection will be empty.
+ */
 @ThreadSafe
 public class CollectionCastGetter extends CollectionGetter {
 	public final static CollectionCastGetter GETTER = new CollectionCastGetter();
