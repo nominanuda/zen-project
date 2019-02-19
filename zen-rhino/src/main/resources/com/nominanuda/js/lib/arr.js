@@ -52,16 +52,28 @@ exports = {
 	build: function(from, to, fnc) {
 		var a = [];
 		if (fnc) { // two params
-			for (var i = from; i < to; i++) {
-				a.push(fnc(i));
+			if (from < to) {
+				for (var i = from; i < to; i++) {
+					a.push(fnc(i));
+				}
+			} else {
+				for (var i = from; i > to; i--) {
+					a.push(fnc(i));
+				}
 			}
 		} else {
 			if (to === undefined) { // single param
 				from = 0;
 				to = from;
 			}
-			for (var i = from; i < to; i++) {
-				a.push(i);
+			if (from < to) {
+				for (var i = from; i < to; i++) {
+					a.push(i);
+				}
+			} else {
+				for (var i = from; i > to; i--) {
+					a.push(i);
+				}
 			}
 		}
 		return a;

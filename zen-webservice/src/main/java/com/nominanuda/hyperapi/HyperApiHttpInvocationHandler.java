@@ -167,7 +167,7 @@ public class HyperApiHttpInvocationHandler implements InvocationHandler {
 				}
 			}
 			if (!annotationFound) {
-				Check.unsupportedoperation.assertNull(entity);
+				Check.unsupportedoperation.assertNull(entity, "no annotations found and no entity to send");
 				entity = entityCodec.encode(arg, new AnnotatedType(parameterType, annotations));
 			}
 		}

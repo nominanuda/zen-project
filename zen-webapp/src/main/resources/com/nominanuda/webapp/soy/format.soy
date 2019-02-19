@@ -58,19 +58,19 @@
 
 /**
  * @param? value
- * @param? decimals
+ * @param? decimals // if -1 will round the number
  * @param separatorT
  * @param separatorD
  */
 {template ._format_number private="true"}
 	{let $d: $decimals ?: 0 /} // decimals
 	{if $value}
-		{let $xI: floor($value) /} // integer part
+		{let $xI: $d >= 0 ? floor($value) : round($value) /} // integer part
 		{call ._format_intK_}
 			{param v: $xI /}
 			{param s: $separatorT /}
 		{/call}
-		{if $d}
+		{if $d > 0}
 			{let $xD: round($value - $xI, $d) /} // decimal part
 			{$separatorD}
 			{call ._format_dec0_}

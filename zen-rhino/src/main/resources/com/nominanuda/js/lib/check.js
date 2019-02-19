@@ -42,7 +42,7 @@ exports = {
 	},
 	
 	notNull: function(v, msg) {
-		return v === null ? false : true;
+		if (v === null) return msg;
 	},
 	
 	nullOrApply: function(v, fnc) {
