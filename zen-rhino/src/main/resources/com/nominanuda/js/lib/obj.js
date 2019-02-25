@@ -204,6 +204,12 @@ function contains(obj, value) {
 	return null;
 }
 
+function evict(obj, key) {
+	var v = obj[key];
+	delete obj[key];
+	return v;
+}
+
 
 exports = {
 	nth: nth,
@@ -224,5 +230,6 @@ exports = {
 	pour: pour,
 	build: build,
 	flatten: flatten,
-	contains: contains
+	contains: contains,
+	evict: evict
 };

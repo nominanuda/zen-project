@@ -48,6 +48,16 @@ exports = {
 		arr = CAST_toArray(arr);
 		return arr[arr.length - 1];
 	},
+	
+	filter: function(arr, fnc) {
+		return CAST_toArray(arr).filter(fnc);
+	},
+	map: function(arr, fnc) {
+		return CAST_toArray(arr).map(fnc);
+	},
+	filterMap: function(arr, filterFnc, mapFnc) {
+		return CAST_toArray(arr).filter(filterFnc).map(mapFnc);
+	},
 		
 	build: function(from, to, fnc) {
 		var a = [];
