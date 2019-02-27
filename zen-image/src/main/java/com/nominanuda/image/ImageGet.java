@@ -120,7 +120,7 @@ public class ImageGet implements CommandRequestHandler, HttpProtocol, HttpStatus
 			} else {
 				ByteArrayEntity res;
 				byte[] image = foundImage.get1();
-				if (tx == null && ext.equals(foundImage.get0())) {
+				if (tx == null && fmtEquals(ext, foundImage.get0())) {
 					res = new ByteArrayEntity(image);
 				} else {
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -161,13 +161,23 @@ public class ImageGet implements CommandRequestHandler, HttpProtocol, HttpStatus
 	}
 
 	private String fmt2contentType(String ext) {
-		if ("jpeg".equals(ext) || "jpg".equals(ext)) {
+		switch (ext) {
+		case "jpg":
+		case "jpeg":
 			return CT_IMAGE_JPEG;
-		} else if ("png".equals(ext)) {
+		case "png":
 			return CT_IMAGE_PNG;
-		} else {
-			throw new IllegalArgumentException("unrecognized format " + ext);
 		}
+		throw new IllegalArgumentException("unrecognized format " + ext);
+	}
+	
+	private boolean fmtEquals(String extFmt, String intFmt) {
+		switch (extFmt) {
+		case "jpg":
+		case "jpeg":
+			return "jpeg".equals(intFmt);
+		}
+		return extFmt.equals(intFmt);
 	}
 	
 	
