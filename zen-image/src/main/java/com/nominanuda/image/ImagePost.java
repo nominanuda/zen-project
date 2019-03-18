@@ -38,17 +38,28 @@ import com.nominanuda.web.mvc.CommandRequestHandler;
 import com.nominanuda.zen.codec.Digester;
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.common.Tuple2;
-import com.nominanuda.zen.io.Uris;
+import static com.nominanuda.zen.io.Uris.URIS;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
 
 public class ImagePost implements CommandRequestHandler, HttpProtocol {
+	
+	/**
+	 * use "{code}" in the UriTemplate
+	 * ONLY IF the corresponding match
+	 * has to be used as the file name
+	 * instead of the computed MD5.
+	 * 
+	 * Example: POST /{code}.{ext jpg|jpeg|png}
+	 * (otherwise just use something different, like: POST /{name}.{ext jpg|jpeg|png})
+	 */
+	private final static String CMD_CODE = "code";
+	
 	private final ImageAwtTransformer imageSizeFilter = new ImageAwtTransformer();
 	private final Digester digester = new Digester();
 	private boolean forceTextResponse = false; // for ie9- compatibility
-	private boolean allowCustomCodes = false; // default don't allow (risk of malicious overwriting)
+	private String resourcePrefix = "";
 	private ImageStore imageStore;
-	private String prefix = "";
 
 	public Object handle(Stru _cmd, HttpRequest request) throws Exception {
 		try {
@@ -67,13 +78,13 @@ public class ImagePost implements CommandRequestHandler, HttpProtocol {
 				barr = IO.readAndClose(entity.getContent());
 			}
 			
-			Obj media = post(barr, allowCustomCodes ? cmd.getStr("code") : null);
+			Obj response = post(barr, cmd.getStr(CMD_CODE));
 			if (forceTextResponse) {
-				StringEntity resp = new StringEntity(media.toString());
+				StringEntity resp = new StringEntity(response.toString());
 				resp.setContentType(CT_TEXT_PLAIN);
 				return resp;
 			}
-			return HTTP.createBasicResponse(200, media.toString(), CT_APPLICATION_JSON_CS_UTF8);
+			return response;
 			
 		} catch(Exception e) {
 			throw new Http500Exception(e);
@@ -83,15 +94,15 @@ public class ImagePost implements CommandRequestHandler, HttpProtocol {
 	
 	/* for usage in admin tools */
 	
-	public Obj post(byte[] barr, @Nullable String code) throws Exception {
-		if (code == null) code = digester.md5(barr).toBase62();
+	public Obj post(byte[] barr, @Nullable String imageUriCode) throws Exception {
+		if (imageUriCode == null) imageUriCode = digester.md5(barr).toBase62();
 		Tuple2<BufferedImage, String> imgAndFmt = imageSizeFilter.readImageAndFormat(new ByteArrayInputStream(barr));
 		String format = imgAndFmt.get1();
-		imageStore.put(code, format, barr);
+		imageStore.put(imageUriCode, format, barr);
 		BufferedImage bi = imgAndFmt.get0();
 		return Obj.make(
-			"code", code,
-			"resource", Uris.URIS.pathJoin(prefix, code),
+			"code", imageUriCode,
+			"resource", URIS.pathJoin(resourcePrefix, imageUriCode),
 			"width", bi.getWidth(),
 			"height", bi.getHeight(),
 			"size", barr.length,
@@ -113,11 +124,7 @@ public class ImagePost implements CommandRequestHandler, HttpProtocol {
 		forceTextResponse = flg;
 	}
 	
-	public void setAllowCustomCodes(boolean flg) {
-		allowCustomCodes = flg;
-	}
-	
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+	public void setResourcePrefix(String prefix) {
+		this.resourcePrefix = prefix;
 	}
 }

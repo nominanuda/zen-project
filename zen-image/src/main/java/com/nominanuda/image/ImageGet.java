@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -50,6 +51,14 @@ import com.twelvemonkeys.image.ResampleOp;
 
 public class ImageGet implements CommandRequestHandler, HttpProtocol, HttpStatus {
 	private final static Pattern WxH_RE = Pattern.compile("^(\\d+)?x(\\d+)?$");
+	
+	/**
+	 * use those in the UriTemplate matching rules
+	 */
+	private final static String
+		CMD_PATH = "path",
+		CMD_NAME = "name",
+		CMD_EXT = "ext";
 	
 	private ImageStore imageStore;
 	private JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
@@ -103,9 +112,9 @@ public class ImageGet implements CommandRequestHandler, HttpProtocol, HttpStatus
 		try {
 			Check.illegalargument.assertEquals(GET, request.getRequestLine().getMethod());
 			Obj cmd = _cmd.asObj();
-			String path = cmd.getStr("path");
-			String nameAndTx = cmd.getStrictStr("name");
-			String ext = cmd.getStrictStr("ext");
+			@Nullable String path = cmd.getStr(CMD_PATH);
+			String nameAndTx = cmd.getStrictStr(CMD_NAME);
+			String ext = cmd.getStrictStr(CMD_EXT);
 			int dotPos = nameAndTx.indexOf('.');
 			String name = dotPos > 0 ? nameAndTx.substring(0, dotPos) : nameAndTx;
 			String tx = dotPos > 0 ? nameAndTx.substring(dotPos + 1) : null;
