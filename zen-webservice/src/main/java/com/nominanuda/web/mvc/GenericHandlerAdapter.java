@@ -27,6 +27,7 @@ import com.nominanuda.web.http.HttpProtocol;
 import com.nominanuda.zen.common.Check;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.Stru;
+import com.nominanuda.zen.obj.wrap.ObjWrapper;
 
 public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProtocol {
 	protected abstract Object handleInternal(Object handler, HttpRequest request, Stru command) throws Exception;
@@ -38,10 +39,13 @@ public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProto
 
 	protected final Object adaptHandlerResponse(Object response) throws Exception {
 		Check.notNull(response);
+		if (response instanceof ObjWrapper) {
+			return new JsonEntity(((ObjWrapper) response).unwrap());
+		}
 		if (response instanceof Stru) {
-			Stru ds = (Stru)response;
-			if (ds.isObj()) {
-				Obj obj = ds.asObj();
+			Stru stru = (Stru)response;
+			if (stru.isObj()) {
+				Obj obj = stru.asObj();
 				String view = obj.getStr("view_");
 				if (view != null) {
 					return (view.startsWith("redirect:"))
@@ -49,11 +53,12 @@ public abstract class GenericHandlerAdapter implements HandlerAdapter, HttpProto
 						: new PathAndJsonViewSpec(view, obj.getObj("data_"));
 				}
 			}
-			return new JsonEntity(ds);
-		} else if (response instanceof ViewSpec
-				|| response instanceof HttpEntity
-				|| response instanceof HttpResponse
-				|| response instanceof ModelAndView) {
+			return new JsonEntity(stru);
+		}
+		if (response instanceof ViewSpec
+		 || response instanceof HttpEntity
+		 || response instanceof HttpResponse
+		 || response instanceof ModelAndView) {
 			return response;
 		}
 		throw new HttpException("cannot render response of type " + response.getClass().getName());

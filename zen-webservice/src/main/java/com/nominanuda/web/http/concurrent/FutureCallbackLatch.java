@@ -4,45 +4,31 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.http.concurrent.FutureCallback;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FutureCallbackLatch<T> extends CountDownLatch implements FutureCallback<T> {
-	private final Logger log;
-	private final String logMessage;
+	private final static Logger LOG = LoggerFactory.getLogger(FutureCallbackLatch.class);
 	
-	public FutureCallbackLatch(int count, Logger log, String logMessage) {
-		super(count);
-		this.log = log;
-		this.logMessage = logMessage;
-	}
-	public FutureCallbackLatch(int count, Logger log) {
-		this(count, log, "job %s, %d remaining");
-	}
 	public FutureCallbackLatch(int count) {
-		this(count, null, null);
+		super(count);
 	}
 
 	@Override
 	public final void completed(T result) {
 		countDown();
-		if (log != null) {
-			String.format(logMessage, "completed", getCount());
-		}
+		LOG.info("job completed, {} remaining", getCount());
 	}
 
 	@Override
 	public final void failed(Exception ex) {
 		countDown();
-		if (log != null) {
-			String.format(logMessage, "failed", getCount());
-		}
+		LOG.info("job failed, {} remaining", getCount());
 	}
 
 	@Override
 	public final void cancelled() {
 		countDown();
-		if (log != null) {
-			String.format(logMessage, "cancelled", getCount());
-		}
+		LOG.info("job cancelled, {} remaining", getCount());
 	}
 	
 	
