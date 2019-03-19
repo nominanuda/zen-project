@@ -19,14 +19,16 @@ define('zen-webapp/transition/snippet', [
         'jquery'
         ], function($) {
 	
-	return function($oldSnippet, $snippet, oLoading, cback) {
+	return function($oldSnippet, $snippet, oLoading, cback) { // TODO manage situation when $snippet.length > 1
 		var h = $oldSnippet.height();
 		var H = $snippet.replaceAll($oldSnippet).height();
-		$snippet.height(h).animate({
-			height: H
-		}, 100, function() {
-			$snippet.removeAttr('style');
-			cback();
-		});
+		$snippet
+			.height(h)
+			.animate({
+				height: H
+			}, 100, function() {
+				$snippet.removeAttr('style');
+				cback();
+			});
 	}
 });

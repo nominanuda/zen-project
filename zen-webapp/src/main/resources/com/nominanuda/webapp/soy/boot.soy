@@ -26,8 +26,8 @@
  * @param? soyPaths
  */
 {template .boot}
-	{let $WEBAPP_DEV: true /} // true only when developing stuff
-	{let $WEBAPP_V: 'v20190219a' /} // as in zen-webapp-wro.xml
+	{let $WEBAPP_DEV: false /} // true only when developing stuff
+	{let $WEBAPP_V: 'v20190225a' /} // as in zen-webapp-wro.xml
 	{if $__webapp}
 		{if $WEBAPP_DEV}
 			<link href="{$__webapp.servlet}/zen-webapp-cdn/css/boot.css" rel="stylesheet" />
