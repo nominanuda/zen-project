@@ -28,7 +28,7 @@ public class ApikeyConfigurator {
 	private FieldConfig user;
 	private FieldConfig time;
 	private FieldConfig roles;
-	List<FieldConfig> customFields = new LinkedList<FieldConfig>();
+	List<FieldConfig> customFields = new LinkedList<>();
 	
 	
 	public ApikeyConfigurator() { // default

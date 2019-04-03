@@ -86,7 +86,7 @@ public class ApikeyManager {
 	public Apikey createFromValues(@Nullable String user, long start, long duration, @Nullable Arr roles, Object... objs) {
 		return createFromMap(user, start, duration, roles, toMap(conf.getCustomFields(), objs));
 	}
-	public Apikey createFromDataObject(@Nullable String user, long start, long duration, @Nullable Arr roles, Obj nameAndValMap) {
+	public Apikey createFromObj(@Nullable String user, long start, long duration, @Nullable Arr roles, Obj nameAndValMap) {
 		return createFromMap(user, start, duration, roles, nameAndValMap);
 	}
 	public Apikey createNoRoles(@Nullable String user, long start, long duration) {
@@ -103,8 +103,8 @@ public class ApikeyManager {
 	protected Apikey createFromValues(@Nullable String user, long start, long duration, @Nullable List<String> roles, Object... objs) {
 		return createFromValues(user, start, duration, toArr(roles), objs);
 	}
-	protected Apikey createFromDataObject(@Nullable String user, long start, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
-		return createFromDataObject(user, start, duration, toArr(roles), nameAndValMap);
+	protected Apikey createFromObj(@Nullable String user, long start, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
+		return createFromObj(user, start, duration, toArr(roles), nameAndValMap);
 	}
 	
 	
@@ -119,8 +119,8 @@ public class ApikeyManager {
 	public Apikey createNowFromValues(@Nullable String user, long duration, @Nullable Arr roles, Object... objs) {
 		return createFromValues(user, nowStartMs(), duration, roles, objs);
 	}
-	public Apikey createNowFromDataObject(@Nullable String user, long duration, @Nullable Arr roles, Obj nameAndValMap) {
-		return createFromDataObject(user, nowStartMs(), duration, roles, nameAndValMap);
+	public Apikey createNowFromObj(@Nullable String user, long duration, @Nullable Arr roles, Obj nameAndValMap) {
+		return createFromObj(user, nowStartMs(), duration, roles, nameAndValMap);
 	}
 	public Apikey createNowNoRoles(@Nullable String user, long duration) {
 		return createNoRoles(user, nowStartMs(), duration);
@@ -140,8 +140,8 @@ public class ApikeyManager {
 	protected Apikey createNowFromValues(@Nullable String user, long duration, @Nullable List<String> roles, Object... objs) {
 		return createNowFromValues(user, duration, toArr(roles), objs);
 	}
-	protected Apikey createNowFromDataObject(@Nullable String user, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
-		return createNowFromDataObject(user, duration, toArr(roles), nameAndValMap);
+	protected Apikey createNowFromObj(@Nullable String user, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
+		return createNowFromObj(user, duration, toArr(roles), nameAndValMap);
 	}
 	
 	
@@ -156,8 +156,8 @@ public class ApikeyManager {
 	public String serializeFromValues(@Nullable String user, long start, long duration, @Nullable Arr roles, Object... objs) {
 		return createFromValues(user, start, duration, roles, objs).serialize();
 	}
-	public String serializeFromDataObject(@Nullable String user, long start, long duration, @Nullable Arr roles, Obj nameAndValMap) {
-		return createFromDataObject(user, start, duration, roles, nameAndValMap).serialize();
+	public String serializeFromObj(@Nullable String user, long start, long duration, @Nullable Arr roles, Obj nameAndValMap) {
+		return createFromObj(user, start, duration, roles, nameAndValMap).serialize();
 	}
 	public String serializeNoRoles(@Nullable String user, long start, long duration) {
 		return createNoRoles(user, start, duration).serialize();
@@ -173,8 +173,8 @@ public class ApikeyManager {
 	protected String serializeFromValues(@Nullable String user, long start, long duration, @Nullable List<String> roles, Object... objs) {
 		return serializeFromValues(user, start, duration, toArr(roles), objs);
 	}
-	protected String serializeFromDataObject(@Nullable String user, long start, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
-		return serializeFromDataObject(user, start, duration, toArr(roles), nameAndValMap);
+	protected String serializeFromObj(@Nullable String user, long start, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
+		return serializeFromObj(user, start, duration, toArr(roles), nameAndValMap);
 	}
 	
 	
@@ -189,8 +189,8 @@ public class ApikeyManager {
 	public String serializeNowFromValues(@Nullable String user, long duration, @Nullable Arr roles, Object... objs) {
 		return createNowFromValues(user, duration, roles, objs).serialize();
 	}
-	public String serializeNowFromDataObject(@Nullable String user, long duration, @Nullable Arr roles, Obj nameAndValMap) {
-		return createNowFromDataObject(user, duration, roles, nameAndValMap).serialize();
+	public String serializeNowFromObj(@Nullable String user, long duration, @Nullable Arr roles, Obj nameAndValMap) {
+		return createNowFromObj(user, duration, roles, nameAndValMap).serialize();
 	}
 	public String serializeNowNoRoles(@Nullable String user, long duration) {
 		return createNowNoRoles(user, duration).serialize();
@@ -206,8 +206,8 @@ public class ApikeyManager {
 	protected String serializeNowFromValues(@Nullable String user, long duration, @Nullable List<String> roles, Object... objs) {
 		return serializeNowFromValues(user, duration, toArr(roles), objs);
 	}
-	protected String serializeNowFromDataObject(@Nullable String user, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
-		return serializeNowFromDataObject(user, duration, toArr(roles), nameAndValMap);
+	protected String serializeNowFromObj(@Nullable String user, long duration, @Nullable List<String> roles, Obj nameAndValMap) {
+		return serializeNowFromObj(user, duration, toArr(roles), nameAndValMap);
 	}
 	
 	
@@ -241,9 +241,9 @@ public class ApikeyManager {
 		
 		List<FieldConfig> custom = conf.getCustomFields();
 		int nCustomFields = custom.size();
-		if(nCustomFields > 0) {
+		if (nCustomFields > 0) {
 			int i = StandardField.values().length;
-			for(FieldConfig fc : custom) {
+			for (FieldConfig fc : custom) {
 				fields[i].update(nameAndValMap.get(fc.name));
 				i++;
 			}

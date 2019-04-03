@@ -48,6 +48,16 @@
 								</constructor-arg>
 							</bean>
 						</entry>
+						<entry key="java.math.BigDecimal">
+							<bean class="com.nominanuda.zen.common.Tuple2">
+								<constructor-arg>
+									<bean class="com.nominanuda.rhino.BigDecimalCoercer" />
+								</constructor-arg>
+								<constructor-arg>
+									<value type="int">1</value>
+								</constructor-arg>
+							</bean>
+						</entry>
 						<entry key="com.nominanuda.zen.obj.Arr">
 							<bean class="com.nominanuda.zen.common.Tuple2">
 								<constructor-arg>

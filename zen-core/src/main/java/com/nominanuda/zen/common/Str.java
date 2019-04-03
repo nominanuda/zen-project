@@ -22,6 +22,7 @@ import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -230,5 +231,11 @@ public class Str {
 			sb.append(string);
 		}
 		return sb;
+	}
+	
+	public String random(int length) {
+		byte[] array = new byte[length];
+		new Random().nextBytes(array);
+	    return new String(array, UTF8);
 	}
 }

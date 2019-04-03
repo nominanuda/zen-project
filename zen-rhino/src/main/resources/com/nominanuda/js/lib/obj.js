@@ -134,37 +134,6 @@ function replace(src, dst, fnc) { // replace dst properties with src properties
 	return dst;
 }
 
-function pour(src, dst, fnc, defs) { // keep all dst private properties but add all src public properties
-	if (src) {
-		dst = dst || {};
-		if (defs) {
-			if (fnc) {
-				for (var p in defs) {
-					dst[p] = fnc(src[p] !== undefined ? src[p] : defs[p], p);
-				}
-			} else {
-				for (var p in defs) {
-					dst[p] = (src[p] !== undefined ? src[p] : defs[p]);
-				}
-			}
-		} else {
-			for (var p in dst) {
-				(p.charAt(0) != '_') && (dst[p] = undefined);
-			}
-			if (fnc) {
-				for (var p in src) {
-					(p.charAt(0) != '_') && (dst[p] = fnc(src[p], p));
-				}
-			} else {
-				for (var p in src) {
-					(p.charAt(0) != '_') && (dst[p] = src[p]);
-				}
-			}
-		}
-	}
-	return dst;
-}
-
 function build() {
 	var obj = {};
 	for (var i=0; i<arguments.length;) {
@@ -204,6 +173,16 @@ function contains(obj, value) {
 	return null;
 }
 
+function prefix(obj, prefix) { // adds prefix to all keys
+	if (obj) {
+		for (var k in obj) {
+			obj[prefix + k] = obj[k];
+			delete obj[k];
+		}
+	}
+	return obj;
+}
+
 function evict(obj, key) {
 	var v = obj[key];
 	delete obj[key];
@@ -227,9 +206,9 @@ exports = {
 	expand: expand,
 	override: override,
 	replace: replace,
-	pour: pour,
 	build: build,
 	flatten: flatten,
 	contains: contains,
+	prefix: prefix,
 	evict: evict
 };
