@@ -88,7 +88,7 @@ exports = {
 		return fnc ? arr.map(fnc) : arr;
 	},
 	toString: function(o, j) {
-		return (o ? o.splice ? o.join(j||'') : o.toString() : '');
+		return (o !== null && o !== undefined ? o.splice ? o.join(j || '') : o.toString() : '');
 	},
 	toFloat: toFloat,
 	toInt: toInt

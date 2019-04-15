@@ -58,7 +58,8 @@ exports = {
 	filterMap: function(arr, filterFnc, mapFnc) {
 		return CAST_toArray(arr).filter(filterFnc).map(mapFnc);
 	},
-		
+	filterEmpties: filterEmpties,
+	
 	build: function(from, to, fnc) {
 		var a = [];
 		if (fnc) { // two params
@@ -103,8 +104,6 @@ exports = {
 	contains: function(arr, val) {
 		return (CAST_toArray(arr).indexOf(val) > -1);
 	},
-	
-	filterEmpties: filterEmpties,
 	
 	forceIn: function(v, arr) { // returns v if it's in arr, else the first arr item (for select widget values) DEPRECATED???
 		return (arr.indexOf(v) == -1) ? arr[0] : v;
