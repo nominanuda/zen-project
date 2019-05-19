@@ -22,18 +22,13 @@ import com.nominanuda.rhino.host.SourceModuleFactory;
 public abstract class AbsScriptSource implements IScriptSource {
 	private final static SourceModuleFactory MODS = new SourceModuleFactory();
 	
-	private final Map<String, Object> hostObjs = new HashMap<String, Object>();
+	private final Map<String, Object> hostObjs = new HashMap<>();
 	private String jsSuffix = ".js", jsonSuffix = ".json";
 	private RhinoEmbedding rhinoEmbedding;
 	private ScriptableObject cachedScope;
 	
 	public abstract String source(boolean doReset) throws IOException;
 	protected abstract Script script(Context cx, String source, boolean doSave);
-	
-	@Override
-	public void setHostObject(String key, Object obj) {
-		hostObjs.put(key, obj);
-	}
 	
 	@Override
 	public IScript open(String source, boolean doSave) throws Exception {
@@ -92,6 +87,11 @@ public abstract class AbsScriptSource implements IScriptSource {
 	
 	public void setRhinoEmbedding(RhinoEmbedding rhinoEmbedding) {
 		this.rhinoEmbedding = rhinoEmbedding;
+	}
+	
+	@Override
+	public void setHostObject(String key, Object obj) {
+		hostObjs.put(key, obj);
 	}
 	
 	public void setHostObjects(Map<String, Object> objs) {

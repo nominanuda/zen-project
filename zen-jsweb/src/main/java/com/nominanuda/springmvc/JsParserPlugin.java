@@ -26,7 +26,7 @@ public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlu
 //	private static final String RUNTIMEPROFILE = "runtimeprofile";
 	
 	// TODO configurable
-	private boolean mergeEntityDataObject = true;
+	private boolean mergeEntityStru = true;
 	private boolean mergeGetAndPostFormParams = true;
 	private String scopeFactoryId = IRequiredBeansIds.RHINO_SCOPE_FACTORY;
 	private String function = "handle";
@@ -46,7 +46,7 @@ public class JsParserPlugin implements MvcFrontControllerBeanDefinitionParserPlu
 			.addPropertyReference("springScopeFactory", scopeFactoryId)
 //			.addPropertyValue("develMode", RUNTIMEPROFILE_DEV.equals(System.getProperty(RUNTIMEPROFILE)))
 			.addPropertyValue("mergeGetAndPostFormParams", mergeGetAndPostFormParams)
-			.addPropertyValue("mergeEntityDataObject", mergeEntityDataObject)
+			.addPropertyValue("mergeEntityStru", mergeEntityStru)
 			.addPropertyValue("function", function)
 			.setInitMethodName("init")
 			.getBeanDefinition());

@@ -70,7 +70,7 @@ public class RhinoHandler implements CommandRequestHandler {
 	protected ScopeFactory scopeFactory;
 	protected boolean allowJavaPackageAccess = true; // TODO security turn to false default policy
 	protected boolean mergeGetAndPostFormParams = true;
-	protected boolean mergeEntityDataObject = true;
+	protected boolean mergeEntityStru = true;
 	protected String function = "handle";
 	
 	
@@ -113,7 +113,7 @@ public class RhinoHandler implements CommandRequestHandler {
 				cmd = cmdFromReq;
 			}
 			
-			if (mergeEntityDataObject && entity != null && pairs.isEmpty()) { // if pairs isn't empty -> entity was already consumed
+			if (mergeEntityStru && entity != null && pairs.isEmpty()) { // if pairs isn't empty -> entity was already consumed
 				try {
 					// DataStruct because it could be an array
 					Stru structFromEntity = (Stru) jsonDecoder.decode(new AnnotatedType(Stru.class, new Annotation[] {}), entity);
@@ -182,8 +182,8 @@ public class RhinoHandler implements CommandRequestHandler {
 		this.mergeGetAndPostFormParams = mergeGetAndPostFormParams;
 	}
 	
-	public void setMergeEntityDataObject(boolean mergeEntityDataObject) {
-		this.mergeEntityDataObject = mergeEntityDataObject;
+	public void setMergeEntityStru(boolean mergeEntityStru) {
+		this.mergeEntityStru = mergeEntityStru;
 	}
 	
 	public void setSpringScopeFactory(SpringScopeFactory scopeFactory) {

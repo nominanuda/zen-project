@@ -18,12 +18,11 @@
 define('zen-webapp/widget/keywords', [
         'jquery',
         'zen-webapp/util/dom',
+        'zen-webapp/widget/init',
         'zen-webapp-lib/jqueryui'
-        ], function($, UTIL_DOM) {
+        ], function($, UTIL_DOM, WIDGET_INIT) {
 	
 	
-	var REQUIRE_ELASTIC = 'zen-webapp-lib/jquery/jquery.elastic';
-	var SELECTOR_ELASTIC = '.zen-webapp-elastic';
 	var SELECTOR_WIDGET = '.zen-webapp-keywords';
 	
 	
@@ -49,59 +48,47 @@ define('zen-webapp/widget/keywords', [
 		return false;
 	}
 	
-	function elastics($elm) {
-		var $elastics = UTIL_DOM.findter(SELECTOR_ELASTIC, $elm);
-		if ($elastics.length) {
-			require([REQUIRE_ELASTIC], function(ELASTIC) {
-				$elastics.elastic({
-					clss: 'zen-webapp-elastic'
-				});
-			});
-		}
-		return $elm;
-	}
-	
 	
 	function init($keywords) {
 		$keywords
-		.on('keydown', '.text,textarea', function(e) {
-			switch(e.which) {
-			case 9:
-			case 13:
-				if (!(e.ctrlKey || e.shiftKey)) {
-					e.preventDefault();
-					var $this = $(this);
-					var $label = $this.closest('label');
-					if (cleanup($this)) {
-						var $new = $label.clone().insertAfter($label.blur());
-						var $field = $('.text,textarea', $new).val('');
-						elastics($new).hide().fadeIn('fast', function() {
-							$field.focus();
-						});
-					} else {
-						remove($label);
+			.on('keydown', '.text,textarea', function(e) {
+				switch(e.which) {
+				case 9:
+				case 13:
+					if (!(e.ctrlKey || e.shiftKey)) {
+						e.preventDefault();
+						var $this = $(this);
+						var $label = $this.closest('label');
+						if (cleanup($this)) {
+							var $new = $label.clone().insertAfter($label.blur());
+							var $field = $('.text,textarea', $new).val('');
+							WIDGET_INIT($new).hide().fadeIn('fast', function() {
+								$field.focus();
+							});
+						} else {
+							remove($label);
+						}
 					}
+					break;
 				}
-				break;
-			}
-		})
-		.on('blur', '.text,textarea', function() {
-			var $this = $(this);
-			var $label = $this.closest('label');
-			if (!$label.hasClass('ui-sortable-helper')) {
-				!cleanup($this) && remove($label);
-			}
-		})
-		.on('click', 'label a.x', function() {
-			var $label = $(this).closest('label');
-			if (!remove($label)) {
-				$('.text,textarea', $label).val('');
-			}
-		})
-		.sortable({
-			handle: 'a.m',
-			tolerance: 'pointer'
-		});
+			})
+			.on('blur', '.text,textarea', function() {
+				var $this = $(this);
+				var $label = $this.closest('label');
+				if (!$label.hasClass('ui-sortable-helper')) {
+					!cleanup($this) && remove($label);
+				}
+			})
+			.on('click', 'label a.x', function() {
+				var $label = $(this).closest('label');
+				if (!remove($label)) {
+					$('.text,textarea', $label).val('');
+				}
+			})
+			.sortable({
+				handle: 'a.m',
+				tolerance: 'pointer'
+			});
 	}
 	
 	

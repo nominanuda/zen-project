@@ -18,8 +18,9 @@
 define('zen-webapp/widget/repeater', [
         'jquery',
         'zen-webapp/util/dom',
+        'zen-webapp/widget/init',
         'zen-webapp-lib/jqueryui' // for sorting
-        ], function($, UTIL_DOM) {
+        ], function($, UTIL_DOM, WIDGET_INIT) {
 	
 	var DATA_SCOPE = 'scope';
 	var DATA_VARIANT = 'variant';
@@ -45,20 +46,24 @@ define('zen-webapp/widget/repeater', [
 				});
 			}
 		};
-		var $delBtn = $(TEMPLATE_DEL({})).on('click', function(e) {
-			if (customDelCback) {
-				customDelCback($delBtn, delCback);
-			} else {
-				delCback();
-			};
-			return UTIL_DOM.noevents(e);
-		});
 		
-		if ($row.is('tr')) {
-			$row.append($('<td />').append($delBtn));
-		} else {
-			$row.prepend($delBtn);
+		if (customDelCback !== null) { // null -> no deletion allowed
+			var $delBtn = $(TEMPLATE_DEL({})).on('click', function(e) {
+				if (customDelCback) {
+					customDelCback($delBtn, delCback);
+				} else {
+					delCback();
+				};
+				return UTIL_DOM.noevents(e);
+			});
+			
+			if ($row.is('tr')) {
+				$row.append($('<td />').append($delBtn));
+			} else {
+				$row.prepend($delBtn);
+			}
 		}
+		
 		$row.addClass(CLASS_ROW).on('keypress', 'input', function(e) {
 			switch (e.keyCode) {
 			case 13: // enter
@@ -92,7 +97,7 @@ define('zen-webapp/widget/repeater', [
 			
 			var $row = $(TEMPLATE_ROW(obj));
 			$repeater.append($row); // first add, then effects (for tables)
-			$row.hide().fadeIn();
+			WIDGET_INIT($row).hide().fadeIn();
 			return $row;
 		};
 		
@@ -109,10 +114,10 @@ define('zen-webapp/widget/repeater', [
 					dynamize($row, $addBtn, delCback);
 					$('input', $row).first().focus();
 				});
-				$repeater.children().each(function() {
-					dynamize($(this), $addBtn, delCback);
-				});
 			}
+			$repeater.children().each(function() {
+				dynamize($(this), $addBtn, delCback);
+			});
 		}
 		
 		return {

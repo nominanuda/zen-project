@@ -10,9 +10,9 @@ public interface IScriptSource {
 	public interface IScript extends AutoCloseable {
 		public void close();
 		Object call(String function, Object... args);
-		Arr callForDataArray(String function, Object... args);
-		Obj callForDataObject(String function, Object... args);
-		Stru callForDataStruct(String function, Object... args);
+		Arr callForArr(String function, Object... args);
+		Obj callForObj(String function, Object... args);
+		Stru callForStru(String function, Object... args);
 		String source();
 	}
 	

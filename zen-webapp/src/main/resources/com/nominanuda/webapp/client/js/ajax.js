@@ -23,15 +23,14 @@ define('zen-webapp/ajax', [
         'zen-webapp/util/css',
         'zen-webapp/util/dom',
         'zen-webapp/util/soy',
+        'zen-webapp/widget/init',
         'zen-webapp-lib/jquery/jquery.cssmap',
         'zen-webapp-lib/jquery/jquery.history'
-        ], function($, module, require, OVERLAY, UTIL_CSS, UTIL_DOM, UTIL_SOY) {
+        ], function($, module, require, OVERLAY, UTIL_CSS, UTIL_DOM, UTIL_SOY, WIDGET_INIT) {
 	
 	var CLASS_DOAJAX = 'doAjax';
 	var CLASS_NOAJAX = 'noAjax';
-	var CLASS_COMBOX = 'combox';
 	var CLASS_DOSUBMIT = 'doSubmit';
-	var CLASS_ELASTIC = 'zen-webapp-elastic';
 	var CLASS_LOADING = 'zen-webapp-loading';
 	var CLASS_ONBEFORESUBMIT = 'zen-webapp-onbeforesubmit';
 	
@@ -53,7 +52,6 @@ define('zen-webapp/ajax', [
 	var SELECTOR_FORM = 'form';
 	var SELECTOR_LINK = 'a[href]';
 	var SELECTOR_ONBEFORESUBMIT = '.' + CLASS_ONBEFORESUBMIT;
-	var SELECTOR_ELASTIC = 'input.' + CLASS_ELASTIC + ',textarea.' + CLASS_ELASTIC;
 	var SELECTOR_SNIPPET = '.zen-webapp-snippet';
 	
 	var SERVLET_PATH = expandProtocol(module.config().servletPath);
@@ -196,16 +194,7 @@ define('zen-webapp/ajax', [
 		var $window = $(window);
 		var originalInit$html = init$html;
 		init$html = function($html, snippet) { // we do our $html initializations
-			UTIL_DOM.widgetize($html, CLASS_COMBOX);
-			var $elastics = UTIL_DOM.findter(SELECTOR_ELASTIC, $html);
-			if ($elastics.length) {
-				require(['zen-webapp-lib/jquery/jquery.elastic'], function(ELASTIC) {
-					UTIL_DOM.findter(SELECTOR_ELASTIC, $html).elastic({ // need to find again elements (using $elements doesn't work... why?)
-						clss: CLASS_ELASTIC
-					});
-				});
-			}
-			originalInit$html($html, snippet);
+			originalInit$html(WIDGET_INIT($html), snippet);
 		};
 
 		if (History && History.enabled) { // we have ajax

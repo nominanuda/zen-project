@@ -110,7 +110,7 @@ textarea.zen-webapp-elastic {
 
 .zen-webapp-repeater-row:hover,
 tr.zen-webapp-repeater-row:hover > * {
-	box-shadow: 0 0 1px #099 !important;
+	box-shadow: 0 0 5px rgba(0, 153, 153, .5) !important;
 }
 .zen-webapp-repeater-row .zen-webapp-repeater-row:hover {
 	background: rgba(0, 153, 153, .05);
@@ -128,7 +128,6 @@ tr.zen-webapp-repeater-row > td:last-child { /* the del host */
 	color: #099;
 	background: url(../img/edit/icn.add.green.2x.png) left center / 16px no-repeat;
 	margin-bottom: 4px;
-	border-top: 1px solid #099;
 	padding-left: 24px;
 	line-height: 16px;
 	font-weight: normal;

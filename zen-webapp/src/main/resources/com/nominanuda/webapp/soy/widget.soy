@@ -185,6 +185,7 @@
  * @param? elastic
  * @param? disabled
  * @param? readonly
+ * @param? inputmask
  * @param? placeholder
  * @param? autocomplete
  * @param? required
@@ -203,9 +204,16 @@
 		{/if}
 	{else}
 		{if $multi or $lines}
-<textarea {call ._attrs_ data="all"}{param baseclss: $elastic ? 'zen-webapp-elastic' : '' /}{/call}
-			{if $placeholder} placeholder="{$placeholder}"{/if}
+<textarea
 			{if $lines} rows="{$lines}"{/if}
+			{if $placeholder} placeholder="{$placeholder}"{/if}
+			{if $inputmask} data-inputmask="{$inputmask}" {/if}
+			{call ._attrs_ data="all"}
+				{param baseclss: ''
+					+ ($elastic ? 'zen-webapp-elastic' : '')
+					+ ($inputmask ? ' zen-webapp-inputmask' : '')
+				/}
+			{/call}
 >
 			{$value |noAutoescape}
 </textarea>
@@ -215,8 +223,12 @@
 			{if $autocomplete} autocomplete="{$autocomplete}"{/if}
 			{if $required} required="required"{/if}
 			{if $length} maxlength="{$length}" size="{$length}"{/if}
+			{if $inputmask} data-inputmask="{$inputmask}" {/if}
 			{call ._attrs_ data="all"}
-				{param baseclss: 'text' + ($elastic ? ' zen-webapp-elastic' : '') /}
+				{param baseclss: 'text'
+					+ ($elastic ? ' zen-webapp-elastic' : '')
+					+ ($inputmask ? ' zen-webapp-inputmask' : '')
+				/}
 			{/call}
 />
 		{/if}
@@ -340,7 +352,7 @@
 						{/foreach}
 					{elseif ''+$value == (''+$val)}true{/if} // add '' to force string comparison
 				{/param}
-				{param disabled: $vdisabled and ($vdisabled[$val]) /}
+				{param disabled: $vdisabled and ($vdisabled[$val]) ? true : false /}
 				{param format: $format /}
 			{/delcall}
 		{/for}
@@ -362,7 +374,7 @@
 						{/foreach}
 					{elseif ''+$value == (''+$val)}true{/if} // add '' to force string comparison
 				{/param}
-				{param disabled: $vdisabled and ($vdisabled[$val]) /}
+				{param disabled: $vdisabled and ($vdisabled[$val]) ? true : false /}
 				{param format: $format /}
 			{/delcall}
 			{if $groups?[$val]?.last}
@@ -491,6 +503,7 @@
  * @param? attrs
  * @param? format
  * @param? disabled
+ * @param? vdisabled
  * @param? rendering
  * @param? editing
  */
@@ -515,9 +528,10 @@
 					{param format: $format /}
 				{/delcall}
 			{/param}
-			{param format: null /} // force format resetting
 			{param checked: ($multi == false ? (isFirst($val) and not $checked and not $empty ? true : ($checked == $val)) : $checked) /}
 			{param multi: not($multi == false) /}
+			{param format: null /} // force format resetting
+			{param disabled: $disabled or $vdisabled and $vdisabled[$val] ? true : false /}
 		{/call}
 	{/foreach}
 {/template}

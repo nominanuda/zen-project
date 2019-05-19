@@ -1,7 +1,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
-	<group name="wro4j.zen.webapp.v20190319a.main">
-		<group-ref>wro4j.zen.webapp.v20190319a.boot</group-ref>
-		<group-ref>wro4j.zen.webapp.v20190319a.soy</group-ref>
+	<group name="wro4j.zen.webapp.v20190519a.main">
+		<group-ref>wro4j.zen.webapp.v20190519a.boot</group-ref>
+		<group-ref>wro4j.zen.webapp.v20190519a.soy</group-ref>
 
 		<!-- css -->
 		<css>classpath:com/nominanuda/webapp/client/css/boot.css</css>
@@ -17,6 +17,8 @@
 		<js>classpath:com/nominanuda/webapp/client/js/util/js.js</js>
 		<js>classpath:com/nominanuda/webapp/client/js/util/json.js</js>
 		<js>classpath:com/nominanuda/webapp/client/js/util/soy.js</js>
+		
+		<js>classpath:com/nominanuda/webapp/client/js/widget/init.js</js>
 
 		<js>classpath:com/nominanuda/webapp/client/js/ajax.js</js>
 		<js>classpath:com/nominanuda/webapp/client/js/overlay.js</js>
@@ -24,14 +26,14 @@
 	</group>
 
 
-	<group name="wro4j.zen.webapp.v20190319a.boot">
+	<group name="wro4j.zen.webapp.v20190519a.boot">
 		<js>classpath:com/nominanuda/webapp/client/lib/requirejs/require-2.3.2.min.js</js>
 		<js>classpath:com/nominanuda/webapp/client/lib/requirejs/bootloader.js</js>
 		<js>classpath:com/nominanuda/jsweb/soy/soyutils-r28.js</js>
 	</group>
 
 
-	<group name="wro4j.zen.webapp.v20190319a.soy">
+	<group name="wro4j.zen.webapp.v20190519a.soy">
 		<js>/zen-webapp-soy/alert.soy.js</js>
 		<js>/zen-webapp-soy/format.soy.js</js>
 		<js>/zen-webapp-soy/format/de.soy.js</js>

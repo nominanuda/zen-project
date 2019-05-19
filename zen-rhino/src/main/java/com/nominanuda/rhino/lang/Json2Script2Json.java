@@ -75,7 +75,7 @@ public class Json2Script2Json implements Function<Stru, Stru>, Disposable {
 
 	@Override
 	public Stru apply(Stru json) {
-		return script.callForDataStruct(function, json);
+		return script.callForStru(function, json);
 	}
 	
 	@Override

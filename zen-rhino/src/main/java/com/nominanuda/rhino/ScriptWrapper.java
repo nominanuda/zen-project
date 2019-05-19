@@ -33,19 +33,19 @@ public class ScriptWrapper implements IScript {
 	}
 	
 	@Override
-	public Stru callForDataStruct(String function, Object... args) {
-		Scriptable result = (Scriptable) call(function, args);
-		return result != null ? SCONVERTOR.fromScriptable(result) : null;
-	}
-	@Override
-	public Arr callForDataArray(String function, Object... args) {
-		Stru result = callForDataStruct(function, args);
+	public Arr callForArr(String function, Object... args) {
+		Stru result = callForStru(function, args);
 		return result != null ? result.asArr() : null;
 	}
 	@Override
-	public Obj callForDataObject(String function, Object... args) {
-		Stru result = callForDataStruct(function, args);
+	public Obj callForObj(String function, Object... args) {
+		Stru result = callForStru(function, args);
 		return result != null ? result.asObj() : null;
+	}
+	@Override
+	public Stru callForStru(String function, Object... args) {
+		Scriptable result = (Scriptable) call(function, args);
+		return result != null ? SCONVERTOR.fromScriptable(result) : null;
 	}
 	
 	@Override

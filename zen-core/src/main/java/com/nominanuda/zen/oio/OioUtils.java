@@ -19,6 +19,7 @@ import static com.nominanuda.zen.codec.Base62.B62;
 import static com.nominanuda.zen.common.Check.notNull;
 import static com.nominanuda.zen.common.Maths.MATHS;
 import static com.nominanuda.zen.common.Str.UTF8;
+import static com.nominanuda.zen.io.Uris.URIS;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,19 +36,22 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
+import com.nominanuda.zen.common.Tuple2;
 import com.nominanuda.zen.stereotype.ScopedSingletonFactory;
 
 public class OioUtils {
 	public static final OioUtils IO = ScopedSingletonFactory.getInstance().buildJvmSingleton(OioUtils.class);
+	private static final Pattern NAMED_PLACEHOLDER = Pattern.compile("(\\{[^\\}]+\\})", Pattern.MULTILINE);
+	private static final Pattern UNNAMED_PLACEHOLDER = Pattern.compile("\\{\\}", Pattern.MULTILINE);
 	private static final File TMP = new File(System.getProperty("java.io.tmpdir"));
-	public static final Pattern NAMED_PLACEHOLDER = Pattern.compile(
-			"(\\{[^\\}]+\\})", Pattern.MULTILINE);
-	public static final Pattern UNNAMED_PLACEHOLDER = Pattern.compile("\\{\\}",
-			Pattern.MULTILINE);
 
 	public String readAndCloseUtf8(InputStream is) throws IOException {
 		return readAndClose(is, UTF8);
@@ -202,8 +206,7 @@ public class OioUtils {
 		return pipe(is, os, true, true);
 	}
 
-	public int pipe(InputStream is, OutputStream os, boolean closeIs,
-			boolean closeOs) throws IOException {
+	public int pipe(InputStream is, OutputStream os, boolean closeIs, boolean closeOs) throws IOException {
 		byte[] buffer = new byte[4096];
 		int totWritten = 0;
 		try {
@@ -226,9 +229,12 @@ public class OioUtils {
 			}
 		}
 	}
+	
 
 	public File newTmpDir(File tmpPath, String prefix) {
-		if (tmpPath == null) tmpPath = TMP;
+		if (tmpPath == null) {
+			tmpPath = TMP;
+		}
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
@@ -243,7 +249,9 @@ public class OioUtils {
 	}
 
 	public File newTmpFile(File tmpPath, String prefix) throws IOException {
-		if (tmpPath == null) tmpPath = TMP;
+		if (tmpPath == null) {
+			tmpPath = TMP;
+		}
 		File res = null;
 		do {
 			Double d = Math.random() * Long.MAX_VALUE;
@@ -257,10 +265,73 @@ public class OioUtils {
 		return newTmpFile(null, prefix);
 	}
 
+	
 	public void writeToFile(File dest, InputStream src) throws IOException {
 		FileOutputStream fos = new FileOutputStream(dest);
 		pipeAndClose(src, fos);
 	}
+	
+	
+	public <T> List<Tuple2<String, T>> getEntries(String jarOrFileSrcDir, Function<String, Boolean> namePredicate, BiFunction<String, InputStream, T> readerFnc) throws IOException {
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		URL r = cl.getResource(jarOrFileSrcDir);
+		if (null != r) {
+			String dirUrl = r.getFile();
+			if (dirUrl.contains("!")) {
+				return getJarEntries(dirUrl, namePredicate, readerFnc);
+			} else {
+				dirUrl = new File(dirUrl).getAbsolutePath(); // to compute the right length on win systems
+				int prefixLength = dirUrl.length() - jarOrFileSrcDir.length();
+				return getDirEntries(prefixLength, dirUrl, namePredicate, readerFnc);
+			}
+		}
+		throw new IOException("no url for this src: " + jarOrFileSrcDir);
+	}
+
+	private <T> List<Tuple2<String, T>> getDirEntries(int prefixLength, String srcDir, final Function<String, Boolean> namePredicate, BiFunction<String, InputStream, T> readerFnc) throws IOException {
+		File fileDir = new File(srcDir);
+		String[] files = fileDir.list((dir, name) -> namePredicate.apply(name));
+		String[] dirs = fileDir.list((dir, name) -> new File(dir, name).isDirectory());
+		LinkedList<Tuple2<String, T>> l = new LinkedList<>();
+		for (String f : files) {
+			String filename = URIS.pathJoin(fileDir.getAbsolutePath(), f).replace("\\", "/"); // for win systems
+			try (InputStream is = new FileInputStream(new File(filename))) {
+				l.add(new Tuple2<>(filename.substring(prefixLength), readerFnc.apply(filename, is)));
+			}
+		}
+		for (String d : dirs) {
+			l.addAll(getDirEntries(prefixLength, URIS.pathJoin(srcDir, d), namePredicate, readerFnc));
+		}
+		return l;
+	}
+	
+	private <T> List<Tuple2<String, T>> getJarEntries(String jarSrcDir, Function<String, Boolean> namePredicate, BiFunction<String, InputStream, T> readerFnc) throws IOException {
+		List<Tuple2<String, T>> result = new LinkedList<>();
+		String[] arr = jarSrcDir.substring("file:".length()).split("!");
+		String jarPath = arr[0], dirPathInJar = arr[1].substring(1);
+		if (!dirPathInJar.endsWith("/")) { // happens on some machines
+			dirPathInJar += "/";
+		}
+//		int dirPathInJarLen = dirPathInJar.length();
+		File f = new File(jarPath);
+		JarFile jf = new JarFile(f);
+		Enumeration<JarEntry> entries = jf.entries();
+		while (entries.hasMoreElements()) {
+			JarEntry entry = entries.nextElement();
+			String entryName = entry.getName();
+			if (entryName.startsWith(dirPathInJar) && !dirPathInJar.equals(entryName)) {
+//				String subResource = entryName.substring(dirPathInJarLen);
+				if (namePredicate.apply(entryName)) {
+					try (InputStream is = jf.getInputStream(entry)) {
+						result.add(new Tuple2<>(entryName, readerFnc.apply(entryName, is)));
+					}
+				}
+			}
+		}
+		jf.close();
+		return result;
+	}
+	
 
 	public void copyResourceContentRecursively(URL originUrl, File destination, boolean allowCreateDirectory) throws IOException {
 		URLConnection urlConnection = originUrl.openConnection();
@@ -272,37 +343,37 @@ public class OioUtils {
 	}
 
 	private void copyDirContentRecusively(File sourceDir, File destDir, boolean allowCreateDirectory) throws IOException {
-		if(destDir.exists() && !destDir.isDirectory()) {
-			throw new IOException("not a directory:"+destDir.toString());
+		if (destDir.exists() && !destDir.isDirectory()) {
+			throw new IOException("not a directory: " + destDir.toString());
 		}
-		if (!sourceDir.isDirectory()) {
-			throw new IOException("not a directory:"+sourceDir.toString());
-		} else {
-			for(File f : sourceDir.listFiles()) {
+		if (sourceDir.isDirectory()) {
+			for (File f : sourceDir.listFiles()) {
 				copyFilesRecusively(f, destDir, allowCreateDirectory);
 			}
+		} else {
+			throw new IOException("not a directory: " + sourceDir.toString());
 		}
 	}
 
 	private void copyFilesRecusively(File toCopy, File destDir, boolean allowCreateDirectory) throws IOException {
-		if(destDir.exists() && !destDir.isDirectory()) {
-			throw new IOException("not a directory:"+destDir.toString());
+		if (destDir.exists() && !destDir.isDirectory()) {
+			throw new IOException("not a directory: " + destDir.toString());
 		}
-		if (!toCopy.isDirectory()) {
-			pipeAndClose(new FileInputStream(toCopy), new FileOutputStream(new File(destDir, toCopy.getName())));
-		} else {
+		if (toCopy.isDirectory()) {
 			File newDestDir = new File(destDir, toCopy.getName());
 			if (!newDestDir.exists()) {
-				if(!allowCreateDirectory) {
-					throw new IOException(destDir.toString()+ "target dir does not exist");
+				if (!allowCreateDirectory) {
+					throw new IOException(destDir.toString() + " target dir does not exist");
 				}
-				if(!newDestDir.mkdir()) {
-					throw new IOException("cannot create dir:"+newDestDir.toString());
+				if (!newDestDir.mkdir()) {
+					throw new IOException("cannot create dir: " + newDestDir.toString());
 				}
 			}
 			for (File child : toCopy.listFiles()) {
 				copyFilesRecusively(child, newDestDir, allowCreateDirectory);
 			}
+		} else {
+			pipeAndClose(new FileInputStream(toCopy), new FileOutputStream(new File(destDir, toCopy.getName())));
 		}
 	}
 
@@ -315,20 +386,18 @@ public class OioUtils {
 		}
 	}
 
-	public void copyJarResourcesRecursively(JarURLConnection jarConnection, File destDir, boolean allowCreateDirectory)
-			throws IOException {
-		if(destDir.exists()) {
-			if(!destDir.isDirectory()) {
-				throw new IOException("not a directory:"+destDir.toString());
+	public void copyJarResourcesRecursively(JarURLConnection jarConnection, File destDir, boolean allowCreateDirectory) throws IOException {
+		if (destDir.exists()) {
+			if (!destDir.isDirectory()) {
+				throw new IOException("not a directory: " + destDir.toString());
 			}
-		} else if(!allowCreateDirectory ){
-			throw new IOException(destDir.toString()+ "target dir does not exist");
-		} else if(! destDir.mkdir()){
-			throw new IOException("cannot create dir:"+destDir.toString());
+		} else if (!allowCreateDirectory ){
+			throw new IOException(destDir.toString() + " target dir does not exist");
+		} else if (! destDir.mkdir()){
+			throw new IOException("cannot create dir: " + destDir.toString());
 		}
 
 		JarFile jarFile = jarConnection.getJarFile();
-
 		for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements();) {
 			JarEntry entry = e.nextElement();
 			if (entry.getName().startsWith(jarConnection.getEntryName())) {
