@@ -61,7 +61,7 @@ class WrapperInvocationHandler implements InvocationHandler {
 
 
 	WrapperInvocationHandler(Obj o, Class<?> role, IGetter[] getters) {
-		this.o = o != null ? o : Obj.make();
+		this.o = o;
 		roleMethods = new HashSet<Method>();
 		defaultMethods = new HashSet<Method>();
 		for (Method m : role.getMethods()) {

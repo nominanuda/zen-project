@@ -30,20 +30,50 @@ import com.nominanuda.zen.obj.wrap.ObjWrapper;
 import com.nominanuda.zen.obj.wrap.WrapType;
 
 public class ObjWrapperTest {
+	
+	interface AnApi {
+		List<AbsBizObject> aList();
+	}
+	
+	@WrapType(
+		values = {"t1", "t2"},
+		types = {BizObject.class, BizObject2.class})
+	interface AbsBizObject extends ObjWrapper {
+		// empty
+	}
+
+	interface BizObject extends AbsBizObject {
+		void foo(String s);
+		String foo();
+		String chain1();
+		BizObject chain1(String s);
+		Integer chain2();
+		BizObject chain2(int s);
+		default String overridden() {
+			return "GOT IT !!";
+		}
+		List<BizObject2> subObjects();
+	}
+
+	interface BizObject2 extends AbsBizObject, Obj {
+		
+	}
+	
 
 	@Test
 	public void testItemFactoryAnno() {
 		Obj anApiJson = SimpleJixParser.obj("{aList[{type:t1},{type:t2}]}");
 		AnApi anApi = WF.wrap(anApiJson, AnApi.class);
-		List<TypeChooser> aList = anApi.aList();
+		List<AbsBizObject> aList = anApi.aList();
 		assertTrue(aList.get(0) instanceof BizObject);
 		assertTrue(aList.get(1) instanceof BizObject2);
+		
+		Obj aTyped1Json = SimpleJixParser.obj("{type:t1}");
+		Obj aTyped2Json = SimpleJixParser.obj("{type:t2}");
+		assertTrue(WF.wrap(aTyped1Json, AbsBizObject.class) instanceof BizObject);
+		assertTrue(WF.wrap(aTyped2Json, AbsBizObject.class) instanceof BizObject2);
 	}
-	@WrapType(values={"t1","t2"},types={BizObject.class, BizObject2.class})
-	interface TypeChooser {}
-	interface AnApi {
-		List<TypeChooser> aList();
-	}
+	
 
 	@Test
 	public void testObjWrapper() {
@@ -64,23 +94,6 @@ public class ObjWrapperTest {
 		bo.unwrap().store("subObjects", arr);
 		BizObject2 bo2 = bo.subObjects().get(0);
 		assertTrue(bo2 instanceof BizObject2);
-	}
-
-	interface BizObject extends ObjWrapper, TypeChooser {
-		void foo(String s);
-		String foo();
-		String chain1();
-		BizObject chain1(String s);
-		Integer chain2();
-		BizObject chain2(int s);
-		default String overridden() {
-			return "GOT IT !!";
-		}
-		List<BizObject2> subObjects();
-	}
-
-	interface BizObject2 extends ObjWrapper, Obj, TypeChooser {
-		
 	}
 
 	
