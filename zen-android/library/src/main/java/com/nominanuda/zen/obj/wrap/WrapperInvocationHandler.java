@@ -61,8 +61,8 @@ class WrapperInvocationHandler implements InvocationHandler {
 	private final IGetter[] getters;
 
 	public WrapperInvocationHandler(JSONObject o, Class<?> role, IGetter[] getters) {
+		this.o = o;
 		this.role = role;
-		this.o = o != null ? o : new Obj();
 		for (Method m : role.getMethods()) {
 			if (!NON_ROLE_METHODS.contains(m)) {
 				roleMethods.add(m);

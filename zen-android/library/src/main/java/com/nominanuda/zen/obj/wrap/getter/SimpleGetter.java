@@ -1,12 +1,10 @@
 package com.nominanuda.zen.obj.wrap.getter;
 
-import com.nominanuda.zen.common.Util;
 import com.nominanuda.zen.obj.Arr;
 import com.nominanuda.zen.obj.JsonType;
 import com.nominanuda.zen.obj.Obj;
 import com.nominanuda.zen.obj.wrap.ObjWrapper;
 import com.nominanuda.zen.obj.wrap.Wrap;
-import com.nominanuda.zen.obj.wrap.WrapType;
 import com.nominanuda.zen.obj.wrap.WrapperItemFactory;
 
 import org.json.JSONArray;
@@ -15,8 +13,6 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -26,7 +22,6 @@ import javax.annotation.concurrent.ThreadSafe;
 public class SimpleGetter implements IGetter {
 	public final static SimpleGetter GETTER = new SimpleGetter();
 
-	private static final Map<Class<?>, Util.Function<JSONObject, Object>> BUILDERS_CACHE = new HashMap<>();
 	private Wrap wf;
 
 	protected SimpleGetter() {
@@ -78,10 +73,7 @@ public class SimpleGetter implements IGetter {
 			}
 		} else if (JsonType.isJSONObject(v)) {
 			JSONObject o = (JSONObject) v;
-			WrapType wrapType = type.getAnnotation(WrapType.class);
-			if (wrapType != null) {
-				return createBuilder(wrapType, type).apply(o);
-			} else if (WrapperItemFactory.class.isAssignableFrom(type)) {
+			if (WrapperItemFactory.class.isAssignableFrom(type)) {
 				try {
 					return findWrapMethod(type).invoke(null, v);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -96,22 +88,6 @@ public class SimpleGetter implements IGetter {
 			return Arr.make((JSONArray) v);
 		}
 		throw new IllegalArgumentException("cannot convert value:" + v + " to type:" + type.getName());
-	}
-
-	private Util.Function<JSONObject, Object> createBuilder(WrapType wrapType, Class<?> type) {
-		Util.Function<JSONObject, Object> builder = BUILDERS_CACHE.get(type);
-		if (builder == null) {
-			String field = wrapType.field();
-			Map<String, Class<?>> typeMap = new HashMap<>();
-			String[] values = wrapType.values();
-			Class<?>[] types = wrapType.types();
-			for (int i = 0; i < values.length; i++) {
-				typeMap.put(values[i], types[i]);
-			}
-			builder = (o) -> wf.wrap(o, typeMap.get(o.optString(field)));
-			BUILDERS_CACHE.put(type, builder);
-		}
-		return builder;
 	}
 
 	private Method findWrapMethod(Class<?> type) throws NoSuchMethodException {
