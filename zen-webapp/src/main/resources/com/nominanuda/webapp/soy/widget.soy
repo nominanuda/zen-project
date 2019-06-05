@@ -35,13 +35,17 @@
  * @param? name
  * @param? clss
  * @param? submit
+ * @param? tabindex
  * @param baseclss
  */
-{template ._behavior_ private="true"}
+{template ._behavior_}
 {if $name and $name != ''} name="{call ._name_ data="all"/}"{/if} // allowing no name attribute by passing ''
 {sp}class="{$baseclss}{if $clss} {$clss}{/if}{if $submit} doSubmit{/if}"
 {if $submit and not($submit == true) and $submit != $name} // is string and doesn't overlap
 {sp}data-do-submit="{call ._name_ data="all"}{param name: $submit /}{/call}" // reach as $elm.data('doSubmit')
+{/if}
+{if $tabindex == 0} tabindex="0" // to avoid Java rendering "0.0"
+{elseif $tabindex} tabindex="{$tabindex}"
 {/if}
 {/template}
 
@@ -65,7 +69,6 @@
 {if $attrs} {$attrs |noAutoescape}{/if}
 {if $disabled} disabled="disabled"{/if}
 {if $readonly} readonly="readonly"{/if}
-{if $tabindex} tabindex="{$tabindex}"{/if}
 {/template}
 
 
