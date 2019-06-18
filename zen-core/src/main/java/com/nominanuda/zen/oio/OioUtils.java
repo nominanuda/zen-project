@@ -294,9 +294,9 @@ public class OioUtils {
 		String[] dirs = fileDir.list((dir, name) -> new File(dir, name).isDirectory());
 		LinkedList<Tuple2<String, T>> l = new LinkedList<>();
 		for (String f : files) {
-			String filename = URIS.pathJoin(fileDir.getAbsolutePath(), f).replace("\\", "/"); // for win systems
-			try (InputStream is = new FileInputStream(new File(filename))) {
-				l.add(new Tuple2<>(filename.substring(prefixLength), readerFnc.apply(filename, is)));
+			String filePath = cleanFilePath(URIS.pathJoin(fileDir.getAbsolutePath(), f));
+			try (InputStream is = new FileInputStream(new File(filePath))) {
+				l.add(new Tuple2<>(filePath.substring(prefixLength), readerFnc.apply(filePath, is)));
 			}
 		}
 		for (String d : dirs) {
@@ -308,13 +308,12 @@ public class OioUtils {
 	private <T> List<Tuple2<String, T>> getJarEntries(String jarSrcDir, Function<String, Boolean> namePredicate, BiFunction<String, InputStream, T> readerFnc) throws IOException {
 		List<Tuple2<String, T>> result = new LinkedList<>();
 		String[] arr = jarSrcDir.substring("file:".length()).split("!");
-		String jarPath = arr[0], dirPathInJar = arr[1].substring(1);
+		String jarPath = cleanFilePath(arr[0]), dirPathInJar = arr[1].substring(1);
 		if (!dirPathInJar.endsWith("/")) { // happens on some machines
 			dirPathInJar += "/";
 		}
 //		int dirPathInJarLen = dirPathInJar.length();
-		File f = new File(jarPath);
-		JarFile jf = new JarFile(f);
+		JarFile jf = new JarFile(new File(jarPath));
 		Enumeration<JarEntry> entries = jf.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
@@ -330,6 +329,12 @@ public class OioUtils {
 		}
 		jf.close();
 		return result;
+	}
+	
+	private String cleanFilePath(String path) { // for win systems
+		return path
+			.replace("%20", " ")
+			.replace("\\", "/");
 	}
 	
 
