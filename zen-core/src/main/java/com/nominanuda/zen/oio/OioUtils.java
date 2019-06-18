@@ -289,12 +289,12 @@ public class OioUtils {
 	}
 
 	private <T> List<Tuple2<String, T>> getDirEntries(int prefixLength, String srcDir, final Function<String, Boolean> namePredicate, BiFunction<String, InputStream, T> readerFnc) throws IOException {
-		File fileDir = new File(srcDir);
+		File fileDir = new File(cleanFilePath(srcDir));
 		String[] files = fileDir.list((dir, name) -> namePredicate.apply(name));
 		String[] dirs = fileDir.list((dir, name) -> new File(dir, name).isDirectory());
 		LinkedList<Tuple2<String, T>> l = new LinkedList<>();
 		for (String f : files) {
-			String filePath = cleanFilePath(URIS.pathJoin(fileDir.getAbsolutePath(), f));
+			String filePath = URIS.pathJoin(fileDir.getAbsolutePath(), f);
 			try (InputStream is = new FileInputStream(new File(filePath))) {
 				l.add(new Tuple2<>(filePath.substring(prefixLength), readerFnc.apply(filePath, is)));
 			}
