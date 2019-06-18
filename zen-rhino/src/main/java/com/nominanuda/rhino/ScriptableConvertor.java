@@ -84,6 +84,8 @@ public class ScriptableConvertor {
 	private Object convertObjectToRhino(Context cx, Object val, Scriptable topScope) {
 		if (JsonType.isNullablePrimitive(val)) {
 			return convertPrimitiveToRhino(val);
+		} else if (val instanceof Enum) {
+			return val.toString();
 		} else if (val instanceof List) {
 			return listToScriptable(cx, (List<?>)val, topScope);
 		} else if (val instanceof Map) {

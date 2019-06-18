@@ -104,7 +104,7 @@ function expand(src, dst, fnc) { // add missing properties (no override)
 	if (src) {
 		dst = dst || {};
 		for (var p in src) {
-			if (!dst[p]) {
+			if (dst[p] === undefined) {
 				dst[p] = (fnc ? fnc(src[p], p) : src[p]);
 			}
 		}
