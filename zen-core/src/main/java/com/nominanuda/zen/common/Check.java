@@ -296,7 +296,7 @@ public enum Check {
 	/**
 	 * @return o != null -> f(o)
 	 */
-	public static @Nullable <T> void nullOrAccept(@Nullable T o, Consumer<T> f) {
+	public static <T> void nullOrAccept(@Nullable T o, Consumer<T> f) {
 		if (o != null) f.accept(o);
 	}
 
@@ -334,13 +334,20 @@ public enum Check {
 		if (o == null) {
 			return false;
 		} else {
-			for (Class<?> cl : types) {
-				if (cl.isInstance(o)) {
+			for (Class<?> type : types) {
+				if (type.isInstance(o)) {
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> void ifInstanceAccept(Object o, Class<T> type, Consumer<T> f) {
+		if (type.isInstance(o)) {
+			f.accept((T) o);
+		}
 	}
 
 	public static boolean isNotInstanceOf(@Nullable Object o, Class<?>... types) {
