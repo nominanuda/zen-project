@@ -125,6 +125,4 @@ public class PluggableURLStreamHandlerFactory implements URLStreamHandlerFactory
 		boolean recursiveCall = (prevProtocol != null && prevProtocol.equals(protocol));
 		return recursiveCall;
 	}
-
-
 }

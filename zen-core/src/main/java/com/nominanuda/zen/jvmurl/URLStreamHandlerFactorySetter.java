@@ -27,39 +27,30 @@ class URLStreamHandlerFactorySetter {
 		final Field[] fields = URL.class.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field current = fields[i];
-			if (Modifier.isStatic(current.getModifiers())
-					&& current.getType().equals(URLStreamHandlerFactory.class)) {
+			if (Modifier.isStatic(current.getModifiers()) && current.getType().equals(URLStreamHandlerFactory.class)) {
 				current.setAccessible(true);
 				streamHandlerFactoryField = current;
 			}
 		}
 		if (streamHandlerFactoryField == null) {
-			throw new RuntimeException(
-					"Unable to detect static field in the URL class for the URLStreamHandlerFactory.");
+			throw new RuntimeException("Unable to detect static field in the URL class for the URLStreamHandlerFactory.");
 		}
 	}
 
-	public static void setURLStreamHandlerFactory(
-			URLStreamHandlerFactory factory) throws Exception {
+	public static void setURLStreamHandlerFactory(URLStreamHandlerFactory factory) throws Exception {
 		try {
-			URL.setURLStreamHandlerFactory(new DelegatingURLStreamHandlerFactory(
-					factory, null));
+			URL.setURLStreamHandlerFactory(new DelegatingURLStreamHandlerFactory(factory, null));
 		} catch (Error err) {
-			URLStreamHandlerFactory currentFactory = (URLStreamHandlerFactory)
-				streamHandlerFactoryField.get(null);
-			streamHandlerFactoryField.set(null,
-					new DelegatingURLStreamHandlerFactory(factory,
-							currentFactory));
+			URLStreamHandlerFactory currentFactory = (URLStreamHandlerFactory) streamHandlerFactoryField.get(null);
+			streamHandlerFactoryField.set(null, new DelegatingURLStreamHandlerFactory(factory, currentFactory));
 		}
 	}
 
-	private static class DelegatingURLStreamHandlerFactory implements
-			URLStreamHandlerFactory {
+	private static class DelegatingURLStreamHandlerFactory implements URLStreamHandlerFactory {
 		private final URLStreamHandlerFactory factory;
 		private final URLStreamHandlerFactory parent;
 
-		public DelegatingURLStreamHandlerFactory(
-				URLStreamHandlerFactory factory, URLStreamHandlerFactory parent) {
+		public DelegatingURLStreamHandlerFactory(URLStreamHandlerFactory factory, URLStreamHandlerFactory parent) {
 			this.parent = parent;
 			this.factory = factory;
 		}

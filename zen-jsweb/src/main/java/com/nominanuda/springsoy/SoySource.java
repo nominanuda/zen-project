@@ -75,7 +75,8 @@ public class SoySource {
 		Map<String, String> tpls = jsTemplatesCache.get(lang);
 		String tpl = tpls.get(name);
 		if (tpl == null) {
-			throw new IOException("not found template named "+name);
+			log.info("available template names: {}", tpls.keySet());
+			throw new IOException("not found template named " + name);
 		}
 		return tpl;
 	}
@@ -143,8 +144,10 @@ public class SoySource {
 		}
 		Map<String, String> jsTplMap = new HashMap<String, String>();
 		int len = jsTplNames.size();
-		for(int i = 0; i < len; i++) {
-			jsTplMap.put(jsTplNames.get(i), jsTpls.get(i));
+		for (int i = 0; i < len; i++) {
+			jsTplMap.put(
+				jsTplNames.get(i).replace('\\', '/'), // win compatibility
+				jsTpls.get(i));
 		}
 		jsTemplatesCache.put(lang, jsTplMap);
 		tofuCache.put(lang, soyFileSet.compileToTofu());

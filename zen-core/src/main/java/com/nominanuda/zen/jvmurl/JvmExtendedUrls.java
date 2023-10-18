@@ -16,7 +16,7 @@
 package com.nominanuda.zen.jvmurl;
 
 public class JvmExtendedUrls {
-	private static JvmExtendedUrls INSTANCE = null;;
+	private static JvmExtendedUrls INSTANCE = null;
 
 	private JvmExtendedUrls() throws Exception {
 		new PluggableURLStreamHandlerFactory().installToJvm();
